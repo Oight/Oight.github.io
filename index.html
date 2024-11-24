@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"oight.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"oight.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":true,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta property="og:type" content="website">
 <meta property="og:title" content="Welcome！This is Oight！">
@@ -71,15 +71,46 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
 
 
 
+<nav class="site-nav">
+  <ul class="main-menu menu">
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </header>
         
@@ -104,6 +135,8 @@
 
         <div class="site-overview-wrap sidebar-panel">
           <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="oight&ZiAzusa"
+      src="/image%5C1.jpg">
   <p class="site-author-name" itemprop="name">oight&ZiAzusa</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -145,7 +178,7 @@
     <link itemprop="mainEntityOfPage" href="http://oight.github.io/posts/6249b303/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/image%5C1.jpg">
       <meta itemprop="name" content="oight&ZiAzusa">
     </span>
 
@@ -170,9 +203,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-11-22 14:29:16 / 修改时间：14:33:08" itemprop="dateCreated datePublished" datetime="2024-11-22T14:29:16+08:00">2024-11-22</time>
+      <time title="创建时间：2024-11-22 14:29:16" itemprop="dateCreated datePublished" datetime="2024-11-22T14:29:16+08:00">2024-11-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-11-24 12:21:19" itemprop="dateModified" datetime="2024-11-24T12:21:19+08:00">2024-11-24</time>
     </span>
 
   
@@ -185,7 +224,8 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"><a href="#以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。" class="headerlink" title="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"></a>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1>
+          <h1 id="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"><a href="#以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。" class="headerlink" title="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"></a>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1><h2 id="一、WEB学习目录"><a href="#一、WEB学习目录" class="headerlink" title="一、WEB学习目录"></a>一、WEB学习目录</h2><h3 id="工具篇："><a href="#工具篇：" class="headerlink" title="工具篇："></a>工具篇：</h3><p>WEB的常用工具有：<br>BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）<br>Hackerbar（浏览器插件，传参的好帮手）<br>蚁剑（连接工具）<br>还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）<br>###<br>拥有了入门的工具，就可以步入WEB的世界力（喜）</p>
+
       
     </div>
 
@@ -214,7 +254,7 @@
     <link itemprop="mainEntityOfPage" href="http://oight.github.io/posts/4a17b156/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/image%5C1.jpg">
       <meta itemprop="name" content="oight&ZiAzusa">
     </span>
 
@@ -333,7 +373,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
 <script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
 
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
 
 
 
@@ -348,3 +390,5 @@
 
 </body>
 </html>
+
+<!-- 页面点击小红心 --> <script type="text/javascript" src="/js/clicklove.js"></script>
