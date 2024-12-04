@@ -4,6 +4,7 @@
     <title>从零开始的CTF冒险（一）！</title>
     <url>/posts/6249b303/</url>
     <content><![CDATA[<h1 id="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"><a href="#以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。" class="headerlink" title="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"></a>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1><h2 id="一、WEB学习目录"><a href="#一、WEB学习目录" class="headerlink" title="一、WEB学习目录"></a>一、WEB学习目录</h2><h3 id="工具篇："><a href="#工具篇：" class="headerlink" title="工具篇："></a>工具篇：</h3><p>WEB的常用工具有：<br>BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）<br>Hackerbar（浏览器插件，传参的好帮手）<br>蚁剑（连接工具）<br>还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）<br>###<br>拥有了入门的工具，就可以步入WEB的世界力（喜）</p>
+<h3 id="WEB包括哪些内容："><a href="#WEB包括哪些内容：" class="headerlink" title="WEB包括哪些内容："></a>WEB包括哪些内容：</h3><p>1.文件包含<br>2.文件上传</p>
 ]]></content>
       <tags>
         <tag>CTF</tag>
