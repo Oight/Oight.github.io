@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://oight.github.io/img/1.jpg">
 <meta property="article:published_time" content="2024-12-11T02:50:31.000Z">
-<meta property="article:modified_time" content="2024-12-12T08:45:21.778Z">
+<meta property="article:modified_time" content="2024-12-12T08:48:44.700Z">
 <meta property="article:author" content="Oight">
 <meta property="article:tag" content="周报">
 <meta name="twitter:card" content="summary">
@@ -146,7 +146,7 @@
   isHighlightShrink: false,
   isToc: true,
   isShuoshuo: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">NoSQL</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">NoSQL</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-11T02:50:31.000Z" title="发表于 2024-12-11 10:50:31">2024-12-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-12T08:45:21.778Z" title="更新于 2024-12-12 16:45:21">2024-12-12</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="NoSQL注入"><a href="#NoSQL注入" class="headerlink" title="NoSQL注入"></a>NoSQL注入</h1><h3 id="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"><a href="#意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下" class="headerlink" title="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"></a>意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</h3><h4 id="什么是NoSQL？"><a href="#什么是NoSQL？" class="headerlink" title="什么是NoSQL？"></a>什么是NoSQL？</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">NoSQL</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">NoSQL</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-11T02:50:31.000Z" title="发表于 2024-12-11 10:50:31">2024-12-11</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-12T08:48:44.700Z" title="更新于 2024-12-12 16:48:44">2024-12-12</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="NoSQL注入"><a href="#NoSQL注入" class="headerlink" title="NoSQL注入"></a>NoSQL注入</h1><h3 id="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"><a href="#意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下" class="headerlink" title="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"></a>意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</h3><h4 id="什么是NoSQL？"><a href="#什么是NoSQL？" class="headerlink" title="什么是NoSQL？"></a>什么是NoSQL？</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
 <p>大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。<br>读这里详细了解MongoDB</p>
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/9908?time__1311=n4+xnD0DuDRDci730=D/iaRWEDBn=QIIDRORYTD#toc-12">https://xz.aliyun.com/t/9908?time__1311=n4%2BxnD0DuDRDci730%3DD%2FiaRWEDBn%3DQIIDRORYTD#toc-12</a></p>
@@ -168,10 +168,14 @@
 <p>常见的NoSQL为PHP中的NoSQL和Node.js中的NoSQL  </p>
 <h5 id="PHP-中的NoSQL注入"><a href="#PHP-中的NoSQL注入" class="headerlink" title="PHP 中的NoSQL注入"></a>PHP 中的NoSQL注入</h5><p>重言式注入：</p>
 <p>重言式注入通常也是判断是否为NoSQL的第一步。<br>我们需要用$ne关键字构造永真条件来完成NoSQL注入</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username[$ne]=1&amp;password[$ne]=1</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>username[$ne]&#x3D;1&amp;password[$ne]&#x3D;1</p>
+</blockquote>
 <p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码<br>这里的原理是，$ne关键字在MongoDB查询语句中意思是不等于，也就是说我们上传了一个永真条件，使得登陆成功，但是服务端查不到username是1，password也是1的账户，只能输出所有的账户</p>
 <p>所以我们也可以使用以下的payload：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">username[$ne]=&amp;password[$ne]=</span><br><span class="line">username[$gt]=&amp;password[$gt]=</span><br><span class="line">username[$gte]=&amp;password[$gte]=</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>username[$ne]&#x3D;&amp;password[$ne]&#x3D;<br>username[$gt]&#x3D;&amp;password[$gt]&#x3D;<br>username[$gte]&#x3D;&amp;password[$gte]&#x3D;</p>
+</blockquote>
 <p>JavaScript注入：</p>
 <p>MongoDB Server 是支持 JavaScript 的，可以使用 JavaScript 进行一些复杂事务和查询，也允许在查询的时候执行 JavaScript 代码。但是如果传递不干净的用户输入到这些查询中，则可能会注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
 <p>要想使用JS注入，我们需要了解一下$where操作符。</p>
@@ -181,7 +185,9 @@
 </blockquote>
 <p>由于使用了 $where 关键字，其后面的 JavaScript 将会被执行并返回 “whoami”，然后将查询出 username 为 whoami 的数据。</p>
 <p>某些易受攻击的 PHP 应用程序在构建 MongoDB 查询时可能会直接插入未经过处理的用户输入，例如从变量中 $userData 获取查询条件：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.users.find(&#123; $where: &quot;function()&#123;return(this.username == $userData)&#125;&quot; &#125;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>db.users.find({ $where: “function(){return(this.username &#x3D;&#x3D; $userData)}” })</p>
+</blockquote>
 <p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">db.users.find(&#123; $where: &quot;function()&#123;return(this.username == &#x27;a&#x27;; sleep(5000))&#125;&quot; &#125;)</span><br></pre></td></tr></table></figure>
 <p>如果此时服务器有 5 秒钟的延迟则说明注入成功。<br>值得注意的是，在 MongoDB 2.4 之前，通过 $where 操作符使用<em>map-reduce</em>、<em>group</em> 命令可以访问到 Mongo Shell 中的全局函数和属性，如<em>db</em>，也就是说可以通过自定义 JavaScript 函数来获取数据库的所有信息。<br>在MongoDB 2.4 之后<em>db</em>访问不到了，但还是可以构造万能密码查出用户信息</p>

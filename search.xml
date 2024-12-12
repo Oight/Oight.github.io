@@ -35,10 +35,14 @@
 <p>常见的NoSQL为PHP中的NoSQL和Node.js中的NoSQL  </p>
 <h5 id="PHP-中的NoSQL注入"><a href="#PHP-中的NoSQL注入" class="headerlink" title="PHP 中的NoSQL注入"></a>PHP 中的NoSQL注入</h5><p>重言式注入：</p>
 <p>重言式注入通常也是判断是否为NoSQL的第一步。<br>我们需要用$ne关键字构造永真条件来完成NoSQL注入</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username[$ne]=1&amp;password[$ne]=1</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>username[$ne]&#x3D;1&amp;password[$ne]&#x3D;1</p>
+</blockquote>
 <p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码<br>这里的原理是，$ne关键字在MongoDB查询语句中意思是不等于，也就是说我们上传了一个永真条件，使得登陆成功，但是服务端查不到username是1，password也是1的账户，只能输出所有的账户</p>
 <p>所以我们也可以使用以下的payload：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username[$ne]=&amp;password[$ne]=</span><br><span class="line">username[$gt]=&amp;password[$gt]=</span><br><span class="line">username[$gte]=&amp;password[$gte]=</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>username[$ne]&#x3D;&amp;password[$ne]&#x3D;<br>username[$gt]&#x3D;&amp;password[$gt]&#x3D;<br>username[$gte]&#x3D;&amp;password[$gte]&#x3D;</p>
+</blockquote>
 <p>JavaScript注入：</p>
 <p>MongoDB Server 是支持 JavaScript 的，可以使用 JavaScript 进行一些复杂事务和查询，也允许在查询的时候执行 JavaScript 代码。但是如果传递不干净的用户输入到这些查询中，则可能会注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
 <p>要想使用JS注入，我们需要了解一下$where操作符。</p>
@@ -48,7 +52,9 @@
 </blockquote>
 <p>由于使用了 $where 关键字，其后面的 JavaScript 将会被执行并返回 “whoami”，然后将查询出 username 为 whoami 的数据。</p>
 <p>某些易受攻击的 PHP 应用程序在构建 MongoDB 查询时可能会直接插入未经过处理的用户输入，例如从变量中 $userData 获取查询条件：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">db.users.find(&#123; $where: &quot;function()&#123;return(this.username == $userData)&#125;&quot; &#125;)</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>db.users.find({ $where: “function(){return(this.username &#x3D;&#x3D; $userData)}” })</p>
+</blockquote>
 <p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">db.users.find(&#123; $where: &quot;function()&#123;return(this.username == &#x27;a&#x27;; sleep(5000))&#125;&quot; &#125;)</span><br></pre></td></tr></table></figure>
 <p>如果此时服务器有 5 秒钟的延迟则说明注入成功。<br>值得注意的是，在 MongoDB 2.4 之前，通过 $where 操作符使用<em>map-reduce</em>、<em>group</em> 命令可以访问到 Mongo Shell 中的全局函数和属性，如<em>db</em>，也就是说可以通过自定义 JavaScript 函数来获取数据库的所有信息。<br>在MongoDB 2.4 之后<em>db</em>访问不到了，但还是可以构造万能密码查出用户信息</p>
