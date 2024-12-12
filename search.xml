@@ -4,9 +4,9 @@
     <title>NoSQL</title>
     <url>/posts/f0940727/</url>
     <content><![CDATA[<h1 id="NoSQL注入"><a href="#NoSQL注入" class="headerlink" title="NoSQL注入"></a>NoSQL注入</h1><h3 id="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"><a href="#意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下" class="headerlink" title="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"></a>意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</h3><h4 id="什么是NoSQL？"><a href="#什么是NoSQL？" class="headerlink" title="什么是NoSQL？"></a>什么是NoSQL？</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
-<p>大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。<br>读这里详细了解MongoDB</p>
+<p>大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。</p>
 <blockquote>
-<p><a href="https://xz.aliyun.com/t/9908?time__1311=n4+xnD0DuDRDci730=D/iaRWEDBn=QIIDRORYTD#toc-12">https://xz.aliyun.com/t/9908?time__1311=n4%2BxnD0DuDRDci730%3DD%2FiaRWEDBn%3DQIIDRORYTD#toc-12</a></p>
+<p><a href="https://xz.aliyun.com/t/9908?time__1311=n4+xnD0DuDRDci730=D/iaRWEDBn=QIIDRORYTD#toc-12">读这里详细了解MongoDB</a></p>
 </blockquote>
 <h4 id="NoSQL-注入的分类"><a href="#NoSQL-注入的分类" class="headerlink" title="NoSQL 注入的分类"></a>NoSQL 注入的分类</h4><h5 id="有两种-NoSQL-注入分类的方式："><a href="#有两种-NoSQL-注入分类的方式：" class="headerlink" title="有两种 NoSQL 注入分类的方式："></a>有两种 NoSQL 注入分类的方式：</h5><p>第一种是按照语言的分类，可以分为：PHP 数组注入，JavaScript 注入和 Mongo Shell 拼接注入等等。</p>
 <p>第二种是按照攻击机制分类，可以分为：重言式注入，联合查询注入，JavaScript 注入、盲注等，这种分类方式很像传统 SQL 注入的分类方式。</p>
@@ -59,7 +59,7 @@ username[$gte]=&amp;password[$gte]=
 <h1 id="MD5"><a href="#MD5" class="headerlink" title="MD5"></a>MD5</h1><p>MD5绕过真是五花八门，ffifdyop和129581926211651571912466741651878684928可用于SQL注入时语句经过MD5加密之后的绕过，其原理是：提交的字符串经过加密形成的16进制字符串转换成10进制数字后对应的asii表内容为：‘ or ‘ 6……。<br>另外，数组绕过还可以绕过<em>if($_POST[‘param1’]!&#x3D;&#x3D;$_POST[‘param2’]&amp;&amp;md5($_POST[‘param1’])&#x3D;&#x3D;&#x3D;md5($_POST[‘param2’]))</em></p>
 <h1 id="SQL布尔盲注"><a href="#SQL布尔盲注" class="headerlink" title="SQL布尔盲注"></a>SQL布尔盲注</h1><p>第一次在题目中遇到布尔盲注，所以在这里记录一下<br>题目：</p>
 <blockquote>
-<p><a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA%20Day2%20Web1]Hack%20World">https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA%20Day2%20Web1]Hack%20World</a> </p>
+<p><a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA%20Day2%20Web1]Hack%20World">[CISCN2019 华北赛区 Day2 Web1]Hack World<br>1</a> </p>
 </blockquote>
 <p>我一开始怀疑是NoSQL（因为题目提示是SQL注入，PHP），结果尝试username[$ne]&#x3D;1&amp;password[$ne]&#x3D;1发现已经被过滤了。遂尝试普通的SQL注入<br>输入*1’ or 1&#x3D;1 –+<em>和</em>1;show databases();#*发现均被过滤，而输入1和2的时候登陆成功，输入3以上的数字以及字母都会报错（回显bool flase）<br>所以猜测这里需要布尔盲注，同时屏蔽了关键词<br>尝试Fuzz一下看看屏蔽了哪些关键词</p>
 <pre><code>这里粘贴一些用于Fuzz的字典
