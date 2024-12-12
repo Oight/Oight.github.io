@@ -73,7 +73,7 @@ username[$gte]=&amp;password[$gte]=
 </blockquote>
 <p>我一开始怀疑是NoSQL（因为题目提示是SQL注入，PHP），结果尝试username[$ne]&#x3D;1&amp;password[$ne]&#x3D;1发现已经被过滤了。遂尝试普通的SQL注入<br>输入*1’ or 1&#x3D;1 –+<em>和</em>1;show databases();#*发现均被过滤，而输入1和2的时候登陆成功，输入3以上的数字以及字母都会报错（回显bool flase）<br>所以猜测这里需要布尔盲注，同时屏蔽了关键词<br>尝试Fuzz一下看看屏蔽了哪些关键词</p>
 <pre><code>这里粘贴一些用于Fuzz的字典
-ttps://github.com/Underwood12/FuzzDict
+https://github.com/Underwood12/FuzzDict
 这是Fuzz教程  
 https://www.bilibili.com/video/BV1Zs42137tf
 </code></pre>
