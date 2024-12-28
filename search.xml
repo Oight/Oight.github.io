@@ -392,62 +392,139 @@ listitems: &#39;__import__(bytes([111,115]).decode()).__getattribute__(bytes([11
 <p>4.异或操作:<br>在加密过程中，最终的 Base64 编码结果被逐字节与 2进行异或操作。<br>解密时需要再次逐字节与 2 进行异或操作，恢复原始数据。</p>
 <p>验证逻辑:解密后的数据与 v21 逐字节对比，如果完全相同，则验证通过  </p>
 <p>使用如下脚本进行解码  </p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 自定义 Base64 字符映射表</span><br><span class="line">custom_base64 = &quot;ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/&quot;</span><br><span class="line">reverse_base64 = &#123;char: idx for idx, char in enumerate(custom_base64)&#125;</span><br><span class="line"></span><br><span class="line"># 加密数据</span><br><span class="line">encrypted = &quot;M@ASL3MF`uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSQhNCX7TVL3UFMeHi2?&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 解密：逐字节异或还原</span><br><span class="line">def xor_decrypt(data, key=2):</span><br><span class="line">    return &#x27;&#x27;.join(chr(ord(char) ^ key) for char in data)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 解密：Base64 自定义表解码</span><br><span class="line">def custom_base64_decode(data):</span><br><span class="line">    decoded_bytes = []</span><br><span class="line">    for i in range(0, len(data), 4):</span><br><span class="line">        chunk = data[i:i + 4]</span><br><span class="line"></span><br><span class="line">        # 处理填充字符 &#x27;=&#x27;</span><br><span class="line">        padding = chunk.count(&#x27;=&#x27;)</span><br><span class="line">        chunk = chunk.replace(&#x27;=&#x27;, &#x27;A&#x27;)  # 临时替换填充字符，用于解码</span><br><span class="line"></span><br><span class="line">        # 逐字节解码</span><br><span class="line">        b1 = reverse_base64[chunk[0]] &lt;&lt; 2 | reverse_base64[chunk[1]] &gt;&gt; 4</span><br><span class="line">        b2 = (reverse_base64[chunk[1]] &amp; 0xF) &lt;&lt; 4 | reverse_base64[chunk[2]] &gt;&gt; 2</span><br><span class="line">        b3 = (reverse_base64[chunk[2]] &amp; 0x3) &lt;&lt; 6 | reverse_base64[chunk[3]]</span><br><span class="line"></span><br><span class="line">        decoded_bytes.extend([b1, b2, b3])</span><br><span class="line"></span><br><span class="line">        # 根据填充字符调整解码结果</span><br><span class="line">        if padding &gt; 0:</span><br><span class="line">            decoded_bytes = decoded_bytes[:-padding]</span><br><span class="line"></span><br><span class="line">    return bytes(decoded_bytes)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 解密过程</span><br><span class="line">def decrypt(encrypted):</span><br><span class="line">    # Step 1: 逐字节异或还原</span><br><span class="line">    after_xor = xor_decrypt(encrypted)</span><br><span class="line"></span><br><span class="line">    # Step 2: 使用自定义 Base64 表解码</span><br><span class="line">    decoded = custom_base64_decode(after_xor)</span><br><span class="line"></span><br><span class="line">    return decoded.decode(&#x27;utf-8&#x27;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 调用解密函数</span><br><span class="line">try:</span><br><span class="line">    decrypted = decrypt(encrypted)</span><br><span class="line">    print(&quot;解密结果:&quot;, decrypted)</span><br><span class="line">except Exception as e:</span><br><span class="line">    print(&quot;解密失败:&quot;, e)</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">运行得到flag </span><br><span class="line">## secret_of_inkey  </span><br><span class="line">进入发现是小游戏</span><br><span class="line"></span><br><span class="line">可以玩出flag来（bushi） </span><br><span class="line"></span><br><span class="line">在WP中看到了一个有趣的解法 ：使用pyautogui来进行自动化脚本操作。  </span><br><span class="line"></span><br><span class="line">&gt; [pyautogui（控制鼠标键盘）GitHub官方文档翻译](https://juejin.cn/post/6844904190259494926)  </span><br><span class="line"></span><br><span class="line">### Payautogui  </span><br><span class="line">payautogui是一个Python模块，可以以编程的方式控制键鼠</span><br><span class="line">使用脚本</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>import pyautogui<br>import time<br>from pywinauto.application import Application</p>
-<p>print(“脚本将在3秒后开始运行…”)<br>time.sleep(3)</p>
-<p>start_x, start_y, end_x, end_y &#x3D; 900, 210, 2080, 1390</p>
-<p>grid &#x3D; []<br>key &#x3D; []</p>
-<p>grid.append(565)<br>key.append(‘9fc82e15d9de6ef2’)</p>
-<h1 id="初始化一个集合用于记录已访问的网格位置"><a href="#初始化一个集合用于记录已访问的网格位置" class="headerlink" title="初始化一个集合用于记录已访问的网格位置"></a>初始化一个集合用于记录已访问的网格位置</h1><p>visited &#x3D; set()<br>visited.add(565)</p>
-<p>while len(grid):<br>    current_grid &#x3D; grid.pop()<br>    current_key &#x3D; key.pop()</p>
-<pre><code>grid_x = start_x + 38 * (current_grid % 31) + 5
-grid_y = start_y + 38 * (current_grid // 31) + 16
+<pre><code># 自定义 Base64 字符映射表
+custom_base64 = &quot;ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/&quot;
+reverse_base64 = &#123;char: idx for idx, char in enumerate(custom_base64)&#125;
 
-pyautogui.click(grid_x, grid_y)
-time.sleep(0.3)
-pyautogui.typewrite(current_key + &#39;\n&#39;)
-time.sleep(0.3)
+# 加密数据
+encrypted = &quot;M@ASL3MF`uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSQhNCX7TVL3UFMeHi2?&quot;
 
+
+# 解密：逐字节异或还原
+def xor_decrypt(data, key=2):
+    return &#39;&#39;.join(chr(ord(char) ^ key) for char in data)
+
+
+# 解密：Base64 自定义表解码
+def custom_base64_decode(data):
+    decoded_bytes = []
+    for i in range(0, len(data), 4):
+        chunk = data[i:i + 4]
+
+        # 处理填充字符 &#39;=&#39;
+        padding = chunk.count(&#39;=&#39;)
+        chunk = chunk.replace(&#39;=&#39;, &#39;A&#39;)  # 临时替换填充字符，用于解码
+
+        # 逐字节解码
+        b1 = reverse_base64[chunk[0]] &lt;&lt; 2 | reverse_base64[chunk[1]] &gt;&gt; 4
+        b2 = (reverse_base64[chunk[1]] &amp; 0xF) &lt;&lt; 4 | reverse_base64[chunk[2]] &gt;&gt; 2
+        b3 = (reverse_base64[chunk[2]] &amp; 0x3) &lt;&lt; 6 | reverse_base64[chunk[3]]
+
+        decoded_bytes.extend([b1, b2, b3])
+
+        # 根据填充字符调整解码结果
+        if padding &gt; 0:
+            decoded_bytes = decoded_bytes[:-padding]
+
+    return bytes(decoded_bytes)
+
+
+# 解密过程
+def decrypt(encrypted):
+    # Step 1: 逐字节异或还原
+    after_xor = xor_decrypt(encrypted)
+
+    # Step 2: 使用自定义 Base64 表解码
+    decoded = custom_base64_decode(after_xor)
+
+    return decoded.decode(&#39;utf-8&#39;)
+
+
+# 调用解密函数
 try:
-    app = Application(backend=&quot;uia&quot;).connect(title=&quot;Right!&quot;)
-    dialog = app.window(title=&quot;Right!&quot;)
-    static_text = dialog.child_window(control_type=&quot;Text&quot;)
-    text = static_text.window_text()
+    decrypted = decrypt(encrypted)
+    print(&quot;解密结果:&quot;, decrypted)
 except Exception as e:
-    print(f&quot;无法连接到窗口: &#123;e&#125;&quot;)
-    continue
+    print(&quot;解密失败:&quot;, e)
+</code></pre>
+<p>运行得到flag </p>
+<h2 id="secret-of-inkey"><a href="#secret-of-inkey" class="headerlink" title="secret_of_inkey"></a>secret_of_inkey</h2><p>进入发现是小游戏</p>
+<p>可以玩出flag来（bushi） </p>
+<p>在WP中看到了一个有趣的解法 ：使用pyautogui来进行自动化脚本操作。  </p>
+<blockquote>
+<p><a href="https://juejin.cn/post/6844904190259494926">pyautogui（控制鼠标键盘）GitHub官方文档翻译</a>  </p>
+</blockquote>
+<h3 id="Payautogui"><a href="#Payautogui" class="headerlink" title="Payautogui"></a>Payautogui</h3><p>payautogui是一个Python模块，可以以编程的方式控制键鼠<br>使用脚本</p>
+<pre><code>import pyautogui
+import time
+from pywinauto.application import Application
 
-pyautogui.typewrite(&#39;\n&#39;)
+print(&quot;脚本将在3秒后开始运行...&quot;)
+time.sleep(3)
 
-print(text)
-if &#39;true&#39; in text.lower():
-    break
-if &#39;nothing&#39; in text.lower():
-    continue
+start_x, start_y, end_x, end_y = 900, 210, 2080, 1390
 
-t = text.split(&#39;\n&#39;)
-print(t)
+grid = []
+key = []
 
-# 假设每一行都有足够的长度，添加异常处理以避免索引错误
-for i in range(min(4, len(t))):
+grid.append(565)
+key.append(&#39;9fc82e15d9de6ef2&#39;)
+
+# 初始化一个集合用于记录已访问的网格位置
+visited = set()
+visited.add(565)
+
+while len(grid):
+    current_grid = grid.pop()
+    current_key = key.pop()
+
+    grid_x = start_x + 38 * (current_grid % 31) + 5
+    grid_y = start_y + 38 * (current_grid // 31) + 16
+
+    pyautogui.click(grid_x, grid_y)
+    time.sleep(0.3)
+    pyautogui.typewrite(current_key + &#39;\n&#39;)
+    time.sleep(0.3)
+
     try:
-        new_key = t[i][-17:-1]
-        new_grid = int(t[i][7:10])
-
-        if new_grid not in visited:
-            key.append(new_key)
-            grid.append(new_grid)
-            visited.add(new_grid)  # 标记为已访问
-    except (ValueError, IndexError) as e:
-        print(f&quot;解析第 &#123;i&#125; 行时出错: &#123;e&#125;&quot;)
+        app = Application(backend=&quot;uia&quot;).connect(title=&quot;Right!&quot;)
+        dialog = app.window(title=&quot;Right!&quot;)
+        static_text = dialog.child_window(control_type=&quot;Text&quot;)
+        text = static_text.window_text()
+    except Exception as e:
+        print(f&quot;无法连接到窗口: &#123;e&#125;&quot;)
         continue
 
-print(&quot;当前已访问的网格数量:&quot;, len(visited))
-print(&quot;待处理的key:&quot;, key)
-print(&quot;待处理的grid:&quot;, grid)
+    pyautogui.typewrite(&#39;\n&#39;)
+
+    print(text)
+    if &#39;true&#39; in text.lower():
+        break
+    if &#39;nothing&#39; in text.lower():
+        continue
+
+    t = text.split(&#39;\n&#39;)
+    print(t)
+
+    # 假设每一行都有足够的长度，添加异常处理以避免索引错误
+    for i in range(min(4, len(t))):
+        try:
+            new_key = t[i][-17:-1]
+            new_grid = int(t[i][7:10])
+
+            if new_grid not in visited:
+                key.append(new_key)
+                grid.append(new_grid)
+                visited.add(new_grid)  # 标记为已访问
+        except (ValueError, IndexError) as e:
+            print(f&quot;解析第 &#123;i&#125; 行时出错: &#123;e&#125;&quot;)
+            continue
+
+    print(&quot;当前已访问的网格数量:&quot;, len(visited))
+    print(&quot;待处理的key:&quot;, key)
+    print(&quot;待处理的grid:&quot;, grid)
 </code></pre>
-<pre><code>得到flag
-</code></pre>
+<p>得到flag</p>
 ]]></content>
       <tags>
         <tag>复现</tag>
