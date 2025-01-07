@@ -739,4 +739,180 @@ return 1;
         <tag>周报</tag>
       </tags>
   </entry>
+  <entry>
+    <title>archlinux</title>
+    <url>/posts/49ae7cb9/</url>
+    <content><![CDATA[<h1 id="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这"><a href="#安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这" class="headerlink" title="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这"></a>安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这</h1><h2 id="前期准备："><a href="#前期准备：" class="headerlink" title="前期准备："></a>前期准备：</h2><pre><code>1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动  
+2开机时使用U盘启动 
+</code></pre>
+<h2 id="无线网卡连接网络（有线可以略过）"><a href="#无线网卡连接网络（有线可以略过）" class="headerlink" title="无线网卡连接网络（有线可以略过）"></a>无线网卡连接网络（有线可以略过）</h2><pre><code>1.iwctl 
+2.device list (列出所有WIFI设备) 
+3.station [网卡名称] scan (扫描网络)  
+4.station [网卡名称] get-networks (显示所有网络)  
+5.station [网卡名称] connect [WIFI名称] 
+输入密码
+Ctrl  + d 退出  
+ping一下看看是否连接到网络  （ping www.baidu.com）  
+</code></pre>
+<h2 id="连上网后，更新系统时间"><a href="#连上网后，更新系统时间" class="headerlink" title="连上网后，更新系统时间"></a>连上网后，更新系统时间</h2><blockquote>
+<p>1.timedatectl (更新系统时间)  </p>
+</blockquote>
+<h2 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h2><h3 id="分区-1"><a href="#分区-1" class="headerlink" title="分区"></a>分区</h3><pre><code>1.fdisk -l (查看自己分区)  
+找到我们要安装的硬盘，单 nvme 盘为 /dev/nvme0n1;单 sata 盘为 /dev/sda1  
+2.cfdisk + [你的硬盘] 
+3.Type 选择第一个 efi system  
+4.Write 
+5.选中分出来的空间，选择 new，创建根分区，输入分区大小（不小于22G）
+5.选中剩下的空余空间，选择new ，创建 home 分区，输入分区大小  
+6.选中剩下的空余空间，选择 new ,创建 swap 交换空间 （类似于 win 的虚拟内存）  
+7.Sort 排下序  
+8.选中 home 分区，Type 选择 linux home  
+9.选中 swap 分区，Type 选择 linux swap  
+10.Write 写入
+11.Quit 退出  
+12.再次执行 fdisk -l 看看是否分好  
+</code></pre>
+<h3 id="格式化分区"><a href="#格式化分区" class="headerlink" title="格式化分区"></a>格式化分区</h3><pre><code>1.mkfs.[文件系统] （-f）/dev/[分区编号]
+例： mkfs.btrfs -f /dev/nvme0n1p4 
+    mkfs.ext4 /dev/nvme0n1p4  
+2.mkfs.btrfs -f /dev/nvme0n1p5 (格式化 home 分区)  
+3.mkswap /dev/nvme0n1p6 (初始化swap分区)  
+</code></pre>
+<h3 id="挂载分区"><a href="#挂载分区" class="headerlink" title="挂载分区"></a>挂载分区</h3><pre><code>一定要先挂载根分区  
+1.mount /dev/[根分区编号] /mnt  
+例：mount /dev/nvme0n1p4 /mnt  
+2.mount --mkdir /dev/[home分区编号] /mnt/home （挂载根分区）
+3.mount --mkdir /dev/[efi分区编号] /mnt/efi  （挂载efi分区）  
+例：mount --mkdir /dev/nvme0n1p1 /mnt/efi  
+4.swapon /dev/[交换空间分区编号] （挂载交换分区）  
+</code></pre>
+<h2 id="配置国内镜像源"><a href="#配置国内镜像源" class="headerlink" title="配置国内镜像源"></a>配置国内镜像源</h2><pre><code>1.nano /etc/pacman.d/mirrorlist  
+2.在第一行添加
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch  
+3.Ctrl + o 保存
+4.Ctrl + x 退出  
+5.pacman -Syy (刷新)  
+6.pacman -S archlinux-keyring (重新安装密钥)  
+</code></pre>
+<h2 id="安装基本系统"><a href="#安装基本系统" class="headerlink" title="安装基本系统"></a>安装基本系统</h2><pre><code>1.pacstrap /mnt [软件包]  
+base （基础系统），base-devel (工具包) 
+</code></pre>
+<p>例：</p>
+<pre><code>pacstrap /mnt base base-devel linux-zen linux-zen-headers linux-firmware networkmanager grub os-prober efibootmgr ntfs-3g amd-ucode bluez bluez-utils nano  
+</code></pre>
+<p>一路回车就可以  </p>
+<h2 id="创建-fstab-自动挂载配置文件"><a href="#创建-fstab-自动挂载配置文件" class="headerlink" title="创建 fstab (自动挂载配置文件)"></a>创建 fstab (自动挂载配置文件)</h2><blockquote>
+<p>1.genfstab -U &#x2F;mnt &gt;&gt; &#x2F;mnt&#x2F;etc&#x2F;fstab  </p>
+</blockquote>
+<h2 id="chroot进入系统"><a href="#chroot进入系统" class="headerlink" title="chroot进入系统"></a>chroot进入系统</h2><blockquote>
+<p>1.arch-chroot &#x2F;mnt </p>
+</blockquote>
+<h2 id="设置时区"><a href="#设置时区" class="headerlink" title="设置时区"></a>设置时区</h2><h3 id="设置时区-1"><a href="#设置时区-1" class="headerlink" title="设置时区"></a>设置时区</h3><blockquote>
+<p>1.ln -sf &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime  </p>
+</blockquote>
+<h3 id="设置硬件时间"><a href="#设置硬件时间" class="headerlink" title="设置硬件时间"></a>设置硬件时间</h3><blockquote>
+<p>1.hwclock –systohc </p>
+</blockquote>
+<h2 id="本地化"><a href="#本地化" class="headerlink" title="本地化"></a>本地化</h2><h3 id="编辑locale-gen"><a href="#编辑locale-gen" class="headerlink" title="编辑locale.gen"></a>编辑locale.gen</h3><pre><code>1.nano /etc/locale.gen &#123;删除 en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8 前的&quot;#&quot;&#125; 
+2.locale-gen (生成locale)  
+</code></pre>
+<h3 id="编辑locale-conf"><a href="#编辑locale-conf" class="headerlink" title="编辑locale.conf:"></a>编辑locale.conf:</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;locale.conf  {添加 LANG&#x3D;en_US.UTF-8}  </p>
+</blockquote>
+<h2 id="设置主机名"><a href="#设置主机名" class="headerlink" title="设置主机名"></a>设置主机名</h2><h3 id="设置主机名-1"><a href="#设置主机名-1" class="headerlink" title="设置主机名"></a>设置主机名</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;hostname  </p>
+</blockquote>
+<h3 id="设置-root-密码"><a href="#设置-root-密码" class="headerlink" title="设置 root 密码"></a>设置 root 密码</h3><blockquote>
+<p>1.passwd  </p>
+</blockquote>
+<h3 id="设置普通用户"><a href="#设置普通用户" class="headerlink" title="设置普通用户"></a>设置普通用户</h3><blockquote>
+<p>1.useradd -m -G wheel [用户名]  </p>
+</blockquote>
+<h3 id="为用户创建密码"><a href="#为用户创建密码" class="headerlink" title="为用户创建密码"></a>为用户创建密码</h3><blockquote>
+<p>1.passwd [用户名]  </p>
+</blockquote>
+<h3 id="编辑-sudoers-赋予用户-root-权限"><a href="#编辑-sudoers-赋予用户-root-权限" class="headerlink" title="编辑 sudoers 赋予用户 root 权限"></a>编辑 sudoers 赋予用户 root 权限</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;sudoers {删除 %wheel ALL&#x3D;(ALL:ALL) ALL前的“#”}  </p>
+</blockquote>
+<h2 id="启用服务"><a href="#启用服务" class="headerlink" title="启用服务"></a>启用服务</h2><h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><blockquote>
+<p>1.systemctl enable NetworkManager  </p>
+</blockquote>
+<h3 id="蓝牙"><a href="#蓝牙" class="headerlink" title="蓝牙"></a>蓝牙</h3><blockquote>
+<p>1.systemctl enable bluetooth </p>
+</blockquote>
+<h2 id="编辑-grub"><a href="#编辑-grub" class="headerlink" title="编辑 grub"></a>编辑 grub</h2><h3 id="编辑-grub-1"><a href="#编辑-grub-1" class="headerlink" title="编辑 grub"></a>编辑 grub</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;default&#x2F;grub {去掉 GRUB_DISABLE_OS_PROBER&#x3D;false 前的“#”}  </p>
+</blockquote>
+<h3 id="安装-grub-服务"><a href="#安装-grub-服务" class="headerlink" title="安装 grub 服务"></a>安装 grub 服务</h3><pre><code>1.grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=grub  
+2.grub-mkconfig -o /boot/grub/grub.cfg (更新 grub 向导)  
+</code></pre>
+<h1 id="安装KDE"><a href="#安装KDE" class="headerlink" title="安装KDE"></a>安装KDE</h1><blockquote>
+<p>sudo pacman -S plasma  </p>
+</blockquote>
+<h2 id="开机自启显示管理"><a href="#开机自启显示管理" class="headerlink" title="开机自启显示管理"></a>开机自启显示管理</h2><blockquote>
+<p>systemctl enable sddm  </p>
+</blockquote>
+<h2 id="其他安装"><a href="#其他安装" class="headerlink" title="其他安装"></a>其他安装</h2><blockquote>
+<p>pacman -S konsole ark dolphin kate </p>
+</blockquote>
+<h1 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h1><h2 id="退出"><a href="#退出" class="headerlink" title="退出"></a>退出</h2><blockquote>
+<p>exit </p>
+</blockquote>
+<h2 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h2><blockquote>
+<p>reboot </p>
+</blockquote>
+<h1 id="进入系统"><a href="#进入系统" class="headerlink" title="进入系统"></a>进入系统</h1><p><code>alt + Ctrl + T 打开终端</code>  </p>
+<h2 id="更新-grub"><a href="#更新-grub" class="headerlink" title="更新 grub"></a>更新 grub</h2><blockquote>
+<p>sudo grub-mkconfig -o &#x2F;boot&#x2F;grub&#x2F;grub.cfg  </p>
+</blockquote>
+<h2 id="安装中文字体"><a href="#安装中文字体" class="headerlink" title="安装中文字体"></a>安装中文字体</h2><blockquote>
+<p>sudo pacman -S adobe-source-han-sans-cn-fonts  </p>
+</blockquote>
+<p>设置语言后重启  </p>
+<h2 id="配置国内源"><a href="#配置国内源" class="headerlink" title="配置国内源"></a>配置国内源</h2><h3 id="配置国内源-1"><a href="#配置国内源-1" class="headerlink" title="配置国内源"></a>配置国内源</h3><pre><code>sudo nano /etc/pacman.conf
+开启32位库，&#123;去掉 [multilib]及下一行前的 &quot;#&quot;&#125;  
+然后在下面添加：
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch  (清华源)或
+Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch           (科大源)或  
+Server = https://repo.huaweicloud.com/archlinux/$repo/os/$srch   (华为源)  
+</code></pre>
+<h3 id="刷新软件包"><a href="#刷新软件包" class="headerlink" title="刷新软件包"></a>刷新软件包</h3><blockquote>
+<p>sudo pacman -Syy  </p>
+</blockquote>
+<h3 id="导入密钥"><a href="#导入密钥" class="headerlink" title="导入密钥"></a>导入密钥</h3><blockquote>
+<p>sudo pacman -S archlinuxcn-keyring  </p>
+</blockquote>
+<h2 id="软件商店软件源安装（可选）"><a href="#软件商店软件源安装（可选）" class="headerlink" title="软件商店软件源安装（可选）"></a>软件商店软件源安装（可选）</h2><blockquote>
+<p>sudo pacman -S archlinux-appstream-data packagekit-qt6 fwupd  </p>
+</blockquote>
+<h2 id="安装-aur-助手-yay"><a href="#安装-aur-助手-yay" class="headerlink" title="安装 aur 助手 yay"></a>安装 aur 助手 yay</h2><pre><code>sudo pacman -S yay
+yay -Syy
+</code></pre>
+<h2 id="安装中文输入法参照-ArchWiKi"><a href="#安装中文输入法参照-ArchWiKi" class="headerlink" title="安装中文输入法参照 ArchWiKi"></a>安装中文输入法参照 ArchWiKi</h2><p>推荐Fcitx5 </p>
+<h1 id="yay"><a href="#yay" class="headerlink" title="yay"></a>yay</h1><h2 id="使用-Yay-进行包管理"><a href="#使用-Yay-进行包管理" class="headerlink" title="使用 Yay 进行包管理"></a>使用 Yay 进行包管理</h2><p>Yay 遵循与 pacman 类似（但不相同）的命令结构。所以你用 Yay 管理 AUR 包应该不难。</p>
+<p>搜索软件包：</p>
+<pre><code>yay search_term
+</code></pre>
+<p>安装软件包：</p>
+<pre><code>yay -S package_name
+</code></pre>
+<p>删除软件包：</p>
+<pre><code>yay -R package_name
+</code></pre>
+<p>要删除包及其依赖项：</p>
+<pre><code>yay -Rns package_name
+</code></pre>
+<p>仅升级 AUR 包：</p>
+<pre><code>yay -Sua
+</code></pre>
+<p>Yay 还能够升级非 AUR 软件包。上面的 a 标志将其限制为 AUR。  </p>
+<h2 id="将-Yay-升级到新版本"><a href="#将-Yay-升级到新版本" class="headerlink" title="将 Yay 升级到新版本"></a>将 Yay 升级到新版本</h2><p>现在，你可能想知道如何将 Yay 升级到可用的新版本。</p>
+<p>答案是你不需要做任何特别的事情。当你运行以下命令时，Yay 可以自行更新：</p>
+<pre><code>yay -Sua  
+</code></pre>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
 </search>
