@@ -919,7 +919,7 @@ yay -Syy
     <title>Python反序列化</title>
     <url>/posts/f66dca92/</url>
     <content><![CDATA[<h1 id="Python-反序列化漏洞"><a href="#Python-反序列化漏洞" class="headerlink" title="Python 反序列化漏洞"></a>Python 反序列化漏洞</h1><h2 id="什么是Python的序列化与反序列化"><a href="#什么是Python的序列化与反序列化" class="headerlink" title="什么是Python的序列化与反序列化"></a>什么是Python的序列化与反序列化</h2><h3 id="什么是Python的序列化"><a href="#什么是Python的序列化" class="headerlink" title="什么是Python的序列化"></a>什么是Python的序列化</h3><p>众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。</p>
-<p>由于Python中对象的形式多种多样，变化万千，在存储时按照原本的形式来存储过于庞大且麻烦，所以我们就需要把Python对象转换为可存储或可传输的标准化格式。将Python对象转换为可存储或传输的标准化格式（如字节流、字符串的过程，就叫做Python的序列化。  </p>
+<p>由于Python中对象的形式多种多样，变化万千，在存储时按照原本的形式来存储过于庞大且麻烦，所以我们就需要把Python对象转换为可存储或可传输的标准化格式。将Python对象转换为可存储或传输的标准化格式（如字节流、字符串）的过程，就叫做Python的序列化。  </p>
 <h3 id="什么是Python的反序列化"><a href="#什么是Python的反序列化" class="headerlink" title="什么是Python的反序列化"></a>什么是Python的反序列化</h3><p>既然为了存储和传输方便，将Python对象通过序列化的方式转换成了一种标准化的格式，那么在程序执行时，我们就需要把标准化格式还原为Python对象，而这个过程，就叫做Python的反序列化。  </p>
 <h3 id="序列化的本质"><a href="#序列化的本质" class="headerlink" title="序列化的本质"></a>序列化的本质</h3><ul>
 <li><p>序列化的本质是将对象的状态或数据结构转换为一种通用格式（如二进制，JSON，XML），使其可以保存到文件、数据库或通过网络传输。</p>
