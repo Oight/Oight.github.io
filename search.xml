@@ -1115,7 +1115,7 @@ python/object/new
 python/object/apply
 </code></pre>
 <p>漏洞成因：</p>
-<p>&emsp;由于上面提到得五个标签，在constructor.py文件被加载器解析导致，攻击者利用这类标签可以达到任意命令执行，以及验证绕过等漏洞得利用。</p>
+<p>&emsp;由于上面提到的五个标签，在constructor.py文件被加载器解析导致，攻击者利用这类标签可以达到任意命令执行，以及验证绕过等漏洞的利用。</p>
 <p>payload：</p>
 <pre><code>!!python/object/apply:os.system [&quot;calc.exe&quot;]
 !!python/object/new:os.system [&quot;calc.exe&quot;]    
