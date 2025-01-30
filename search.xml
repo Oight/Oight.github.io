@@ -1237,8 +1237,62 @@ print(deserialized_data)
 <p><a href="https://github.com/H3rmesk1t/Security-Learning/blob/main/PythonSec/Python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E2%80%94Python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/Python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E2%80%94Python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E.md">Python安全学习—Python反序列化漏洞</a>  </p>
 </blockquote>
 <blockquote>
-<p><a href="https://tttang.com/archive/1885/">python反序列化详解</a></p>
+<p><a href="https://tttang.com/archive/1885/">python反序列化详解</a>  </p>
 </blockquote>
+<hr>
+<p>其他：</p>
+<p>关于callable：<br>在 Python 中，<strong>“callable”（可调用对象）</strong> 是指任何可以通过 <code>()</code> 运算符调用的对象。简单来说，如果一个对象可以像函数一样被调用（例如 <code>obj()</code>），它就是可调用的。以下是关于 callable 的详细解释：</p>
+<h3 id="1-常见的可调用对象类型"><a href="#1-常见的可调用对象类型" class="headerlink" title="1. 常见的可调用对象类型"></a><strong>1. 常见的可调用对象类型</strong></h3><h4 id="1-函数（Function）"><a href="#1-函数（Function）" class="headerlink" title="(1) 函数（Function）"></a><strong>(1) 函数（Function）</strong></h4><ul>
+<li>包括内置函数、自定义函数、Lambda 函数。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">greet</span>(<span class="params">name</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;Hello, <span class="subst">&#123;name&#125;</span>!&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用函数</span></span><br><span class="line">greet(<span class="string">&quot;Alice&quot;</span>)  <span class="comment"># 输出 Hello, Alice!</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Lambda 也是可调用的</span></span><br><span class="line">add = <span class="keyword">lambda</span> a, b: a + b</span><br><span class="line"><span class="built_in">print</span>(add(<span class="number">3</span>, <span class="number">5</span>))  <span class="comment"># 输出 8</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="2-类（Class）"><a href="#2-类（Class）" class="headerlink" title="(2) 类（Class）"></a><strong>(2) 类（Class）</strong></h4><ul>
+<li><strong>类本身是可调用的</strong>，调用类会创建它的实例。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Dog</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, name</span>):</span><br><span class="line">        <span class="variable language_">self</span>.name = name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用类创建实例</span></span><br><span class="line">my_dog = Dog(<span class="string">&quot;Buddy&quot;</span>)  <span class="comment"># Dog 类是可调用的</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="3-方法（Method）"><a href="#3-方法（Method）" class="headerlink" title="(3) 方法（Method）"></a><strong>(3) 方法（Method）</strong></h4><ul>
+<li>类中定义的方法（实例方法、类方法、静态方法）。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Calculator</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">self, a, b</span>):  <span class="comment"># 实例方法</span></span><br><span class="line">        <span class="keyword">return</span> a + b</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">multiply</span>(<span class="params">cls, a, b</span>):  <span class="comment"># 类方法</span></span><br><span class="line">        <span class="keyword">return</span> a * b</span><br><span class="line"></span><br><span class="line"><span class="meta">    @staticmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">subtract</span>(<span class="params">a, b</span>):  <span class="comment"># 静态方法</span></span><br><span class="line">        <span class="keyword">return</span> a - b</span><br><span class="line"></span><br><span class="line">calc = Calculator()</span><br><span class="line">calc.add(<span class="number">2</span>, <span class="number">3</span>)           <span class="comment"># 实例方法调用</span></span><br><span class="line">Calculator.multiply(<span class="number">2</span>, <span class="number">3</span>)  <span class="comment"># 类方法调用</span></span><br><span class="line">Calculator.subtract(<span class="number">5</span>, <span class="number">2</span>)  <span class="comment"># 静态方法调用</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="4-实现了-call-方法的对象"><a href="#4-实现了-call-方法的对象" class="headerlink" title="(4) 实现了 __call__ 方法的对象"></a><strong>(4) 实现了 <code>__call__</code> 方法的对象</strong></h4><ul>
+<li>如果一个类定义了 <code>__call__</code> 方法，它的实例会成为可调用对象。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Adder</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="variable language_">self</span>.x = x</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params">self, y</span>):</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.x + y</span><br><span class="line"></span><br><span class="line">add_5 = Adder(<span class="number">5</span>)</span><br><span class="line"><span class="built_in">print</span>(add_5(<span class="number">3</span>))  <span class="comment"># 输出 8（等价于 add_5.__call__(3)）</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h4 id="5-其他内置可调用对象"><a href="#5-其他内置可调用对象" class="headerlink" title="(5) 其他内置可调用对象"></a><strong>(5) 其他内置可调用对象</strong></h4><ul>
+<li>生成器函数、部分函数（<code>functools.partial</code>）等。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> functools</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">power</span>(<span class="params">base, exp</span>):</span><br><span class="line">    <span class="keyword">return</span> base ** exp</span><br><span class="line"></span><br><span class="line">square = functools.partial(power, exp=<span class="number">2</span>)  <span class="comment"># 部分函数</span></span><br><span class="line"><span class="built_in">print</span>(square(<span class="number">3</span>))  <span class="comment"># 输出 9</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="2-如何判断一个对象是否可调用？"><a href="#2-如何判断一个对象是否可调用？" class="headerlink" title="2. 如何判断一个对象是否可调用？"></a><strong>2. 如何判断一个对象是否可调用？</strong></h3><p>使用内置函数 <code>callable()</code> 可以检测对象是否可调用：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">callable</span>(<span class="built_in">len</span>))        <span class="comment"># True（内置函数）</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">callable</span>(<span class="string">&quot;hello&quot;</span>))    <span class="comment"># False（字符串不可调用）</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">callable</span>(Adder(<span class="number">5</span>)))   <span class="comment"># True（实现了 __call__ 的实例）</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="3-不可调用的对象示例"><a href="#3-不可调用的对象示例" class="headerlink" title="3. 不可调用的对象示例"></a><strong>3. 不可调用的对象示例</strong></h3><ul>
+<li><p><strong>基础数据类型</strong>：整数、字符串、列表等。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">x = <span class="number">42</span></span><br><span class="line">x()  <span class="comment"># 报错：&#x27;int&#x27; object is not callable</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>未实现 <code>__call__</code> 的实例</strong>：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Cat</span>:</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">my_cat = Cat()</span><br><span class="line">my_cat()  <span class="comment"># 报错：&#x27;Cat&#x27; object is not callable</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="4-Callable-的实际应用场景"><a href="#4-Callable-的实际应用场景" class="headerlink" title="4. Callable 的实际应用场景"></a><strong>4. Callable 的实际应用场景</strong></h3><ol>
+<li><p><strong>装饰器（Decorator）</strong>：</p>
+<ul>
+<li>装饰器本身必须是可调用对象（函数或类）。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">logger</span>(<span class="params">func</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">wrapper</span>(<span class="params">*args, **kwargs</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Calling <span class="subst">&#123;func.__name__&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> func(*args, **kwargs)</span><br><span class="line">    <span class="keyword">return</span> wrapper</span><br><span class="line"></span><br><span class="line"><span class="meta">@logger</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">say_hello</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Hello!&quot;</span>)</span><br><span class="line"></span><br><span class="line">say_hello()  <span class="comment"># 输出 &quot;Calling say_hello&quot; 和 &quot;Hello!&quot;</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>动态调用函数</strong>：</p>
+<ul>
+<li>通过变量名动态调用函数。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">do_operation</span>(<span class="params">op, a, b</span>):</span><br><span class="line">    operations = &#123;<span class="string">&quot;add&quot;</span>: <span class="keyword">lambda</span> x, y: x + y, <span class="string">&quot;mul&quot;</span>: <span class="keyword">lambda</span> x, y: x * y&#125;</span><br><span class="line">    <span class="keyword">return</span> operations[op](a, b)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(do_operation(<span class="string">&quot;add&quot;</span>, <span class="number">3</span>, <span class="number">5</span>))  <span class="comment"># 输出 8</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><p><strong>回调机制</strong>：</p>
+<ul>
+<li>将函数作为参数传递，在特定事件发生时调用。<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">on_button_click</span>(<span class="params">callback</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;按钮被点击了！&quot;</span>)</span><br><span class="line">    callback()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_message</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;执行回调函数&quot;</span>)</span><br><span class="line"></span><br><span class="line">on_button_click(show_message)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a><strong>总结</strong></h3><ul>
+<li><strong>可调用对象</strong>是 Python 的核心概念之一，包括函数、类、方法和实现了 <code>__call__</code> 的实例。</li>
+<li>使用 <code>callable()</code> 可以快速检测对象是否可调用。</li>
+<li>理解 callable 是掌握装饰器、动态编程和回调机制的关键。</li>
+</ul>
 ]]></content>
       <tags>
         <tag>周报</tag>
