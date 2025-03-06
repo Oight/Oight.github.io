@@ -1496,6 +1496,10 @@ while True:
 </li>
 <li><strong>最终效果</strong>：通过污染 <code>Object.prototype.language</code>，在渲染时执行 <code>cat /flag</code>，直接获取flag。</li>
 </ul>
+<p>参考：</p>
+<blockquote>
+<p><a href="https://www.leavesongs.com/PENETRATION/javascript-prototype-pollution-attack.html">深入理解 JavaScript Prototype 污染攻击</a></p>
+</blockquote>
 ]]></content>
       <tags>
         <tag>周报</tag>
