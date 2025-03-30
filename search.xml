@@ -2240,7 +2240,7 @@ var
 </blockquote>
 <h1 id="Rust输出"><a href="#Rust输出" class="headerlink" title="Rust输出"></a>Rust输出</h1><p>我们将以菜鸟教程上的顺序来进行。  </p>
 <p>第一步，经典的<code>Hello,world</code>  </p>
-<h2 id="Hello，World！"><a href="#Hello，World！" class="headerlink" title="Hello，World！"></a>Hello，World！</h2><h3 id="创建项目目录"><a href="#创建项目目录" class="headerlink" title="创建项目目录"></a>创建项目目录</h3><p>这一步是每个Rust程序的开端，没一个伟大的项目都起源于此。  </p>
+<h2 id="Hello，World！"><a href="#Hello，World！" class="headerlink" title="Hello，World！"></a>Hello，World！</h2><h3 id="创建项目目录"><a href="#创建项目目录" class="headerlink" title="创建项目目录"></a>创建项目目录</h3><p>这一步是每个Rust程序的开端，每一个伟大的项目都起源于此。  </p>
 <p>我们使用<code>cargo</code>来创建一个名为<code>Hello_World</code>的项目： </p>
 <blockquote>
 <p>cargo new Hello_World  </p>
