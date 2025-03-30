@@ -2212,4 +2212,128 @@ var
         <tag>渗透</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Rust学习</title>
+    <url>/posts/35a38378/</url>
+    <content><![CDATA[<p>在网络安全的学习中越来越发现没有编程基础寸步难行，同时我也想要学习相关的程序开发，因为Rust功能强大，并且是系统语言，或许算比较适合我的语言？（但愿吧）  </p>
+<p>我主要是从以下的文章中学习Rust，但是发现每个教程都有不太面向初学者的部分，因此我做一下梳理，也方便我后面查缺补漏。  </p>
+<blockquote>
+<p><a href="https://rustwiki.org/zh-CN/book/">Rust 程序设计语言</a></p>
+</blockquote>
+<blockquote>
+<p><a href="https://kaisery.github.io/trpl-zh-cn/">Rust 程序设计语言 简体中文版</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://course.rs/about-book.html">Rust语言圣经(Rust Course)</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.w3cschool.cn/rust/">Rust语言中文版</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://rustwiki.org/zh-CN/reference/">Rust 参考手册 中文版</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://rustwiki.org/zh-CN/rust-by-example/">通过例子学 Rust 中文版</a>  </p>
+</blockquote>
+<blockquote>
+<p><a href="https://www.runoob.com/rust/rust-tutorial.html">Rust 教程</a></p>
+</blockquote>
+<h1 id="Rust输出"><a href="#Rust输出" class="headerlink" title="Rust输出"></a>Rust输出</h1><p>我们将以菜鸟教程上的顺序来进行。  </p>
+<p>第一步，经典的<code>Hello,world</code>  </p>
+<h2 id="Hello，World！"><a href="#Hello，World！" class="headerlink" title="Hello，World！"></a>Hello，World！</h2><h3 id="创建项目目录"><a href="#创建项目目录" class="headerlink" title="创建项目目录"></a>创建项目目录</h3><p>这一步是每个Rust程序的开端，没一个伟大的项目都起源于此。  </p>
+<p>我们使用<code>cargo</code>来创建一个名为<code>Hello_World</code>的项目： </p>
+<blockquote>
+<p>cargo new Hello_World  </p>
+</blockquote>
+<p>然后我们需要进入到我们新创建的<code>Hello_World</code>目录下，这将是我们经常用到的，</p>
+<blockquote>
+<p>cd Hello_World</p>
+</blockquote>
+<p>有时候发现程序无法编译？先看看是否进入了正确的项目目录下。  </p>
+<p>我们来看看这个项目的项目结构：  </p>
+<pre><code>$ tree
+.
+├── .git
+├── .gitignore
+├── Cargo.toml
+└── src
+    └── main.rs
+</code></pre>
+<p>其中，<strong>Cargo.toml</strong> 是 <strong>cargo</strong> 特有的项目数据描述文件。它存储了项目的所有元配置信息，如果 Rust 开发者希望 Rust 项目能够按照期望的方式进行构建、测试和运行，那么，必须按照合理的方式构建 <strong>Cargo.toml</strong> 。我们可以理解为这里存储了这个项目中所有我们需要的依赖库，我们在这里告诉程序我们要导入哪些库。  </p>
+<p>_Cargo.toml_一般是这个样子：  </p>
+<pre><code>// package 配置段落
+[package] 
+name = &quot;world_hello&quot;
+version = &quot;0.1.0&quot;
+edition = &quot;2021&quot;
+// 定义项目依赖 
+[dependencies]   
+// 这里刚打开是空的，我们需要把我们要的库复制到这里  
+</code></pre>
+<h3 id="main函数"><a href="#main函数" class="headerlink" title="main函数"></a>main函数</h3><p>接下来我们来看看 <code>main.rs</code> ，此文件是当前 Rust 工程的入口文件，每一个新建的Rust项目都会有这个文件。  </p>
+<p>我们来看看这个文件：  </p>
+<pre><code class="Rust">// 这是注释内容，将会被编译器忽略掉
+// 可以单击那边的按钮 &quot;Run&quot; 来测试这段代码 -&gt;
+// 若想用键盘操作，可以使用快捷键 &quot;Ctrl + Enter&quot; 来运行
+
+// 这段代码支持编辑，你可以自由地修改代码！
+// 通过单击 &quot;Reset&quot; 按钮可以使代码恢复到初始状态 -&gt;
+
+// 这是主函数
+fn main() &#123;
+    // 调用编译生成的可执行文件时，这里的语句将被运行。
+
+    // 将文本打印到控制台
+    println!(&quot;Hello World!&quot;);
+&#125;
+</code></pre>
+<p>这几行定义了一个名叫 main 的函数。main 函数是一个特殊的函数：在可执行的 Rust 程序中，它总是最先运行的代码。第一行代码声明了一个叫做 main 的函数，它没有参数也没有返回值。如果有参数的话，它们的名称应该出现在小括号 () 中。</p>
+<p>函数体被包裹在 {} 中。Rust 要求所有函数体都要用花括号包裹起来。一般来说，将左花括号与函数声明置于同一行并以空格分隔，是良好的代码风格。  </p>
+<p>很简单吧，fn 是定义函数，main是函数名，被{}包裹起来的是函数体。  </p>
+<p>在函数体中，我们看到使用<code>println!(&quot;Hello World!&quot;);</code>输出了 Hello World！  </p>
+<p>这里有几个点需要注意一下，在Rust中 <code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println（没有!）</code>  关于宏，我们后面再说，现在你只需记住，当看到符号 ! 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。  </p>
+<p>另外，这个语句以<code>;</code>结尾，Rust中的大多数语句都以 ; 结尾，但 ; 并不是简单的行与行之间的分割符，而是标致着一个语句的结束。在语句未结束时使用 ; 是错误的。  </p>
+<p>例如：  </p>
+<pre><code>fn add_one(x: i32) -&gt;i32 &#123;
+    x + 1
+&#125;  
+</code></pre>
+<p>这里会返回一个 i32 的值，但如果加了 ; 它会返回()  </p>
+<p>这里简单的提一嘴，并不是我们现在要讨论的核心，但这个小知识点还是要记住的。   </p>
+<p>现在我们让它跑起来：</p>
+<p>在终端中，我们输入：  </p>
+<blockquote>
+<p>cargo run </p>
+</blockquote>
+<p>就会得到Hello World!  </p>
+<h2 id="编译与运行"><a href="#编译与运行" class="headerlink" title="编译与运行"></a>编译与运行</h2><p>通过上面那个例子，我们不难发现Rust的编译和运行是分开的，我们可以直接让它快速执行编译，也可以先编译然后再运行，不过总之都是要编译的，这也是系统语言和脚本语言的一大不同点。  </p>
+<p>我们使用：</p>
+<blockquote>
+<p>cargo build   </p>
+</blockquote>
+<p>来编译我们我们的程序  </p>
+<p>然后使用：  </p>
+<blockquote>
+<p>cargo run   </p>
+</blockquote>
+<p>来让项目跑起来。  </p>
+<p>Cargo 还提供了一个名为 cargo check 的命令。该命令快速检查代码确保其可以编译，但并不产生可执行文件：  </p>
+<blockquote>
+<p>cargo check  </p>
+</blockquote>
+<p><code>cargo check</code> 是我们在代码开发过程中最常用的命令，它的作用很简单：快速的检查一下代码能否编译通过。因此该命令速度会非常快，能节省大量的编译时间。  </p>
+<p>BTW, 以上的编译和运行都是在debug模式下进行的，在这种模式下，代码的编译速度会非常快，可是福兮祸所伏，运行速度就慢了. 原因是，在 debug 模式下，Rust 编译器不会做任何的优化，只为了尽快的编译完成，让你的开发流程更加顺畅。  </p>
+<p>如果想要高性能的代码，我们可以在命令后面加上 <code>--release</code> :</p>
+<blockquote>
+</blockquote>
+<pre><code>cargo run --release
+cargo build --release  
+</code></pre>
+<blockquote>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
 </search>
