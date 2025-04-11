@@ -477,7 +477,7 @@ while len(grid):
       </tags>
   </entry>
   <entry>
-    <title>Python沙箱逃逸（未完成）</title>
+    <title>Python沙箱逃逸</title>
     <url>/posts/9e349d62/</url>
     <content><![CDATA[<h1 id="Python沙箱逃逸"><a href="#Python沙箱逃逸" class="headerlink" title="Python沙箱逃逸"></a>Python沙箱逃逸</h1><p>我们知道Python可以利用反序列化漏洞以及其他漏洞进行攻击，因此，在CTF中也会通过防火墙来进行防御。今天我们就讨论一下如何绕过防火墙来实现攻击行为，即Python的沙箱逃逸  </p>
 <h2 id="什么是Python沙箱"><a href="#什么是Python沙箱" class="headerlink" title="什么是Python沙箱"></a>什么是Python沙箱</h2><p>Python 沙箱（Sandbox） 是一个隔离的代码执行环境，用于安全地运行不受信任的代码，防止其对宿主系统造成破坏。在Python中，沙箱通过限制代码的访问权限（如文件读写、网络请求、系统命令执行等），确保程序只能在可控范围内操作。  </p>
