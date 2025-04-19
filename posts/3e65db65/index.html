@@ -1,0 +1,283 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Windows内核逆向 | Welcome！This is Oight！</title><meta name="author" content="Oight"><meta name="copyright" content="Oight"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Windows内核逆向比较深入底层，从底层开始学习更有利于进步，因此在这里作长文整理一下   汇编语言学习众所周知，在高级语言诞生前，专家们都是手搓二进制来使电脑运行的，不过这样未免太过于费专家，为了解决二进制可读性太差，完全不知道计算机在干什么的问题，工程师将那些指令写成了八进制。二进制转八进制是轻而易举的，但是八进制的可读性也不行。很自然地，最后还是用文字表达，加法指令写成 ADD。内存地址也">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows内核逆向">
+<meta property="og:url" content="http://oight.github.io/posts/3e65db65/index.html">
+<meta property="og:site_name" content="Welcome！This is Oight！">
+<meta property="og:description" content="Windows内核逆向比较深入底层，从底层开始学习更有利于进步，因此在这里作长文整理一下   汇编语言学习众所周知，在高级语言诞生前，专家们都是手搓二进制来使电脑运行的，不过这样未免太过于费专家，为了解决二进制可读性太差，完全不知道计算机在干什么的问题，工程师将那些指令写成了八进制。二进制转八进制是轻而易举的，但是八进制的可读性也不行。很自然地，最后还是用文字表达，加法指令写成 ADD。内存地址也">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://oight.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-04-06T07:33:09.000Z">
+<meta property="article:modified_time" content="2025-04-06T10:38:12.871Z">
+<meta property="article:author" content="Oight">
+<meta property="article:tag" content="Reverse">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://oight.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://oight.github.io/posts/3e65db65/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?your_id";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+btf.addGlobalFn('pjaxComplete', () => {
+  _hmt.push(['_trackPageview',window.location.pathname])
+}, 'baidu_analytics')
+</script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Windows内核逆向',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">加载中...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load', preloader.endLoading)
+
+  if (false) {
+    btf.addGlobalFn('pjaxSend', preloader.initLoading, 'preloader_init')
+    btf.addGlobalFn('pjaxComplete', preloader.endLoading, 'preloader_end')
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/1.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/background.png);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">Welcome！This is Oight！</span></a><a class="nav-page-title" href="/"><span class="site-name">Windows内核逆向</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Windows内核逆向</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-06T07:33:09.000Z" title="发表于 2025-04-06 15:33:09">2025-04-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-06T10:38:12.871Z" title="更新于 2025-04-06 18:38:12">2025-04-06</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><p>Windows内核逆向比较深入底层，从底层开始学习更有利于进步，因此在这里作长文整理一下  </p>
+<h1 id="汇编语言学习"><a href="#汇编语言学习" class="headerlink" title="汇编语言学习"></a>汇编语言学习</h1><p>众所周知，在高级语言诞生前，专家们都是手搓二进制来使电脑运行的，不过这样未免太过于费专家，为了解决二进制可读性太差，完全不知道计算机在干什么的问题，工程师将那些指令写成了八进制。二进制转八进制是轻而易举的，但是八进制的可读性也不行。很自然地，最后还是用文字表达，加法指令写成 ADD。内存地址也不再直接引用，而是用标签表示。</p>
+<p>这样的话，就多出一个步骤，要把这些文字指令翻译成二进制，这个步骤就称为 assembling，完成这个步骤的程序就叫做 assembler。它处理的文本，自然就叫做 aseembly code。标准化以后，称为 assembly language，缩写为 asm，中文译为汇编语言。  </p>
+<p>在早期的高级语言中（如C&#x2F;C++）在编译时都是先将代码转换成汇编语言，再转换为机器语言来执行的</p>
+<blockquote>
+<p>请先了解寄存器和内存模型（详情参阅计算机组成原理）  </p>
+</blockquote>
+<h2 id="寄存器与内存"><a href="#寄存器与内存" class="headerlink" title="寄存器与内存"></a>寄存器与内存</h2><h3 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h3><p>我们都知道 Cache ，而寄存器（registers）是比 Cache 更加底层的用于存储数据并与计算机交互的东西，计算机中最频繁读写的数据，都会放进寄存器中，CPU优先读写寄存器，再由寄存器和内存交换数据  </p>
+<p>早期的x86 CPU 只有8个寄存器（当然现在有很多了），并且每个都有不同的用途。来看看有哪些：</p>
+<pre><code>EAX
+EBX
+ECX
+EDX
+EDI
+ESI
+EBP
+ESP
+</code></pre>
+<p>其中前七个是通用寄存器，而ESP寄存器用来存储当前Stack的地址  </p>
+<p>我们常常看到32位，64位CPU就是指寄存器的大小。  </p>
+<h3 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h3><p>程序运行的时候，操作系统会给它分配一段内存，用来储存程序和运行产生的数据。这段内存有起始地址和结束地址，比如从0x1000到0x8000，起始地址是较小的那个地址，结束地址是较大的那个地址。</p>
+<h4 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h4><p>Heap（堆），在操作系统分配给程序的内存中，堆用来存储用户请求的数据，比如用户输入，堆中的数据由低位向高位增长，同时，存储在堆中的数据需要手动释放（或借助垃圾回收机制）  </p>
+<p>一般来说，堆中的数据都是长度不定的，不明确的数据  </p>
+<h4 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h4><p>Stack（栈），栈是具有特定大小和格式的内存空间，用于存储明确的数据，如字符串字面量，也可以用于存储指针，栈在作用域结束后会自动释放内存。</p>
+<p>例如：</p>
+<pre><code>int main() &#123;
+int a = 2;
+int b = 3;
+&#125;  
+</code></pre>
+<p>这个C代码运行main函数时，系统会为它在内存中建立一个帧（frame），所有main的内部变量（比如a和b）都保存在这个帧里面。main函数执行结束后，该帧就会被回收，释放所有的内部变量，不再占用空间。  </p>
+<p>一个程序里有多少函数，就会有多少个栈帧，一般来说，调用栈有多少层，就有多少帧。每一层函数执行完毕，栈帧就会被回收，然后程序执行下一层，通过这种机制，就实现了函数的层层调用，并且每一层都能使用自己的本地变量。</p>
+<p>所有的帧都存放在 Stack，由于帧是一层层叠加的，所以 Stack 叫做栈。生成新的帧，叫做”入栈”，英文是 push；栈的回收叫做”出栈”，英文是 pop。Stack 的特点就是，最晚入栈的帧最早出栈（因为最内层的函数调用，最先结束运行），这就叫做”后进先出”的数据结构。每一次函数执行结束，就自动释放一个帧，所有函数执行结束，整个 Stack 就都释放了。  </p>
+<p>Stack 是由内存区域的结束地址开始，从高位（地址）向低位（地址）分配。比如，内存区域的结束地址是0x8000，第一帧假定是16字节，那么下一次分配的地址就会从0x7FF0开始；第二帧假定需要64字节，那么地址就会移动到0x7FB0。  </p>
+<h2 id="汇编指令"><a href="#汇编指令" class="headerlink" title="汇编指令"></a>汇编指令</h2><p>我们来看一个简单的C程序： </p>
+<pre><code>int add_a_and_b(int a, int b) &#123;
+return a + b;
+&#125;
+
+int main() &#123;
+return add_a_and_b(2, 3);
+&#125;  
+</code></pre>
+<p>gcc 将这个程序转成汇编语言。  </p>
+<pre><code>$ gcc -S example.c  
+</code></pre>
+<p>上面的命令执行以后，会生成一个文本文件example.s，里面就是汇编语言，包含了几十行指令。这么说吧，一个高级语言的简单操作，底层可能由几个，甚至几十个 CPU 指令构成。CPU 依次执行这些指令，完成这一步操作。</p>
+<p>example.s经过简化以后，大概是下面的样子。  </p>
+<pre><code>_add_a_and_b:
+push   %ebx
+mov    %eax, [%esp+8] 
+mov    %ebx, [%esp+12]
+add    %eax, %ebx 
+pop    %ebx 
+ret  
+
+_main:
+push   3
+push   2
+call   _add_a_and_b 
+add    %esp, 8
+ret  
+</code></pre>
+<p>我们来具体看看每一行函数的实现过程: </p>
+<p>我们知道main函数是程序的入口处，大多数程序也是从这里开始执行的，所以我们先看看main函数  </p>
+<p>  push 3</p>
+<p>首先是将 3 压入栈中，虽然看上去很简单，push指令其实有一个前置操作。它会先取出 ESP 寄存器里面的地址，将其减去4个字节，然后将新地址写入 ESP 寄存器。使用减法是因为 Stack 从高位向低位发展，4个字节则是因为3的类型是int，占用4个字节。得到新地址以后， 3 就会写入这个地址开始的四个字节。  </p>
+<p>你可能很疑惑，为什么是 ESP 寄存器，还记得我们前面说过， ESP 寄存器是干嘛的吗？它是用来存储当前Stack的地址的，所以会首先对 ESP 寄存器进行操作。  </p>
+<p>我们继续看，这里减去4个字节的操作就相当于是把3存在了这里，因为3占用了4个字节  </p>
+<p>  push 2  </p>
+<p>同样的，这里将 2 压入栈中，位置紧贴着 3 ，这时 ESP 寄存器会再减去4个字节（累计减去8） </p>
+<p>然后到  </p>
+<p>  call _add_a_and_b  </p>
+<p>这里的call指令用来调用函数，这时我们进 _add_a_and_b 函数看看  </p>
+<pre><code>push %ebx  
+</code></pre>
+<p>这一行表示将 EBX 寄存器里面的值，写入_add_a_and_b这个帧。这是因为后面要用到这个寄存器，就先把里面的值取出来，用完后再写回去。  </p>
+<p>这时，push指令会再将 ESP 寄存器里面的地址减去4个字节（累计减去12）。  </p>
+<pre><code>mov %eax, [%esp+8]  
+</code></pre>
+<p>这里表示给 ESP 寄存器里面的地址加上8个字节，然后存储到 EAX 寄存器中，（即把2从 ESP 寄存器中取出，放进 EAX 寄存器中） </p>
+<pre><code>mov  %ebx, [%esp+12]  
+</code></pre>
+<p>同样的，这里给 ESP 寄存器里面的地址加上12个字节，然后存储到 EAX  寄存器中，（即把3从 ESP 寄存器中取出，放进 EBX 寄存器中）</p>
+<pre><code>add    %eax, %ebx   
+</code></pre>
+<p>然后是 add 指令，add 指令用于将两个运算子相加（%ebx是该指令要用到的运算子。一个 CPU 指令可以有零个到多个运算子。）  </p>
+<p>这里是把 EBX 寄存器中的值（3）和 EAX 寄存器中的值（2）相加，然后存储到第一个运算子（EAX寄存器）中  </p>
+<pre><code>pop    %ebx  
+</code></pre>
+<p>EBX 寄存器已经没有用武之地了，所以把它推出栈，pop指令用于取出 Stack 最近一个写入的值（即最低位地址的值），并将这个值写入运算子指定的位置。</p>
+<p>上面的代码表示，取出 Stack 最近写入的值（即 EBX 寄存器的原始值），再将这个值写回 EBX 寄存器（因为加法已经做完了，EBX 寄存器用不到了）。  </p>
+<p>注意，pop指令还会将 ESP 寄存器里面的地址加4，即回收4个字节。（这里就是在内存回收）  </p>
+<pre><code>ret  
+</code></pre>
+<p>ret指令用于终止当前函数的执行，将运行权交还给上层函数。也就是，当前函数的帧将被回收。</p>
+<p>所以 _add_a_and_b 函数以及执行完了，我们回到 main 函数中去  </p>
+<pre><code>add    %esp, 8  
+</code></pre>
+<p>这里给 ESP 寄存器的地址加上8 因为我们的结果已经写入到了 EAX 寄存器中，这里 ESP 寄存器已经用不到了，所以回收它的内存，给它的地址加上8个字节使其恢复原位</p>
+<pre><code>ret 
+</code></pre>
+<p>最后 main 函数结束，程序运行完毕  </p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="http://oight.github.io">Oight</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="http://oight.github.io/posts/3e65db65/">http://oight.github.io/posts/3e65db65/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="http://oight.github.io" target="_blank">Welcome！This is Oight！</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Reverse/">Reverse</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/posts/b3bf10c3/" title="TGCTF部分WP"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">TGCTF部分WP</div></div><div class="info-2"><div class="info-item-1">这次是和徐师傅，顾师傅，梁师傅一起打的，各方向都写在一起了，距离五十名只差一步之遥，还是我技术不够精湛的原因 Web这次TGCTF Web方面给了我很大的挫败感，感觉对很多知识的了解都非常浅薄，一直做不出题，还是要下苦功夫精进技术   火眼辩魑魅这道题很简单的签到题，dirsearch 扫一下得到几个文件路径，真正能打通的是 shell.php ，直接蚁剑连接，在根目录下找到 flag    AAA偷渡阴平无参RCE 可以看看这篇  无参数RCE绕过的详细总结(六种方法)  直面天命这道题很好玩 一开始看出来是 SSTI ，但是拼尽全力无法注入。 F12看网页源码，提示不止一个路由，进 &#x2F;hint 看看 提示有四个字母的路由，写个脚本爆破一下： 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273# 路由爆破脚本import sysimport...</div></div></div></a><a class="pagination-related" href="/posts/b6cb9152/" title="Tea"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Tea</div></div><div class="info-2"><div class="info-item-1">逆向算法复习第二弹：Tea系列算法   Tea算法“TEA” 的全称为”Tiny Encryption Algorithm” 由于实现简单，加密安全（QQ和微信的一些协议中就是使用的Tea加密），深受ctf出题人的喜爱。因此tea算法成为ctf REer的一种必学算法。TEA算法使用64位的明文分组和128位的密钥，它使用Feistel分组加密框架，需要进行 64 轮迭代。该算法使用了一个神秘常数δ作为倍数，它来源于黄金比率2654435769 （0x9E3779B9），以保证每一轮加密都不相同。   Tea算法实现：加密加密代码： 1234567891011void encrypt(uint32_t* v,uint32_t* key)&#123;uint32_t v0=v[0],v1=v[1],sum=0,i;uint32_t delta=0x9e3779b9;uint32_t k0=key[0],k1=key[1],k2=key[2],k3=key[3];for(i=0;i&lt;32;i++)&#123;    sum+=delta;   ...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/posts/6a99cbbf/" title="RC4"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-29</div><div class="info-item-2">RC4</div></div><div class="info-2"><div class="info-item-1">精力一直放在Web和一些奇奇怪怪的东西上（比如 rust web应用()），突然发现好久没做逆向题了，知识点都忘记了很多，甚至IDA都不会用了（其实本来就不怎么会用()） 所以重新学一下逆向的一些知识，顺便进行一些梳理和整合。 RC4算法 RC4加密算法是一种对称加密算法。 什么是对称加密算法？ 对称加密(也叫私钥加密)指加密和解密使用相同密钥的加密算法。有时又叫传统密码算法，就是加密密钥能够从解密密钥中推算出来，同时解密密钥也可以从加密密钥中推算出来。而在大多数的对称算法中，加密密钥和解密密钥是相同的，所以也称这种加密算法为秘密密钥算法或单密钥算法。它要求发送方和接收方在安全通信之前，商定一个密钥。对称算法的安全性依赖于密钥，泄漏密钥就意味着任何人都可以对他们发送或接收的消息解密，所以密钥的保密性对通信的安全性至关重要。 RC4算法实现过程RC4算法包括初始化算法(KSA)和随即子密码生成算法(PRGA)两部分。 KSA我们先来看看算法中的初始化部分   1234567891011121314151617/*初始化函数*/void rc4_init(unsigned...</div></div></div></a><a class="pagination-related" href="/posts/b6cb9152/" title="Tea"><div class="cover" style="background: var(--default-bg-color)"></div><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-01</div><div class="info-item-2">Tea</div></div><div class="info-2"><div class="info-item-1">逆向算法复习第二弹：Tea系列算法   Tea算法“TEA” 的全称为”Tiny Encryption Algorithm” 由于实现简单，加密安全（QQ和微信的一些协议中就是使用的Tea加密），深受ctf出题人的喜爱。因此tea算法成为ctf REer的一种必学算法。TEA算法使用64位的明文分组和128位的密钥，它使用Feistel分组加密框架，需要进行 64 轮迭代。该算法使用了一个神秘常数δ作为倍数，它来源于黄金比率2654435769 （0x9E3779B9），以保证每一轮加密都不相同。   Tea算法实现：加密加密代码： 1234567891011void encrypt(uint32_t* v,uint32_t* key)&#123;uint32_t v0=v[0],v1=v[1],sum=0,i;uint32_t delta=0x9e3779b9;uint32_t k0=key[0],k1=key[1],k2=key[2],k3=key[3];for(i=0;i&lt;32;i++)&#123;    sum+=delta;   ...</div></div></div></a></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Oight</div><div class="author-info-description"></div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">9</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Oight"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.</span> <span class="toc-text">汇编语言学习</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8%E4%B8%8E%E5%86%85%E5%AD%98"><span class="toc-number">1.1.</span> <span class="toc-text">寄存器与内存</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%84%E5%AD%98%E5%99%A8"><span class="toc-number">1.1.1.</span> <span class="toc-text">寄存器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98"><span class="toc-number">1.1.2.</span> <span class="toc-text">内存</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Heap"><span class="toc-number">1.1.2.1.</span> <span class="toc-text">Heap</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Stack"><span class="toc-number">1.1.2.2.</span> <span class="toc-text">Stack</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%87%E7%BC%96%E6%8C%87%E4%BB%A4"><span class="toc-number">1.2.</span> <span class="toc-text">汇编指令</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/e7e2a7cc/" title="TGCTF知识梳理">TGCTF知识梳理</a><time datetime="2025-04-19T09:14:08.000Z" title="发表于 2025-04-19 17:14:08">2025-04-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/b3bf10c3/" title="TGCTF部分WP">TGCTF部分WP</a><time datetime="2025-04-13T07:02:31.000Z" title="发表于 2025-04-13 15:02:31">2025-04-13</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/3e65db65/" title="Windows内核逆向">Windows内核逆向</a><time datetime="2025-04-06T07:33:09.000Z" title="发表于 2025-04-06 15:33:09">2025-04-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/b6cb9152/" title="Tea">Tea</a><time datetime="2025-03-31T23:14:40.000Z" title="发表于 2025-04-01 07:14:40">2025-04-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/35a38378/" title="Rust学习">Rust学习</a><time datetime="2025-03-30T10:44:41.000Z" title="发表于 2025-03-30 18:44:41">2025-03-30</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent;"><div id="footer-wrap"><div class="copyright">&copy;2019 - 2025 By Oight</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
