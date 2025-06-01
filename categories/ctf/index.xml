@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>CTF on Oight</title>
+        <link>https://Oight.github.io/categories/ctf/</link>
+        <description>Recent content in CTF on Oight</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Example Person</copyright>
+        <lastBuildDate>Sun, 01 Jun 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://Oight.github.io/categories/ctf/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>从零开始的CTF探险！</title>
+        <link>https://Oight.github.io/p/test-chinese/</link>
+        <pubDate>Sun, 01 Jun 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://Oight.github.io/p/test-chinese/</guid>
+        <description>&lt;blockquote&gt;
+&lt;h1 id=&#34;以此文记录我在学习ctf中的心路历程日拱一卒功不唐捐&#34;&gt;以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。
+&lt;/h1&gt;&lt;h2 id=&#34;一web学习目录&#34;&gt;一、WEB学习目录
+&lt;/h2&gt;&lt;h3 id=&#34;工具篇&#34;&gt;工具篇：
+&lt;/h3&gt;&lt;p&gt;WEB的常用工具有：
+BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）
+Hackerbar（浏览器插件，传参的好帮手）
+蚁剑（连接工具）
+还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）
+###
+拥有了入门的工具，就可以步入WEB的世界力（喜）&lt;/p&gt;
+&lt;h3 id=&#34;web包括哪些内容&#34;&gt;WEB包括哪些内容：
+&lt;/h3&gt;&lt;p&gt;1.文件包含
+2.文件上传&lt;/p&gt;&lt;/blockquote&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

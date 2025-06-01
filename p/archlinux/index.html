@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1 2 1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1 2 3 4 5 6 7 8 1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n">
+<title>Archlinux</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/archlinux/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfa5b1b0e78d61c00a14173992a1f3fa3b5c1b9fa34d023de959af564e7b19dd.css"><meta property='og:title' content="Archlinux">
+<meta property='og:description' content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1 2 1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1 2 3 4 5 6 7 8 1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n">
+<meta property='og:url' content='https://Oight.github.io/p/archlinux/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:29:03&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:29:03&#43;08:00'/>
+<meta name="twitter:title" content="Archlinux">
+<meta name="twitter:description" content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1 2 1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1 2 3 4 5 6 7 8 1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">talk is cheap, show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#前期准备">前期准备：</a></li>
+    <li><a href="#无线网卡连接网络有线可以略过">无线网卡连接网络（有线可以略过）</a></li>
+    <li><a href="#连上网后更新系统时间">连上网后，更新系统时间</a></li>
+    <li><a href="#分区">分区</a>
+      <ol>
+        <li><a href="#分区-1">分区</a></li>
+        <li><a href="#格式化分区">格式化分区</a></li>
+        <li><a href="#挂载分区">挂载分区</a></li>
+      </ol>
+    </li>
+    <li><a href="#配置国内镜像源">配置国内镜像源</a></li>
+    <li><a href="#安装基本系统">安装基本系统</a></li>
+    <li><a href="#创建-fstab-自动挂载配置文件">创建 fstab (自动挂载配置文件)</a></li>
+    <li><a href="#chroot进入系统">chroot进入系统</a></li>
+    <li><a href="#设置时区">设置时区</a>
+      <ol>
+        <li><a href="#设置时区-1">设置时区</a></li>
+        <li><a href="#设置硬件时间">设置硬件时间</a></li>
+      </ol>
+    </li>
+    <li><a href="#本地化">本地化</a>
+      <ol>
+        <li><a href="#编辑localegen">编辑locale.gen</a></li>
+        <li><a href="#编辑localeconf">编辑locale.conf:</a></li>
+      </ol>
+    </li>
+    <li><a href="#设置主机名">设置主机名</a>
+      <ol>
+        <li><a href="#设置主机名-1">设置主机名</a></li>
+        <li><a href="#设置-root-密码">设置 root 密码</a></li>
+        <li><a href="#设置普通用户">设置普通用户</a></li>
+        <li><a href="#为用户创建密码">为用户创建密码</a></li>
+        <li><a href="#编辑-sudoers-赋予用户-root-权限">编辑 sudoers 赋予用户 root 权限</a></li>
+      </ol>
+    </li>
+    <li><a href="#启用服务">启用服务</a>
+      <ol>
+        <li><a href="#网络">网络</a></li>
+        <li><a href="#蓝牙">蓝牙</a></li>
+      </ol>
+    </li>
+    <li><a href="#编辑-grub">编辑 grub</a>
+      <ol>
+        <li><a href="#编辑-grub-1">编辑 grub</a></li>
+        <li><a href="#安装-grub-服务">安装 grub 服务</a></li>
+      </ol>
+    </li>
+  </ol>
+
+  <ol>
+    <li><a href="#开机自启显示管理">开机自启显示管理</a></li>
+    <li><a href="#其他安装">其他安装</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#退出">退出</a></li>
+    <li><a href="#重启">重启</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#更新-grub">更新 grub</a></li>
+    <li><a href="#安装中文字体">安装中文字体</a></li>
+    <li><a href="#配置国内源">配置国内源</a>
+      <ol>
+        <li><a href="#配置国内源-1">配置国内源</a></li>
+        <li><a href="#刷新软件包">刷新软件包</a></li>
+        <li><a href="#导入密钥">导入密钥</a></li>
+      </ol>
+    </li>
+    <li><a href="#软件商店软件源安装可选">软件商店软件源安装（可选）</a></li>
+    <li><a href="#安装-aur-助手-yay">安装 aur 助手 yay</a></li>
+    <li><a href="#安装中文输入法参照-archwiki">安装中文输入法参照 ArchWiKi</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#使用-yay-进行包管理">使用 Yay 进行包管理</a></li>
+    <li><a href="#将-yay-升级到新版本">将 Yay 升级到新版本</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/linux/" >
+                Linux
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/archlinux/">Archlinux</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 3 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="安装了下arch双系统真不好安啊现把所有需要用到的代码写在这">安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这
+</h1><h2 id="前期准备">前期准备：
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动  
+</span></span><span class="line"><span class="cl">2开机时使用U盘启动 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="无线网卡连接网络有线可以略过">无线网卡连接网络（有线可以略过）
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.iwctl 
+</span></span><span class="line"><span class="cl">2.device list (列出所有WIFI设备) 
+</span></span><span class="line"><span class="cl">3.station [网卡名称] scan (扫描网络)  
+</span></span><span class="line"><span class="cl">4.station [网卡名称] get-networks (显示所有网络)  
+</span></span><span class="line"><span class="cl">5.station [网卡名称] connect [WIFI名称] 
+</span></span><span class="line"><span class="cl">输入密码
+</span></span><span class="line"><span class="cl">Ctrl  + d 退出  
+</span></span><span class="line"><span class="cl">ping一下看看是否连接到网络  （ping www.baidu.com）  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="连上网后更新系统时间">连上网后，更新系统时间
+</h2><blockquote>
+<p>1.timedatectl (更新系统时间)</p></blockquote>
+<h2 id="分区">分区
+</h2><h3 id="分区-1">分区
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.fdisk -l (查看自己分区)  
+</span></span><span class="line"><span class="cl">找到我们要安装的硬盘，单 nvme 盘为 /dev/nvme0n1;单 sata 盘为 /dev/sda1  
+</span></span><span class="line"><span class="cl">2.cfdisk + [你的硬盘] 
+</span></span><span class="line"><span class="cl">3.Type 选择第一个 efi system  
+</span></span><span class="line"><span class="cl">4.Write 
+</span></span><span class="line"><span class="cl">5.选中分出来的空间，选择 new，创建根分区，输入分区大小（不小于22G）
+</span></span><span class="line"><span class="cl">5.选中剩下的空余空间，选择new ，创建 home 分区，输入分区大小  
+</span></span><span class="line"><span class="cl">6.选中剩下的空余空间，选择 new ,创建 swap 交换空间 （类似于 win 的虚拟内存）  
+</span></span><span class="line"><span class="cl">7.Sort 排下序  
+</span></span><span class="line"><span class="cl">8.选中 home 分区，Type 选择 linux home  
+</span></span><span class="line"><span class="cl">9.选中 swap 分区，Type 选择 linux swap  
+</span></span><span class="line"><span class="cl">10.Write 写入
+</span></span><span class="line"><span class="cl">11.Quit 退出  
+</span></span><span class="line"><span class="cl">12.再次执行 fdisk -l 看看是否分好  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="格式化分区">格式化分区
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.mkfs.[文件系统] （-f）/dev/[分区编号]
+</span></span><span class="line"><span class="cl">例： mkfs.btrfs -f /dev/nvme0n1p4 
+</span></span><span class="line"><span class="cl">    mkfs.ext4 /dev/nvme0n1p4  
+</span></span><span class="line"><span class="cl">2.mkfs.btrfs -f /dev/nvme0n1p5 (格式化 home 分区)  
+</span></span><span class="line"><span class="cl">3.mkswap /dev/nvme0n1p6 (初始化swap分区)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="挂载分区">挂载分区
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">一定要先挂载根分区  
+</span></span><span class="line"><span class="cl">1.mount /dev/[根分区编号] /mnt  
+</span></span><span class="line"><span class="cl">例：mount /dev/nvme0n1p4 /mnt  
+</span></span><span class="line"><span class="cl">2.mount --mkdir /dev/[home分区编号] /mnt/home （挂载根分区）
+</span></span><span class="line"><span class="cl">3.mount --mkdir /dev/[efi分区编号] /mnt/efi  （挂载efi分区）  
+</span></span><span class="line"><span class="cl">例：mount --mkdir /dev/nvme0n1p1 /mnt/efi  
+</span></span><span class="line"><span class="cl">4.swapon /dev/[交换空间分区编号] （挂载交换分区）  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="配置国内镜像源">配置国内镜像源
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.nano /etc/pacman.d/mirrorlist  
+</span></span><span class="line"><span class="cl">2.在第一行添加
+</span></span><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch  
+</span></span><span class="line"><span class="cl">3.Ctrl + o 保存
+</span></span><span class="line"><span class="cl">4.Ctrl + x 退出  
+</span></span><span class="line"><span class="cl">5.pacman -Syy (刷新)  
+</span></span><span class="line"><span class="cl">6.pacman -S archlinux-keyring (重新安装密钥)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="安装基本系统">安装基本系统
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.pacstrap /mnt [软件包]  
+</span></span><span class="line"><span class="cl">base （基础系统），base-devel (工具包) 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>例：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacstrap /mnt base base-devel linux-zen linux-zen-headers linux-firmware networkmanager grub os-prober efibootmgr ntfs-3g amd-ucode bluez bluez-utils nano  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>一路回车就可以</p>
+<h2 id="创建-fstab-自动挂载配置文件">创建 fstab (自动挂载配置文件)
+</h2><blockquote>
+<p>1.genfstab -U /mnt &raquo; /mnt/etc/fstab</p></blockquote>
+<h2 id="chroot进入系统">chroot进入系统
+</h2><blockquote>
+<p>1.arch-chroot /mnt</p></blockquote>
+<h2 id="设置时区">设置时区
+</h2><h3 id="设置时区-1">设置时区
+</h3><blockquote>
+<p>1.ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</p></blockquote>
+<h3 id="设置硬件时间">设置硬件时间
+</h3><blockquote>
+<p>1.hwclock –systohc</p></blockquote>
+<h2 id="本地化">本地化
+</h2><h3 id="编辑localegen">编辑locale.gen
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.nano /etc/locale.gen {删除 en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8 前的&#34;#&#34;} 
+</span></span><span class="line"><span class="cl">2.locale-gen (生成locale)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="编辑localeconf">编辑locale.conf:
+</h3><blockquote>
+<p>1.nano /etc/locale.conf  {添加 LANG=en_US.UTF-8}</p></blockquote>
+<h2 id="设置主机名">设置主机名
+</h2><h3 id="设置主机名-1">设置主机名
+</h3><blockquote>
+<p>1.nano /etc/hostname</p></blockquote>
+<h3 id="设置-root-密码">设置 root 密码
+</h3><blockquote>
+<p>1.passwd</p></blockquote>
+<h3 id="设置普通用户">设置普通用户
+</h3><blockquote>
+<p>1.useradd -m -G wheel [用户名]</p></blockquote>
+<h3 id="为用户创建密码">为用户创建密码
+</h3><blockquote>
+<p>1.passwd [用户名]</p></blockquote>
+<h3 id="编辑-sudoers-赋予用户-root-权限">编辑 sudoers 赋予用户 root 权限
+</h3><blockquote>
+<p>1.nano /etc/sudoers {删除 %wheel ALL=(ALL:ALL) ALL前的“#”}</p></blockquote>
+<h2 id="启用服务">启用服务
+</h2><h3 id="网络">网络
+</h3><blockquote>
+<p>1.systemctl enable NetworkManager</p></blockquote>
+<h3 id="蓝牙">蓝牙
+</h3><blockquote>
+<p>1.systemctl enable bluetooth</p></blockquote>
+<h2 id="编辑-grub">编辑 grub
+</h2><h3 id="编辑-grub-1">编辑 grub
+</h3><blockquote>
+<p>1.nano /etc/default/grub {去掉 GRUB_DISABLE_OS_PROBER=false 前的“#”}</p></blockquote>
+<h3 id="安装-grub-服务">安装 grub 服务
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="mf">1.</span><span class="n">grub</span><span class="o">-</span><span class="n">install</span> <span class="o">--</span><span class="n">target</span><span class="o">=</span><span class="n">x86_64</span><span class="o">-</span><span class="n">efi</span> <span class="o">--</span><span class="n">efi</span><span class="o">-</span><span class="n">directory</span><span class="o">=/</span><span class="n">efi</span> <span class="o">--</span><span class="n">bootloader</span><span class="o">-</span><span class="n">id</span><span class="o">=</span><span class="n">grub</span>  
+</span></span><span class="line"><span class="cl"><span class="mf">2.</span><span class="n">grub</span><span class="o">-</span><span class="n">mkconfig</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">grub</span><span class="o">/</span><span class="n">grub</span><span class="o">.</span><span class="n">cfg</span> <span class="p">(</span><span class="err">更新</span> <span class="n">grub</span> <span class="err">向导</span><span class="p">)</span>  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h1 id="安装kde">安装KDE
+</h1><blockquote>
+<p>sudo pacman -S plasma</p></blockquote>
+<h2 id="开机自启显示管理">开机自启显示管理
+</h2><blockquote>
+<p>systemctl enable sddm</p></blockquote>
+<h2 id="其他安装">其他安装
+</h2><blockquote>
+<p>pacman -S konsole ark dolphin kate</p></blockquote>
+<h1 id="完成安装">完成安装
+</h1><h2 id="退出">退出
+</h2><blockquote>
+<p>exit</p></blockquote>
+<h2 id="重启">重启
+</h2><blockquote>
+<p>reboot</p></blockquote>
+<h1 id="进入系统">进入系统
+</h1><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">alt + Ctrl + T 打开终端
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="更新-grub">更新 grub
+</h2><blockquote>
+<p>sudo grub-mkconfig -o /boot/grub/grub.cfg</p></blockquote>
+<h2 id="安装中文字体">安装中文字体
+</h2><blockquote>
+<p>sudo pacman -S adobe-source-han-sans-cn-fonts</p></blockquote>
+<p>设置语言后重启</p>
+<h2 id="配置国内源">配置国内源
+</h2><h3 id="配置国内源-1">配置国内源
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/pacman.conf
+</span></span><span class="line"><span class="cl">开启32位库，{去掉 [multilib]及下一行前的 &#34;#&#34;}  
+</span></span><span class="line"><span class="cl">然后在下面添加：
+</span></span><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch  (清华源)或
+</span></span><span class="line"><span class="cl">Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch           (科大源)或  
+</span></span><span class="line"><span class="cl">Server = https://repo.huaweicloud.com/archlinux/$repo/os/$srch   (华为源)  
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="刷新软件包">刷新软件包
+</h3><blockquote>
+<p>sudo pacman -Syy</p></blockquote>
+<h3 id="导入密钥">导入密钥
+</h3><blockquote>
+<p>sudo pacman -S archlinuxcn-keyring</p></blockquote>
+<h2 id="软件商店软件源安装可选">软件商店软件源安装（可选）
+</h2><blockquote>
+<p>sudo pacman -S archlinux-appstream-data packagekit-qt6 fwupd</p></blockquote>
+<h2 id="安装-aur-助手-yay">安装 aur 助手 yay
+</h2><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S yay
+</span></span><span class="line"><span class="cl">yay -Syy
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="安装中文输入法参照-archwiki">安装中文输入法参照 ArchWiKi
+</h2><p>推荐Fcitx5</p>
+<h1 id="yay">yay
+</h1><h2 id="使用-yay-进行包管理">使用 Yay 进行包管理
+</h2><p>Yay 遵循与 pacman 类似（但不相同）的命令结构。所以你用 Yay 管理 AUR 包应该不难。</p>
+<p>搜索软件包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay search_term
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>安装软件包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S package_name
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>删除软件包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -R package_name
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>要删除包及其依赖项：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -Rns package_name
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>仅升级 AUR 包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -Sua
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Yay 还能够升级非 AUR 软件包。上面的 a 标志将其限制为 AUR。</p>
+<h2 id="将-yay-升级到新版本">将 Yay 升级到新版本
+</h2><p>现在，你可能想知道如何将 Yay 升级到可用的新版本。</p>
+<p>答案是你不需要做任何特别的事情。当你运行以下命令时，Yay 可以自行更新：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yay -Sua  
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Example Person
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

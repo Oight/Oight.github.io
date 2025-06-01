@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>渗透 on Oight</title>
+        <link>https://Oight.github.io/categories/%E6%B8%97%E9%80%8F/</link>
+        <description>Recent content in 渗透 on Oight</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Example Person</copyright>
+        <lastBuildDate>Sun, 01 Jun 2025 10:30:35 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/%E6%B8%97%E9%80%8F/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>渗透攻击学习</title>
+        <link>https://Oight.github.io/p/%E6%B8%97%E9%80%8F%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/</link>
+        <pubDate>Sun, 01 Jun 2025 10:30:35 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/p/%E6%B8%97%E9%80%8F%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;参考： &lt;a class=&#34;link&#34; href=&#34;https://wizardforcel.gitbooks.io/daxueba-kali-linux-tutorial/content/0.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;大学霸 Kali Linux 安全渗透教程&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;渗透测试是对用户信息安全措施积极评估的过程。通过系统化的操作和分析，积极发现系统和网络中存在的各种缺陷和弱点，如设计缺陷和技术缺陷。&lt;/strong&gt;&lt;/p&gt;
+&lt;h1 id=&#34;渗透所需工具&#34;&gt;渗透所需工具
+&lt;/h1&gt;&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;splint&lt;/th&gt;
+          &lt;th&gt;unhide&lt;/th&gt;
+          &lt;th&gt;scrub&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;pscan&lt;/td&gt;
+          &lt;td&gt;examiner&lt;/td&gt;
+          &lt;td&gt;ht&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;flawfinder&lt;/td&gt;
+          &lt;td&gt;srm&lt;/td&gt;
+          &lt;td&gt;driftnet&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;rats&lt;/td&gt;
+          &lt;td&gt;nwipe&lt;/td&gt;
+          &lt;td&gt;binwalk&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;ddrescue&lt;/td&gt;
+          &lt;td&gt;firstaidkit-gui&lt;/td&gt;
+          &lt;td&gt;scalpel&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;gparted&lt;/td&gt;
+          &lt;td&gt;xmount&lt;/td&gt;
+          &lt;td&gt;pdfcrack&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;testdisk&lt;/td&gt;
+          &lt;td&gt;dc3dd&lt;/td&gt;
+          &lt;td&gt;wipe&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;foremost&lt;/td&gt;
+          &lt;td&gt;afftools&lt;/td&gt;
+          &lt;td&gt;safecopy&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;sectool-gui&lt;/td&gt;
+          &lt;td&gt;scanmem&lt;/td&gt;
+          &lt;td&gt;hfsutils&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;unhide&lt;/td&gt;
+          &lt;td&gt;sleuthkit&lt;/td&gt;
+          &lt;td&gt;cmospwd&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;examiner&lt;/td&gt;
+          &lt;td&gt;macchanger&lt;/td&gt;
+          &lt;td&gt;secuirty-menus&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;srm&lt;/td&gt;
+          &lt;td&gt;ntfs-3g&lt;/td&gt;
+          &lt;td&gt;mc&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;firstaidkit-gui&lt;/td&gt;
+          &lt;td&gt;ntfsprogs&lt;/td&gt;
+          &lt;td&gt;screen&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;net-snmp&lt;/td&gt;
+          &lt;td&gt;pcapdiff&lt;/td&gt;
+          &lt;td&gt;openvas-scanner&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;hexedit&lt;/td&gt;
+          &lt;td&gt;netsed&lt;/td&gt;
+          &lt;td&gt;rkhunter&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;powertop&lt;/td&gt;
+          &lt;td&gt;sslstrip&lt;/td&gt;
+          &lt;td&gt;nebula&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;mutt&lt;/td&gt;
+          &lt;td&gt;bonesi&lt;/td&gt;
+          &lt;td&gt;tripwire&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;nano&lt;/td&gt;
+          &lt;td&gt;proxychains&lt;/td&gt;
+          &lt;td&gt;prelude-lml&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;vim-enhanced&lt;/td&gt;
+          &lt;td&gt;prewikka&lt;/td&gt;
+          &lt;td&gt;iftop&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;wget&lt;/td&gt;
+          &lt;td&gt;prelude-manager&lt;/td&gt;
+          &lt;td&gt;scamper&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;yum-utils&lt;/td&gt;
+          &lt;td&gt;picviz-gui&lt;/td&gt;
+          &lt;td&gt;iptraf-ng&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;firstaidkit-plugin-all&lt;/td&gt;
+          &lt;td&gt;onenssh&lt;/td&gt;
+          &lt;td&gt;nethogs&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;vnstat&lt;/td&gt;
+          &lt;td&gt;dnstracer&lt;/td&gt;
+          &lt;td&gt;uperf&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;aircrack-ng&lt;/td&gt;
+          &lt;td&gt;chkrootkit&lt;/td&gt;
+          &lt;td&gt;nload&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;airsnort&lt;/td&gt;
+          &lt;td&gt;aide&lt;/td&gt;
+          &lt;td&gt;ntop&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;kismet&lt;/td&gt;
+          &lt;td&gt;pads&lt;/td&gt;
+          &lt;td&gt;trafshow&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;weplab&lt;/td&gt;
+          &lt;td&gt;cowpatty&lt;/td&gt;
+          &lt;td&gt;wavemon&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;以上工具大都集成于Kali linux中&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
