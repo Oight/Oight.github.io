@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/'>
 
-<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="TGCTF知识梳理">
+<link rel="stylesheet" href="/scss/style.min.436eb123a22130218f99c06c798f5756e0739c9d3b815aa5a69ed91dd5bdde65.css"><meta property='og:title' content="TGCTF知识梳理">
 <meta property='og:description' content="Web 无参RCE/PHPSESSID绕过 无参RCE TGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\n1 2 3 4 5 6 php &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
 <meta property='og:url' content='https://Oight.github.io/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/'>
 <meta property='og:site_name' content='Oight'>
