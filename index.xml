@@ -15,10 +15,9 @@
         <guid>https://Oight.github.io/p/docker%E5%AD%A6%E4%B9%A0/</guid>
         <description>&lt;h4 id=&#34;前言&#34;&gt;前言
 &lt;/h4&gt;&lt;p&gt;由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）&lt;/p&gt;
-&lt;p&gt;之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不慎顺利&lt;/p&gt;
+&lt;p&gt;之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利&lt;/p&gt;
 &lt;p&gt;不过在经过多次尝试和调整之后，新的博客也是搭好了，后面可以正常更新了。&lt;/p&gt;
 &lt;p&gt;虽然还有一些问题没处理好，但是大体记录学习过程的目的还是能达到的，小问题就暂且按下不表吧（）&lt;/p&gt;
-&lt;hr&gt;
 &lt;h1 id=&#34;docker学习&#34;&gt;Docker学习
 &lt;/h1&gt;&lt;h2 id=&#34;关于docker&#34;&gt;关于Docker
 &lt;/h2&gt;&lt;p&gt;众所周知Docker是一个容器引擎，性能很好。&lt;/p&gt;
@@ -45,8 +44,7 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; pkg in docker.io docker-doc docker-compose podman-docker containerd runc&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;do&lt;/span&gt; sudo apt-get remove &lt;span class=&#34;nv&#34;&gt;$pkg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;hr&gt;
-&lt;h3 id=&#34;使用官方安装脚本自动安装&#34;&gt;使用官方安装脚本自动安装
+&lt;/div&gt;&lt;h3 id=&#34;使用官方安装脚本自动安装&#34;&gt;使用官方安装脚本自动安装
 &lt;/h3&gt;&lt;p&gt;安装命令如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -58,9 +56,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; sudo sh get-docker.sh
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;hr&gt;
-&lt;hr&gt;
-&lt;h3 id=&#34;手动安装推荐&#34;&gt;手动安装（推荐）
+&lt;/div&gt;&lt;h3 id=&#34;手动安装推荐&#34;&gt;手动安装（推荐）
 &lt;/h3&gt;&lt;h4 id=&#34;1-更新软件包&#34;&gt;1. 更新软件包
 &lt;/h4&gt;&lt;p&gt;首先，更新现有的软件包和包缓存：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;

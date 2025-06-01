@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="前言 由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不慎顺利\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="前言 由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利\n">
 <title>Docker学习</title>
 
 <link rel='canonical' href='https://Oight.github.io/p/docker%E5%AD%A6%E4%B9%A0/'>
 
 <link rel="stylesheet" href="/scss/style.min.23547ec81c51b641d6206050d547d1228dd2faf73d1bb90be4bb7b9716a6d959.css"><meta property='og:title' content="Docker学习">
-<meta property='og:description' content="前言 由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不慎顺利\n">
+<meta property='og:description' content="前言 由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利\n">
 <meta property='og:url' content='https://Oight.github.io/p/docker%E5%AD%A6%E4%B9%A0/'>
 <meta property='og:site_name' content='Oight'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T12:28:46&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T12:28:46&#43;08:00'/>
 <meta name="twitter:title" content="Docker学习">
-<meta name="twitter:description" content="前言 由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不慎顺利\n">
+<meta name="twitter:description" content="前言 由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利\n">
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -402,10 +402,9 @@
     
     <h4 id="前言">前言
 </h4><p>由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）</p>
-<p>之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不慎顺利</p>
+<p>之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利</p>
 <p>不过在经过多次尝试和调整之后，新的博客也是搭好了，后面可以正常更新了。</p>
 <p>虽然还有一些问题没处理好，但是大体记录学习过程的目的还是能达到的，小问题就暂且按下不表吧（）</p>
-<hr>
 <h1 id="docker学习">Docker学习
 </h1><h2 id="关于docker">关于Docker
 </h2><p>众所周知Docker是一个容器引擎，性能很好。</p>
@@ -432,8 +431,7 @@
 <pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> pkg in docker.io docker-doc docker-compose podman-docker containerd runc<span class="p">;</span> <span class="k">do</span> sudo apt-get remove <span class="nv">$pkg</span><span class="p">;</span> <span class="k">done</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><hr>
-<h3 id="使用官方安装脚本自动安装">使用官方安装脚本自动安装
+</div><h3 id="使用官方安装脚本自动安装">使用官方安装脚本自动安装
 </h3><p>安装命令如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -445,9 +443,7 @@
 </span></span><span class="line"><span class="cl"> sudo sh get-docker.sh
 </span></span></code></pre></td></tr></table>
 </div>
-</div><hr>
-<hr>
-<h3 id="手动安装推荐">手动安装（推荐）
+</div><h3 id="手动安装推荐">手动安装（推荐）
 </h3><h4 id="1-更新软件包">1. 更新软件包
 </h4><p>首先，更新现有的软件包和包缓存：</p>
 <div class="highlight"><div class="chroma">
