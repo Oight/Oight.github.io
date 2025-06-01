@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="精力一直放在Web和一些奇奇怪怪的东西上（比如 rust web应用()），突然发现好久没做逆向题了，知识点都忘记了很多，甚至IDA都不会用了（其实本来就不怎么会用()）\n">
+<title>RC4</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/rc4/'>
+
+<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="RC4">
+<meta property='og:description' content="精力一直放在Web和一些奇奇怪怪的东西上（比如 rust web应用()），突然发现好久没做逆向题了，知识点都忘记了很多，甚至IDA都不会用了（其实本来就不怎么会用()）\n">
+<meta property='og:url' content='https://Oight.github.io/p/rc4/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:30:53&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:30:53&#43;08:00'/>
+<meta name="twitter:title" content="RC4">
+<meta name="twitter:description" content="精力一直放在Web和一些奇奇怪怪的东西上（比如 rust web应用()），突然发现好久没做逆向题了，知识点都忘记了很多，甚至IDA都不会用了（其实本来就不怎么会用()）\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">talk is cheap, show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#ksa">KSA</a></li>
+    <li><a href="#prga">PRGA</a></li>
+    <li><a href="#加密流程详解">加密流程详解</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/reverse/" >
+                Reverse
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/rc4/">RC4</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 9 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>精力一直放在Web和一些奇奇怪怪的东西上（比如 rust web应用()），突然发现好久没做逆向题了，知识点都忘记了很多，甚至IDA都不会用了（其实本来就不怎么会用()）</p>
+<p>所以重新学一下逆向的一些知识，顺便进行一些梳理和整合。</p>
+<p><strong>RC4算法</strong></p>
+<p>RC4加密算法是一种对称加密算法。</p>
+<p><strong>什么是对称加密算法？</strong></p>
+<p>对称加密(也叫私钥加密)指加密和解密使用相同密钥的加密算法。有时又叫传统密码算法，就是加密密钥能够从解密密钥中推算出来，同时解密密钥也可以从加密密钥中推算出来。而在大多数的对称算法中，加密密钥和解密密钥是相同的，所以也称这种加密算法为秘密密钥算法或单密钥算法。它要求发送方和接收方在安全通信之前，商定一个密钥。对称算法的安全性依赖于密钥，泄漏密钥就意味着任何人都可以对他们发送或接收的消息解密，所以密钥的保密性对通信的安全性至关重要。</p>
+<h1 id="rc4算法实现过程">RC4算法实现过程
+</h1><p>RC4算法包括初始化算法(KSA)和随即子密码生成算法(PRGA)两部分。</p>
+<h2 id="ksa">KSA
+</h2><p>我们先来看看算法中的初始化部分</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+</span></span><span class="line"><span class="cl">/*初始化函数*/
+</span></span><span class="line"><span class="cl">void rc4_init(unsigned char*s,unsigned char*key, unsigned long Len)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    int i=0,j=0;
+</span></span><span class="line"><span class="cl">    char k[256]={0};
+</span></span><span class="line"><span class="cl">    unsigned char tmp=0;
+</span></span><span class="line"><span class="cl">    for(i=0;i&lt;256;i++) {
+</span></span><span class="line"><span class="cl">        s[i]=i;
+</span></span><span class="line"><span class="cl">        k[i]=key[i%Len];
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    for(i=0;i&lt;256;i++) {
+</span></span><span class="line"><span class="cl">        j=(j+s[i]+k[i])%256;
+</span></span><span class="line"><span class="cl">        tmp=s[i];
+</span></span><span class="line"><span class="cl">        s[i]=s[j];//交换s[i]和s[j]
+</span></span><span class="line"><span class="cl">        s[j]=tmp;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参数1是一个256长度的char型数组，定义为: unsigned char sBox[256];</p>
+<p>参数2是密钥，其内容可以随便定义：char key[256];</p>
+<p>参数3是密钥的长度，Len = strlen(key);</p>
+<p>初始化的过程是先有一个sbox(s盒)，s盒的长度是256，然后有一个随意长度的密钥，一个中间的临时变量(tmp)，在初始化的过程中，先定义一个 i ，将 i 从0开始到255以此遍历填充进s盒中；然后定义一个 j ，使用<code>j=(j+s[i]+k[i])%256</code>，得到 j 是几；然后 i 和 j 作为s盒的索引，进行随机化处理。因此，</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">j=(j+s[i]+k[i])%256;
+</span></span><span class="line"><span class="cl">        tmp=s[i];
+</span></span><span class="line"><span class="cl">        s[i]=s[j];//交换s[i]和s[j]
+</span></span><span class="line"><span class="cl">        s[j]=tmp;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这一部分是根据密钥来打乱s盒，i 确保S-box的每个元素都得到处理，j 保证S-box的搅乱是随机的。</p>
+<h2 id="prga">PRGA
+</h2><p>接下来我们来看看随即子密码生成算法，即加解密的过程</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+</span></span><span class="line"><span class="cl">/*加解密*/
+</span></span><span class="line"><span class="cl">void rc4_crypt(unsigned char*s,unsigned char*Data,unsigned long Len)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    int i=0,j=0,t=0;
+</span></span><span class="line"><span class="cl">    unsigned long k=0;
+</span></span><span class="line"><span class="cl">    unsigned char tmp;
+</span></span><span class="line"><span class="cl">    for(k=0;k&lt;Len;k++)
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        i=(i+1)%256;
+</span></span><span class="line"><span class="cl">        j=(j+s[i])%256;
+</span></span><span class="line"><span class="cl">        tmp=s[i];
+</span></span><span class="line"><span class="cl">        s[i]=s[j];//交换s[x]和s[y]
+</span></span><span class="line"><span class="cl">        s[j]=tmp;
+</span></span><span class="line"><span class="cl">        t=(s[i]+s[j])%256;
+</span></span><span class="line"><span class="cl">        Data[k]^=s[t];
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参数1是上边rc4_init函数中，被搅乱的S-box;</p>
+<p>参数2是需要加密的数据data;</p>
+<p>参数3是data的长度.</p>
+<p>我们看到我们现在填入了要加密的内容，来分析一下加密的过程。</p>
+<p>首先是在KSA中被打乱的s盒，这时候我们就不再需要密钥了，我们继续对s盒中的元素进行处理。</p>
+<p>通过对s盒中的元素的索引 i 和 j 进行处理：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">        i=(i+1)%256;
+</span></span><span class="line"><span class="cl">        j=(j+s[i])%256;
+</span></span><span class="line"><span class="cl">        tmp=s[i];
+</span></span><span class="line"><span class="cl">        s[i]=s[j];//交换s[x]和s[y]
+</span></span><span class="line"><span class="cl">        s[j]=tmp;
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这一部分，我们使 i 加一，得到新的 i 然后 j 等于 j 加上新的 i 索引的数字，然后 i 和 j 定位了新的位置，然后通过<code>t=(s[i]+s[j])%256;</code>，来得到密钥流，最后使用密钥流和要加密的数据进行异或得到密文。</p>
+<p>即每收到一个字节，就进行while循环。通过一定的算法定位S盒中的一个元素，并与输入字节异或，得到k。循环中还改变了S盒。如果输入的是明文，输出的就是密文；如果输入的是密文，输出的就是明文。</p>
+<p>我们来看看完整的程序</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+</span></span><span class="line"><span class="cl">//程序开始
+</span></span><span class="line"><span class="cl">#include&lt;stdio.h&gt;
+</span></span><span class="line"><span class="cl">#include&lt;string.h&gt;
+</span></span><span class="line"><span class="cl">typedef unsigned longULONG;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/*初始化函数*/
+</span></span><span class="line"><span class="cl">void rc4_init(unsigned char*s, unsigned char*key, unsigned long Len)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    int i = 0, j = 0;
+</span></span><span class="line"><span class="cl">    char k[256] = { 0 };
+</span></span><span class="line"><span class="cl">    unsigned char tmp = 0;
+</span></span><span class="line"><span class="cl">    for (i = 0; i&lt;256; i++)
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        s[i] = i;
+</span></span><span class="line"><span class="cl">        k[i] = key[i%Len];
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    for (i = 0; i&lt;256; i++)
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        j = (j + s[i] + k[i]) % 256;
+</span></span><span class="line"><span class="cl">        tmp = s[i];
+</span></span><span class="line"><span class="cl">        s[i] = s[j];//交换s[i]和s[j]
+</span></span><span class="line"><span class="cl">        s[j] = tmp;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">/*加解密*/
+</span></span><span class="line"><span class="cl">void rc4_crypt(unsigned char*s, unsigned char*Data, unsigned long Len)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    int i = 0, j = 0, t = 0;
+</span></span><span class="line"><span class="cl">    unsigned long k = 0;
+</span></span><span class="line"><span class="cl">    unsigned char tmp;
+</span></span><span class="line"><span class="cl">    for (k = 0; k&lt;Len; k++)
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        i = (i + 1) % 256;
+</span></span><span class="line"><span class="cl">        j = (j + s[i]) % 256;
+</span></span><span class="line"><span class="cl">        tmp = s[i];
+</span></span><span class="line"><span class="cl">        s[i] = s[j];//交换s[x]和s[y]
+</span></span><span class="line"><span class="cl">        s[j] = tmp;
+</span></span><span class="line"><span class="cl">        t = (s[i] + s[j]) % 256;
+</span></span><span class="line"><span class="cl">        Data[k] ^= s[t];
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">int main()
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    unsigned char s[256] = { 0 }, s2[256] = { 0 };//S-box
+</span></span><span class="line"><span class="cl">    char key[256] = { &#34;justfortest&#34; };
+</span></span><span class="line"><span class="cl">    char pData[512] = &#34;这是一个用来加密的数据Data&#34;;
+</span></span><span class="line"><span class="cl">    unsigned long len = strlen(pData);
+</span></span><span class="line"><span class="cl">    int i;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    printf(&#34;pData=%s\n&#34;, pData);
+</span></span><span class="line"><span class="cl">    printf(&#34;key=%s,length=%d\n\n&#34;, key, strlen(key));
+</span></span><span class="line"><span class="cl">    rc4_init(s, (unsigned char*)key, strlen(key));//已经完成了初始化
+</span></span><span class="line"><span class="cl">    printf(&#34;完成对S[i]的初始化，如下：\n\n&#34;);
+</span></span><span class="line"><span class="cl">    for (i = 0; i&lt;256; i++)
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        printf(&#34;%02X&#34;, s[i]);
+</span></span><span class="line"><span class="cl">        if (i &amp;&amp; (i + 1) % 16 == 0)putchar(&#39;\n&#39;);
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    printf(&#34;\n\n&#34;);
+</span></span><span class="line"><span class="cl">    for (i = 0; i&lt;256; i++)//用s2[i]暂时保留经过初始化的s[i]，很重要的！！！
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        s2[i] = s[i];
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    printf(&#34;已经初始化，现在加密:\n\n&#34;);
+</span></span><span class="line"><span class="cl">    rc4_crypt(s, (unsigned char*)pData, len);//加密
+</span></span><span class="line"><span class="cl">    printf(&#34;pData=%s\n\n&#34;, pData);
+</span></span><span class="line"><span class="cl">    printf(&#34;已经加密，现在解密:\n\n&#34;);
+</span></span><span class="line"><span class="cl">    //rc4_init(s,(unsignedchar*)key,strlen(key));//初始化密钥
+</span></span><span class="line"><span class="cl">    rc4_crypt(s2, (unsigned char*)pData, len);//解密
+</span></span><span class="line"><span class="cl">    printf(&#34;pData=%s\n\n&#34;, pData);
+</span></span><span class="line"><span class="cl">    return 0;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">//程序完
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这时候有人就要问了，你写这么绕，这么模糊谁能看得懂啊？</p>
+<p>所以我们来举几个例子帮助理解：</p>
+<h2 id="加密流程详解">加密流程详解
+</h2><p>一、数学实现</p>
+<ol>
+<li>初始化S盒（Key Scheduling Algorithm, KSA）</li>
+</ol>
+<ul>
+<li>
+<p><strong>初始状态</strong>：S盒是一个长度为256的数组（S[0], S[1], …, S[255]），初始时按顺序填充0到255：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+</span></span><span class="line"><span class="cl">S[0] = 0, S[1] = 1, ..., S[255] = 255
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><strong>密钥预处理</strong>：如果密钥长度不足256字节，循环重复密钥直到填满256字节。例如密钥是<code>KEY</code>（3字节），则扩展为<code>K E Y K E Y K E Y ...</code>。</p>
+</li>
+<li>
+<p><strong>洗牌算法</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">j = 0
+</span></span><span class="line"><span class="cl">for i in 0到255:
+</span></span><span class="line"><span class="cl">    j = (j + S[i] + 密钥[i % 密钥长度]) % 256  # 用密钥决定交换位置
+</span></span><span class="line"><span class="cl">    交换 S[i] 和 S[j]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>关键点</strong>：密钥的每个字节都会影响洗牌过程，但前几个字节的影响可能被后续步骤覆盖。</p>
+</li>
+</ul>
+<ol>
+<li>生成密钥流（Pseudo-Random Generation Algorithm, PRGA）</li>
+</ol>
+<ul>
+<li>
+<p><strong>初始化指针</strong>：i = 0, j = 0</p>
+</li>
+<li>
+<p><strong>循环生成每个密钥字节</strong>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">i = (i + 1) % 256          # i每次向前移动1步
+</span></span><span class="line"><span class="cl">j = (j + S[i]) % 256       # j根据S[i]的值跳跃
+</span></span><span class="line"><span class="cl">交换 S[i] 和 S[j]          # 动态打乱S盒
+</span></span><span class="line"><span class="cl">t = (S[i] + S[j]) % 256    # 计算索引t
+</span></span><span class="line"><span class="cl">密钥字节 = S[t]            # 输出密钥流的一个字节
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>关键点</strong>：每生成一个密钥字节，S盒的状态都会改变，密钥流依赖于动态变化的S盒。</p>
+</li>
+</ul>
+<p>二、举个具体例子</p>
+<p><strong>示例1：初始化S盒</strong></p>
+<p>假设密钥是<code>[0x01, 0x02, 0x03]</code>（3字节）：</p>
+<ol>
+<li>
+<p>初始化S盒</p>
+<p>：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+</span></span><span class="line"><span class="cl">S = [0,1,2,3, ..., 255]
+</span></span></code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>洗牌过程</p>
+<p>（前3步演示）：</p>
+<ul>
+<li>
+<p>i=0</p>
+<p>：</p>
+<ul>
+<li>j = (0 + S[0] + Key[0]) % 256 = (0 + 0 + 1) % 256 = 1</li>
+<li>交换 S[0] 和 S[1] → S变为 <code>[1,0,2,3, ..., 255]</code></li>
+</ul>
+</li>
+<li>
+<p>i=1</p>
+<p>：</p>
+<ul>
+<li>j = (1 + S[1] + Key[1]) % 256 = (1 + 0 + 2) % 256 = 3</li>
+<li>交换 S[1] 和 S[3] → S变为 <code>[1,3,2,0, ..., 255]</code></li>
+</ul>
+</li>
+<li>
+<p>i=2</p>
+<p>：</p>
+<ul>
+<li>j = (3 + S[2] + Key[2]) % 256 = (3 + 2 + 3) % 256 = 8</li>
+<li>交换 S[2] 和 S[8] → S[8]的值被换到位置2。</li>
+</ul>
+</li>
+<li>
+<p>…（持续到i=255）</p>
+</li>
+</ul>
+</li>
+</ol>
+<p><strong>示例2：生成密钥流</strong></p>
+<p>假设初始化后的S盒为 <code>[3, 1, 4, 0, 2, 5, ...]</code>（简化举例）：</p>
+<ul>
+<li>
+<p>第1个密钥字节</p>
+<p>：</p>
+<ul>
+<li>i = (0 + 1) = 1</li>
+<li>j = (0 + S[1]) = 0 + 1 = 1</li>
+<li>交换 S[1] 和 S[1]（无变化）</li>
+<li>t = (S[1] + S[1]) = 1 + 1 = 2</li>
+<li>密钥字节 = S[2] = 4 → 密钥流第一个字节是4</li>
+</ul>
+</li>
+<li>
+<p>第2个密钥字节</p>
+<p>：</p>
+<ul>
+<li>i = 2</li>
+<li>j = (1 + S[2]) = 1 + 4 = 5</li>
+<li>交换 S[2] 和 S[5] → S[2]=5, S[5]=4</li>
+<li>t = (5 + 4) = 9 → 密钥字节 = S[9]</li>
+<li>…</li>
+</ul>
+</li>
+</ul>
+<h1 id="例题">例题
+</h1><p>接下来我们看看RC4算法在CTF中的具体实现</p>
+<blockquote>
+<p>[BabyAlgorithm](<a class="link" href="https://buuoj.cn/challenges#["  target="_blank" rel="noopener"
+    >https://buuoj.cn/challenges#[</a>第五章 CTF之RE章]BabyAlgorithm)</p></blockquote>
+<p>导入IDA，查看main函数</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+</span></span><span class="line"><span class="cl">__int64 __fastcall main(int a1, char **a2, char **a3)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">__int64 result; // rax
+</span></span><span class="line"><span class="cl">int i; // [rsp+Ch] [rbp-E4h]
+</span></span><span class="line"><span class="cl">char v5[16]; // [rsp+10h] [rbp-E0h] BYREF
+</span></span><span class="line"><span class="cl">char s[64]; // [rsp+20h] [rbp-D0h] BYREF
+</span></span><span class="line"><span class="cl">char v7[64]; // [rsp+60h] [rbp-90h] BYREF
+</span></span><span class="line"><span class="cl">char v8[72]; // [rsp+A0h] [rbp-50h] BYREF
+</span></span><span class="line"><span class="cl">unsigned __int64 v9; // [rsp+E8h] [rbp-8h]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">v9 = __readfsqword(0x28u);
+</span></span><span class="line"><span class="cl">memset(v8, 0, 0x40uLL);
+</span></span><span class="line"><span class="cl">v8[0] = 0xC6;
+</span></span><span class="line"><span class="cl">v8[1] = 0x21;
+</span></span><span class="line"><span class="cl">v8[2] = 0xCA;
+</span></span><span class="line"><span class="cl">v8[3] = 0xBF;
+</span></span><span class="line"><span class="cl">v8[4] = 0x51;
+</span></span><span class="line"><span class="cl">v8[5] = 0x43;
+</span></span><span class="line"><span class="cl">v8[6] = 0x37;
+</span></span><span class="line"><span class="cl">v8[7] = 0x31;
+</span></span><span class="line"><span class="cl">v8[8] = 0x75;
+</span></span><span class="line"><span class="cl">v8[9] = 0xE4;
+</span></span><span class="line"><span class="cl">v8[0xA] = 0x8E;
+</span></span><span class="line"><span class="cl">v8[0xB] = 0xC0;
+</span></span><span class="line"><span class="cl">v8[0xC] = 0x54;
+</span></span><span class="line"><span class="cl">v8[0xD] = 0x6F;
+</span></span><span class="line"><span class="cl">v8[0xE] = 0x8F;
+</span></span><span class="line"><span class="cl">v8[0xF] = 0xEE;
+</span></span><span class="line"><span class="cl">v8[0x10] = 0xF8;
+</span></span><span class="line"><span class="cl">v8[0x11] = 0x5A;
+</span></span><span class="line"><span class="cl">v8[0x12] = 0xA2;
+</span></span><span class="line"><span class="cl">v8[0x13] = 0xC1;
+</span></span><span class="line"><span class="cl">v8[0x14] = 0xEB;
+</span></span><span class="line"><span class="cl">v8[0x15] = 0xA5;
+</span></span><span class="line"><span class="cl">v8[0x16] = 0x34;
+</span></span><span class="line"><span class="cl">v8[0x17] = 0x6D;
+</span></span><span class="line"><span class="cl">v8[0x18] = 0x71;
+</span></span><span class="line"><span class="cl">v8[0x19] = 0x55;
+</span></span><span class="line"><span class="cl">v8[0x1A] = 8;
+</span></span><span class="line"><span class="cl">v8[0x1B] = 7;
+</span></span><span class="line"><span class="cl">v8[0x1C] = 0xB2;
+</span></span><span class="line"><span class="cl">v8[0x1D] = 0xA8;
+</span></span><span class="line"><span class="cl">v8[0x1E] = 0x2F;
+</span></span><span class="line"><span class="cl">v8[0x1F] = 0xF4;
+</span></span><span class="line"><span class="cl">v8[0x20] = 0x51;
+</span></span><span class="line"><span class="cl">v8[0x21] = 0x8E;
+</span></span><span class="line"><span class="cl">v8[0x22] = 0xC;
+</span></span><span class="line"><span class="cl">v8[0x23] = 0xCC;
+</span></span><span class="line"><span class="cl">qmemcpy(&amp;v8[0x24], &#34;3S1&#34;, 3);
+</span></span><span class="line"><span class="cl">v8[0x28] = 0x40;
+</span></span><span class="line"><span class="cl">v8[0x29] = 0xD6;
+</span></span><span class="line"><span class="cl">v8[0x2A] = 0xCA;
+</span></span><span class="line"><span class="cl">v8[0x2B] = 0xEC;
+</span></span><span class="line"><span class="cl">v8[0x2C] = 0xD4;
+</span></span><span class="line"><span class="cl">puts(&#34;Input flag: &#34;);
+</span></span><span class="line"><span class="cl">__isoc99_scanf(&#34;%63s&#34;, s);
+</span></span><span class="line"><span class="cl">if ( strlen(s) == 0x2D )
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    strcpy(v5, &#34;Nu1Lctf233&#34;);
+</span></span><span class="line"><span class="cl">    sub_400874(v5, s, v7);
+</span></span><span class="line"><span class="cl">    for ( i = 0; i &lt;= 0x2C; ++i )
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">    if ( v7[i] != v8[i] )
+</span></span><span class="line"><span class="cl">    {
+</span></span><span class="line"><span class="cl">        puts(&#34;GG!&#34;);
+</span></span><span class="line"><span class="cl">        return 0LL;
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    }
+</span></span><span class="line"><span class="cl">    puts(&#34;Congratulations!&#34;);
+</span></span><span class="line"><span class="cl">    result = 0LL;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">else
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">    puts(&#34;GG!&#34;);
+</span></span><span class="line"><span class="cl">    result = 0LL;
+</span></span><span class="line"><span class="cl">}
+</span></span><span class="line"><span class="cl">return result;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p><strong>注意下面两个函数都有一个共同的特征%256，这是RC4算法的典型特征</strong></p>
+<p>sub_400874 中，sub_40067A()和sub_400753()两个函数都是加密算法，</p>
+<p>sub_40067A()是流密钥的生成，</p>
+<p>sub_400753()是加密。</p>
+<p>sub_400874:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__int64 __fastcall sub_400874(__int64 a1, __int64 a2, __int64 a3)
+</span></span><span class="line"><span class="cl">{
+</span></span><span class="line"><span class="cl">char v5[264]; // [rsp+20h] [rbp-110h] BYREF
+</span></span><span class="line"><span class="cl">unsigned __int64 v6; // [rsp+128h] [rbp-8h]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">v6 = __readfsqword(0x28u);
+</span></span><span class="line"><span class="cl">sub_40067A(a1, v5);
+</span></span><span class="line"><span class="cl">sub_400753(v5, a2, a3);
+</span></span><span class="line"><span class="cl">return 0LL;
+</span></span><span class="line"><span class="cl">}
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>sub_40067A(流密钥生成)：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">__int64</span> <span class="n">__fastcall</span> <span class="n">sub_40067A</span><span class="p">(</span><span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">a1</span><span class="p">,</span> <span class="n">__int64</span> <span class="n">a2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">v3</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">10</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">10</span><span class="n">h</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">i</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">14</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="n">Ch</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">j</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">18</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">8</span><span class="n">h</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">v6</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">1</span><span class="n">Ch</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">4</span><span class="n">h</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">v6</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">a1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="n">v3</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="mi">255</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">(</span><span class="n">_BYTE</span> <span class="o">*</span><span class="p">)(</span><span class="n">i</span> <span class="o">+</span> <span class="n">a2</span><span class="p">)</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="mi">255</span><span class="p">;</span> <span class="o">++</span><span class="n">j</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">v3</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">__int8</span> <span class="o">*</span><span class="p">)(</span><span class="n">j</span> <span class="o">+</span> <span class="n">a2</span><span class="p">)</span> <span class="o">+</span> <span class="n">v3</span> <span class="o">+</span> <span class="n">a1</span><span class="p">[</span><span class="n">j</span> <span class="o">%</span> <span class="n">v6</span><span class="p">])</span> <span class="o">%</span> <span class="mi">256</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sub_400646</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">a2</span><span class="p">,</span> <span class="n">a2</span> <span class="o">+</span> <span class="n">v3</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="mi">0</span><span class="n">LL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>sub_400753(加密)：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">__int64</span> <span class="n">__fastcall</span> <span class="n">sub_400753</span><span class="p">(</span><span class="n">__int64</span> <span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">a2</span><span class="p">,</span> <span class="n">__int64</span> <span class="n">a3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">v5</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">24</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">1</span><span class="n">Ch</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">v6</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">28</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">18</span><span class="n">h</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">size_t</span> <span class="n">v7</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">30</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">10</span><span class="n">h</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">size_t</span> <span class="n">v8</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">38</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">8</span><span class="n">h</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">v5</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">v6</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">v7</span> <span class="o">=</span> <span class="mi">0</span><span class="n">LL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="n">v8</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">a2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="p">(</span> <span class="n">v7</span> <span class="o">&lt;</span> <span class="n">v8</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">v5</span> <span class="o">=</span> <span class="p">(</span><span class="n">v5</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">256</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">v6</span> <span class="o">=</span> <span class="p">(</span><span class="n">v6</span> <span class="o">+</span> <span class="o">*</span><span class="p">(</span><span class="n">unsigned</span> <span class="n">__int8</span> <span class="o">*</span><span class="p">)(</span><span class="n">v5</span> <span class="o">+</span> <span class="n">a1</span><span class="p">))</span> <span class="o">%</span> <span class="mi">256</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sub_400646</span><span class="p">(</span><span class="n">v5</span> <span class="o">+</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a1</span> <span class="o">+</span> <span class="n">v6</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">*</span><span class="p">(</span><span class="n">_BYTE</span> <span class="o">*</span><span class="p">)(</span><span class="n">a3</span> <span class="o">+</span> <span class="n">v7</span><span class="p">)</span> <span class="o">=</span> <span class="n">a2</span><span class="p">[</span><span class="n">v7</span><span class="p">]</span> <span class="o">^</span> <span class="o">*</span><span class="p">(</span><span class="n">_BYTE</span> <span class="o">*</span><span class="p">)((</span><span class="n">unsigned</span> <span class="n">__int8</span><span class="p">)(</span><span class="o">*</span><span class="p">(</span><span class="n">_BYTE</span> <span class="o">*</span><span class="p">)(</span><span class="n">v5</span> <span class="o">+</span> <span class="n">a1</span><span class="p">)</span> <span class="o">+</span> <span class="o">*</span><span class="p">(</span><span class="n">_BYTE</span> <span class="o">*</span><span class="p">)(</span><span class="n">v6</span> <span class="o">+</span> <span class="n">a1</span><span class="p">))</span> <span class="o">+</span> <span class="n">a1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="o">++</span><span class="n">v7</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="mi">0</span><span class="n">LL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>本题的密钥是 Nu1Lctf233</p>
+<p>加密后的密文是 v8，即</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[0xc6,0x21,0xca,0xbf,0x51,0x43,0x37,0x31,0x75,0xe4,0x8e,0xc0,0x54,0x6f,0x8f,0xee,0xf8,0x5a,0xa2,0xc1,0xeb,0xa5,0x34,0x6d,0x71,0x55,0x8,0x7,0xb2,0xa8,0x2f,0xf4,0x51,0x8e,0xc,0xcc,0x33,0x53,0x31,0x0,0x40,0xd6,0xca,0xec,0xd4 ]
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这个数组的解出来是乱码,这里base64加utf-8编码就可以得到密文</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">import base64
+</span></span><span class="line"><span class="cl">a=[0xc6,0x21,0xca,0xbf,0x51,0x43,0x37,0x31,0x75,0xe4,0x8e,0xc0,0x54,0x6f,0x8f,0xee,0xf8,0x5a,0xa2,0xc1,0xeb,0xa5,0x34,0x6d,0x71,0x55,0x8,0x7,0xb2,0xa8,0x2f,0xf4,0x51,0x8e,0xc,0xcc,0x33,0x53,0x31,0x0,0x40,0xd6,0xca,0xec,0xd4]
+</span></span><span class="line"><span class="cl">s=&#34;&#34;
+</span></span><span class="line"><span class="cl">for i in a:
+</span></span><span class="line"><span class="cl">    s+=chr(i)
+</span></span><span class="line"><span class="cl">print(s)
+</span></span><span class="line"><span class="cl">print(str(base64.b64encode(s.encode(&#39;utf-8&#39;)), &#39;utf-8&#39;))
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>密文：<code>w4Yhw4rCv1FDNzF1w6TCjsOAVG/Cj8Ouw7hawqLDgcOrwqU0bXFVCAfCssKoL8O0UcKODMOMM1MxAEDDlsOKw6zDlA==</code></p>
+<p>贴上搜到的脚本，拿到 flag</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span><span class="line"><span class="cl">import base64
+</span></span><span class="line"><span class="cl">def rc4_main(key = &#34;init_key&#34;, message = &#34;init_message&#34;):
+</span></span><span class="line"><span class="cl">    print(&#34;RC4解密主函数调用成功&#34;)
+</span></span><span class="line"><span class="cl">    print(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    s_box = rc4_init_sbox(key)
+</span></span><span class="line"><span class="cl">    crypt = rc4_excrypt(message, s_box)
+</span></span><span class="line"><span class="cl">    return crypt
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">def rc4_init_sbox(key):
+</span></span><span class="line"><span class="cl">    s_box = list(range(256)) 
+</span></span><span class="line"><span class="cl">    print(&#34;原来的 s 盒：%s&#34; % s_box)
+</span></span><span class="line"><span class="cl">    print(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    j = 0
+</span></span><span class="line"><span class="cl">    for i in range(256):
+</span></span><span class="line"><span class="cl">        j = (j + s_box[i] + ord(key[i % len(key)])) % 256
+</span></span><span class="line"><span class="cl">        s_box[i], s_box[j] = s_box[j], s_box[i]
+</span></span><span class="line"><span class="cl">    print(&#34;混乱后的 s 盒：%s&#34;% s_box)
+</span></span><span class="line"><span class="cl">    print(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    return s_box
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">def rc4_excrypt(plain, box):
+</span></span><span class="line"><span class="cl">    print(&#34;调用解密程序成功。&#34;)
+</span></span><span class="line"><span class="cl">    print(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    plain = base64.b64decode(plain.encode(&#39;utf-8&#39;))
+</span></span><span class="line"><span class="cl">    plain = bytes.decode(plain)
+</span></span><span class="line"><span class="cl">    res = []
+</span></span><span class="line"><span class="cl">    i = j = 0
+</span></span><span class="line"><span class="cl">    for s in plain:
+</span></span><span class="line"><span class="cl">        i = (i + 1) % 256
+</span></span><span class="line"><span class="cl">        j = (j + box[i]) % 256
+</span></span><span class="line"><span class="cl">        box[i], box[j] = box[j], box[i]
+</span></span><span class="line"><span class="cl">        t = (box[i] + box[j]) % 256
+</span></span><span class="line"><span class="cl">        k = box[t]
+</span></span><span class="line"><span class="cl">        res.append(chr(ord(s) ^ k))
+</span></span><span class="line"><span class="cl">    print(&#34;res用于解密字符串，解密后是：%res&#34; %res)
+</span></span><span class="line"><span class="cl">    print(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    cipher = &#34;&#34;.join(res)
+</span></span><span class="line"><span class="cl">    print(&#34;解密后的字符串是：%s&#34; %cipher)
+</span></span><span class="line"><span class="cl">    print(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    print(&#34;解密后的输出(没经过任何编码):&#34;)
+</span></span><span class="line"><span class="cl">    print(&#39;\n&#39;)
+</span></span><span class="line"><span class="cl">    return  cipher
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">a=[0xc6,0x21,0xca,0xbf,0x51,0x43,0x37,0x31,0x75,0xe4,0x8e,0xc0,0x54,0x6f,0x8f,0xee,0xf8,0x5a,0xa2,0xc1,0xeb,0xa5,0x34,0x6d,0x71,0x55,0x8,0x7,0xb2,0xa8,0x2f,0xf4,0x51,0x8e,0xc,0xcc,0x33,0x53,0x31,0x0,0x40,0xd6,0xca,0xec,0xd4]
+</span></span><span class="line"><span class="cl">s=&#34;&#34;
+</span></span><span class="line"><span class="cl">for i in a:
+</span></span><span class="line"><span class="cl">    s+=chr(i)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">s=str(base64.b64encode(s.encode(&#39;utf-8&#39;)), &#39;utf-8&#39;)
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">rc4_main(&#34;Nu1Lctf233&#34;, s)
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<blockquote>
+<p><a class="link" href="https://www.cnblogs.com/Moomin/p/15023601.html"  target="_blank" rel="noopener"
+    >RC4加密算法与逆向方法简析</a></p></blockquote>
+<blockquote>
+<p><a class="link" href="https://www.cnblogs.com/zibility/p/5404478.html"  target="_blank" rel="noopener"
+    >RC4加密算法 </a></p></blockquote>
+<blockquote>
+<p><a class="link" href="https://www.52pojie.cn/thread-800115-1-1.html"  target="_blank" rel="noopener"
+    >RC4加密算法及逆向方法初探</a></p></blockquote>
+<blockquote>
+<p>[BUUCTF_N1book_RE_<a class="link" href="https://www.cnblogs.com/1ucky/p/16274644.html"  target="_blank" rel="noopener"
+    >第五章 CTF之RE章]BabyAlgorithm</a></p></blockquote>
+<p>最后，家人们，补药用rust写脚本😭😭😭 🤡🤡🤡</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/windows%E5%86%85%E6%A0%B8%E9%80%86%E5%90%91/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Windows内核逆向</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/tea/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Tea</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Example Person
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
