@@ -16,14 +16,6 @@
         <description></description>
         </item>
         <item>
-        <title>Links</title>
-        <link>https://Oight.github.io/links/</link>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-        
-        <guid>https://Oight.github.io/links/</guid>
-        <description></description>
-        </item>
-        <item>
         <title>Search</title>
         <link>https://Oight.github.io/search/</link>
         <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -39,6 +31,14 @@
         <guid>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</guid>
         <description>&lt;p&gt;一个Web小白，逆向新手，运维、开发初学者，渗透潜在学习者&lt;/p&gt;
 </description>
+        </item>
+        <item>
+        <title>友情链接</title>
+        <link>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid>
+        <description></description>
         </item>
         
     </channel>

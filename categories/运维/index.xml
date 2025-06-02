@@ -13,7 +13,7 @@
         <pubDate>Sun, 01 Jun 2025 12:28:46 +0800</pubDate>
         
         <guid>https://Oight.github.io/p/docker%E5%AD%A6%E4%B9%A0/</guid>
-        <description>&lt;h4 id=&#34;前言&#34;&gt;前言
+        <description>&lt;img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*vQK4s0lOiK1ZkcXxFNIMDQ.png" alt="Featured image of post Docker学习" /&gt;&lt;h4 id=&#34;前言&#34;&gt;前言
 &lt;/h4&gt;&lt;p&gt;由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）&lt;/p&gt;
 &lt;p&gt;之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利&lt;/p&gt;
 &lt;p&gt;不过在经过多次尝试和调整之后，新的博客也是搭好了，后面可以正常更新了。&lt;/p&gt;
