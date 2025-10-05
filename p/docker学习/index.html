@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="前言\r由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利\n">
+<title>Docker学习</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/docker%E5%AD%A6%E4%B9%A0/'>
+
+<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="Docker学习">
+<meta property='og:description' content="前言\r由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利\n">
+<meta property='og:url' content='https://Oight.github.io/p/docker%E5%AD%A6%E4%B9%A0/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T12:28:46&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T12:28:46&#43;08:00'/><meta property='og:image' content='https://miro.medium.com/v2/resize:fit:1100/format:webp/1*vQK4s0lOiK1ZkcXxFNIMDQ.png' />
+<meta name="twitter:title" content="Docker学习">
+<meta name="twitter:description" content="前言\r由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）\n之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利\n"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://miro.medium.com/v2/resize:fit:1100/format:webp/1*vQK4s0lOiK1ZkcXxFNIMDQ.png' />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#前言">前言</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+
+  <ol>
+    <li><a href="#关于docker">关于Docker</a></li>
+    <li><a href="#debian-docker-安装">Debian Docker 安装</a>
+      <ol>
+        <li><a href="#卸载旧版本">卸载旧版本</a></li>
+        <li><a href="#使用官方安装脚本自动安装">使用官方安装脚本自动安装</a></li>
+        <li><a href="#手动安装推荐">手动安装（推荐）</a>
+          <ol>
+            <li><a href="#1-更新软件包">1. 更新软件包</a></li>
+            <li><a href="#2-安装依赖包">2. 安装依赖包</a></li>
+            <li><a href="#3-添加-docker-官方-gpg-密钥">3. 添加 Docker 官方 GPG 密钥</a></li>
+            <li><a href="#4-添加-docker-仓库">4. 添加 Docker 仓库</a></li>
+            <li><a href="#5-更新-apt-软件包缓存">5. 更新 APT 软件包缓存</a></li>
+            <li><a href="#6-安装-docker">6. 安装 Docker</a></li>
+            <li><a href="#7-启动并验证-docker">7. 启动并验证 Docker</a></li>
+            <li><a href="#卸载-docker">卸载 docker</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#docker-基本命令">Docker 基本命令</a></li>
+    <li><a href="#docker-镜像设置">Docker 镜像设置</a>
+      <ol>
+        <li><a href="#配置方式">配置方式：</a>
+          <ol>
+            <li><a href="#临时使用">临时使用：</a></li>
+            <li><a href="#长久有效">长久有效：</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#docker-file">Docker file</a>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#什么是-dockerfile">什么是 Dockerfile？</a></li>
+          </ol>
+        </li>
+        <li><a href="#基础知识">基础知识</a></li>
+        <li><a href="#dockerfile的指令">Dockerfile的指令</a></li>
+      </ol>
+    </li>
+    <li><a href="#docker-compose">Docker Compose</a>
+      <ol>
+        <li><a href="#docker-composeyml">Docker-compose.yml</a></li>
+        <li><a href="#docker-compose常用命令">Docker compose常用命令</a></li>
+      </ol>
+    </li>
+    <li><a href="#requirementstxt">requirements.txt</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/docker%E5%AD%A6%E4%B9%A0/">
+                
+                    <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*vQK4s0lOiK1ZkcXxFNIMDQ.png" loading="lazy" alt="Featured image of post Docker学习" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%BF%90%E7%BB%B4/" style="background-color: #2a9d8f; color: #fff;">
+                运维
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/docker%E5%AD%A6%E4%B9%A0/">Docker学习</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 7 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h4 id="前言">前言
+</h4><p>由于上次不小心执行rm -rf /*导致了我的电脑焕然一新（）</p>
+<p>之后一直在尝试重新搭建博客，然而由于放弃了原有的Hexo选择了Hugo，导致进展一直不甚顺利</p>
+<p>不过在经过多次尝试和调整之后，新的博客也是搭好了，后面可以正常更新了。</p>
+<p>虽然还有一些问题没处理好，但是大体记录学习过程的目的还是能达到的，小问题就暂且按下不表吧（）</p>
+<h1 id="docker学习">Docker学习
+</h1><h2 id="关于docker">关于Docker
+</h2><p>众所周知Docker是一个容器引擎，性能很好。</p>
+<p>详细了解：</p>
+<blockquote>
+<p><a class="link" href="https://www.docker.com/"  target="_blank" rel="noopener"
+    >Docker</a></p>
+<p><a class="link" href="https://www.runoob.com/docker/docker-tutorial.html"  target="_blank" rel="noopener"
+    >Docker 教程</a></p></blockquote>
+<h2 id="debian-docker-安装">Debian Docker 安装
+</h2><p>Docker 支持以下的 64 位 Debian 版本：</p>
+<ul>
+<li>Debian Bookworm 12 （稳定版）</li>
+<li>Debian Bullseye 11 （旧稳定版）</li>
+</ul>
+<p>支持的架构包括 x86_64（amd64）、armhf、arm64 和 ppc64le。</p>
+<h3 id="卸载旧版本">卸载旧版本
+</h3><p>如果你之前安装过 Docker Engine 之前，你需要卸载旧版本，避免冲突：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> pkg in docker.io docker-doc docker-compose podman-docker containerd runc<span class="p">;</span> <span class="k">do</span> sudo apt-get remove <span class="nv">$pkg</span><span class="p">;</span> <span class="k">done</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="使用官方安装脚本自动安装">使用官方安装脚本自动安装
+</h3><p>安装命令如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"> curl -fsSL https://get.docker.com -o get-docker.sh
+</span></span><span class="line"><span class="cl"> sudo sh get-docker.sh
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="手动安装推荐">手动安装（推荐）
+</h3><h4 id="1-更新软件包">1. 更新软件包
+</h4><p>首先，更新现有的软件包和包缓存：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt update
+</span></span><span class="line"><span class="cl">sudo apt upgrade
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="2-安装依赖包">2. 安装依赖包
+</h4><p>安装一些需要的依赖包，这些包允许 apt 使用 HTTPS 协议来访问 Docker 仓库：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt install apt-transport-https ca-certificates curl software-properties-common
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="3-添加-docker-官方-gpg-密钥">3. 添加 Docker 官方 GPG 密钥
+</h4><p>使用下面的命令来添加 Docker 官方的 GPG 密钥：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
+</span></span><span class="line"><span class="cl">sudo chmod a+r /etc/apt/keyrings/docker.asc
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="4-添加-docker-仓库">4. 添加 Docker 仓库
+</h4><p>添加 Docker 官方的 APT 软件源：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  <span class="s2">&#34;deb [arch=</span><span class="k">$(</span>dpkg --print-architecture<span class="k">)</span><span class="s2"> signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+</span></span></span><span class="line"><span class="cl"><span class="s2">  </span><span class="k">$(</span>. /etc/os-release <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$VERSION_CODENAME</span><span class="s2">&#34;</span><span class="k">)</span><span class="s2"> stable&#34;</span> <span class="p">|</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+</span></span><span class="line"><span class="cl"><span class="c1"># 更新</span>
+</span></span><span class="line"><span class="cl">sudo apt-get update
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="5-更新-apt-软件包缓存">5. 更新 APT 软件包缓存
+</h4><p>添加仓库后，更新 APT 包索引：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt update
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>确保你现在从 Docker 官方仓库安装 Docker 而不是 Debian 默认仓库：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">apt-cache policy docker-ce
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你应该看到它指向 <a class="link" href="https://download.docker.com/"  target="_blank" rel="noopener"
+    >https://download.docker.com/</a>，确保这就是官方的 Docker 仓库。</p>
+<h4 id="6-安装-docker">6. 安装 Docker
+</h4><p>现在，你可以安装 Docker：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="7-启动并验证-docker">7. 启动并验证 Docker
+</h4><p>启动 Docker 并设置为开机自启：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo systemctl start docker
+</span></span><span class="line"><span class="cl">sudo systemctl <span class="nb">enable</span> docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>你可以使用以下命令来验证 Docker 是否安装成功：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker --version
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>运行以下测试命令确保 Docker 正常工作：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo docker run hello-world
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="卸载-docker">卸载 docker
+</h4><p>删除安装包：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo apt-get purge docker-ce
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>删除镜像、容器、配置文件等内容：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">sudo rm -rf /var/lib/docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="docker-基本命令">Docker 基本命令
+</h2><p>这里记录一下Docker基本命令，方便查（其实感觉查菜鸟教程更快一点() ）</p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th><strong>命令</strong></th>
+          <th><strong>功能</strong></th>
+          <th><strong>示例</strong></th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>docker run</code></td>
+          <td>启动一个新的容器并运行命令</td>
+          <td><code>docker run -d ubuntu</code></td>
+      </tr>
+      <tr>
+          <td><code>docker ps</code></td>
+          <td>列出当前正在运行的容器</td>
+          <td><code>docker ps</code></td>
+      </tr>
+      <tr>
+          <td><code>docker ps -a</code></td>
+          <td>列出所有容器（包括已停止的容器）</td>
+          <td><code>docker ps -a</code></td>
+      </tr>
+      <tr>
+          <td><code>docker build</code></td>
+          <td>使用 Dockerfile 构建镜像</td>
+          <td><code>docker build -t my-image .</code></td>
+      </tr>
+      <tr>
+          <td><code>docker images</code></td>
+          <td>列出本地存储的所有镜像</td>
+          <td><code>docker images</code></td>
+      </tr>
+      <tr>
+          <td><code>docker pull</code></td>
+          <td>从 Docker 仓库拉取镜像</td>
+          <td><code>docker pull ubuntu</code></td>
+      </tr>
+      <tr>
+          <td><code>docker push</code></td>
+          <td>将镜像推送到 Docker 仓库</td>
+          <td><code>docker push my-image</code></td>
+      </tr>
+      <tr>
+          <td><code>docker exec</code></td>
+          <td>在运行的容器中执行命令</td>
+          <td><code>docker exec -it container_name bash</code></td>
+      </tr>
+      <tr>
+          <td><code>docker stop</code></td>
+          <td>停止一个或多个容器</td>
+          <td><code>docker stop container_name</code></td>
+      </tr>
+      <tr>
+          <td><code>docker start</code></td>
+          <td>启动已停止的容器</td>
+          <td><code>docker start container_name</code></td>
+      </tr>
+      <tr>
+          <td><code>docker restart</code></td>
+          <td>重启一个容器</td>
+          <td><code>docker restart container_name</code></td>
+      </tr>
+      <tr>
+          <td><code>docker rm</code></td>
+          <td>删除一个或多个容器</td>
+          <td><code>docker rm container_name</code></td>
+      </tr>
+      <tr>
+          <td><code>docker rmi</code></td>
+          <td>删除一个或多个镜像</td>
+          <td><code>docker rmi my-image</code></td>
+      </tr>
+      <tr>
+          <td><code>docker logs</code></td>
+          <td>查看容器的日志</td>
+          <td><code>docker logs container_name</code></td>
+      </tr>
+      <tr>
+          <td><code>docker inspect</code></td>
+          <td>获取容器或镜像的详细信息</td>
+          <td><code>docker inspect container_name</code></td>
+      </tr>
+      <tr>
+          <td><code>docker exec -it</code></td>
+          <td>进入容器的交互式终端</td>
+          <td><code>docker exec -it container_name /bin/bash</code></td>
+      </tr>
+      <tr>
+          <td><code>docker network ls</code></td>
+          <td>列出所有 Docker 网络</td>
+          <td><code>docker network ls</code></td>
+      </tr>
+      <tr>
+          <td><code>docker volume ls</code></td>
+          <td>列出所有 Docker 卷</td>
+          <td><code>docker volume ls</code></td>
+      </tr>
+      <tr>
+          <td><code>docker-compose up</code></td>
+          <td>启动多容器应用（从 <code>docker-compose.yml</code> 文件）</td>
+          <td><code>docker-compose up</code></td>
+      </tr>
+      <tr>
+          <td><code>docker-compose down</code></td>
+          <td>停止并删除由 <code>docker-compose</code> 启动的容器、网络等</td>
+          <td><code>docker-compose down</code></td>
+      </tr>
+      <tr>
+          <td><code>docker info</code></td>
+          <td>显示 Docker 系统的详细信息</td>
+          <td><code>docker info</code></td>
+      </tr>
+      <tr>
+          <td><code>docker version</code></td>
+          <td>显示 Docker 客户端和守护进程的版本信息</td>
+          <td><code>docker version</code></td>
+      </tr>
+      <tr>
+          <td><code>docker stats</code></td>
+          <td>显示容器的实时资源使用情况</td>
+          <td><code>docker stats</code></td>
+      </tr>
+      <tr>
+          <td><code>docker login</code></td>
+          <td>登录 Docker 仓库</td>
+          <td><code>docker login</code></td>
+      </tr>
+      <tr>
+          <td><code>docker logout</code></td>
+          <td>登出 Docker 仓库</td>
+          <td><code>docker logout</code></td>
+      </tr>
+  </tbody>
+</table></div>
+<h2 id="docker-镜像设置">Docker 镜像设置
+</h2><p>由于一些原因，国内无法直连Docker官方仓库，原本的镜像站现在也都无法使用了，现在只剩一部分个人搭的镜像站可以使用，因此请经常检查自己的Docker镜像是否还能用</p>
+<blockquote>
+<p><a class="link" href="https://coderjia.cn/archives/dba3f94c-a021-468a-8ac6-e840f85867ea"  target="_blank" rel="noopener"
+    >目前国内可用Docker镜像源汇总（截至2025年3月）</a></p></blockquote>
+<h3 id="配置方式">配置方式：
+</h3><h4 id="临时使用">临时使用：
+</h4><p>直接使用：</p>
+<p>直接用镜像域名拼接上官方镜像名。例如：要拉取 <code>istio/distroless</code>，可以这样写：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">docker pull docker-0.unsee.tech/istio/distroless
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h4 id="长久有效">长久有效：
+</h4><p>以下命令在<code>Debian 12.5</code>,<code>Ubuntu 16.04+</code>适用</p>
+<p>修改文件 <code>/etc/docker/daemon.json</code>（如果不存在则需要创建创建，注意不要写入中文，要带 <code>https://</code>），并重启服务。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># 创建目录</span>
+</span></span><span class="line"><span class="cl">	sudo mkdir -p /etc/docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl"><span class="c1"># 写入配置文件</span>
+</span></span><span class="line"><span class="cl">	sudo nano /etc/docker/daemon.json
+</span></span><span class="line"><span class="cl">或   sudo vi /etc/docker/daemon.json
+</span></span><span class="line"><span class="cl"><span class="c1"># 写入下面的	</span>
+</span></span><span class="line"><span class="cl">	<span class="o">{</span>
+</span></span><span class="line"><span class="cl">	    <span class="s2">&#34;registry-mirrors&#34;</span>: <span class="o">[</span>
+</span></span><span class="line"><span class="cl">	    	<span class="s2">&#34;https://docker-0.unsee.tech&#34;</span>,
+</span></span><span class="line"><span class="cl">	        <span class="s2">&#34;https://docker-cf.registry.cyou&#34;</span>,
+</span></span><span class="line"><span class="cl">	        <span class="s2">&#34;https://docker.1panel.live&#34;</span>
+</span></span><span class="line"><span class="cl">	    <span class="o">]</span>
+</span></span><span class="line"><span class="cl">	<span class="o">}</span>
+</span></span><span class="line"><span class="cl">	
+</span></span><span class="line"><span class="cl"><span class="c1"># 重启docker服务</span>
+</span></span><span class="line"><span class="cl">	sudo systemctl daemon-reload <span class="o">&amp;&amp;</span> sudo systemctl restart docker
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>使用<code>docker pull </code>拉取镜像进行测试</p>
+<h2 id="docker-file">Docker file
+</h2><h4 id="什么是-dockerfile">什么是 Dockerfile？
+</h4><p>Dockerfile 是一个文本文件，包含了构建 Docker 镜像的所有指令。</p>
+<p>Dockerfile 是一个用来构建镜像的文本文件，文本内容包含了一条条构建镜像所需的指令和说明。</p>
+<p>通过定义一系列命令和参数，Dockerfile 指导 Docker 构建一个自定义的镜像。</p>
+<p>例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="k">FROM</span><span class="s"> golang:1.18-alpine AS builder</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> . /app<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> mkdir /out<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /app</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> go env -w <span class="nv">GO111MODULE</span><span class="o">=</span>on <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> go env -w <span class="nv">GOPROXY</span><span class="o">=</span>https://mirrors.aliyun.com/goproxy/,direct <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> <span class="nv">CGO_ENABLED</span><span class="o">=</span><span class="m">0</span> <span class="nv">GOOS</span><span class="o">=</span>linux <span class="nv">GOARCH</span><span class="o">=</span>amd64 go build -o /out/main .<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> cp -r /app/assets /app/views -t /out<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="s"> centos:7</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> --from<span class="o">=</span>builder /out /app<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> chmod +x /usr/bin/curl <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> rm -rf /etc/yum.repos.d/*.repo <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> curl -k -o /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> yum --exclude<span class="o">=</span>kernel* update -y <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> yum install -y epel-release <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> rm -rf /etc/yum.repos.d/epel.repo <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> curl -k -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> yum groupinstall -y <span class="s2">&#34;Development Tools&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> yum install -y gcc openssl-devel bzip2-devel libffi-devel zlib-devel make wget <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> <span class="nb">cd</span> /usr/src <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> curl -k -o Python-3.10.4.tgz https://mirrors.huaweicloud.com/python/3.10.4/Python-3.10.4.tgz <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> tar xzf Python-3.10.4.tgz <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> <span class="nb">cd</span> Python-3.10.4 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> ./configure --enable-optimizations <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> make altinstall <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> rm -f /usr/src/Python-3.10.4.tgz <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> ln -s /usr/local/bin/python3.10 /usr/bin/python3 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> yum clean all <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> mkdir -p /home/John <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    <span class="o">&amp;&amp;</span> chmod -R <span class="m">755</span> /home/John<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> shell/* /home/John/<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span> start.sh /app/start.sh<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span> chmod +x /home/John/shell.py<span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /app</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">EXPOSE</span><span class="s"> 8000</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">CMD</span> <span class="p">[</span><span class="s2">&#34;/bin/bash&#34;</span><span class="p">,</span> <span class="s2">&#34;/app/start.sh&#34;</span><span class="p">]</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="基础知识">基础知识
+</h3><ul>
+<li>每个保留关键字（指令）都必须是大写字母</li>
+<li>执行从上到下顺序执行</li>
+<li>#表示注释</li>
+<li>每一个指令都会创建提交一个新的镜像层</li>
+<li>Dockerfile：是定义了构建镜像文件的源代码，能够构建镜像文件</li>
+<li>Docker Images：通过DockerFile构建生成的镜像，最终发布和运行的产品</li>
+<li>Docker Container：容器就是镜像运行起来提供服务的</li>
+</ul>
+<h3 id="dockerfile的指令">Dockerfile的指令
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-dockerfile" data-lang="dockerfile"><span class="line"><span class="cl"><span class="c">#指定基础镜像，一切从这里构建</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">FROM</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#镜像是谁写的，姓名+邮箱</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">MAINTAINER</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#镜像构建运行时需要运行的命令</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">RUN</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#添加的内容</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ADD</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#指定镜像的工作目录</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">WORKDIR</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#指定挂载的容器卷</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">VOLUME</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#指定暴露的端口</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">EXPOSE</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#指定容器启动时要运行的命令，只有最后一个会生效，可被替代</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">CMD</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#指定容器启动时要运行的命令，可以追加命令</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENTRYPOINT</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#当构建一个被继承的DockerFile，这个时候就会运行ONBUILD指令</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ONBUILD</span>
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl"><span class="c">#类似ADD，将文件拷贝进镜像中</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">COPY</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span> <span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="c">#构建的时候设置环境变量</span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="k">ENV</span><span class="err">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="docker-compose">Docker Compose
+</h2><p>Compose 是用于定义和运行多容器 Docker 应用程序的工具。通过 Compose，您可以使用 YML 文件来配置应用程序需要的所有服务。然后，使用一个命令，就可以从 YML 文件配置中创建并启动所有服务。</p>
+<p>注意：安装docker的同时，已经安装了Docker compose V2，无需再另外安装 Docker compose V1 ；Docker compose V2的命令以<code>docker compose</code>开头，如<code>docker compose up</code></p>
+<h3 id="docker-composeyml">Docker-compose.yml
+</h3><p>Dockerfile让容器在任何地方运行，但如果要运行多个容器就十分麻烦，这就需要使用<code>docker-compose.yml</code>文件。</p>
+<p>例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;3.8&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">app</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l">.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l">Dockerfile</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="s2">&#34;8000:8000&#34;</span><span class="w"> </span><span class="c"># 可在此处修改映射到宿主机的端口</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">FLAG</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;ISCC{cl1mb3d_p3ngl41_sh4d0w}&#34;</span><span class="w">  </span><span class="c"># 可在此处动态修改FLAG值</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">command</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;/home/John/.bashrc&#34;</span><span class="p">,</span><span class="w">  </span><span class="s2">&#34;/app/start.sh&#34;</span><span class="p">]</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>两个概念</p>
+<ul>
+<li>services（服务）：容器、应用（mysql、nginx…）</li>
+<li>project（项目）：一组关联的容器</li>
+</ul>
+<h3 id="docker-compose常用命令">Docker compose常用命令
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">up	         启动容器，终端运行
+</span></span><span class="line"><span class="cl">images	     列出镜像
+</span></span><span class="line"><span class="cl">down	     停止和删除容器、网络、卷、镜像
+</span></span><span class="line"><span class="cl">start	     启动项目中容器，后台运行
+</span></span><span class="line"><span class="cl">logs	     查看项目中容器日志
+</span></span><span class="line"><span class="cl">stop	     停止项目中容器
+</span></span><span class="line"><span class="cl">restart	     重启项目中容器
+</span></span><span class="line"><span class="cl">ps           查看启动的容器
+</span></span><span class="line"><span class="cl"> 
+</span></span><span class="line"><span class="cl">#选项如下
+</span></span><span class="line"><span class="cl">-f file      指定Compose模板文件，默认为docker-compose.yml，可以多次指定
+</span></span><span class="line"><span class="cl">-p project   指定项目名称，默认将使用所在目录名称作为项目名
+</span></span><span class="line"><span class="cl">-d	         后台运行容器
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h2 id="requirementstxt">requirements.txt
+</h2><p>有时候可能会遇见使用requirements.txt来存储依赖的情况，这个不必多言（）</p>
+<p>Python项目依赖，生成requirements.txt 有两种方法</p>
+<p>1、进入需要生成文件的目录，执行</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">pip</span> <span class="n">freeze</span> <span class="o">&gt;</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>，此方法会包含环境所有的依赖包。</p>
+<p>直接使用此命令，会把当前共用python环境的所有包都写进去，这些不必要的。可以在目标目录下面先pipenv shell，进入pipenv环境，再用上面的命令，产生的requirements.txt 就只包含虚拟环境的依赖项。</p>
+<p>2、pip install pipreqs</p>
+<p>进入需要生成文件的目录执行： pipreqs ./ (或者直接 pipreqs D:\test(实际路径））</p>
+<p>在此时可能会遇见</p>
+<p>UnicodeDecodeError: ‘gbk’ codec can’t decode byte 0x80 in position 776: illegal multibyte sequence</p>
+<p>这个错误.</p>
+<p>解决方法：指定编码格式 pipreqs ./ &ndash;encoding=utf8</p>
+<p>如果要安装requirements.txt中的类库内容，那么你可以执行:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在dockerfile里就是</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"> <span class="n">RUN</span> <span class="n">pipe</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>参考：</p>
+<blockquote>
+<p><a class="link" href="https://goodapple.top/archives/456"  target="_blank" rel="noopener"
+    >Docker学习笔记——DockerFile</a></p>
+<p><a class="link" href="https://goodapple.top/archives/482"  target="_blank" rel="noopener"
+    >Docker学习笔记——Docker Compose</a></p>
+<p><a class="link" href="https://blog.csdn.net/gac0540/article/details/103505743"  target="_blank" rel="noopener"
+    >docker部署，生成依赖项清单requirements.txt</a></p></blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

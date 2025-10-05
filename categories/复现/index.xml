@@ -6,7 +6,7 @@
         <description>Recent content in 复现 on Oight</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <copyright>Example Person</copyright>
+        <copyright>Oight</copyright>
         <lastBuildDate>Sun, 01 Jun 2025 10:32:07 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/%E5%A4%8D%E7%8E%B0/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>TGCTF知识梳理</title>
         <link>https://Oight.github.io/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/</link>
@@ -1613,7 +1613,7 @@ FLAG=NSSCTF{f9f794c5-47f3-47b2-b473-4881097d212f}
         <pubDate>Sun, 01 Jun 2025 10:28:42 +0800</pubDate>
         
         <guid>https://Oight.github.io/p/dasctf2024%E5%8D%81%E6%9C%88%E8%B5%9B/</guid>
-        <description>&lt;h1 id=&#34;web&#34;&gt;WEB
+        <description>&lt;img src="https://c.img.dasctf.com/LightPicture/2024/10/993ae115bf4e5120.png" alt="Featured image of post DASCTF2024十月赛" /&gt;&lt;h1 id=&#34;web&#34;&gt;WEB
 &lt;/h1&gt;&lt;h2 id=&#34;flow&#34;&gt;flow
 &lt;/h2&gt;&lt;p&gt;创建实例，提示：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -2026,7 +2026,7 @@ FLAG=NSSCTF{f9f794c5-47f3-47b2-b473-4881097d212f}
         <pubDate>Sun, 01 Jun 2025 10:28:21 +0800</pubDate>
         
         <guid>https://Oight.github.io/p/dasctf/</guid>
-        <description>&lt;h1 id=&#34;chicken&#34;&gt;Chicken
+        <description>&lt;img src="https://c.img.dasctf.com/LightPicture/2024/12/9d8f8773e21caf21.png" alt="Featured image of post DASCTF" /&gt;&lt;h1 id=&#34;chicken&#34;&gt;Chicken
 &lt;/h1&gt;&lt;h2 id=&#34;1签到题&#34;&gt;1.签到题
 &lt;/h2&gt;&lt;p&gt;进入容器发现会先在&lt;code&gt;https://game.wetolink.com/&lt;/code&gt;停留一段时间然后会跳转到&lt;code&gt;https://game.gcsis.cn/compete/home/8c3adb14b154482&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;一开始以为是类似于需要“买东西”之类的WEB题，需要获取管理员权限，更改数据之类的操作&lt;/p&gt;

@@ -6,14 +6,14 @@
         <description>Recent content in Linux on Oight</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
-        <copyright>Example Person</copyright>
+        <copyright>Oight</copyright>
         <lastBuildDate>Sun, 01 Jun 2025 10:29:03 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>Archlinux</title>
         <link>https://Oight.github.io/p/archlinux/</link>
         <pubDate>Sun, 01 Jun 2025 10:29:03 +0800</pubDate>
         
         <guid>https://Oight.github.io/p/archlinux/</guid>
-        <description>&lt;h1 id=&#34;安装了下arch双系统真不好安啊现把所有需要用到的代码写在这&#34;&gt;安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这
+        <description>&lt;img src="https://moegirl.uk/images/c/c9/Archlinux_chan.png?20221105073224" alt="Featured image of post Archlinux" /&gt;&lt;h1 id=&#34;安装了下arch双系统真不好安啊现把所有需要用到的代码写在这&#34;&gt;安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这
 &lt;/h1&gt;&lt;h2 id=&#34;前期准备&#34;&gt;前期准备：
 &lt;/h2&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
