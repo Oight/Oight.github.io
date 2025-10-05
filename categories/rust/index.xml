@@ -14,6 +14,8 @@
         
         <guid>https://Oight.github.io/p/rust%E5%AD%A6%E4%B9%A0/</guid>
         <description>&lt;img src="https://openingsource.org/wp-content/uploads/2018/02/rust_logo-1024x460.jpg" alt="Featured image of post Rust学习" /&gt;&lt;p&gt;在网络安全的学习中越来越发现没有编程基础寸步难行，同时我也想要学习相关的程序开发，因为Rust功能强大，并且是系统语言，或许算比较适合我的语言？（但愿吧）&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;后记：家人们，不要学习Rust，这是我第 &lt;del&gt;二&lt;/del&gt; &lt;del&gt;三&lt;/del&gt; &lt;del&gt;四&lt;/del&gt; &lt;del&gt;五&lt;/del&gt; 六次入门Rust&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;我主要是从以下的文章中学习Rust，但是发现每个教程都有不太面向初学者的部分，因此我做一下梳理，也方便我后面查缺补漏。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://rustwiki.org/zh-CN/book/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
@@ -176,6 +178,9 @@
 &lt;blockquote&gt;
 &lt;p&gt;cargo run –release
 cargo build –release&lt;/p&gt;&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;[!NOTE]&lt;/p&gt;
+&lt;p&gt;rust自身是使用rustc进行编译的， rustc,rustup和cargo之间的关系可以理解为rustc是编译器，rustup是更新器，cargo是包管理器&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h1 id=&#34;rust-基础语法&#34;&gt;Rust 基础语法
 &lt;/h1&gt;&lt;p&gt;变量，基本类型，函数，注释和控制流，这些几乎是每种编程语言都具有的编程概念。&lt;/p&gt;
 &lt;p&gt;这些基础概念将存在于每个 Rust 程序中，及早学习它们将使你以最快的速度学习 Rust 的使用。&lt;/p&gt;
