@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>BlockChain on Oight</title>
+        <link>https://Oight.github.io/categories/blockchain/</link>
+        <description>Recent content in BlockChain on Oight</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Oight</copyright>
+        <lastBuildDate>Tue, 07 Oct 2025 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/blockchain/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>区块链学习（一）</title>
+        <link>https://Oight.github.io/p/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E4%B8%80/</link>
+        <pubDate>Tue, 07 Oct 2025 10:29:47 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/p/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid>
+        <description>&lt;h1 id=&#34;区块链学习一&#34;&gt;区块链学习（一）
+&lt;/h1&gt;&lt;p&gt;区块链作为较为前沿的领域，近几年也在迅速发展&lt;/p&gt;
+&lt;p&gt;最开始接触区块链的内容是从较新的move-sui体系开始的，这个后面另外再写博客介绍吧（挖坑+1）&lt;/p&gt;
+&lt;p&gt;最近接触到了更为成熟的以太坊体系&lt;/p&gt;
+&lt;p&gt;所以写博客记录一下（主要是因为Ethereum 测试网水龙头太多了）&lt;/p&gt;
+&lt;h2 id=&#34;区块链浏览器&#34;&gt;区块链浏览器
+&lt;/h2&gt;&lt;p&gt;区块链浏览器，是指提供用户浏览与查询区块链链上信息的工具。它和普通的浏览器不同，它只能查询区块链信息上的工具，它是建立在普通的中心化网络上，专门为用户提供浏览与查询区块链上信息的一种搜索工具。如何利用区块链浏览器查询地址交易信息和区块数据等基础信息，几乎成了每个WEB3人的必备技能。&lt;/p&gt;
+&lt;p&gt;每个区块链系统都有本身特定的浏览器，比如，比特币区块链浏览器只能查询比特币的相关区块信息，以太坊区块链浏览器只能查询以太坊的相关区块信息。&lt;/p&gt;
+&lt;p&gt;以太 Sepolia 区块链浏览器：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://sepolia.etherscan.io/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Sepolia.ethrescan&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;区块链浏览器相关术语&#34;&gt;区块链浏览器相关术语
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;区块 Block&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;区块是指一批交易的组合，并且包含链中上一个区块的哈希。这将区块连接在一起（成为一个链），因为哈希是从区块数据中加密得出的。这可以防止欺诈，因为历史上任何区块的一次更改都会使所有后续区块无效，因为所有后续哈希都会更改，并且运行区块链的每个人都会注意到。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;创世区块 Genesis Block&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;区块链上的第一个区块，用于初始化特定的区块链以及原生加密货币。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;区块链 Blockchain&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;以太坊网络中由工作量证明验证的区块序列，每个区块与其前一个区块相连，可一直追溯到创世区块。它没有区块大小限制，而使用gas 上限来调整区块大小。&lt;/p&gt;
+&lt;p&gt;交易情况：可以通过查询钱包地址来查询余额或者交易的详细信息。比如你知道某人的比特币地址，由于区块链的公开透明性，当你在比特币区块链浏览器上查询此地址时，你可以看到它的所有交易记录。&lt;/p&gt;
+&lt;p&gt;一般区块链浏览器中有三个地方可能出现明文数据：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Input Data / Full Input&lt;/strong&gt;（常见位置在 “Input Data” 或 “Function &amp;amp; Input Data”）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Logs / Event Logs&lt;/strong&gt;（有时 dev 会把可读字符串塞在 event data 里）&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Internal Txns / Token Transfers / Contract Creation&lt;/strong&gt;（如果这笔交易是合约创建，合约字节码里可能藏字符串）&lt;/p&gt;
+&lt;h5 id=&#34;input-data-&#34;&gt;Input Data ：
+&lt;/h5&gt;&lt;p&gt;在以太坊协议中，&lt;/p&gt;
+&lt;p&gt;当交易（transaction）为合约创建时，input data 是账户初始化程序的 EVM 代码；&lt;/p&gt;
+&lt;p&gt;而当交易（transaction）为消息调用时，input data 是合约函数调用数据。&lt;/p&gt;
+&lt;p&gt;正常情况下简单的消息调用如调用转账函数时需要填写你要转账的地址 _to 和你要转账的数量 _amount，这些基本信息都包含在 input data 里面。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;详见：&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/612605361&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;交易Input Data 解析&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h5 id=&#34;logs-and-event-logs&#34;&gt;Logs and &lt;strong&gt;Event Logs&lt;/strong&gt;
+&lt;/h5&gt;&lt;p&gt;Ethereum日志和事件是Ethereum生态系统中的重要组成部分。使开发人员能够通过其跟踪并记录智能合约在区块链上的特定操作或数据。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EVM中的事件和日志&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;在EVM（以太坊虚拟机）中，事件是智能合约在执行重要操作时发出的消息。例如，当代币转移或合约数据更新时，合约会触发一个事件以通知外部系统。事件通过event关键字在智能合约中定义。&lt;/p&gt;
+&lt;p&gt;在上述示例中，Transfer事件用于记录代币转移。它有三个参数：&lt;/p&gt;
+&lt;p&gt;from：发送方地址。&lt;/p&gt;
+&lt;p&gt;to：接收方地址。&lt;/p&gt;
+&lt;p&gt;value：转移的金额。&lt;/p&gt;
+&lt;p&gt;在执行智能合约函数期间使用emit关键字触发时间。发出的事件数据存储在日志中，这些日志是交易回执的一部分。&lt;/p&gt;
+&lt;p&gt;日志：&lt;/p&gt;
+&lt;p&gt;日志是这些事件的记录。当事件发生时，它们会存储有关所发生情况的信息，例如发送者、接收者和转移的代币数量。日志被包含在交易回执中，使其易于检索以进行跟踪或分析。&lt;/p&gt;
+&lt;p&gt;通过触发事件并将其记录为交易收据中的日志，开发人员可以轻松追踪特定的操作，如代币转移、铸造、销毁或合约状态的变更。这种方式节省了存储空间并降低了交易的Gas费用，为与智能合约交互和理解智能合约行为提供了高效且具有成本效益的方法。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;详见：&lt;a class=&#34;link&#34; href=&#34;https://learnblockchain.cn/article/10628&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;以太坊链上 logs和events 解析&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h5 id=&#34;contract&#34;&gt;Contract
+&lt;/h5&gt;&lt;p&gt;这一部分就是大名鼎鼎的智能合约了，Ethereum的智能合约使用Solidity语言编写，关于智能合约，将会另写一篇博客详细探索一下&lt;/p&gt;
+&lt;p&gt;这里需要注意的是如果作者没有开源自己的智能合约的话，区块链浏览器上只能看到编译好的字节码，这种情况下想要了解合约内容就需要逆向字节码&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如何开源自己的智能合约：&lt;a class=&#34;link&#34; href=&#34;https://learnblockchain.cn/article/7077#%E4%B8%89%E3%80%81%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%AA%8C%E8%AF%81&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Web3 开发智能合约部署及合约验证全流程&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;区块链测试网&#34;&gt;区块链测试网
+&lt;/h2&gt;&lt;p&gt;目前我主要接触的是Sepolia测试网&lt;/p&gt;
+&lt;h4 id=&#34;什么是测试网&#34;&gt;什么是测试网
+&lt;/h4&gt;&lt;p&gt;测试网被设计成模仿主网环境，以使开发人员能够在将合约部署到主网之前测试和排除应用程序的问题，而不会有任何价值处于风险之中。&lt;/p&gt;
+&lt;p&gt;通常情况下，将任何合约代码在测试网上进行测试，然后再部署到主网上被认为是一个良好的做法 - 大多数链上应用程序都会在测试网上部署副本，以便开发人员进行故障排除。&lt;/p&gt;
+&lt;p&gt;简单来说，就是由于区块链与资产息息相关，开发者在开发的时候自然不能在主链上测试，避免造成巨大的损失；为了方便开发者测试自己的区块链应用，出于测试和学习的目的，开辟了一条新的链作为测试网。&lt;/p&gt;
+&lt;p&gt;测试网和主网的差异只是测试网上的虚拟货币并没有价值，以太坊应用程序开发者可以在这里测试他们的智能合约，而无需花费真实的 ETH 代币&lt;/p&gt;
+&lt;h4 id=&#34;什么是sepolia&#34;&gt;什么是Sepolia
+&lt;/h4&gt;&lt;p&gt;Sepolia是以太坊核心开发人员为智能合约应用程序开发推荐的默认测试网。Sepolia最初是由以太坊核心开发人员于2021年10月推出的一种权威性测试网。该网络后来转变为一种权益证明共识机制，以模拟以太坊主网的运行环境。&lt;/p&gt;
+&lt;p&gt;Sepolia使用了一组经过授权的验证器。由于它是一个相对较新的测试网络，状态较小，因此该网络同步速度快，运行节点所需的存储空间比主网或其他测试网要少。这些功能对于希望直接与网络交互并运行节点的开发人员非常有用。&lt;/p&gt;
+&lt;p&gt;与其他以太坊测试网络（如Goerli）相比，Sepolia测试网的测试网ETH通证总供应量没有上限，这使得使用Sepolia的开发人员更有可能在未来继续访问测试网通证。&lt;/p&gt;
+&lt;p&gt;Ethereum Sepolia 测试网水龙头：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zan.top/cn/faucet&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;ZAN水龙头&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.alchemy.com/faucets/ethereum-sepolia&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;alchemy&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://cloud.google.com/application/web3/faucet&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;谷歌云&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.datawallet.com/zh/%E9%9A%90%E8%94%BD%E6%80%A7/best-crypto-faucets&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;other&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

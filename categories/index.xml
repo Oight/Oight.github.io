@@ -7,7 +7,23 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Oight</copyright>
-        <lastBuildDate>Mon, 01 Sep 2025 10:31:09 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 07 Oct 2025 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>BlockChain</title>
+        <link>https://Oight.github.io/categories/blockchain/</link>
+        <pubDate>Tue, 07 Oct 2025 10:29:47 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/blockchain/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Misc</title>
+        <link>https://Oight.github.io/categories/misc/</link>
+        <pubDate>Tue, 07 Oct 2025 10:29:47 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/categories/misc/</guid>
+        <description></description>
+        </item>
+        <item>
         <title>复现</title>
         <link>https://Oight.github.io/categories/%E5%A4%8D%E7%8E%B0/</link>
         <pubDate>Mon, 01 Sep 2025 10:31:09 +0800</pubDate>

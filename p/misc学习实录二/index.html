@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="MISC学习实录（二）\r因为在MiGuo的MISC课上睡大觉，所以被MiGuo惩罚来学MISC ε(┬┬﹏┬┬)3\nUSB流量分析\rUSB流量主要是鼠标流量和键盘流量\n鼠标流量\rUSB协议鼠标数据部分在Leftover Capture Data域中，数据长度为四个字节。 其中， 第一个字节代表按键，当取0x00时，代表没有按键，为0x01时，代表按左按键，为0x02时，代表当前按键为右键； 第二个字节可以成是一个signed byte类型，其最高位为符号位，当这个值为正时，代表鼠标水平右移动多少像素，为负时，代表水平左移多少像素； 第三个字节与第二个字节类似，代表垂直上下移动的偏移。\n">
+<title>MISC学习实录（二）</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%BA%8C/'>
+
+<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="MISC学习实录（二）">
+<meta property='og:description' content="MISC学习实录（二）\r因为在MiGuo的MISC课上睡大觉，所以被MiGuo惩罚来学MISC ε(┬┬﹏┬┬)3\nUSB流量分析\rUSB流量主要是鼠标流量和键盘流量\n鼠标流量\rUSB协议鼠标数据部分在Leftover Capture Data域中，数据长度为四个字节。 其中， 第一个字节代表按键，当取0x00时，代表没有按键，为0x01时，代表按左按键，为0x02时，代表当前按键为右键； 第二个字节可以成是一个signed byte类型，其最高位为符号位，当这个值为正时，代表鼠标水平右移动多少像素，为负时，代表水平左移多少像素； 第三个字节与第二个字节类似，代表垂直上下移动的偏移。\n">
+<meta property='og:url' content='https://Oight.github.io/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%BA%8C/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-10-07T10:29:47&#43;08:00'/><meta property='article:modified_time' content='2025-10-07T10:29:47&#43;08:00'/>
+<meta name="twitter:title" content="MISC学习实录（二）">
+<meta name="twitter:description" content="MISC学习实录（二）\r因为在MiGuo的MISC课上睡大觉，所以被MiGuo惩罚来学MISC ε(┬┬﹏┬┬)3\nUSB流量分析\rUSB流量主要是鼠标流量和键盘流量\n鼠标流量\rUSB协议鼠标数据部分在Leftover Capture Data域中，数据长度为四个字节。 其中， 第一个字节代表按键，当取0x00时，代表没有按键，为0x01时，代表按左按键，为0x02时，代表当前按键为右键； 第二个字节可以成是一个signed byte类型，其最高位为符号位，当这个值为正时，代表鼠标水平右移动多少像素，为负时，代表水平左移多少像素； 第三个字节与第二个字节类似，代表垂直上下移动的偏移。\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#usb流量分析">USB流量分析</a>
+      <ol>
+        <li><a href="#鼠标流量">鼠标流量</a></li>
+        <li><a href="#键盘流量">键盘流量</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/misc/" >
+                Misc
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%BA%8C/">MISC学习实录（二）</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-10-07</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 3 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="misc学习实录二">MISC学习实录（二）
+</h1><p>因为在MiGuo的MISC课上睡大觉，所以被MiGuo惩罚来学MISC ε(┬┬﹏┬┬)3</p>
+<h2 id="usb流量分析">USB流量分析
+</h2><p>USB流量主要是鼠标流量和键盘流量</p>
+<h3 id="鼠标流量">鼠标流量
+</h3><p>USB协议鼠标数据部分在Leftover Capture Data域中，数据长度为四个字节。
+其中，
+<strong>第一个字节代表按键</strong>，当取<strong>0x00</strong>时，代表没有按键，为0x01时，代表按左按键，为0x02时，代表当前按键为右键；
+<strong>第二个字节</strong>可以成是一个signed byte类型，其最高位为<strong>符号位</strong>，当这个值为<strong>正</strong>时，代表鼠标<strong>水平右移</strong>动多少像素，为<strong>负</strong>时，代表<strong>水平左移</strong>多少像素；
+<strong>第三个字节</strong>与第二个字节类似，代表垂直上下移动的偏移。</p>
+<h3 id="键盘流量">键盘流量
+</h3><p>键盘数据包的数据长度为8个字节</p>
+<p>USB使用HID协议规定键盘映射，具体映射表我没找到，具体可以翻翻HID协议</p>
+<p>1和2两道题的思路是一样的</p>
+<p>把pcap文件扔进kali，然后用tshark将 <code>leftover capture data</code> 提取出来：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tshark -r example.pcap -T fields -e usb.capdata //如果想导入usbdata.txt文件中，后面加上参数：&gt;usbdata.txt
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>然后看特质，长的是键盘流量，短的是鼠标流量</p>
+<p>最后用脚本解析</p>
+<p>键盘转化脚本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">mappings</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0x04</span><span class="p">:</span><span class="s2">&#34;A&#34;</span><span class="p">,</span>  <span class="mh">0x05</span><span class="p">:</span><span class="s2">&#34;B&#34;</span><span class="p">,</span>  <span class="mh">0x06</span><span class="p">:</span><span class="s2">&#34;C&#34;</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">:</span><span class="s2">&#34;D&#34;</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">:</span><span class="s2">&#34;E&#34;</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">:</span><span class="s2">&#34;F&#34;</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">:</span><span class="s2">&#34;G&#34;</span><span class="p">,</span>  <span class="mh">0x0B</span><span class="p">:</span><span class="s2">&#34;H&#34;</span><span class="p">,</span> <span class="mh">0x0C</span><span class="p">:</span><span class="s2">&#34;I&#34;</span><span class="p">,</span>  <span class="mh">0x0D</span><span class="p">:</span><span class="s2">&#34;J&#34;</span><span class="p">,</span> <span class="mh">0x0E</span><span class="p">:</span><span class="s2">&#34;K&#34;</span><span class="p">,</span> <span class="mh">0x0F</span><span class="p">:</span><span class="s2">&#34;L&#34;</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">:</span><span class="s2">&#34;M&#34;</span><span class="p">,</span> <span class="mh">0x11</span><span class="p">:</span><span class="s2">&#34;N&#34;</span><span class="p">,</span><span class="mh">0x12</span><span class="p">:</span><span class="s2">&#34;O&#34;</span><span class="p">,</span>  <span class="mh">0x13</span><span class="p">:</span><span class="s2">&#34;P&#34;</span><span class="p">,</span> <span class="mh">0x14</span><span class="p">:</span><span class="s2">&#34;Q&#34;</span><span class="p">,</span> <span class="mh">0x15</span><span class="p">:</span><span class="s2">&#34;R&#34;</span><span class="p">,</span> <span class="mh">0x16</span><span class="p">:</span><span class="s2">&#34;S&#34;</span><span class="p">,</span> <span class="mh">0x17</span><span class="p">:</span><span class="s2">&#34;T&#34;</span><span class="p">,</span> <span class="mh">0x18</span><span class="p">:</span><span class="s2">&#34;U&#34;</span><span class="p">,</span><span class="mh">0x19</span><span class="p">:</span><span class="s2">&#34;V&#34;</span><span class="p">,</span> <span class="mh">0x1A</span><span class="p">:</span><span class="s2">&#34;W&#34;</span><span class="p">,</span> <span class="mh">0x1B</span><span class="p">:</span><span class="s2">&#34;X&#34;</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">:</span><span class="s2">&#34;Y&#34;</span><span class="p">,</span> <span class="mh">0x1D</span><span class="p">:</span><span class="s2">&#34;Z&#34;</span><span class="p">,</span> <span class="mh">0x1E</span><span class="p">:</span><span class="s2">&#34;1&#34;</span><span class="p">,</span> <span class="mh">0x1F</span><span class="p">:</span><span class="s2">&#34;2&#34;</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">:</span><span class="s2">&#34;3&#34;</span><span class="p">,</span> <span class="mh">0x21</span><span class="p">:</span><span class="s2">&#34;4&#34;</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">:</span><span class="s2">&#34;5&#34;</span><span class="p">,</span>  <span class="mh">0x23</span><span class="p">:</span><span class="s2">&#34;6&#34;</span><span class="p">,</span> <span class="mh">0x24</span><span class="p">:</span><span class="s2">&#34;7&#34;</span><span class="p">,</span> <span class="mh">0x25</span><span class="p">:</span><span class="s2">&#34;8&#34;</span><span class="p">,</span> <span class="mh">0x26</span><span class="p">:</span><span class="s2">&#34;9&#34;</span><span class="p">,</span> <span class="mh">0x27</span><span class="p">:</span><span class="s2">&#34;0&#34;</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">:</span><span class="s2">&#34;n&#34;</span><span class="p">,</span> <span class="mh">0x2a</span><span class="p">:</span><span class="s2">&#34;[DEL]&#34;</span><span class="p">,</span>  <span class="mh">0X2B</span><span class="p">:</span><span class="s2">&#34;    &#34;</span><span class="p">,</span> <span class="mh">0x2C</span><span class="p">:</span><span class="s2">&#34; &#34;</span><span class="p">,</span>  <span class="mh">0x2D</span><span class="p">:</span><span class="s2">&#34;-&#34;</span><span class="p">,</span> <span class="mh">0x2E</span><span class="p">:</span><span class="s2">&#34;=&#34;</span><span class="p">,</span> <span class="mh">0x2F</span><span class="p">:</span><span class="s2">&#34;[&#34;</span><span class="p">,</span>  <span class="mh">0x30</span><span class="p">:</span><span class="s2">&#34;]&#34;</span><span class="p">,</span>  <span class="mh">0x31</span><span class="p">:</span><span class="s2">&#34;</span><span class="se">\\</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mh">0x32</span><span class="p">:</span><span class="s2">&#34;~&#34;</span><span class="p">,</span> <span class="mh">0x33</span><span class="p">:</span><span class="s2">&#34;;&#34;</span><span class="p">,</span>  <span class="mh">0x34</span><span class="p">:</span><span class="s2">&#34;&#39;&#34;</span><span class="p">,</span> <span class="mh">0x36</span><span class="p">:</span><span class="s2">&#34;,&#34;</span><span class="p">,</span>  <span class="mh">0x37</span><span class="p">:</span><span class="s2">&#34;.&#34;</span> <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">nums</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">keys</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;usbdata.txt&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">line</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="mi">2</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">line</span> <span class="o">+=</span> <span class="n">i</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;:&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># print(line)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">15</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">18</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">19</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span> <span class="ow">or</span> <span class="n">line</span><span class="p">[</span><span class="mi">22</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;0&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">         <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">    <span class="n">nums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">],</span><span class="mi">16</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">keys</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">output</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nums</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">mappings</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">+=</span> <span class="n">mappings</span><span class="p">[</span><span class="n">n</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">output</span> <span class="o">+=</span> <span class="s1">&#39;[unknown]&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output : &#39;</span> <span class="o">+</span> <span class="n">output</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 脚本跑的结果中去掉unknow，注意del键</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>鼠标转化脚本：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">nums</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl"><span class="n">keys</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./mouse_data.txt&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;xy.txt&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">posx</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">posy</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">line</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="mi">2</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">line</span> <span class="o">+=</span> <span class="n">i</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;:&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">11</span> <span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">    <span class="n">x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">3</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span><span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">],</span><span class="mi">16</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">x</span> <span class="o">-=</span> <span class="mi">256</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">y</span> <span class="o">-=</span> <span class="mi">256</span>
+</span></span><span class="line"><span class="cl">    <span class="n">posx</span> <span class="o">+=</span> <span class="n">x</span>
+</span></span><span class="line"><span class="cl">    <span class="n">posy</span> <span class="o">+=</span> <span class="n">y</span>
+</span></span><span class="line"><span class="cl">    <span class="n">btn_flag</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">],</span><span class="mi">16</span><span class="p">)</span>  <span class="c1"># 1 for left , 2 for right , 0 for nothing</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">btn_flag</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">:</span> <span class="c1"># 1 代表左键 // 这里0，1，2都试试</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">posx</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">posy</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+</span></span><span class="line"><span class="cl"><span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;RGB&#39;</span><span class="p">,(</span><span class="mi">2000</span><span class="p">,</span><span class="mi">2000</span><span class="p">),(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span><span class="c1">#创建Image对象</span>
+</span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;xy.txt&#39;</span><span class="p">)</span><span class="c1">#xy.txt文件 </span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">point</span> <span class="o">=</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">img</span><span class="o">.</span><span class="n">putpixel</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="c1">#读取文件中的每一行，并修改像素 </span>
+</span></span><span class="line"><span class="cl"><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> 
+</span></span><span class="line"><span class="cl"><span class="n">img</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>第三题是BUU原题</p>
+<p>给一个rar和一个ftm</p>
+<p>尝试解压rar失败</p>
+<p>由于RAR是有四个文件块组成的，分别是标记块、归档头部块、文件块、结束块，这些块之间没有固定地先后顺序，但要求第一个块必须是标志块并且其后紧跟一个归档头部块。详情看：</p>
+<blockquote>
+<p><a class="link" href="https://www.freebuf.com/column/199854.html"  target="_blank" rel="noopener"
+    >CTF解题技能之压缩包分析基础篇</a></p></blockquote>
+<p>我们把rar 扔进010提示模块三有错误，对照博客中的内容（文件块的HEAD_TYPE应该是0x74而不是0x7A。）把 7A改成74</p>
+<p>然后解压得到一个png</p>
+<p>把png扔进stegsolve发现在Blue plane 0 有二维码</p>
+<p>扫码得到ci{v3erf_0tygidv2_fc0}</p>
+<p>还有key.ftm没用到，有key说明flag被加密了</p>
+<p>把key.ftm扔进010，发现有“PK”,尝试搜索 50 4B 03 04 ，说明ftm中藏了一个zip，把50 4Bpcap前的内容全部删去，再保存为zip</p>
+<p>解压得到一个pcap，用tshark提取leftover capture data，发现是键盘流量，跑脚本拿到key： <code>XINAN</code></p>
+<p>加密方式是维吉尼亚+栅栏</p>
+<p>解密得到flag</p>
+<p>flag{vig3ne2e_is_c00l}</p>
+<p>MISC常见加密方法：</p>
+<blockquote>
+<p><a class="link" href="https://miguoqaq.github.io/2024/04/07/CTF%20%E5%B8%B8%E8%A7%81%E5%AF%86%E7%A0%81%E7%BC%96%E7%A0%81%E5%8F%8A%E5%85%B6%E7%89%B9%E5%BE%81/"  target="_blank" rel="noopener"
+    >CTF 常见密码编码及其解决方案</a></p></blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%B8%80/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">MISC学习实录（一）</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="区块链学习（一）\r区块链作为较为前沿的领域，近几年也在迅速发展\n最开始接触区块链的内容是从较新的move-sui体系开始的，这个后面另外再写博客介绍吧（挖坑+1）\n">
+<title>区块链学习（一）</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E4%B8%80/'>
+
+<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="区块链学习（一）">
+<meta property='og:description' content="区块链学习（一）\r区块链作为较为前沿的领域，近几年也在迅速发展\n最开始接触区块链的内容是从较新的move-sui体系开始的，这个后面另外再写博客介绍吧（挖坑+1）\n">
+<meta property='og:url' content='https://Oight.github.io/p/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E4%B8%80/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-10-07T10:29:47&#43;08:00'/><meta property='article:modified_time' content='2025-10-07T10:29:47&#43;08:00'/>
+<meta name="twitter:title" content="区块链学习（一）">
+<meta name="twitter:description" content="区块链学习（一）\r区块链作为较为前沿的领域，近几年也在迅速发展\n最开始接触区块链的内容是从较新的move-sui体系开始的，这个后面另外再写博客介绍吧（挖坑+1）\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🍥</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#区块链浏览器">区块链浏览器</a>
+      <ol>
+        <li><a href="#区块链浏览器相关术语">区块链浏览器相关术语</a>
+          <ol>
+            <li></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#区块链测试网">区块链测试网</a>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#什么是测试网">什么是测试网</a></li>
+            <li><a href="#什么是sepolia">什么是Sepolia</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/blockchain/" >
+                BlockChain
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E4%B8%80/">区块链学习（一）</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-10-07</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 5 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="区块链学习一">区块链学习（一）
+</h1><p>区块链作为较为前沿的领域，近几年也在迅速发展</p>
+<p>最开始接触区块链的内容是从较新的move-sui体系开始的，这个后面另外再写博客介绍吧（挖坑+1）</p>
+<p>最近接触到了更为成熟的以太坊体系</p>
+<p>所以写博客记录一下（主要是因为Ethereum 测试网水龙头太多了）</p>
+<h2 id="区块链浏览器">区块链浏览器
+</h2><p>区块链浏览器，是指提供用户浏览与查询区块链链上信息的工具。它和普通的浏览器不同，它只能查询区块链信息上的工具，它是建立在普通的中心化网络上，专门为用户提供浏览与查询区块链上信息的一种搜索工具。如何利用区块链浏览器查询地址交易信息和区块数据等基础信息，几乎成了每个WEB3人的必备技能。</p>
+<p>每个区块链系统都有本身特定的浏览器，比如，比特币区块链浏览器只能查询比特币的相关区块信息，以太坊区块链浏览器只能查询以太坊的相关区块信息。</p>
+<p>以太 Sepolia 区块链浏览器：</p>
+<blockquote>
+<p><a class="link" href="https://sepolia.etherscan.io/"  target="_blank" rel="noopener"
+    >Sepolia.ethrescan</a></p></blockquote>
+<h3 id="区块链浏览器相关术语">区块链浏览器相关术语
+</h3><p><strong>区块 Block</strong></p>
+<p>区块是指一批交易的组合，并且包含链中上一个区块的哈希。这将区块连接在一起（成为一个链），因为哈希是从区块数据中加密得出的。这可以防止欺诈，因为历史上任何区块的一次更改都会使所有后续区块无效，因为所有后续哈希都会更改，并且运行区块链的每个人都会注意到。</p>
+<p><strong>创世区块 Genesis Block</strong></p>
+<p>区块链上的第一个区块，用于初始化特定的区块链以及原生加密货币。</p>
+<p><strong>区块链 Blockchain</strong></p>
+<p>以太坊网络中由工作量证明验证的区块序列，每个区块与其前一个区块相连，可一直追溯到创世区块。它没有区块大小限制，而使用gas 上限来调整区块大小。</p>
+<p>交易情况：可以通过查询钱包地址来查询余额或者交易的详细信息。比如你知道某人的比特币地址，由于区块链的公开透明性，当你在比特币区块链浏览器上查询此地址时，你可以看到它的所有交易记录。</p>
+<p>一般区块链浏览器中有三个地方可能出现明文数据：</p>
+<p><strong>Input Data / Full Input</strong>（常见位置在 “Input Data” 或 “Function &amp; Input Data”）</p>
+<p><strong>Logs / Event Logs</strong>（有时 dev 会把可读字符串塞在 event data 里）</p>
+<p><strong>Internal Txns / Token Transfers / Contract Creation</strong>（如果这笔交易是合约创建，合约字节码里可能藏字符串）</p>
+<h5 id="input-data-">Input Data ：
+</h5><p>在以太坊协议中，</p>
+<p>当交易（transaction）为合约创建时，input data 是账户初始化程序的 EVM 代码；</p>
+<p>而当交易（transaction）为消息调用时，input data 是合约函数调用数据。</p>
+<p>正常情况下简单的消息调用如调用转账函数时需要填写你要转账的地址 _to 和你要转账的数量 _amount，这些基本信息都包含在 input data 里面。</p>
+<blockquote>
+<p>详见：<a class="link" href="https://zhuanlan.zhihu.com/p/612605361"  target="_blank" rel="noopener"
+    >交易Input Data 解析</a></p></blockquote>
+<h5 id="logs-and-event-logs">Logs and <strong>Event Logs</strong>
+</h5><p>Ethereum日志和事件是Ethereum生态系统中的重要组成部分。使开发人员能够通过其跟踪并记录智能合约在区块链上的特定操作或数据。</p>
+<p><strong>EVM中的事件和日志</strong></p>
+<p>在EVM（以太坊虚拟机）中，事件是智能合约在执行重要操作时发出的消息。例如，当代币转移或合约数据更新时，合约会触发一个事件以通知外部系统。事件通过event关键字在智能合约中定义。</p>
+<p>在上述示例中，Transfer事件用于记录代币转移。它有三个参数：</p>
+<p>from：发送方地址。</p>
+<p>to：接收方地址。</p>
+<p>value：转移的金额。</p>
+<p>在执行智能合约函数期间使用emit关键字触发时间。发出的事件数据存储在日志中，这些日志是交易回执的一部分。</p>
+<p>日志：</p>
+<p>日志是这些事件的记录。当事件发生时，它们会存储有关所发生情况的信息，例如发送者、接收者和转移的代币数量。日志被包含在交易回执中，使其易于检索以进行跟踪或分析。</p>
+<p>通过触发事件并将其记录为交易收据中的日志，开发人员可以轻松追踪特定的操作，如代币转移、铸造、销毁或合约状态的变更。这种方式节省了存储空间并降低了交易的Gas费用，为与智能合约交互和理解智能合约行为提供了高效且具有成本效益的方法。</p>
+<blockquote>
+<p>详见：<a class="link" href="https://learnblockchain.cn/article/10628"  target="_blank" rel="noopener"
+    >以太坊链上 logs和events 解析</a></p></blockquote>
+<h5 id="contract">Contract
+</h5><p>这一部分就是大名鼎鼎的智能合约了，Ethereum的智能合约使用Solidity语言编写，关于智能合约，将会另写一篇博客详细探索一下</p>
+<p>这里需要注意的是如果作者没有开源自己的智能合约的话，区块链浏览器上只能看到编译好的字节码，这种情况下想要了解合约内容就需要逆向字节码</p>
+<blockquote>
+<p>如何开源自己的智能合约：<a class="link" href="https://learnblockchain.cn/article/7077#%E4%B8%89%E3%80%81%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%AA%8C%E8%AF%81"  target="_blank" rel="noopener"
+    >Web3 开发智能合约部署及合约验证全流程</a></p></blockquote>
+<h2 id="区块链测试网">区块链测试网
+</h2><p>目前我主要接触的是Sepolia测试网</p>
+<h4 id="什么是测试网">什么是测试网
+</h4><p>测试网被设计成模仿主网环境，以使开发人员能够在将合约部署到主网之前测试和排除应用程序的问题，而不会有任何价值处于风险之中。</p>
+<p>通常情况下，将任何合约代码在测试网上进行测试，然后再部署到主网上被认为是一个良好的做法 - 大多数链上应用程序都会在测试网上部署副本，以便开发人员进行故障排除。</p>
+<p>简单来说，就是由于区块链与资产息息相关，开发者在开发的时候自然不能在主链上测试，避免造成巨大的损失；为了方便开发者测试自己的区块链应用，出于测试和学习的目的，开辟了一条新的链作为测试网。</p>
+<p>测试网和主网的差异只是测试网上的虚拟货币并没有价值，以太坊应用程序开发者可以在这里测试他们的智能合约，而无需花费真实的 ETH 代币</p>
+<h4 id="什么是sepolia">什么是Sepolia
+</h4><p>Sepolia是以太坊核心开发人员为智能合约应用程序开发推荐的默认测试网。Sepolia最初是由以太坊核心开发人员于2021年10月推出的一种权威性测试网。该网络后来转变为一种权益证明共识机制，以模拟以太坊主网的运行环境。</p>
+<p>Sepolia使用了一组经过授权的验证器。由于它是一个相对较新的测试网络，状态较小，因此该网络同步速度快，运行节点所需的存储空间比主网或其他测试网要少。这些功能对于希望直接与网络交互并运行节点的开发人员非常有用。</p>
+<p>与其他以太坊测试网络（如Goerli）相比，Sepolia测试网的测试网ETH通证总供应量没有上限，这使得使用Sepolia的开发人员更有可能在未来继续访问测试网通证。</p>
+<p>Ethereum Sepolia 测试网水龙头：</p>
+<blockquote>
+<p><a class="link" href="https://zan.top/cn/faucet"  target="_blank" rel="noopener"
+    >ZAN水龙头</a></p>
+<p><a class="link" href="https://www.alchemy.com/faucets/ethereum-sepolia"  target="_blank" rel="noopener"
+    >alchemy</a></p>
+<p><a class="link" href="https://cloud.google.com/application/web3/faucet"  target="_blank" rel="noopener"
+    >谷歌云</a></p>
+<p><a class="link" href="https://www.datawallet.com/zh/%E9%9A%90%E8%94%BD%E6%80%A7/best-crypto-faucets"  target="_blank" rel="noopener"
+    >other</a></p></blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2025 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
