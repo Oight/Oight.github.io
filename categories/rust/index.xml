@@ -13,7 +13,7 @@
         <pubDate>Sun, 01 Jun 2025 10:31:09 +0800</pubDate>
         
         <guid>https://Oight.github.io/p/rust%E5%AD%A6%E4%B9%A0/</guid>
-        <description>&lt;img src="https://openingsource.org/wp-content/uploads/2018/02/rust_logo-1024x460.jpg" alt="Featured image of post Rust学习" /&gt;&lt;p&gt;在网络安全的学习中越来越发现没有编程基础寸步难行，同时我也想要学习相关的程序开发，因为Rust功能强大，并且是系统语言，或许算比较适合我的语言？（但愿吧）&lt;/p&gt;
+        <description>&lt;img src="https://rust-lang.org/static/images/rust-logo-blk.svg" alt="Featured image of post Rust学习" /&gt;&lt;p&gt;在网络安全的学习中越来越发现没有编程基础寸步难行，同时我也想要学习相关的程序开发，因为Rust功能强大，并且是系统语言，或许算比较适合我的语言？（但愿吧）&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;后记：家人们，不要学习Rust，这是我第 &lt;del&gt;二&lt;/del&gt; &lt;del&gt;三&lt;/del&gt; &lt;del&gt;四&lt;/del&gt; &lt;del&gt;五&lt;/del&gt; 六次入门Rust&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;我主要是从以下的文章中学习Rust，但是发现每个教程都有不太面向初学者的部分，因此我做一下梳理，也方便我后面查缺补漏。&lt;/p&gt;
