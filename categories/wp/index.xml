@@ -8,12 +8,12 @@
         <language>zh-cn</language>
         <copyright>Oight</copyright>
         <lastBuildDate>Sun, 12 Oct 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://Oight.github.io/categories/wp/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>羊城杯 Write UP</title>
-        <link>https://Oight.github.io/p/%E7%BE%8A%E5%9F%8E%E6%9D%AF-write-up/</link>
+        <title>羊城杯2025 Write UP</title>
+        <link>https://Oight.github.io/p/%E7%BE%8A%E5%9F%8E%E6%9D%AF2025-write-up/</link>
         <pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate>
         
-        <guid>https://Oight.github.io/p/%E7%BE%8A%E5%9F%8E%E6%9D%AF-write-up/</guid>
-        <description>&lt;h1 id=&#34;羊城杯-write-up&#34;&gt;羊城杯 Write UP
+        <guid>https://Oight.github.io/p/%E7%BE%8A%E5%9F%8E%E6%9D%AF2025-write-up/</guid>
+        <description>&lt;h1 id=&#34;羊城杯2025-write-up&#34;&gt;羊城杯2025 Write UP
 &lt;/h1&gt;&lt;p&gt;被队里的天才选手带飞了，太强大了！！！&lt;/p&gt;
 &lt;p&gt;而我除了用AI出一道PHP反序列化之外毫无输出QaQ&lt;/p&gt;
 &lt;h2 id=&#34;misc&#34;&gt;MISC
@@ -283,8 +283,8 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;运行，得到Flag：&lt;code&gt;DASCTF{xCuBiFYr-u5aP2-QjspKk-rh0LO-w9WZ8DeS}&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&#34;ds&#34;&gt;DS
-&lt;/h3&gt;&lt;h3 id=&#34;sm4-ofb&#34;&gt;SM4-OFB
+&lt;h2 id=&#34;ds&#34;&gt;DS
+&lt;/h2&gt;&lt;h3 id=&#34;sm4-ofb&#34;&gt;SM4-OFB
 &lt;/h3&gt;&lt;p&gt;让AI分析一下加密过程并编写解密脚本：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
