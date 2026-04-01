@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Java安全学习\r只开新坑不填旧坑这一块\n反射\r反射是Java中很重要的一个特性，我们可以使用反射来动态获取一个对象的所有信息。\n所以，反射是为了解决在运行期，对某个实例一无所知的情况下，如何调用其方法。 ————廖雪峰的官方网站\n">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="你现在这个题的结构（从你前面给出的行为来看）属于 “主程序在 x86_64 上跑，但把关键校验逻辑塞进另一段小代码里，用 Unicorn 模拟另一种架构去跑” 的典型逆向题。对新手来说，一开始会很懵：因为你在 IDA/Ghidra 里看 main 逻辑很短，但就是找不到真正的校验算法 —— 它藏在“被模拟执行”的那段代码里。\n">
 <title></title>
 
-<link rel='canonical' href='http://localhost:1313/p/'>
+<link rel='canonical' href='https://Oight.github.io/p/'>
 
 <link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="">
-<meta property='og:description' content="Java安全学习\r只开新坑不填旧坑这一块\n反射\r反射是Java中很重要的一个特性，我们可以使用反射来动态获取一个对象的所有信息。\n所以，反射是为了解决在运行期，对某个实例一无所知的情况下，如何调用其方法。 ————廖雪峰的官方网站\n">
-<meta property='og:url' content='http://localhost:1313/p/'>
+<meta property='og:description' content="你现在这个题的结构（从你前面给出的行为来看）属于 “主程序在 x86_64 上跑，但把关键校验逻辑塞进另一段小代码里，用 Unicorn 模拟另一种架构去跑” 的典型逆向题。对新手来说，一开始会很懵：因为你在 IDA/Ghidra 里看 main 逻辑很短，但就是找不到真正的校验算法 —— 它藏在“被模拟执行”的那段代码里。\n">
+<meta property='og:url' content='https://Oight.github.io/p/'>
 <meta property='og:site_name' content='Oight'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' />
 <meta name="twitter:title" content="">
-<meta name="twitter:description" content="Java安全学习\r只开新坑不填旧坑这一块\n反射\r反射是Java中很重要的一个特性，我们可以使用反射来动态获取一个对象的所有信息。\n所以，反射是为了解决在运行期，对某个实例一无所知的情况下，如何调用其方法。 ————廖雪峰的官方网站\n">
+<meta name="twitter:description" content="你现在这个题的结构（从你前面给出的行为来看）属于 “主程序在 x86_64 上跑，但把关键校验逻辑塞进另一段小代码里，用 Unicorn 模拟另一种架构去跑” 的典型逆向题。对新手来说，一开始会很懵：因为你在 IDA/Ghidra 里看 main 逻辑很短，但就是找不到真正的校验算法 —— 它藏在“被模拟执行”的那段代码里。\n">
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -64,7 +64,7 @@
                 
                 </a>
                 
-                    <span class="emoji">🍥</span>
+                    <span class="emoji">🐧</span>
                 
             </figure>
             
@@ -261,30 +261,33 @@
         <div class="widget--toc">
             <nav id="TableOfContents">
   <ol>
-    <li><a href="#反射">反射</a>
+    <li><a href="#1-新手逆向的正确打开方式先动态看它想干嘛">1. 新手逆向的正确打开方式：先动态“看它想干嘛”</a></li>
+    <li><a href="#2-静态初筛先识别壳加壳保护">2. 静态初筛：先识别“壳/加壳/保护”</a></li>
+    <li><a href="#3-在-ghidraida-里快速定位-main-和输入点">3. 在 Ghidra/IDA 里快速定位 main 和输入点</a></li>
+    <li><a href="#4-发现关键点unicorn-模拟器调用链">4. 发现“关键点”：Unicorn 模拟器调用链</a>
       <ol>
-        <li><a href="#获取对象">获取对象</a></li>
-        <li><a href="#创建对象">创建对象</a></li>
-        <li><a href="#访问字段">访问字段</a></li>
-        <li><a href="#调用方法">调用方法</a>
-          <ol>
-            <li><a href="#非无参构造方法和私有方法的调用">非无参构造方法和私有方法的调用</a></li>
-          </ol>
-        </li>
+        <li><a href="#41-它模拟的是什么架构">4.1 它模拟的是什么架构？</a></li>
+        <li><a href="#42-它把模拟代码写到哪里了">4.2 它把“模拟代码”写到哪里了？</a></li>
+        <li><a href="#43-输入数据放在模拟器哪段内存">4.3 输入数据放在模拟器哪段内存？</a></li>
+        <li><a href="#44-它还有没有第二个参数常量字符串">4.4 它还有没有第二个参数/常量字符串？</a></li>
+        <li><a href="#45-成功失败怎么回传">4.5 成功/失败怎么回传？</a></li>
       </ol>
     </li>
-    <li><a href="#javalangreflect">java.lang.reflect</a>
+    <li><a href="#5-真正逆向从这里开始把那段risc-v-小代码提出来">5. 真正逆向从这里开始：把那段“RISC-V 小代码”提出来</a>
       <ol>
-        <li><a href="#1-class">1. <strong><code>Class</code> 类</strong></a></li>
-        <li><a href="#2-field">2. <strong><code>Field</code> 类</strong></a></li>
-        <li><a href="#3-method">3. <strong><code>Method</code> 类</strong></a></li>
-        <li><a href="#4-constructor">4. <strong><code>Constructor</code> 类</strong></a>
-          <ol>
-            <li></li>
-          </ol>
-        </li>
+        <li><a href="#51-提取-code-blobbytes">5.1 提取 code blob（bytes）</a></li>
       </ol>
     </li>
+    <li><a href="#6-反汇编-risc-v或目标架构代码让它变成你能读懂的逻辑">6. 反汇编 RISC-V（或目标架构）代码，让它变成你能读懂的逻辑</a></li>
+    <li><a href="#7-新手最推荐的解法不用完全看懂汇编也能把-flag-反推出来">7. 新手最推荐的解法：不用完全看懂汇编，也能把 flag 反推出来</a>
+      <ol>
+        <li><a href="#71-expected-怎么拿">7.1 expected 怎么拿？</a></li>
+        <li><a href="#72-keystream-怎么拿超实用技巧全-0-输入">7.2 keystream 怎么拿（超实用技巧：全 0 输入）</a></li>
+      </ol>
+    </li>
+    <li><a href="#8-用-python--unicorn-复现模拟执行新手可照抄的骨架">8. 用 Python + Unicorn 复现模拟执行（新手可照抄的骨架）</a></li>
+    <li><a href="#9-你最终要明白的题目套路总结这题的核心思想">9. 你最终要明白的“题目套路总结”（这题的核心思想）</a></li>
+    <li><a href="#如果你愿意我可以把你的这道题按你文件逐行讲透">如果你愿意，我可以把“你的这道题”按你文件逐行讲透</a></li>
   </ol>
 </nav>
         </div>
@@ -328,7 +331,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 11 分钟
+                    阅读时长: 6 分钟
                 </time>
             </div>
         
@@ -343,502 +346,227 @@
     <section class="article-content">
     
     
-    <h1 id="java安全学习">Java安全学习
-</h1><p>只开新坑不填旧坑这一块</p>
-<h2 id="反射">反射
-</h2><p>反射是Java中很重要的一个特性，我们可以使用反射来动态获取一个对象的所有信息。</p>
-<blockquote>
-<p>所以，反射是为了解决在运行期，对某个实例一无所知的情况下，如何调用其方法。
-————廖雪峰的官方网站</p></blockquote>
-<p>我们都知道Java作为面向对象语言中最具代表性的一个，在Java中一切皆对象。而每个对象都对应着用来实例化它的类。</p>
-<p>如果不用反射或类似的运行时发现机制，程序员必须在编译期/代码中显式绑定类型与实例化逻辑（写 <code>new</code>、写工厂、写注册代码），因此替换实现或动态加载插件时需要改大量代码或依赖构建时/配置时的额外步骤；反射把“选择实现/方法”的时机从编译期延后到运行期，从而降低了代码耦合和样板，但会以运行时安全性、性能和可维护性为代价。。</p>
-<p>Java中的注解就是使用反射来实现的，通过反射来获取类并遍历各个类中的方法，从而找到所有想要的方法并注入。以<strong>Spring</strong>为例，当你在 Spring 配置文件中或者使用注解 <code>@Autowired</code> 时，你只需要告诉 Spring：“我需要一个 <code>UserService</code> 的对象”。Spring 容器在启动时，会读取你的配置，然后通过反射机制，动态地找到 <code>UserService</code> 这个类，调用它的构造函数创建一个实例，然后把它注入到你需要的地方。你并没有写 <code>new UserService()</code> 这行代码，是 Spring 通过反射帮你做了。</p>
-<p>如对象序列化 / 反序列化（将对象转为 JSON 或 XML）、ORM（对象关系映射）框架，都需要反射来工作。</p>
-<p>举例：JSON 序列化库 (如 Jackson, Gson)</p>
-<p>当你调用 <strong>new Gson().toJson(myObject)</strong> 时，Gson 库并不知道 <strong>myObject</strong>具体是什么类，有哪些字段。它会使用反射机制，遍历 <strong>myObject</strong>对象的所有字段（包括 <strong>private</strong>的），获取它们的名称和值，然后将其组织成 JSON 字符串。</p>
-<p>总而言之，有了反射机制，在调用某个对象的方法或访问其字段时，都不再需要知道这个对象对应的类的全部信息，只需要拿到一个实例，就可以尽情地使用它。</p>
-<p>Java 的反射 API 提供了一系列的类和接口来操作 Class 对象。主要的类包括：</p>
-<ul>
-<li><strong><code>java.lang.Class</code></strong>：表示类的对象。提供了方法来获取类的字段、方法、构造函数等。</li>
-<li><strong><code>java.lang.reflect.Field</code></strong>：表示类的字段（属性）。提供了访问和修改字段的能力。</li>
-<li><strong><code>java.lang.reflect.Method</code></strong>：表示类的方法。提供了调用方法的能力。</li>
-<li><strong><code>java.lang.reflect.Constructor</code></strong>：表示类的构造函数。提供了创建对象的能力。</li>
-</ul>
-<p>一般来说，反射的工作流程是：获取Class对象=&gt;获取成员信息(通过Class获取字段、方法、构造函数等)=&gt;操作成员(读取或者修改值、调用方法、创建对象等)</p>
-<h3 id="获取对象">获取对象
-</h3><p>一般使用**Class.forName()<strong>来获取对象，使用</strong>Class.forName()**获取对象非常简单，我们只需要知道一个类的类名，就可以获取到这个类的对象。</p>
+    <p>你现在这个题的结构（从你前面给出的行为来看）属于 <strong>“主程序在 x86_64 上跑，但把关键校验逻辑塞进另一段小代码里，用 Unicorn 模拟另一种架构去跑”</strong> 的典型逆向题。对新手来说，一开始会很懵：因为你在 IDA/Ghidra 里看 main 逻辑很短，但就是找不到真正的校验算法 —— 它藏在“被模拟执行”的那段代码里。</p>
+<p>⚠️ 先说明一下：你之前上传的 <code>vvvmmm</code> 文件在我这边已经过期/不可读取了，所以我没法把每条指令、每个常量的地址逐行对着你文件讲。但我可以把<strong>从零到出 flag 的完整方法论</strong>讲清楚，你照着做就能自己复现；如果你愿意重新上传文件，我也能把“这里对应哪条指令/哪个常量”给你对齐到具体地址。</p>
+<hr>
+<h2 id="1-新手逆向的正确打开方式先动态看它想干嘛">1. 新手逆向的正确打开方式：先动态“看它想干嘛”
+</h2><p>第一步别急着上反编译，先运行：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;java.lang.String&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Class obtained using Class.forName(): &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getName</span><span class="p">());</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// Class obtained using Class.forName(): java.lang.String</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">chmod +x vvvmmm
+</span></span><span class="line"><span class="cl">./vvvmmm
+</span></span></code></pre></td></tr></table>
 </div>
-</div><p>我们现在知道了有反射，同时知道有个Runtime类可以执行命令，那两者结合，通过这种动态调用的形式就可以执行命令。</p>
-<p>Java中有三种代码块：<strong>静态初始化块（static block）</strong>、<strong>实例初始化块（instance initializer block）</strong> 和 <strong>构造方法（constructor）</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">new</span><span class="w"> </span><span class="n">Test1</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">class</span> <span class="nc">Test1</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Test1</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;我是构造方法&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;我是静态初始化块&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;我是实例初始化块&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cm">/* 我是静态初始化块
-</span></span></span><span class="line"><span class="cl"><span class="cm">   我是实例初始化块
-</span></span></span><span class="line"><span class="cl"><span class="cm">   我是构造方法    */</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
-<li>静态初始化块（<code>static {}</code>）在类被加载到 JVM 时执行，仅执行一次，只能访问静态成员，同时在任何对象创建之前执行。</li>
-<li>实例初始化块（<code>{}</code>）每次创建对象时，在构造方法之前执行。</li>
-<li>构造方法（<code>public ClassName() {}</code>）每次创建对象时，在实例初始化块之后执行。</li>
-</ul>
-<p>可以看到静态初始化块中的代码最先执行，构造方法最后执行。而**Class.forName()**就是用来控制静态初始化块的，所以它的优先级非常高。可以往进塞恶意代码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;test.Test1&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">class</span> <span class="nc">Test1</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Test1</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;我是构造方法&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;hacked&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;我是实例初始化块&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// hacked</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="创建对象">创建对象
-</h3><p>就是使用<code>getDeclaredConstructor()</code>来创建实例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;test.Test1&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Object</span><span class="w"> </span><span class="n">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getDeclaredConstructor</span><span class="p">().</span><span class="na">newInstance</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">class</span> <span class="nc">Test1</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="nf">Test1</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;我是构造方法&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">static</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;hacked&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;我是实例初始化块&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cm">/* hacked
-</span></span></span><span class="line"><span class="cl"><span class="cm">   我是实例初始化块
-</span></span></span><span class="line"><span class="cl"><span class="cm">   我是构造方法  */</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="访问字段">访问字段
-</h3><p>可以使用这些方法来访问字段：</p>
-<blockquote>
-<p>clazz.getField(String name)：获取公有字段（包括继承的）</p>
-<p>clazz.getDeclaredField(String name)：获取本类中声明的字段（包括私有字段）</p>
-<p>field.setAccessible(true)：允许访问私有字段</p>
-<p>field.get(Object obj)：获取字段值</p>
-<p>field.set(Object obj, Object value)：设置字段值</p></blockquote>
-<p>代码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.reflect.Field</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 获取类</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;test.Cat&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 实例化类(创建对象)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Cat</span><span class="w"> </span><span class="n">cat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Cat</span><span class="p">)</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">newInstance</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 访问公有字段</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Field</span><span class="w"> </span><span class="n">publicCat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getField</span><span class="p">(</span><span class="s">&#34;name&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Get Public Field CatName is: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">publicCat</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">cat</span><span class="p">));</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">publicCat</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;耄耋&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Get Public Field CatName is: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">publicCat</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">cat</span><span class="p">));</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 访问私有字段</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Field</span><span class="w"> </span><span class="n">privateCat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getDeclaredField</span><span class="p">(</span><span class="s">&#34;age&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">privateCat</span><span class="p">.</span><span class="na">setAccessible</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Get Private Field Catage is: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">privateCat</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">cat</span><span class="p">));</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">privateCat</span><span class="p">.</span><span class="na">set</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="w"> </span><span class="n">10</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;Get Private Field Catage is: &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">privateCat</span><span class="p">.</span><span class="na">get</span><span class="p">(</span><span class="n">cat</span><span class="p">));</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">class</span> <span class="nc">Cat</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&#34;哈基米&#34;</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">2</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cm">/* Get Public Field CatName is: 哈基米
-</span></span></span><span class="line"><span class="cl"><span class="cm">   Get Public Field CatName is: 耄耋
-</span></span></span><span class="line"><span class="cl"><span class="cm">   Get Private Field Catage is: 2
-</span></span></span><span class="line"><span class="cl"><span class="cm">   Get Private Field Catage is: 10 */</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="调用方法">调用方法
-</h3><p>调用方法和访问字段的操作差不多，具体流程为：</p>
-<blockquote>
-<p>获取 <code>Class</code> =&gt;</p>
-<p>获取目标 <code>Method</code> 对象（公有用 <code>getMethod</code>，私有用 <code>getDeclaredMethod</code>）=&gt;</p>
-<p>设置可访问（私有方法要 <code>setAccessible(true)</code>）=&gt;</p>
-<p>使用 <code>invoke()</code> 调用方法</p></blockquote>
-<p>可以使用这些来获取：</p>
-<blockquote>
-<p>clazz.getMethod(String name, Class… parameterTypes)：获取 <strong>公有方法</strong>（包括继承的）（注意，这里第一个参数是方法名，后面的参数表示的是这个方法传入参数的类型，比如参数是String就是String.class）</p>
-<p>clazz.getDeclaredMethod(String name, Class… parameterTypes)：获取 <strong>本类声明的方法</strong>（包括私有方法）</p>
-<p>method.setAccessible(true)：允许访问私有方法</p>
-<p>method.invoke(Object obj, Object… args)：调用方法，第一个参数是对象，后面是传入方法的参数</p></blockquote>
-<p>代码例子：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.reflect.Method</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 获取类</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;test.Cat&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 实例化类(创建对象)</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Cat</span><span class="w"> </span><span class="n">cat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Cat</span><span class="p">)</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">newInstance</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 调用公有方法</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Method</span><span class="w"> </span><span class="n">PublicCat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;Ha&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">PublicCat</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;人? &#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// 调用私有方法</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Method</span><span class="w"> </span><span class="n">privateCat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getDeclaredMethod</span><span class="p">(</span><span class="s">&#34;add&#34;</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">privateCat</span><span class="p">.</span><span class="na">setAccessible</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="n">privateCat</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">,</span><span class="w"> </span><span class="n">1</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">&#34;强化普攻次数： &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">result</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">class</span> <span class="nc">Cat</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">Ha</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">name</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&#34;哈！&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b</span><span class="p">;</span><span class="w"> </span><span class="c1">// 计算挠人次数（不是）</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="cm">/* 人? 哈！
-</span></span></span><span class="line"><span class="cl"><span class="cm">   强化普攻次数： 2   */</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果类中存在静态方法，那我们就不需要再实例化对象了，可以直接操作类</p>
-<p>就像这样：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.reflect.Method</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Method</span><span class="w"> </span><span class="n">staticMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cat</span><span class="p">.</span><span class="na">class</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;say&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">String</span><span class="w"> </span><span class="n">echoed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">String</span><span class="p">)</span><span class="w"> </span><span class="n">staticMethod</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;曼波&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">echoed</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">class</span> <span class="nc">Cat</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">say</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&#34;Hello &#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">name</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="c1">// Hello 曼波 </span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果方法是静态方法，<code>invoke()</code> 的第一个参数可以传 <code>null</code>，毕竟这个时候我们也没有具体的对象。</p>
-<p>现在让我们来弹个计算器</p>
+</div><p>你要观察 3 件事：</p>
+<ol>
+<li>它要你输入什么（提示里是否写着 <code>%48c</code> / <code>48</code> / <code>flag</code> 之类）</li>
+<li>输入长度是不是固定（很多题就是固定 32/40/48 字节）</li>
+<li>成功/失败的分支是什么输出（比如 <code>Good.</code> / <code>Try again</code>）</li>
+</ol>
+<p><strong>结论：你得先知道“验证的输入是什么形态”</strong>。比如 <code>%48c</code> 意味着“精确读取 48 个字符”，包含空格也算字符（这和 <code>%s</code> 不一样）。</p>
+<hr>
+<h2 id="2-静态初筛先识别壳加壳保护">2. 静态初筛：先识别“壳/加壳/保护”
+</h2><p>对二进制先做体检：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;exec&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">).</span><span class="na">invoke</span><span class="p">(</span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;getRuntime&#34;</span><span class="p">).</span><span class="na">invoke</span><span class="p">(</span><span class="n">clazz</span><span class="p">),</span><span class="w"> </span><span class="s">&#34;calc.exe&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">file vvvmmm
+</span></span><span class="line"><span class="cl">checksec --file=vvvmmm
+</span></span><span class="line"><span class="cl">strings -a vvvmmm | head
+</span></span><span class="line"><span class="cl">strings -a vvvmmm | grep -i upx
+</span></span></code></pre></td></tr></table>
 </div>
-</div><p>其中，<code>clazz.getMethod(&quot;exec&quot;, String.class).invoke(clazz.getMethod(&quot;getRuntime&quot;).invoke(clazz), &quot;calc.exe&quot;);</code></p>
-<p>我们可以把它看作是一个嵌套的方法调用：</p>
-<p><code>A.invoke(B, &quot;calc.exe&quot;)</code>，其中：</p>
+</div><p>如果你看到：</p>
 <ul>
-<li><code>A</code> 是 <code>clazz.getMethod(&quot;exec&quot;, String.class)</code> 的结果。</li>
-<li><code>B</code> 是 <code>clazz.getMethod(&quot;getRuntime&quot;).invoke(clazz)</code> 的结果。</li>
+<li><code>UPX!</code>、或者 <code>strings</code> 里有很多 <code>UPX</code> 特征</li>
+<li><code>file</code> 显示 “packed” 或者体积很小但跑起来又很复杂</li>
 </ul>
-<p>根据规则，JVM 要执行 <code>A.invoke(...)</code>，必须先计算出 <code>A</code> 和 <code>B</code> 的值。</p>
+<p>那多半是 <strong>UPX 壳</strong>。对新手来说，UPX 是最好处理的壳：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">upx -t vvvmmm        # 测试是不是UPX
+</span></span><span class="line"><span class="cl">upx -d vvvmmm -o vvvmmm.unpacked
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>后面所有分析都优先用 <code>vvvmmm.unpacked</code>。</p>
+<blockquote>
+<p>为什么必须先脱壳？
+因为没脱壳时，main 逻辑/字符串/代码结构都被压缩重排了，你在反编译器里看到的会很“假”，很难跟踪。</p></blockquote>
+<hr>
+<h2 id="3-在-ghidraida-里快速定位-main-和输入点">3. 在 Ghidra/IDA 里快速定位 main 和输入点
+</h2><p>新手最容易迷路，所以推荐你用“字符串定位法”：</p>
 <ol>
-<li><strong>计算 A 的值</strong>: 执行 <code>clazz.getMethod(&quot;exec&quot;, String.class)</code>。
+<li>打开 Ghidra / IDA</li>
+<li>搜索字符串（Strings window）：
 <ul>
-<li>这本身又是一个方法调用 (<code>getMethod</code>)，JVM 会先计算它的参数（<code>&quot;exec&quot;</code> 和 <code>String.class</code>），然后执行 <code>getMethod</code>，返回一个 <code>Method</code> 对象（代表 <code>exec</code> 方法）。现在 <code>A</code> 的值确定了。</li>
+<li>找输入提示（比如 <code>input</code>、<code>%48c</code>、<code>Try again</code>、<code>Good</code>）</li>
 </ul>
 </li>
-<li><strong>计算 B 的值</strong>: 执行 <code>clazz.getMethod(&quot;getRuntime&quot;).invoke(clazz)</code>。
-<ul>
-<li>这是一个链式调用，我们可以把它拆成 <code>C.invoke(clazz)</code>，其中 <code>C</code> 是 <code>clazz.getMethod(&quot;getRuntime&quot;)</code> 的结果。</li>
-<li>根据规则，要执行 <code>C.invoke(...)</code>，必须先计算 <code>C</code> 的值。</li>
-<li><strong>计算 C 的值</strong>: 执行 <code>clazz.getMethod(&quot;getRuntime&quot;)</code>，返回一个 <code>Method</code> 对象（代表 <code>getRuntime</code> 方法）。现在 <code>C</code> 的值确定了。</li>
-<li><strong>执行 <code>C.invoke(clazz)</code></strong>: 现在参数都齐了，可以执行 <code>invoke</code> 方法了。这会调用 <code>Runtime.getRuntime()</code>，返回一个 <code>Runtime</code> 实例。现在 <code>B</code> 的值也确定了。</li>
-</ul>
-</li>
-<li><strong>执行 <code>A.invoke(B, &quot;calc.exe&quot;)</code></strong>:
-<ul>
-<li>现在，<code>invoke</code> 方法的所有参数（<code>B</code> 和 <code>&quot;calc.exe&quot;</code>）都计算完毕。</li>
-<li>JVM 终于可以执行 <code>A</code> 所代表的 <code>exec</code> 方法的 <code>invoke</code> 调用了，这会调用 <code>runtimeInstance.exec(&quot;calc.exe&quot;)</code>。</li>
-</ul>
-</li>
+<li>对该字符串点 <strong>Xref</strong>（交叉引用）跳到使用该字符串的位置</li>
 </ol>
-<p>原因是在Java中，<strong>方法调用的参数，总是在方法本身执行之前被计算</strong>。</p>
-<p>所以上面的代码展开是这样的：</p>
+<p>一般你会很快落到 main 附近，看到类似：</p>
+<ul>
+<li><code>printf(&quot;...input %48c&gt;&quot;)</code></li>
+<li><code>scanf(&quot;%48c&quot;, buf)</code> 或 <code>read(0, buf, 48)</code></li>
+</ul>
+<p>这一步你就拿到了：</p>
+<ul>
+<li>输入长度</li>
+<li>输入缓冲区地址/变量</li>
+<li>成功/失败输出位置</li>
+</ul>
+<hr>
+<h2 id="4-发现关键点unicorn-模拟器调用链">4. 发现“关键点”：Unicorn 模拟器调用链
+</h2><p>这种题最关键的特征是，你会在 main 附近看到一堆函数调用名字很像：</p>
+<ul>
+<li><code>uc_open</code></li>
+<li><code>uc_mem_map</code></li>
+<li><code>uc_mem_write</code></li>
+<li><code>uc_reg_write</code></li>
+<li><code>uc_emu_start</code></li>
+<li><code>uc_reg_read</code></li>
+<li><code>uc_close</code></li>
+</ul>
+<p>只要看到这些，几乎可以确定：</p>
+<p>✅ <strong>真正的校验逻辑不是 x86_64 指令，而是在某段 bytes 里，用 Unicorn 模拟某个架构执行。</strong></p>
+<p>你接下来要做的是把下面这些信息从 main 里“抄下来”：</p>
+<h3 id="41-它模拟的是什么架构">4.1 它模拟的是什么架构？
+</h3><p>在 <code>uc_open(arch, mode, &amp;handle)</code> 里就能看见：</p>
+<ul>
+<li><code>UC_ARCH_RISCV</code> / <code>UC_ARCH_ARM</code> / <code>UC_ARCH_MIPS</code> 等</li>
+<li><code>UC_MODE_RISCV64</code> / <code>UC_MODE_ARM</code> / <code>UC_MODE_64</code> 等</li>
+</ul>
+<h3 id="42-它把模拟代码写到哪里了">4.2 它把“模拟代码”写到哪里了？
+</h3><p>你会看到类似：</p>
+<ul>
+<li><code>uc_mem_map(0x0, 0x1000, perms)</code></li>
+<li><code>uc_mem_write(0x0, code_blob, code_len)</code></li>
+</ul>
+<p>这说明：</p>
+<ul>
+<li>模拟执行的“代码段”从地址 <code>0x0</code> 开始</li>
+<li><code>code_len</code> 可能是 0x296 这种固定长度</li>
+</ul>
+<h3 id="43-输入数据放在模拟器哪段内存">4.3 输入数据放在模拟器哪段内存？
+</h3><p>一般会有：</p>
+<ul>
+<li><code>uc_mem_map(0x10000000, 0x1000, perms)</code></li>
+<li><code>uc_mem_write(0x10000000, input, 48)</code></li>
+<li><code>uc_reg_write(A0, 0x10000000)</code></li>
+</ul>
+<p>这说明：</p>
+<ul>
+<li>模拟代码把 <code>A0</code> 当作输入指针（RISC-V 的 a0 是第一个参数寄存器）</li>
+<li>输入在模拟内存 <code>0x10000000</code></li>
+</ul>
+<h3 id="44-它还有没有第二个参数常量字符串">4.4 它还有没有第二个参数/常量字符串？
+</h3><p>常见还有：</p>
+<ul>
+<li><code>uc_mem_write(0x10001000, &quot;xxx...&quot;, 32)</code></li>
+<li><code>uc_reg_write(A1, 0x10001000)</code></li>
+</ul>
+<p>这说明模拟代码会用常量串参与生成 key/seed。</p>
+<h3 id="45-成功失败怎么回传">4.5 成功/失败怎么回传？
+</h3><p>你会看到类似：</p>
+<ul>
+<li><code>uc_emu_start(start=0, end=code_len, ...)</code></li>
+<li><code>uc_reg_read(A0, &amp;ret)</code></li>
+<li><code>if (ret) success else fail</code></li>
+</ul>
+<p>✅ 这就非常清晰了：<strong>模拟代码返回值放在 a0</strong>。
+（RISC-V 调用约定：a0 既是第一个参数，也通常用于返回值）</p>
+<hr>
+<h2 id="5-真正逆向从这里开始把那段risc-v-小代码提出来">5. 真正逆向从这里开始：把那段“RISC-V 小代码”提出来
+</h2><p>你要做两件事：</p>
+<h3 id="51-提取-code-blobbytes">5.1 提取 code blob（bytes）
+</h3><p>你有两种简单办法：</p>
+<p><strong>办法 A：在 Ghidra/IDA 里直接导出</strong></p>
+<ul>
+<li>找到 <code>uc_mem_write(0x0, &lt;指针&gt;, code_len)</code> 的 <code>&lt;指针&gt;</code></li>
+<li>跳到该地址，通常在 <code>.rodata</code> 或某个全局数组里</li>
+<li>选中 <code>code_len</code> 字节，导出为 <code>rv.bin</code></li>
+</ul>
+<p><strong>办法 B：用 gdb 在运行时 dump（对新手也很友好）</strong>
+在 <code>uc_mem_write</code> 前下断点，查看它第二个参数指向的内存，dump 出来。</p>
+<blockquote>
+<p>这一步的意义：
+你从“反编译 C”切换到“反汇编另一种架构”，题目核心就在这段 <code>rv.bin</code> 里。</p></blockquote>
+<hr>
+<h2 id="6-反汇编-risc-v或目标架构代码让它变成你能读懂的逻辑">6. 反汇编 RISC-V（或目标架构）代码，让它变成你能读懂的逻辑
+</h2><p>如果是 RISC-V 64，你可以用：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">riscv64-linux-gnu-objdump -D -b binary -m riscv:rv64 rv.bin &gt; rv.asm
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>（不同系统工具链名字可能不一样，关键是 <code>objdump</code> 能按 riscv binary 解）</p>
+<p>然后你重点看三块：</p>
+<ol>
+<li><strong>输入处理循环</strong>：通常会从 a0 指向的 buffer 读 48 字节</li>
+<li><strong>key/seed 生成</strong>：可能会用 a1 指向的常量字符串做 hash/seed</li>
+<li><strong>比较常量</strong>：最终一定会有一段 <code>if (computed != expected) fail</code> 的逻辑</li>
+</ol>
+<hr>
+<h2 id="7-新手最推荐的解法不用完全看懂汇编也能把-flag-反推出来">7. 新手最推荐的解法：不用完全看懂汇编，也能把 flag 反推出来
+</h2><p>你前面描述的这种结构（XOR/流加密/比较常量）通常具备一个特性：</p>
+<blockquote>
+<p>如果校验过程是
+<code>out[i] = in[i] XOR keystream[i]</code>
+并拿 <code>out</code> 去跟 <code>expected</code> 比较
+那么：
+<strong>in = expected XOR keystream</strong></p></blockquote>
+<p>所以你只需要搞到两样东西：</p>
+<ul>
+<li><code>expected</code>：比较用的 48 字节常量</li>
+<li><code>keystream</code>：程序生成的 48 字节密钥流</li>
+</ul>
+<h3 id="71-expected-怎么拿">7.1 expected 怎么拿？
+</h3><p>两种可能：</p>
+<ul>
+<li>常量以“表”的形式存在（48 字节或 12 个 32-bit word）</li>
+<li>常量被拆成若干 <code>lui/addi</code> / <code>li</code> 拼出来</li>
+</ul>
+<p>你可以：</p>
+<ul>
+<li>在汇编里找到“逐字比较”的地方，逆着往上找常量来源</li>
+<li>或者更简单：<strong>写 Unicorn hook</strong>，在比较点把 <code>expected</code> 读出来（更适合不爱看汇编的人）</li>
+</ul>
+<h3 id="72-keystream-怎么拿超实用技巧全-0-输入">7.2 keystream 怎么拿（超实用技巧：全 0 输入）
+</h3><p>如果 <code>out = in XOR keystream</code>，那么当你让 <code>in = 0</code>：</p>
+<ul>
+<li><code>out = 0 XOR keystream = keystream</code></li>
+</ul>
+<p>也就是说：
+✅ <strong>用全 0 的 48 字节输入跑一遍模拟器，然后读取被变换后的 buffer，就能直接得到 keystream。</strong></p>
+<p>然后你再用 <code>expected XOR keystream</code> 就能恢复正确输入。</p>
+<blockquote>
+<p>这个技巧对新手特别友好：
+你不用完全理解 keystream 怎么生成的，只要能“跑起来并读内存”就够了。</p></blockquote>
+<hr>
+<h2 id="8-用-python--unicorn-复现模拟执行新手可照抄的骨架">8. 用 Python + Unicorn 复现模拟执行（新手可照抄的骨架）
+</h2><p>下面是“骨架级”代码，你需要自己把：</p>
+<ul>
+<li><code>CODE_LEN</code></li>
+<li><code>CONST_STR</code></li>
+<li><code>expected</code> 的读取方式（或你自己从汇编/IDA 抄出 expected）</li>
+</ul>
+<p>对齐成你题目里的值。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre tabindex="0" class="chroma"><code><span class="lnt"> 1
@@ -854,200 +582,122 @@
 </span><span class="lnt">11
 </span><span class="lnt">12
 </span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.reflect.Method</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Method</span><span class="w"> </span><span class="n">getRuntimeMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;getRuntime&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Object</span><span class="w"> </span><span class="n">runtime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getRuntimeMethod</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="kc">null</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Method</span><span class="w"> </span><span class="n">execMethod</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;exec&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">execMethod</span><span class="p">.</span><span class="na">invoke</span><span class="p">(</span><span class="n">runtime</span><span class="p">,</span><span class="w"> </span><span class="s">&#34;calc.exe&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">unicorn</span> <span class="n">import</span> <span class="n">Uc</span><span class="p">,</span> <span class="n">UC_ARCH_RISCV</span><span class="p">,</span> <span class="n">UC_MODE_RISCV64</span><span class="p">,</span> <span class="n">UC_PROT_ALL</span>
+</span></span><span class="line"><span class="cl"><span class="n">from</span> <span class="n">unicorn</span><span class="o">.</span><span class="n">riscv_const</span> <span class="n">import</span> <span class="n">UC_RISCV_REG_A0</span><span class="p">,</span> <span class="n">UC_RISCV_REG_A1</span><span class="p">,</span> <span class="n">UC_RISCV_REG_SP</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">CODE_ADDR</span> <span class="o">=</span> <span class="mh">0x0</span>
+</span></span><span class="line"><span class="cl"><span class="n">CODE_LEN</span>  <span class="o">=</span> <span class="mh">0x296</span>            <span class="c1"># 以你在 main 里看到的为准</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">IN_ADDR</span>   <span class="o">=</span> <span class="mh">0x10000000</span>
+</span></span><span class="line"><span class="cl"><span class="n">IN_LEN</span>    <span class="o">=</span> <span class="mi">48</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">STR_ADDR</span>  <span class="o">=</span> <span class="mh">0x10001000</span>
+</span></span><span class="line"><span class="cl"><span class="n">CONST_STR</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;e4Y8YRXVzg2HRrCUy35CM0Txq91HzMGZ</span><span class="se">\x00</span><span class="s2">&#34;</span>  <span class="c1"># 以 main 里看到的为准</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">STACK_ADDR</span> <span class="o">=</span> <span class="mh">0x70000000</span>
+</span></span><span class="line"><span class="cl"><span class="n">STACK_SIZE</span> <span class="o">=</span> <span class="mh">0x10000</span>
+</span></span><span class="line"><span class="cl"><span class="n">SP_INIT</span>    <span class="o">=</span> <span class="n">STACK_ADDR</span> <span class="o">+</span> <span class="n">STACK_SIZE</span> <span class="o">-</span> <span class="mh">0x100</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="s2">&#34;rv.bin&#34;</span><span class="p">,</span> <span class="s2">&#34;rb&#34;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">code</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">uc</span> <span class="o">=</span> <span class="n">Uc</span><span class="p">(</span><span class="n">UC_ARCH_RISCV</span><span class="p">,</span> <span class="n">UC_MODE_RISCV64</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># map code</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">mem_map</span><span class="p">(</span><span class="n">CODE_ADDR</span><span class="p">,</span> <span class="mh">0x1000</span><span class="p">,</span> <span class="n">UC_PROT_ALL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">mem_write</span><span class="p">(</span><span class="n">CODE_ADDR</span><span class="p">,</span> <span class="n">code</span><span class="p">[:</span><span class="n">CODE_LEN</span><span class="p">])</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># map input</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">mem_map</span><span class="p">(</span><span class="n">IN_ADDR</span><span class="p">,</span> <span class="mh">0x1000</span><span class="p">,</span> <span class="n">UC_PROT_ALL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">mem_write</span><span class="p">(</span><span class="n">IN_ADDR</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&#34;</span><span class="se">\x00</span><span class="s2">&#34;</span> <span class="o">*</span> <span class="n">IN_LEN</span><span class="p">)</span>  <span class="c1"># 全0输入拿keystream</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># map const string</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">mem_map</span><span class="p">(</span><span class="n">STR_ADDR</span><span class="p">,</span> <span class="mh">0x1000</span><span class="p">,</span> <span class="n">UC_PROT_ALL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">mem_write</span><span class="p">(</span><span class="n">STR_ADDR</span><span class="p">,</span> <span class="n">CONST_STR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># map stack</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">mem_map</span><span class="p">(</span><span class="n">STACK_ADDR</span><span class="p">,</span> <span class="n">STACK_SIZE</span><span class="p">,</span> <span class="n">UC_PROT_ALL</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">reg_write</span><span class="p">(</span><span class="n">UC_RISCV_REG_SP</span><span class="p">,</span> <span class="n">SP_INIT</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># set args</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">reg_write</span><span class="p">(</span><span class="n">UC_RISCV_REG_A0</span><span class="p">,</span> <span class="n">IN_ADDR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">reg_write</span><span class="p">(</span><span class="n">UC_RISCV_REG_A1</span><span class="p">,</span> <span class="n">STR_ADDR</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># run</span>
+</span></span><span class="line"><span class="cl"><span class="n">uc</span><span class="o">.</span><span class="n">emu_start</span><span class="p">(</span><span class="n">CODE_ADDR</span><span class="p">,</span> <span class="n">CODE_ADDR</span> <span class="o">+</span> <span class="n">CODE_LEN</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># 读取变换后的输入区：这就是 keystream（在“XOR型”题里）</span>
+</span></span><span class="line"><span class="cl"><span class="n">keystream</span> <span class="o">=</span> <span class="n">uc</span><span class="o">.</span><span class="n">mem_read</span><span class="p">(</span><span class="n">IN_ADDR</span><span class="p">,</span> <span class="n">IN_LEN</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;keystream =&#34;</span><span class="p">,</span> <span class="n">keystream</span><span class="o">.</span><span class="n">hex</span><span class="p">())</span>
+</span></span></code></pre></td></tr></table>
 </div>
-</div><h4 id="非无参构造方法和私有方法的调用">非无参构造方法和私有方法的调用
-</h4><p>我们知道，我们想要调用一个类的方法执行函数，一般情况下都要获取到相应的实例对象，然后调用实例对象的方法函数</p>
-<p>上面的例子中，由于没有重载构造方法，所以我们可以直接调用默认的无参构造方法来实例化对象；或是使用了单例模式，使我们得以调用静态方法来获取实例对象。</p>
-<p>那如果一个类没有无参构造方法，也没有类似单例模式里的静态方法，我们怎样通过反射实例化该类呢？</p>
-<p>另外，如果我们想调用的方法是私有方法，要怎么调用呢？</p>
-<h6 id="非无参构造方法">非无参构造方法
-</h6><p>要解决这个问题需要使用<code>getConstructors()</code>方法，这里做一下补充：</p>
-<blockquote>
-<h2 id="javalangreflect">java.lang.reflect
-</h2><p><code>java.lang.reflect</code> 是 Java 反射机制的核心包，提供了操作类及其成员（字段、方法、构造函数等）的类和接口。通过这些 API，开发者可以在运行时动态地查询和修改类的结构。</p>
-<h3 id="1-class">1. <strong><code>Class</code> 类</strong>
-</h3><ul>
-<li>
-<p><strong>功能</strong>：表示类的对象，提供了获取类信息的方法，如字段、方法、构造函数等。</p>
-</li>
-<li>
-<p>主要方法</p>
-<p>：</p>
-<ul>
-<li><code>getFields()</code>：获取所有公共字段。</li>
-<li><code>getDeclaredFields()</code>：获取所有声明的字段，包括私有字段。</li>
-<li><code>getMethods()</code>：获取所有公共方法。</li>
-<li><code>getDeclaredMethods()</code>：获取所有声明的方法，包括私有方法。</li>
-<li><code>getConstructors()</code>：获取所有公共构造函数。</li>
-<li><code>getDeclaredConstructors()</code>：获取所有声明的构造函数，包括私有构造函数。</li>
-<li><code>getSuperclass()</code>：获取类的父类。</li>
-<li><code>getInterfaces()</code>：获取类实现的所有接口。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-field">2. <strong><code>Field</code> 类</strong>
-</h3><ul>
-<li>
-<p><strong>功能</strong>：表示类的字段（属性），提供了访问和修改字段值的方法。</p>
-</li>
-<li>
-<p>主要方法</p>
-<p>：</p>
-<ul>
-<li><code>get(Object obj)</code>：获取指定对象的字段值。</li>
-<li><code>set(Object obj, Object value)</code>：设置指定对象的字段值。</li>
-<li><code>getType()</code>：获取字段的数据类型。</li>
-<li><code>getModifiers()</code>：获取字段的修饰符（如 public、private）。</li>
-</ul>
-</li>
-</ul>
-<h3 id="3-method">3. <strong><code>Method</code> 类</strong>
-</h3><ul>
-<li>
-<p><strong>功能</strong>：表示类的方法，提供了调用方法的能力。</p>
-</li>
-<li>
-<p>主要方法</p>
-<p>：</p>
-<ul>
-<li><code>invoke(Object obj, Object... args)</code>：调用指定对象的方法。</li>
-<li><code>getReturnType()</code>：获取方法的返回类型。</li>
-<li><code>getParameterTypes()</code>：获取方法的参数类型。</li>
-<li><code>getModifiers()</code>：获取方法的修饰符（如 public、private）。</li>
-</ul>
-</li>
-</ul>
-<h3 id="4-constructor">4. <strong><code>Constructor</code> 类</strong>
-</h3><ul>
-<li>
-<p><strong>功能</strong>：表示类的构造函数，提供了创建对象的能力。</p>
-</li>
-<li>
-<p>主要方法</p>
-<p>：</p>
-<ul>
-<li><code>newInstance(Object... initargs)</code>：创建一个新实例，使用指定的构造函数参数。</li>
-<li><code>getParameterTypes()</code>：获取构造函数的参数类型。</li>
-<li><code>getModifiers()</code>：获取构造函数的修饰符（如 public、private）。</li>
-</ul>
-</li>
-</ul></blockquote>
-<p>getConstructor 接收的参数是构造函数列表类型，因为构造函数支持重载，所以只能通过参数列表来唯一确定一个构造函数。</p>
-<p>用ProcessBuilder执行命令来举例：</p>
-<p>ProcessBuilder有两个构造函数：</p>
-<ul>
-<li>public ProcessBuilder(List<String> command)</li>
-<li>public ProcessBuilder(String… command)</li>
-</ul>
-<p>我们只关注使用反射的方式来获取构造方法：</p>
-<p>调用第一个构造函数：</p>
+</div><p>接下来你拿到 <code>expected</code> 后：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Arrays</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;java.lang.ProcessBuilder&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;start&#34;</span><span class="p">).</span><span class="na">invoke</span><span class="p">(</span><span class="n">clazz</span><span class="p">.</span><span class="na">getConstructor</span><span class="p">(</span><span class="n">List</span><span class="p">.</span><span class="na">class</span><span class="p">).</span><span class="na">newInstance</span><span class="p">(</span><span class="n">Arrays</span><span class="p">.</span><span class="na">asList</span><span class="p">(</span><span class="s">&#34;calc.exe&#34;</span><span class="p">)));</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">inp = bytes([expected[i] ^ keystream[i] for i in range(48)])
+</span></span><span class="line"><span class="cl">print(inp)
+</span></span></code></pre></td></tr></table>
 </div>
-</div><p>调用第二个构造函数：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">test</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.Arrays</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.util.List</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="o">&lt;?&gt;</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;java.lang.ProcessBuilder&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;start&#34;</span><span class="p">).</span><span class="na">invoke</span><span class="p">(</span><span class="n">clazz</span><span class="p">.</span><span class="na">getConstructor</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="p">.</span><span class="na">class</span><span class="p">).</span><span class="na">newInstance</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">String</span><span class="o">[][]</span><span class="p">{{</span><span class="s">&#34;calc.exe&#34;</span><span class="p">}}));</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>想通过第二种构造函数实现RCE，这里就需要用到可变长参数了，用<code>...</code>表示参数可变，而由于编译时可变长参数其实会被编译成数组，所以String[]和String…其实没有什么差别</p>
-<h6 id="私有方法调用">私有方法调用
-</h6><p>私有方法只需要setAccessible(true)就行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="kn">package</span><span class="w"> </span><span class="nn">chapter10</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kn">import</span><span class="w"> </span><span class="nn">java.lang.reflect.Constructor</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">Java05_Reflect_test</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="w"> </span><span class="kd">throws</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="p">{</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Class</span><span class="w"> </span><span class="n">clazz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Class</span><span class="p">.</span><span class="na">forName</span><span class="p">(</span><span class="s">&#34;java.lang.Runtime&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">Constructor</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">clazz</span><span class="p">.</span><span class="na">getDeclaredConstructor</span><span class="p">();</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">m</span><span class="p">.</span><span class="na">setAccessible</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="n">clazz</span><span class="p">.</span><span class="na">getMethod</span><span class="p">(</span><span class="s">&#34;exec&#34;</span><span class="p">,</span><span class="w"> </span><span class="n">String</span><span class="p">.</span><span class="na">class</span><span class="p">).</span><span class="na">invoke</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="na">newInstance</span><span class="p">(),</span><span class="w"> </span><span class="s">&#34;calc.exe&#34;</span><span class="p">);</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>不过这个在Java9及以上版本会报错</p>
+</div><p>如果 <code>inp</code> 是可打印字符，你就能直接看到输入字符串；如果有不可打印，也可以用 <code>repr</code> 或 base64 输出。</p>
+<hr>
+<h2 id="9-你最终要明白的题目套路总结这题的核心思想">9. 你最终要明白的“题目套路总结”（这题的核心思想）
+</h2><p>这类题想考你 3 件事：</p>
+<ol>
+<li><strong>识别壳/脱壳</strong>（UPX 是入门必会）</li>
+<li><strong>识别“模拟执行”</strong>（看到 <code>uc_*</code> 就要警觉：校验不在本机指令）</li>
+<li><strong>从“比较常量”反推输入</strong>（XOR/流加密/变换 → 可逆 → 求解输入）</li>
+</ol>
+<p>新手只要抓住这条主线，不需要你一开始就能读懂所有汇编，也能做出来。</p>
+<hr>
+<h2 id="如果你愿意我可以把你的这道题按你文件逐行讲透">如果你愿意，我可以把“你的这道题”按你文件逐行讲透
+</h2><p>因为我现在拿不到你那个 <code>vvvmmm</code> 文件内容，没法把 <code>expected</code> 常量、比较位置、循环结构给你一一标出来。
+你重新上传一下二进制（或把脱壳后的文件传上来），我可以：</p>
+<ul>
+<li>截图级别标注：main 里每个 <code>uc_mem_map / uc_reg_write</code> 对应什么意思</li>
+<li>把 RISC-V 汇编翻译成伪代码（哪一步生成 keystream、哪一步比较 expected）</li>
+<li>给你一份“一键跑出正确 48 字节输入”的 Python 脚本（不需要你看汇编）</li>
+</ul>
+<p>你想用 <strong>Ghidra</strong> 还是 <strong>IDA</strong> 来跟我一起看？我可以按你用的工具来讲。</p>
 
 </section>
 
@@ -1088,7 +738,7 @@
         
             2024 - 
         
-        2025 Oight
+        2026 Oight
     </section>
     
     <section class="powerby">
@@ -1184,7 +834,7 @@
                 src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
                 
                 >
-            </script><script type="text/javascript" src="/ts/main.a01d1a6ca638485d3c7e5f3c89848ff013552088552a41f03dcaaaa7ff1b77bc.js" defer></script>
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
 <script>
     (function () {
         const customFont = document.createElement('link');
