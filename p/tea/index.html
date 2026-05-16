@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/tea/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="Tea">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="Tea">
 <meta property='og:description' content="逆向算法复习第二弹：Tea系列算法\nTea算法\r“TEA” 的全称为”Tiny Encryption Algorithm” 由于实现简单，加密安全（QQ和微信的一些协议中就是使用的Tea加密），深受ctf出题人的喜爱。因此tea算法成为ctf REer的一种必学算法。TEA算法使用64位的明文分组和128位的密钥，它使用Feistel分组加密框架，需要进行 64 轮迭代。该算法使用了一个神秘常数δ作为倍数，它来源于黄金比率2654435769 （0x9E3779B9），以保证每一轮加密都不相同。\n">
 <meta property='og:url' content='https://Oight.github.io/p/tea/'>
 <meta property='og:site_name' content='Oight'>
@@ -378,23 +378,7 @@
 <h3 id="tea算法实现">Tea算法实现：
 </h3><h4 id="加密">加密
 </h4><p>加密代码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
 </span></span><span class="line"><span class="cl">void encrypt(uint32_t* v,uint32_t* key){
 </span></span><span class="line"><span class="cl">uint32_t v0=v[0],v1=v[1],sum=0,i;
 </span></span><span class="line"><span class="cl">uint32_t delta=0x9e3779b9;
@@ -406,26 +390,9 @@
 </span></span><span class="line"><span class="cl">}
 </span></span><span class="line"><span class="cl">v[0]=v0;v[1]=v1;
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="解密">解密
+</span></span></code></pre></div><h4 id="解密">解密
 </h4><p>加密过程很清晰，那么解密过程我们只要把它倒过来写就好</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void decrypt(uint32_t* v,uint32_t* key){
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">void decrypt(uint32_t* v,uint32_t* key){
 </span></span><span class="line"><span class="cl">uint32_t v0=v[0],v1=v[1],sum=0xC6EF3720,i;
 </span></span><span class="line"><span class="cl">uint32_t delta=0x9e3779b9;
 </span></span><span class="line"><span class="cl">uint32_t k0=key[0],k1=key[1],k2=key[2],k3=key[3];
@@ -436,81 +403,16 @@
 </span></span><span class="line"><span class="cl">}
 </span></span><span class="line"><span class="cl">v[0]=v0;v[1]=v1;
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>不难看出其实Tea算法有很鲜明的特征：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">可能存在针对64bit以及128bit数字的操作（输入的msg和key）
+</span></span></code></pre></div><p>不难看出其实Tea算法有很鲜明的特征：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">可能存在针对64bit以及128bit数字的操作（输入的msg和key）
 </span></span><span class="line"><span class="cl">存在先进行位移，然后异或的类似操作（(z&gt;&gt;5^y&lt;&lt;2)这类混合变换）
 </span></span><span class="line"><span class="cl">前面一个复杂的混合变换的结果可能会叠加到另一个值上，两者相互叠加（Feistel 结构）
 </span></span><span class="line"><span class="cl">获取密钥的时候，会使用某一个常量值作为下标（key[(sum&gt;&gt;11) &amp; 3]）
 </span></span><span class="line"><span class="cl">会在算法开始定义一个delta，并且这个值不断的参与算法，但是从来不会受到输入的影响（delta数值，根据见过的题目中很少会直接使用0x9e3779b9）
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>即32或64轮加密，以及有一个关键的delta值，难点主要是如何从出题人魔改过的代码中找到v0，v1，delta以及加密过程。</p>
+</span></span></code></pre></div><p>即32或64轮加密，以及有一个关键的delta值，难点主要是如何从出题人魔改过的代码中找到v0，v1，delta以及加密过程。</p>
 <p>解密脚本可以参考知识库中现有的脚本，改改加密方式，delta值这些就好</p>
 <p>脚本：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">c</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">c</span>
 </span></span><span class="line"><span class="cl"><span class="c1">//tea
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
@@ -558,57 +460,10 @@
 </span></span><span class="line"><span class="cl">    <span class="nf">free</span><span class="p">(</span><span class="n">decryptedString</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="xtea算法">xTea算法
+</span></span></code></pre></div><h1 id="xtea算法">xTea算法
 </h1><p>TEA 算法发布不久，被发现存在缺陷，作为回应，设计者提出了一个 TEA 的升级版本——XTEA（有时也被称为“tean”）。XTEA 跟 TEA  使用了相同的简单运算，但它采用了截然不同的顺序，为了阻止密钥表攻击，四个子密钥（在加密过程中，原 128 位的密钥被拆分为 4 个 32  位的子密钥）采用了一种不太正规的方式进行混合。总的来说 xTEA就是在TEA算法基础上加了一些内容，而加解密过程基本没变。</p>
 <p>加解密：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">#include &lt;stdio.h&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">#include &lt;stdio.h&gt;</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#include &lt;stdint.h&gt;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="o">/*</span> <span class="n">take</span> <span class="mi">64</span> <span class="n">bits</span> <span class="n">of</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="mi">128</span> <span class="n">bits</span> <span class="n">of</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">key</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">*/</span>
@@ -649,46 +504,11 @@
 </span></span><span class="line"><span class="cl">    <span class="n">printf</span><span class="p">(</span><span class="s2">&#34;解密后的数据：</span><span class="si">%u</span><span class="s2"> </span><span class="si">%u</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">,</span><span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
 </span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="xxtea算法">xxTea算法
+</span></span></code></pre></div><h1 id="xxtea算法">xxTea算法
 </h1><p>相比TEA,xTEA算法，xxTEA算法的优势是原字符串长度可以不是4的倍数了</p>
 <h4 id="加密过程">加密过程：
 </h4><p>加密：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">#include &lt;stdio.h&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">#include &lt;stdio.h&gt;</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#include &lt;stdint.h&gt;</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#define DELTA 0x9e3779b9</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#define MX (((z&gt;&gt;5^y&lt;&lt;2)+(y&gt;&gt;3^z&lt;&lt;4))^((sum^y)+(key[(p&amp;3)^e]^z)))</span>
@@ -717,35 +537,9 @@
 </span></span><span class="line"><span class="cl">        <span class="k">while</span><span class="p">(</span><span class="o">--</span><span class="n">rounds</span><span class="p">);</span> 
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>     
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="解密过程">解密过程：
+</span></span></code></pre></div><h4 id="解密过程">解密过程：
 </h4><p>解密：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">#include &lt;stdio.h&gt;</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1">#include &lt;stdio.h&gt;</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#include &lt;stdint.h&gt;</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#define DELTA 0x9e3779b9</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#define MX (((z&gt;&gt;5^y&lt;&lt;2)+(y&gt;&gt;3^z&lt;&lt;4))^((sum^y)+(key[(p&amp;3)^e]^z)))</span>
@@ -765,143 +559,14 @@
 </span></span><span class="line"><span class="cl">        <span class="n">sum</span> <span class="o">-=</span> <span class="n">DELTA</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="o">--</span><span class="n">rounds</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>xxTea算法的特征：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1. key 128 bit
+</span></span></code></pre></div><p>xxTea算法的特征：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1. key 128 bit
 </span></span><span class="line"><span class="cl">2. enc =&gt; 32*i(i=&gt;2)
 </span></span><span class="line"><span class="cl">3. 特征量`0x9e3779b9`
 </span></span><span class="line"><span class="cl">4. 两层循环，通常记住最外层的循环为rounds=6+52/n
 </span></span><span class="line"><span class="cl">5. 5,2,3,4 左右移操作  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>解密脚本：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">  1
-</span><span class="lnt">  2
-</span><span class="lnt">  3
-</span><span class="lnt">  4
-</span><span class="lnt">  5
-</span><span class="lnt">  6
-</span><span class="lnt">  7
-</span><span class="lnt">  8
-</span><span class="lnt">  9
-</span><span class="lnt"> 10
-</span><span class="lnt"> 11
-</span><span class="lnt"> 12
-</span><span class="lnt"> 13
-</span><span class="lnt"> 14
-</span><span class="lnt"> 15
-</span><span class="lnt"> 16
-</span><span class="lnt"> 17
-</span><span class="lnt"> 18
-</span><span class="lnt"> 19
-</span><span class="lnt"> 20
-</span><span class="lnt"> 21
-</span><span class="lnt"> 22
-</span><span class="lnt"> 23
-</span><span class="lnt"> 24
-</span><span class="lnt"> 25
-</span><span class="lnt"> 26
-</span><span class="lnt"> 27
-</span><span class="lnt"> 28
-</span><span class="lnt"> 29
-</span><span class="lnt"> 30
-</span><span class="lnt"> 31
-</span><span class="lnt"> 32
-</span><span class="lnt"> 33
-</span><span class="lnt"> 34
-</span><span class="lnt"> 35
-</span><span class="lnt"> 36
-</span><span class="lnt"> 37
-</span><span class="lnt"> 38
-</span><span class="lnt"> 39
-</span><span class="lnt"> 40
-</span><span class="lnt"> 41
-</span><span class="lnt"> 42
-</span><span class="lnt"> 43
-</span><span class="lnt"> 44
-</span><span class="lnt"> 45
-</span><span class="lnt"> 46
-</span><span class="lnt"> 47
-</span><span class="lnt"> 48
-</span><span class="lnt"> 49
-</span><span class="lnt"> 50
-</span><span class="lnt"> 51
-</span><span class="lnt"> 52
-</span><span class="lnt"> 53
-</span><span class="lnt"> 54
-</span><span class="lnt"> 55
-</span><span class="lnt"> 56
-</span><span class="lnt"> 57
-</span><span class="lnt"> 58
-</span><span class="lnt"> 59
-</span><span class="lnt"> 60
-</span><span class="lnt"> 61
-</span><span class="lnt"> 62
-</span><span class="lnt"> 63
-</span><span class="lnt"> 64
-</span><span class="lnt"> 65
-</span><span class="lnt"> 66
-</span><span class="lnt"> 67
-</span><span class="lnt"> 68
-</span><span class="lnt"> 69
-</span><span class="lnt"> 70
-</span><span class="lnt"> 71
-</span><span class="lnt"> 72
-</span><span class="lnt"> 73
-</span><span class="lnt"> 74
-</span><span class="lnt"> 75
-</span><span class="lnt"> 76
-</span><span class="lnt"> 77
-</span><span class="lnt"> 78
-</span><span class="lnt"> 79
-</span><span class="lnt"> 80
-</span><span class="lnt"> 81
-</span><span class="lnt"> 82
-</span><span class="lnt"> 83
-</span><span class="lnt"> 84
-</span><span class="lnt"> 85
-</span><span class="lnt"> 86
-</span><span class="lnt"> 87
-</span><span class="lnt"> 88
-</span><span class="lnt"> 89
-</span><span class="lnt"> 90
-</span><span class="lnt"> 91
-</span><span class="lnt"> 92
-</span><span class="lnt"> 93
-</span><span class="lnt"> 94
-</span><span class="lnt"> 95
-</span><span class="lnt"> 96
-</span><span class="lnt"> 97
-</span><span class="lnt"> 98
-</span><span class="lnt"> 99
-</span><span class="lnt">100
-</span><span class="lnt">101
-</span><span class="lnt">102
-</span><span class="lnt">103
-</span><span class="lnt">104
-</span><span class="lnt">105
-</span><span class="lnt">106
-</span><span class="lnt">107
-</span><span class="lnt">108
-</span><span class="lnt">109
-</span><span class="lnt">110
-</span><span class="lnt">111
-</span><span class="lnt">112
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">c</span>
+</span></span></code></pre></div><p>解密脚本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">c</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#include &lt;stdio.h&gt;</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#include &lt;stdint.h&gt;</span>
 </span></span><span class="line"><span class="cl"><span class="c1">#define DELTA 0x9e3779b9</span>
@@ -1013,9 +678,7 @@
 </span></span><span class="line"><span class="cl">        <span class="n">sum</span> <span class="o">-=</span> <span class="n">delta</span><span class="p">;</span>           <span class="o">//</span> <span class="err">更新</span><span class="n">sum</span>
 </span></span><span class="line"><span class="cl">    <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="tea系列算法特征总结">Tea系列算法特征总结：
+</span></span></code></pre></div><h1 id="tea系列算法特征总结">Tea系列算法特征总结：
 </h1><p>根据上文对tea算法的源码分析，我们得出TEA算法的如下特征：</p>
 <blockquote>
 <p>key 128 bit {2,2,3,4}
@@ -1240,6 +903,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

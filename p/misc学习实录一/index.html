@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%B8%80/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="MISC学习实录（一）">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="MISC学习实录（一）">
 <meta property='og:description' content="MISC学习实录（一）\r因为在MiGuo的MISC课上睡大觉，所以被MiGuo惩罚来学MISC ε(┬┬﹏┬┬)3\n图片隐写\r1.RGB\r把图片用PS打开提取RGB然后转16进制拿flag（MISC就是史）\n">
 <meta property='og:url' content='https://Oight.github.io/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%B8%80/'>
 <meta property='og:site_name' content='Oight'>
@@ -407,15 +407,8 @@
 </h3><p>这个不会</p>
 <h3 id="6idat">6.IDAT
 </h3><p>一个 PNG 文件格式为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">文件头（89 50 4E 47 0D 0A 1A 0A） + 数据块 + 数据块 + 数据块…… + 文件尾（00 00 00 00 49 45 4E 44 AE 42 60 82）
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>PNG 定义了两种类型的<strong>数据块</strong>，一种是称为<strong>关键数据块</strong>，这是标准的数据块，另一种叫做<strong>辅助数据块</strong>，这是可选的数据块。关键数据块定义了4个标准数据块，每个 PNG 文件都必须包含它们。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">文件头（89 50 4E 47 0D 0A 1A 0A） + 数据块 + 数据块 + 数据块…… + 文件尾（00 00 00 00 49 45 4E 44 AE 42 60 82）
+</span></span></code></pre></div><p>PNG 定义了两种类型的<strong>数据块</strong>，一种是称为<strong>关键数据块</strong>，这是标准的数据块，另一种叫做<strong>辅助数据块</strong>，这是可选的数据块。关键数据块定义了4个标准数据块，每个 PNG 文件都必须包含它们。</p>
 <p><strong>IHDR</strong>（文件头数据块）</p>
 <p>第一块是<strong>文件头数据块</strong>（<strong>IHDR</strong>），它由第11——32字节组成（从0开始），包含有 PNG 文件中存储的图像数据的基本信息，数据从第 16字节开始，有13个字节，其前8字节分别用4个字节规定了图片的宽和高（十六进制，以像素为单位）。</p>
 <p><strong>IDAT</strong>（图像数据块）</p>
@@ -423,87 +416,13 @@
 <p><strong>IDAT 隐写</strong></p>
 <p>IDAT  块只有当上一个块充满（正常length最大65524）时，才会继续一个新的块。程序读取图像的时候也会在<del>第一个未满的块停止</del>（查了下W3C标准，其实是PNG图片在压缩的时候会在最后一个块的标记位标明这是最后一个数据块）。所以如果某一块没有满但后面却还有 IDAT 块则说明后面的块是“假”的。</p>
 <p>我们可以用 <code>pngcheck -v [文件名]</code> 去查看PNG文件数据块信息，然后利用 <strong>python zlib</strong> 解压多余IDAT块的内容，此时注意剔除<strong>长度</strong>、<strong>数据块类型</strong>及末尾的<strong>CRC校验值</strong>。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">zlib</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">zlib</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">binascii</span>
 </span></span><span class="line"><span class="cl"><span class="n">IDAT</span> <span class="o">=</span> <span class="s2">&#34; &#34;</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;hex&#39;</span><span class="p">)</span>    <span class="c1">#双引号中填IDAT数据</span>
 </span></span><span class="line"><span class="cl"><span class="n">result</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">zlib</span><span class="o">.</span><span class="n">decompress</span><span class="p">(</span><span class="n">IDAT</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>将图片放进kali中，使用binwalk 分离，得到15AAFB，发现是625个二进制，每二十五为一行拆开，然后将1转为黑块，0转为白块，得到一个二维码，扫描得到flag</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 1. 导入图像处理所需库（需先安装 Pillow：pip install pillow）</span>
+</span></span></code></pre></div><p>将图片放进kali中，使用binwalk 分离，得到15AAFB，发现是625个二进制，每二十五为一行拆开，然后将1转为黑块，0转为白块，得到一个二维码，扫描得到flag</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># 1. 导入图像处理所需库（需先安装 Pillow：pip install pillow）</span>
 </span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span><span class="p">,</span> <span class="n">ImageDraw</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 2. 定义您提供的 01 原始数据（每行对应图像的一行，共 25 行）</span>
@@ -562,9 +481,7 @@
 </span></span><span class="line"><span class="cl"><span class="n">image</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>  <span class="c1"># 自动打开图像查看（部分系统可能需要手动打开文件）</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s2">&#34;图像已生成并保存为：binary_black_white.png&#34;</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div>
+</span></span></code></pre></div>
 </section>
 
 
@@ -734,6 +651,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

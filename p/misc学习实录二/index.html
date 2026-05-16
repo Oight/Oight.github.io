@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%BA%8C/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="MISC学习实录（二）">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="MISC学习实录（二）">
 <meta property='og:description' content="MISC学习实录（二）\r因为在MiGuo的MISC课上睡大觉，所以被MiGuo惩罚来学MISC ε(┬┬﹏┬┬)3\nUSB流量分析\rUSB流量主要是鼠标流量和键盘流量\n鼠标流量\rUSB协议鼠标数据部分在Leftover Capture Data域中，数据长度为四个字节。 其中， 第一个字节代表按键，当取0x00时，代表没有按键，为0x01时，代表按左按键，为0x02时，代表当前按键为右键； 第二个字节可以成是一个signed byte类型，其最高位为符号位，当这个值为正时，代表鼠标水平右移动多少像素，为负时，代表水平左移多少像素； 第三个字节与第二个字节类似，代表垂直上下移动的偏移。\n">
 <meta property='og:url' content='https://Oight.github.io/p/misc%E5%AD%A6%E4%B9%A0%E5%AE%9E%E5%BD%95%E4%BA%8C/'>
 <meta property='og:site_name' content='Oight'>
@@ -361,49 +361,11 @@
 <p>USB使用HID协议规定键盘映射，具体映射表我没找到，具体可以翻翻HID协议</p>
 <p>1和2两道题的思路是一样的</p>
 <p>把pcap文件扔进kali，然后用tshark将 <code>leftover capture data</code> 提取出来：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tshark -r example.pcap -T fields -e usb.capdata //如果想导入usbdata.txt文件中，后面加上参数：&gt;usbdata.txt
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后看特质，长的是键盘流量，短的是鼠标流量</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tshark -r example.pcap -T fields -e usb.capdata //如果想导入usbdata.txt文件中，后面加上参数：&gt;usbdata.txt
+</span></span></code></pre></div><p>然后看特质，长的是键盘流量，短的是鼠标流量</p>
 <p>最后用脚本解析</p>
 <p>键盘转化脚本：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">mappings</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0x04</span><span class="p">:</span><span class="s2">&#34;A&#34;</span><span class="p">,</span>  <span class="mh">0x05</span><span class="p">:</span><span class="s2">&#34;B&#34;</span><span class="p">,</span>  <span class="mh">0x06</span><span class="p">:</span><span class="s2">&#34;C&#34;</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">:</span><span class="s2">&#34;D&#34;</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">:</span><span class="s2">&#34;E&#34;</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">:</span><span class="s2">&#34;F&#34;</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">:</span><span class="s2">&#34;G&#34;</span><span class="p">,</span>  <span class="mh">0x0B</span><span class="p">:</span><span class="s2">&#34;H&#34;</span><span class="p">,</span> <span class="mh">0x0C</span><span class="p">:</span><span class="s2">&#34;I&#34;</span><span class="p">,</span>  <span class="mh">0x0D</span><span class="p">:</span><span class="s2">&#34;J&#34;</span><span class="p">,</span> <span class="mh">0x0E</span><span class="p">:</span><span class="s2">&#34;K&#34;</span><span class="p">,</span> <span class="mh">0x0F</span><span class="p">:</span><span class="s2">&#34;L&#34;</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">:</span><span class="s2">&#34;M&#34;</span><span class="p">,</span> <span class="mh">0x11</span><span class="p">:</span><span class="s2">&#34;N&#34;</span><span class="p">,</span><span class="mh">0x12</span><span class="p">:</span><span class="s2">&#34;O&#34;</span><span class="p">,</span>  <span class="mh">0x13</span><span class="p">:</span><span class="s2">&#34;P&#34;</span><span class="p">,</span> <span class="mh">0x14</span><span class="p">:</span><span class="s2">&#34;Q&#34;</span><span class="p">,</span> <span class="mh">0x15</span><span class="p">:</span><span class="s2">&#34;R&#34;</span><span class="p">,</span> <span class="mh">0x16</span><span class="p">:</span><span class="s2">&#34;S&#34;</span><span class="p">,</span> <span class="mh">0x17</span><span class="p">:</span><span class="s2">&#34;T&#34;</span><span class="p">,</span> <span class="mh">0x18</span><span class="p">:</span><span class="s2">&#34;U&#34;</span><span class="p">,</span><span class="mh">0x19</span><span class="p">:</span><span class="s2">&#34;V&#34;</span><span class="p">,</span> <span class="mh">0x1A</span><span class="p">:</span><span class="s2">&#34;W&#34;</span><span class="p">,</span> <span class="mh">0x1B</span><span class="p">:</span><span class="s2">&#34;X&#34;</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">:</span><span class="s2">&#34;Y&#34;</span><span class="p">,</span> <span class="mh">0x1D</span><span class="p">:</span><span class="s2">&#34;Z&#34;</span><span class="p">,</span> <span class="mh">0x1E</span><span class="p">:</span><span class="s2">&#34;1&#34;</span><span class="p">,</span> <span class="mh">0x1F</span><span class="p">:</span><span class="s2">&#34;2&#34;</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">:</span><span class="s2">&#34;3&#34;</span><span class="p">,</span> <span class="mh">0x21</span><span class="p">:</span><span class="s2">&#34;4&#34;</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">:</span><span class="s2">&#34;5&#34;</span><span class="p">,</span>  <span class="mh">0x23</span><span class="p">:</span><span class="s2">&#34;6&#34;</span><span class="p">,</span> <span class="mh">0x24</span><span class="p">:</span><span class="s2">&#34;7&#34;</span><span class="p">,</span> <span class="mh">0x25</span><span class="p">:</span><span class="s2">&#34;8&#34;</span><span class="p">,</span> <span class="mh">0x26</span><span class="p">:</span><span class="s2">&#34;9&#34;</span><span class="p">,</span> <span class="mh">0x27</span><span class="p">:</span><span class="s2">&#34;0&#34;</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">:</span><span class="s2">&#34;n&#34;</span><span class="p">,</span> <span class="mh">0x2a</span><span class="p">:</span><span class="s2">&#34;[DEL]&#34;</span><span class="p">,</span>  <span class="mh">0X2B</span><span class="p">:</span><span class="s2">&#34;    &#34;</span><span class="p">,</span> <span class="mh">0x2C</span><span class="p">:</span><span class="s2">&#34; &#34;</span><span class="p">,</span>  <span class="mh">0x2D</span><span class="p">:</span><span class="s2">&#34;-&#34;</span><span class="p">,</span> <span class="mh">0x2E</span><span class="p">:</span><span class="s2">&#34;=&#34;</span><span class="p">,</span> <span class="mh">0x2F</span><span class="p">:</span><span class="s2">&#34;[&#34;</span><span class="p">,</span>  <span class="mh">0x30</span><span class="p">:</span><span class="s2">&#34;]&#34;</span><span class="p">,</span>  <span class="mh">0x31</span><span class="p">:</span><span class="s2">&#34;</span><span class="se">\\</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mh">0x32</span><span class="p">:</span><span class="s2">&#34;~&#34;</span><span class="p">,</span> <span class="mh">0x33</span><span class="p">:</span><span class="s2">&#34;;&#34;</span><span class="p">,</span>  <span class="mh">0x34</span><span class="p">:</span><span class="s2">&#34;&#39;&#34;</span><span class="p">,</span> <span class="mh">0x36</span><span class="p">:</span><span class="s2">&#34;,&#34;</span><span class="p">,</span>  <span class="mh">0x37</span><span class="p">:</span><span class="s2">&#34;.&#34;</span> <span class="p">}</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">mappings</span> <span class="o">=</span> <span class="p">{</span> <span class="mh">0x04</span><span class="p">:</span><span class="s2">&#34;A&#34;</span><span class="p">,</span>  <span class="mh">0x05</span><span class="p">:</span><span class="s2">&#34;B&#34;</span><span class="p">,</span>  <span class="mh">0x06</span><span class="p">:</span><span class="s2">&#34;C&#34;</span><span class="p">,</span> <span class="mh">0x07</span><span class="p">:</span><span class="s2">&#34;D&#34;</span><span class="p">,</span> <span class="mh">0x08</span><span class="p">:</span><span class="s2">&#34;E&#34;</span><span class="p">,</span> <span class="mh">0x09</span><span class="p">:</span><span class="s2">&#34;F&#34;</span><span class="p">,</span> <span class="mh">0x0A</span><span class="p">:</span><span class="s2">&#34;G&#34;</span><span class="p">,</span>  <span class="mh">0x0B</span><span class="p">:</span><span class="s2">&#34;H&#34;</span><span class="p">,</span> <span class="mh">0x0C</span><span class="p">:</span><span class="s2">&#34;I&#34;</span><span class="p">,</span>  <span class="mh">0x0D</span><span class="p">:</span><span class="s2">&#34;J&#34;</span><span class="p">,</span> <span class="mh">0x0E</span><span class="p">:</span><span class="s2">&#34;K&#34;</span><span class="p">,</span> <span class="mh">0x0F</span><span class="p">:</span><span class="s2">&#34;L&#34;</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">:</span><span class="s2">&#34;M&#34;</span><span class="p">,</span> <span class="mh">0x11</span><span class="p">:</span><span class="s2">&#34;N&#34;</span><span class="p">,</span><span class="mh">0x12</span><span class="p">:</span><span class="s2">&#34;O&#34;</span><span class="p">,</span>  <span class="mh">0x13</span><span class="p">:</span><span class="s2">&#34;P&#34;</span><span class="p">,</span> <span class="mh">0x14</span><span class="p">:</span><span class="s2">&#34;Q&#34;</span><span class="p">,</span> <span class="mh">0x15</span><span class="p">:</span><span class="s2">&#34;R&#34;</span><span class="p">,</span> <span class="mh">0x16</span><span class="p">:</span><span class="s2">&#34;S&#34;</span><span class="p">,</span> <span class="mh">0x17</span><span class="p">:</span><span class="s2">&#34;T&#34;</span><span class="p">,</span> <span class="mh">0x18</span><span class="p">:</span><span class="s2">&#34;U&#34;</span><span class="p">,</span><span class="mh">0x19</span><span class="p">:</span><span class="s2">&#34;V&#34;</span><span class="p">,</span> <span class="mh">0x1A</span><span class="p">:</span><span class="s2">&#34;W&#34;</span><span class="p">,</span> <span class="mh">0x1B</span><span class="p">:</span><span class="s2">&#34;X&#34;</span><span class="p">,</span> <span class="mh">0x1C</span><span class="p">:</span><span class="s2">&#34;Y&#34;</span><span class="p">,</span> <span class="mh">0x1D</span><span class="p">:</span><span class="s2">&#34;Z&#34;</span><span class="p">,</span> <span class="mh">0x1E</span><span class="p">:</span><span class="s2">&#34;1&#34;</span><span class="p">,</span> <span class="mh">0x1F</span><span class="p">:</span><span class="s2">&#34;2&#34;</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">:</span><span class="s2">&#34;3&#34;</span><span class="p">,</span> <span class="mh">0x21</span><span class="p">:</span><span class="s2">&#34;4&#34;</span><span class="p">,</span> <span class="mh">0x22</span><span class="p">:</span><span class="s2">&#34;5&#34;</span><span class="p">,</span>  <span class="mh">0x23</span><span class="p">:</span><span class="s2">&#34;6&#34;</span><span class="p">,</span> <span class="mh">0x24</span><span class="p">:</span><span class="s2">&#34;7&#34;</span><span class="p">,</span> <span class="mh">0x25</span><span class="p">:</span><span class="s2">&#34;8&#34;</span><span class="p">,</span> <span class="mh">0x26</span><span class="p">:</span><span class="s2">&#34;9&#34;</span><span class="p">,</span> <span class="mh">0x27</span><span class="p">:</span><span class="s2">&#34;0&#34;</span><span class="p">,</span> <span class="mh">0x28</span><span class="p">:</span><span class="s2">&#34;n&#34;</span><span class="p">,</span> <span class="mh">0x2a</span><span class="p">:</span><span class="s2">&#34;[DEL]&#34;</span><span class="p">,</span>  <span class="mh">0X2B</span><span class="p">:</span><span class="s2">&#34;    &#34;</span><span class="p">,</span> <span class="mh">0x2C</span><span class="p">:</span><span class="s2">&#34; &#34;</span><span class="p">,</span>  <span class="mh">0x2D</span><span class="p">:</span><span class="s2">&#34;-&#34;</span><span class="p">,</span> <span class="mh">0x2E</span><span class="p">:</span><span class="s2">&#34;=&#34;</span><span class="p">,</span> <span class="mh">0x2F</span><span class="p">:</span><span class="s2">&#34;[&#34;</span><span class="p">,</span>  <span class="mh">0x30</span><span class="p">:</span><span class="s2">&#34;]&#34;</span><span class="p">,</span>  <span class="mh">0x31</span><span class="p">:</span><span class="s2">&#34;</span><span class="se">\\</span><span class="s2">&#34;</span><span class="p">,</span> <span class="mh">0x32</span><span class="p">:</span><span class="s2">&#34;~&#34;</span><span class="p">,</span> <span class="mh">0x33</span><span class="p">:</span><span class="s2">&#34;;&#34;</span><span class="p">,</span>  <span class="mh">0x34</span><span class="p">:</span><span class="s2">&#34;&#39;&#34;</span><span class="p">,</span> <span class="mh">0x36</span><span class="p">:</span><span class="s2">&#34;,&#34;</span><span class="p">,</span>  <span class="mh">0x37</span><span class="p">:</span><span class="s2">&#34;.&#34;</span> <span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="n">nums</span> <span class="o">=</span> <span class="p">[]</span>
 </span></span><span class="line"><span class="cl"><span class="n">keys</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;usbdata.txt&#39;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
@@ -430,56 +392,8 @@
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;output : &#39;</span> <span class="o">+</span> <span class="n">output</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 脚本跑的结果中去掉unknow，注意del键</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>鼠标转化脚本：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">nums</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span></code></pre></div><p>鼠标转化脚本：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">nums</span> <span class="o">=</span> <span class="p">[]</span>
 </span></span><span class="line"><span class="cl"><span class="n">keys</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./mouse_data.txt&#39;</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;xy.txt&#39;</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
@@ -521,9 +435,7 @@
 </span></span><span class="line"><span class="cl">    <span class="n">img</span><span class="o">.</span><span class="n">putpixel</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">point</span><span class="p">[</span><span class="mi">1</span><span class="p">])),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span><span class="c1">#读取文件中的每一行，并修改像素 </span>
 </span></span><span class="line"><span class="cl"><span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span> 
 </span></span><span class="line"><span class="cl"><span class="n">img</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>第三题是BUU原题</p>
+</span></span></code></pre></div><p>第三题是BUU原题</p>
 <p>给一个rar和一个ftm</p>
 <p>尝试解压rar失败</p>
 <p>由于RAR是有四个文件块组成的，分别是标记块、归档头部块、文件块、结束块，这些块之间没有固定地先后顺序，但要求第一个块必须是标志块并且其后紧跟一个归档头部块。详情看：</p>
@@ -714,6 +626,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

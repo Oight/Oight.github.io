@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/windows%E5%86%85%E6%A0%B8%E9%80%86%E5%90%91/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="Windows内核逆向">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="Windows内核逆向">
 <meta property='og:description' content="Windows内核逆向比较深入底层，从底层开始学习更有利于进步，因此在这里作长文整理一下\n汇编语言学习\r众所周知，在高级语言诞生前，专家们都是手搓二进制来使电脑运行的，不过这样未免太过于费专家，为了解决二进制可读性太差，完全不知道计算机在干什么的问题，工程师将那些指令写成了八进制。二进制转八进制是轻而易举的，但是八进制的可读性也不行。很自然地，最后还是用文字表达，加法指令写成 ADD。内存地址也不再直接引用，而是用标签表示。\n">
 <meta property='og:url' content='https://Oight.github.io/p/windows%E5%86%85%E6%A0%B8%E9%80%86%E5%90%91/'>
 <meta property='og:site_name' content='Oight'>
@@ -372,19 +372,7 @@
 </h2><h3 id="寄存器">寄存器
 </h3><p>我们都知道 Cache ，而寄存器（registers）是比 Cache 更加底层的用于存储数据并与计算机交互的东西，计算机中最频繁读写的数据，都会放进寄存器中，CPU优先读写寄存器，再由寄存器和内存交换数据</p>
 <p>早期的x86 CPU 只有8个寄存器（当然现在有很多了），并且每个都有不同的用途。来看看有哪些：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">EAX
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">EAX
 </span></span><span class="line"><span class="cl">EBX
 </span></span><span class="line"><span class="cl">ECX
 </span></span><span class="line"><span class="cl">EDX
@@ -392,9 +380,7 @@
 </span></span><span class="line"><span class="cl">ESI
 </span></span><span class="line"><span class="cl">EBP
 </span></span><span class="line"><span class="cl">ESP
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>其中前七个是通用寄存器，而ESP寄存器用来存储当前Stack的地址</p>
+</span></span></code></pre></div><p>其中前七个是通用寄存器，而ESP寄存器用来存储当前Stack的地址</p>
 <p>我们常常看到32位，64位CPU就是指寄存器的大小。</p>
 <h3 id="内存">内存
 </h3><p>程序运行的时候，操作系统会给它分配一段内存，用来储存程序和运行产生的数据。这段内存有起始地址和结束地址，比如从0x1000到0x8000，起始地址是较小的那个地址，结束地址是较大的那个地址。</p>
@@ -404,76 +390,28 @@
 <h4 id="stack">Stack
 </h4><p>Stack（栈），栈是具有特定大小和格式的内存空间，用于存储明确的数据，如字符串字面量，也可以用于存储指针，栈在作用域结束后会自动释放内存。</p>
 <p>例如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">int main() {
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">int main() {
 </span></span><span class="line"><span class="cl">int a = 2;
 </span></span><span class="line"><span class="cl">int b = 3;
 </span></span><span class="line"><span class="cl">}  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个C代码运行main函数时，系统会为它在内存中建立一个帧（frame），所有main的内部变量（比如a和b）都保存在这个帧里面。main函数执行结束后，该帧就会被回收，释放所有的内部变量，不再占用空间。</p>
+</span></span></code></pre></div><p>这个C代码运行main函数时，系统会为它在内存中建立一个帧（frame），所有main的内部变量（比如a和b）都保存在这个帧里面。main函数执行结束后，该帧就会被回收，释放所有的内部变量，不再占用空间。</p>
 <p>一个程序里有多少函数，就会有多少个栈帧，一般来说，调用栈有多少层，就有多少帧。每一层函数执行完毕，栈帧就会被回收，然后程序执行下一层，通过这种机制，就实现了函数的层层调用，并且每一层都能使用自己的本地变量。</p>
 <p>所有的帧都存放在 Stack，由于帧是一层层叠加的，所以 Stack 叫做栈。生成新的帧，叫做”入栈”，英文是  push；栈的回收叫做”出栈”，英文是 pop。Stack  的特点就是，最晚入栈的帧最早出栈（因为最内层的函数调用，最先结束运行），这就叫做”后进先出”的数据结构。每一次函数执行结束，就自动释放一个帧，所有函数执行结束，整个 Stack 就都释放了。</p>
 <p>Stack 是由内存区域的结束地址开始，从高位（地址）向低位（地址）分配。比如，内存区域的结束地址是0x8000，第一帧假定是16字节，那么下一次分配的地址就会从0x7FF0开始；第二帧假定需要64字节，那么地址就会移动到0x7FB0。</p>
 <h2 id="汇编指令">汇编指令
 </h2><p>我们来看一个简单的C程序：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">int add_a_and_b(int a, int b) {
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">int add_a_and_b(int a, int b) {
 </span></span><span class="line"><span class="cl">return a + b;
 </span></span><span class="line"><span class="cl">}
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">int main() {
 </span></span><span class="line"><span class="cl">return add_a_and_b(2, 3);
 </span></span><span class="line"><span class="cl">}  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>gcc 将这个程序转成汇编语言。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ gcc -S example.c  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>上面的命令执行以后，会生成一个文本文件example.s，里面就是汇编语言，包含了几十行指令。这么说吧，一个高级语言的简单操作，底层可能由几个，甚至几十个 CPU 指令构成。CPU 依次执行这些指令，完成这一步操作。</p>
+</span></span></code></pre></div><p>gcc 将这个程序转成汇编语言。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ gcc -S example.c  
+</span></span></code></pre></div><p>上面的命令执行以后，会生成一个文本文件example.s，里面就是汇编语言，包含了几十行指令。这么说吧，一个高级语言的简单操作，底层可能由几个，甚至几十个 CPU 指令构成。CPU 依次执行这些指令，完成这一步操作。</p>
 <p>example.s经过简化以后，大概是下面的样子。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">_add_a_and_b:
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">_add_a_and_b:
 </span></span><span class="line"><span class="cl">push   %ebx
 </span></span><span class="line"><span class="cl">mov    %eax, [%esp+8] 
 </span></span><span class="line"><span class="cl">mov    %ebx, [%esp+12]
@@ -487,9 +425,7 @@
 </span></span><span class="line"><span class="cl">call   _add_a_and_b 
 </span></span><span class="line"><span class="cl">add    %esp, 8
 </span></span><span class="line"><span class="cl">ret  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>我们来具体看看每一行函数的实现过程:</p>
+</span></span></code></pre></div><p>我们来具体看看每一行函数的实现过程:</p>
 <p>我们知道main函数是程序的入口处，大多数程序也是从这里开始执行的，所以我们先看看main函数</p>
 <p>push 3</p>
 <p>首先是将 3 压入栈中，虽然看上去很简单，push指令其实有一个前置操作。它会先取出 ESP  寄存器里面的地址，将其减去4个字节，然后将新地址写入 ESP 寄存器。使用减法是因为 Stack  从高位向低位发展，4个字节则是因为3的类型是int，占用4个字节。得到新地址以后， 3 就会写入这个地址开始的四个字节。</p>
@@ -500,83 +436,27 @@
 <p>然后到</p>
 <p>call _add_a_and_b</p>
 <p>这里的call指令用来调用函数，这时我们进 _add_a_and_b 函数看看</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">push %ebx  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这一行表示将 EBX 寄存器里面的值，写入_add_a_and_b这个帧。这是因为后面要用到这个寄存器，就先把里面的值取出来，用完后再写回去。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">push %ebx  
+</span></span></code></pre></div><p>这一行表示将 EBX 寄存器里面的值，写入_add_a_and_b这个帧。这是因为后面要用到这个寄存器，就先把里面的值取出来，用完后再写回去。</p>
 <p>这时，push指令会再将 ESP 寄存器里面的地址减去4个字节（累计减去12）。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mov %eax, [%esp+8]  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里表示给 ESP 寄存器里面的地址加上8个字节，然后存储到 EAX 寄存器中，（即把2从 ESP 寄存器中取出，放进 EAX 寄存器中）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mov  %ebx, [%esp+12]  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>同样的，这里给 ESP 寄存器里面的地址加上12个字节，然后存储到 EAX  寄存器中，（即把3从 ESP 寄存器中取出，放进 EBX 寄存器中）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">add    %eax, %ebx   
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后是 add 指令，add 指令用于将两个运算子相加（%ebx是该指令要用到的运算子。一个 CPU 指令可以有零个到多个运算子。）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mov %eax, [%esp+8]  
+</span></span></code></pre></div><p>这里表示给 ESP 寄存器里面的地址加上8个字节，然后存储到 EAX 寄存器中，（即把2从 ESP 寄存器中取出，放进 EAX 寄存器中）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">mov  %ebx, [%esp+12]  
+</span></span></code></pre></div><p>同样的，这里给 ESP 寄存器里面的地址加上12个字节，然后存储到 EAX  寄存器中，（即把3从 ESP 寄存器中取出，放进 EBX 寄存器中）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">add    %eax, %ebx   
+</span></span></code></pre></div><p>然后是 add 指令，add 指令用于将两个运算子相加（%ebx是该指令要用到的运算子。一个 CPU 指令可以有零个到多个运算子。）</p>
 <p>这里是把 EBX 寄存器中的值（3）和 EAX 寄存器中的值（2）相加，然后存储到第一个运算子（EAX寄存器）中</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pop    %ebx  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>EBX 寄存器已经没有用武之地了，所以把它推出栈，pop指令用于取出 Stack 最近一个写入的值（即最低位地址的值），并将这个值写入运算子指定的位置。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pop    %ebx  
+</span></span></code></pre></div><p>EBX 寄存器已经没有用武之地了，所以把它推出栈，pop指令用于取出 Stack 最近一个写入的值（即最低位地址的值），并将这个值写入运算子指定的位置。</p>
 <p>上面的代码表示，取出 Stack 最近写入的值（即 EBX 寄存器的原始值），再将这个值写回 EBX 寄存器（因为加法已经做完了，EBX 寄存器用不到了）。</p>
 <p>注意，pop指令还会将 ESP 寄存器里面的地址加4，即回收4个字节。（这里就是在内存回收）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ret  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>ret指令用于终止当前函数的执行，将运行权交还给上层函数。也就是，当前函数的帧将被回收。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ret  
+</span></span></code></pre></div><p>ret指令用于终止当前函数的执行，将运行权交还给上层函数。也就是，当前函数的帧将被回收。</p>
 <p>所以 _add_a_and_b 函数以及执行完了，我们回到 main 函数中去</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">add    %esp, 8  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里给 ESP 寄存器的地址加上8 因为我们的结果已经写入到了 EAX 寄存器中，这里 ESP 寄存器已经用不到了，所以回收它的内存，给它的地址加上8个字节使其恢复原位</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ret 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>最后 main 函数结束，程序运行完毕</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">add    %esp, 8  
+</span></span></code></pre></div><p>这里给 ESP 寄存器的地址加上8 因为我们的结果已经写入到了 EAX 寄存器中，这里 ESP 寄存器已经用不到了，所以回收它的内存，给它的地址加上8个字节使其恢复原位</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ret 
+</span></span></code></pre></div><p>最后 main 函数结束，程序运行完毕</p>
 
 </section>
 
@@ -766,6 +646,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

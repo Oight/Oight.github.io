@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/rc4/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="RC4">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="RC4">
 <meta property='og:description' content="精力一直放在Web和一些奇奇怪怪的东西上（比如 rust web应用()），突然发现好久没做逆向题了，知识点都忘记了很多，甚至IDA都不会用了（其实本来就不怎么会用()）\n">
 <meta property='og:url' content='https://Oight.github.io/p/rc4/'>
 <meta property='og:site_name' content='Oight'>
@@ -328,7 +328,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 9 分钟
+                    阅读时长: 8 分钟
                 </time>
             </div>
         
@@ -353,29 +353,7 @@
 </h1><p>RC4算法包括初始化算法(KSA)和随即子密码生成算法(PRGA)两部分。</p>
 <h2 id="ksa">KSA
 </h2><p>我们先来看看算法中的初始化部分</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
 </span></span><span class="line"><span class="cl">/*初始化函数*/
 </span></span><span class="line"><span class="cl">void rc4_init(unsigned char*s,unsigned char*key, unsigned long Len)
 </span></span><span class="line"><span class="cl">{
@@ -393,52 +371,18 @@
 </span></span><span class="line"><span class="cl">        s[j]=tmp;
 </span></span><span class="line"><span class="cl">    }
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参数1是一个256长度的char型数组，定义为: unsigned char sBox[256];</p>
+</span></span></code></pre></div><p>参数1是一个256长度的char型数组，定义为: unsigned char sBox[256];</p>
 <p>参数2是密钥，其内容可以随便定义：char key[256];</p>
 <p>参数3是密钥的长度，Len = strlen(key);</p>
 <p>初始化的过程是先有一个sbox(s盒)，s盒的长度是256，然后有一个随意长度的密钥，一个中间的临时变量(tmp)，在初始化的过程中，先定义一个 i ，将 i 从0开始到255以此遍历填充进s盒中；然后定义一个 j ，使用<code>j=(j+s[i]+k[i])%256</code>，得到 j 是几；然后 i 和 j 作为s盒的索引，进行随机化处理。因此，</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">j=(j+s[i]+k[i])%256;
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">j=(j+s[i]+k[i])%256;
 </span></span><span class="line"><span class="cl">        tmp=s[i];
 </span></span><span class="line"><span class="cl">        s[i]=s[j];//交换s[i]和s[j]
 </span></span><span class="line"><span class="cl">        s[j]=tmp;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这一部分是根据密钥来打乱s盒，i 确保S-box的每个元素都得到处理，j 保证S-box的搅乱是随机的。</p>
+</span></span></code></pre></div><p>这一部分是根据密钥来打乱s盒，i 确保S-box的每个元素都得到处理，j 保证S-box的搅乱是随机的。</p>
 <h2 id="prga">PRGA
 </h2><p>接下来我们来看看随即子密码生成算法，即加解密的过程</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
 </span></span><span class="line"><span class="cl">/*加解密*/
 </span></span><span class="line"><span class="cl">void rc4_crypt(unsigned char*s,unsigned char*Data,unsigned long Len)
 </span></span><span class="line"><span class="cl">{
@@ -456,115 +400,21 @@
 </span></span><span class="line"><span class="cl">        Data[k]^=s[t];
 </span></span><span class="line"><span class="cl">    }
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参数1是上边rc4_init函数中，被搅乱的S-box;</p>
+</span></span></code></pre></div><p>参数1是上边rc4_init函数中，被搅乱的S-box;</p>
 <p>参数2是需要加密的数据data;</p>
 <p>参数3是data的长度.</p>
 <p>我们看到我们现在填入了要加密的内容，来分析一下加密的过程。</p>
 <p>首先是在KSA中被打乱的s盒，这时候我们就不再需要密钥了，我们继续对s盒中的元素进行处理。</p>
 <p>通过对s盒中的元素的索引 i 和 j 进行处理：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">        i=(i+1)%256;
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">        i=(i+1)%256;
 </span></span><span class="line"><span class="cl">        j=(j+s[i])%256;
 </span></span><span class="line"><span class="cl">        tmp=s[i];
 </span></span><span class="line"><span class="cl">        s[i]=s[j];//交换s[x]和s[y]
 </span></span><span class="line"><span class="cl">        s[j]=tmp;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这一部分，我们使 i 加一，得到新的 i 然后 j 等于 j 加上新的 i 索引的数字，然后 i 和 j 定位了新的位置，然后通过<code>t=(s[i]+s[j])%256;</code>，来得到密钥流，最后使用密钥流和要加密的数据进行异或得到密文。</p>
+</span></span></code></pre></div><p>这一部分，我们使 i 加一，得到新的 i 然后 j 等于 j 加上新的 i 索引的数字，然后 i 和 j 定位了新的位置，然后通过<code>t=(s[i]+s[j])%256;</code>，来得到密钥流，最后使用密钥流和要加密的数据进行异或得到密文。</p>
 <p>即每收到一个字节，就进行while循环。通过一定的算法定位S盒中的一个元素，并与输入字节异或，得到k。循环中还改变了S盒。如果输入的是明文，输出的就是密文；如果输入的是密文，输出的就是明文。</p>
 <p>我们来看看完整的程序</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span><span class="lnt">75
-</span><span class="lnt">76
-</span><span class="lnt">77
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
 </span></span><span class="line"><span class="cl">//程序开始
 </span></span><span class="line"><span class="cl">#include&lt;stdio.h&gt;
 </span></span><span class="line"><span class="cl">#include&lt;string.h&gt;
@@ -641,9 +491,7 @@
 </span></span><span class="line"><span class="cl">}
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">//程序完
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这时候有人就要问了，你写这么绕，这么模糊谁能看得懂啊？</p>
+</span></span></code></pre></div><p>这时候有人就要问了，你写这么绕，这么模糊谁能看得懂啊？</p>
 <p>所以我们来举几个例子帮助理解：</p>
 <h2 id="加密流程详解">加密流程详解
 </h2><p>一、数学实现</p>
@@ -653,39 +501,20 @@
 <ul>
 <li>
 <p><strong>初始状态</strong>：S盒是一个长度为256的数组（S[0], S[1], …, S[255]），初始时按顺序填充0到255：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
 </span></span><span class="line"><span class="cl">S[0] = 0, S[1] = 1, ..., S[255] = 255
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 <li>
 <p><strong>密钥预处理</strong>：如果密钥长度不足256字节，循环重复密钥直到填满256字节。例如密钥是<code>KEY</code>（3字节），则扩展为<code>K E Y K E Y K E Y ...</code>。</p>
 </li>
 <li>
 <p><strong>洗牌算法</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">j = 0
 </span></span><span class="line"><span class="cl">for i in 0到255:
 </span></span><span class="line"><span class="cl">    j = (j + S[i] + 密钥[i % 密钥长度]) % 256  # 用密钥决定交换位置
 </span></span><span class="line"><span class="cl">    交换 S[i] 和 S[j]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>关键点</strong>：密钥的每个字节都会影响洗牌过程，但前几个字节的影响可能被后续步骤覆盖。</p>
+</span></span></code></pre></div><p><strong>关键点</strong>：密钥的每个字节都会影响洗牌过程，但前几个字节的影响可能被后续步骤覆盖。</p>
 </li>
 </ul>
 <ol>
@@ -697,25 +526,13 @@
 </li>
 <li>
 <p><strong>循环生成每个密钥字节</strong>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">i = (i + 1) % 256          # i每次向前移动1步
 </span></span><span class="line"><span class="cl">j = (j + S[i]) % 256       # j根据S[i]的值跳跃
 </span></span><span class="line"><span class="cl">交换 S[i] 和 S[j]          # 动态打乱S盒
 </span></span><span class="line"><span class="cl">t = (S[i] + S[j]) % 256    # 计算索引t
 </span></span><span class="line"><span class="cl">密钥字节 = S[t]            # 输出密钥流的一个字节
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>关键点</strong>：每生成一个密钥字节，S盒的状态都会改变，密钥流依赖于动态变化的S盒。</p>
+</span></span></code></pre></div><p><strong>关键点</strong>：每生成一个密钥字节，S盒的状态都会改变，密钥流依赖于动态变化的S盒。</p>
 </li>
 </ul>
 <p>二、举个具体例子</p>
@@ -725,17 +542,9 @@
 <li>
 <p>初始化S盒</p>
 <p>：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
 </span></span><span class="line"><span class="cl">S = [0,1,2,3, ..., 255]
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 <li>
 <p>洗牌过程</p>
 <p>（前3步演示）：</p>
@@ -802,90 +611,7 @@
 <p>[BabyAlgorithm](<a class="link" href="https://buuoj.cn/challenges#["  target="_blank" rel="noopener"
     >https://buuoj.cn/challenges#[</a>第五章 CTF之RE章]BabyAlgorithm)</p></blockquote>
 <p>导入IDA，查看main函数</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span><span class="lnt">75
-</span><span class="lnt">76
-</span><span class="lnt">77
-</span><span class="lnt">78
-</span><span class="lnt">79
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">c
 </span></span><span class="line"><span class="cl">__int64 __fastcall main(int a1, char **a2, char **a3)
 </span></span><span class="line"><span class="cl">{
 </span></span><span class="line"><span class="cl">__int64 result; // rax
@@ -964,28 +690,12 @@
 </span></span><span class="line"><span class="cl">}
 </span></span><span class="line"><span class="cl">return result;
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><strong>注意下面两个函数都有一个共同的特征%256，这是RC4算法的典型特征</strong></p>
+</span></span></code></pre></div><p><strong>注意下面两个函数都有一个共同的特征%256，这是RC4算法的典型特征</strong></p>
 <p>sub_400874 中，sub_40067A()和sub_400753()两个函数都是加密算法，</p>
 <p>sub_40067A()是流密钥的生成，</p>
 <p>sub_400753()是加密。</p>
 <p>sub_400874:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__int64 __fastcall sub_400874(__int64 a1, __int64 a2, __int64 a3)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__int64 __fastcall sub_400874(__int64 a1, __int64 a2, __int64 a3)
 </span></span><span class="line"><span class="cl">{
 </span></span><span class="line"><span class="cl">char v5[264]; // [rsp+20h] [rbp-110h] BYREF
 </span></span><span class="line"><span class="cl">unsigned __int64 v6; // [rsp+128h] [rbp-8h]
@@ -995,32 +705,8 @@
 </span></span><span class="line"><span class="cl">sub_400753(v5, a2, a3);
 </span></span><span class="line"><span class="cl">return 0LL;
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>sub_40067A(流密钥生成)：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">__int64</span> <span class="n">__fastcall</span> <span class="n">sub_40067A</span><span class="p">(</span><span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">a1</span><span class="p">,</span> <span class="n">__int64</span> <span class="n">a2</span><span class="p">)</span>
+</span></span></code></pre></div><p>sub_40067A(流密钥生成)：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">__int64</span> <span class="n">__fastcall</span> <span class="n">sub_40067A</span><span class="p">(</span><span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">a1</span><span class="p">,</span> <span class="n">__int64</span> <span class="n">a2</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">v3</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">10</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">10</span><span class="n">h</span><span class="p">]</span>
 </span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">i</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">14</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="n">Ch</span><span class="p">]</span>
@@ -1038,35 +724,8 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="mi">0</span><span class="n">LL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>sub_400753(加密)：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">__int64</span> <span class="n">__fastcall</span> <span class="n">sub_400753</span><span class="p">(</span><span class="n">__int64</span> <span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">a2</span><span class="p">,</span> <span class="n">__int64</span> <span class="n">a3</span><span class="p">)</span>
+</span></span></code></pre></div><p>sub_400753(加密)：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">__int64</span> <span class="n">__fastcall</span> <span class="n">sub_400753</span><span class="p">(</span><span class="n">__int64</span> <span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">char</span> <span class="o">*</span><span class="n">a2</span><span class="p">,</span> <span class="n">__int64</span> <span class="n">a3</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">v5</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">24</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">1</span><span class="n">Ch</span><span class="p">]</span>
 </span></span><span class="line"><span class="cl"><span class="ne">int</span> <span class="n">v6</span><span class="p">;</span> <span class="o">//</span> <span class="p">[</span><span class="n">rsp</span><span class="o">+</span><span class="mi">28</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="n">rbp</span><span class="o">-</span><span class="mi">18</span><span class="n">h</span><span class="p">]</span>
@@ -1087,32 +746,11 @@
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="mi">0</span><span class="n">LL</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>本题的密钥是 Nu1Lctf233</p>
+</span></span></code></pre></div><p>本题的密钥是 Nu1Lctf233</p>
 <p>加密后的密文是 v8，即</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[0xc6,0x21,0xca,0xbf,0x51,0x43,0x37,0x31,0x75,0xe4,0x8e,0xc0,0x54,0x6f,0x8f,0xee,0xf8,0x5a,0xa2,0xc1,0xeb,0xa5,0x34,0x6d,0x71,0x55,0x8,0x7,0xb2,0xa8,0x2f,0xf4,0x51,0x8e,0xc,0xcc,0x33,0x53,0x31,0x0,0x40,0xd6,0xca,0xec,0xd4 ]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个数组的解出来是乱码,这里base64加utf-8编码就可以得到密文</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[0xc6,0x21,0xca,0xbf,0x51,0x43,0x37,0x31,0x75,0xe4,0x8e,0xc0,0x54,0x6f,0x8f,0xee,0xf8,0x5a,0xa2,0xc1,0xeb,0xa5,0x34,0x6d,0x71,0x55,0x8,0x7,0xb2,0xa8,0x2f,0xf4,0x51,0x8e,0xc,0xcc,0x33,0x53,0x31,0x0,0x40,0xd6,0xca,0xec,0xd4 ]
+</span></span></code></pre></div><p>这个数组的解出来是乱码,这里base64加utf-8编码就可以得到密文</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">import base64
 </span></span><span class="line"><span class="cl">a=[0xc6,0x21,0xca,0xbf,0x51,0x43,0x37,0x31,0x75,0xe4,0x8e,0xc0,0x54,0x6f,0x8f,0xee,0xf8,0x5a,0xa2,0xc1,0xeb,0xa5,0x34,0x6d,0x71,0x55,0x8,0x7,0xb2,0xa8,0x2f,0xf4,0x51,0x8e,0xc,0xcc,0x33,0x53,0x31,0x0,0x40,0xd6,0xca,0xec,0xd4]
 </span></span><span class="line"><span class="cl">s=&#34;&#34;
@@ -1120,67 +758,9 @@
 </span></span><span class="line"><span class="cl">    s+=chr(i)
 </span></span><span class="line"><span class="cl">print(s)
 </span></span><span class="line"><span class="cl">print(str(base64.b64encode(s.encode(&#39;utf-8&#39;)), &#39;utf-8&#39;))
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>密文：<code>w4Yhw4rCv1FDNzF1w6TCjsOAVG/Cj8Ouw7hawqLDgcOrwqU0bXFVCAfCssKoL8O0UcKODMOMM1MxAEDDlsOKw6zDlA==</code></p>
+</span></span></code></pre></div><p>密文：<code>w4Yhw4rCv1FDNzF1w6TCjsOAVG/Cj8Ouw7hawqLDgcOrwqU0bXFVCAfCssKoL8O0UcKODMOMM1MxAEDDlsOKw6zDlA==</code></p>
 <p>贴上搜到的脚本，拿到 flag</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">import base64
 </span></span><span class="line"><span class="cl">def rc4_main(key = &#34;init_key&#34;, message = &#34;init_message&#34;):
 </span></span><span class="line"><span class="cl">    print(&#34;RC4解密主函数调用成功&#34;)
@@ -1232,9 +812,7 @@
 </span></span><span class="line"><span class="cl">s=str(base64.b64encode(s.encode(&#39;utf-8&#39;)), &#39;utf-8&#39;)
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">rc4_main(&#34;Nu1Lctf233&#34;, s)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
+</span></span></code></pre></div><p>参考：</p>
 <blockquote>
 <p><a class="link" href="https://www.cnblogs.com/Moomin/p/15023601.html"  target="_blank" rel="noopener"
     >RC4加密算法与逆向方法简析</a></p></blockquote>
@@ -1443,6 +1021,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

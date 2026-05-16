@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1 2 1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1 2 3 4 5 6 7 8 1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n">
 <title>Archlinux</title>
 
 <link rel='canonical' href='https://Oight.github.io/p/archlinux/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="Archlinux">
-<meta property='og:description' content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1 2 1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1 2 3 4 5 6 7 8 1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="Archlinux">
+<meta property='og:description' content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n">
 <meta property='og:url' content='https://Oight.github.io/p/archlinux/'>
 <meta property='og:site_name' content='Oight'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T10:29:03&#43;08:00'/><meta property='article:modified_time' content='2025-06-01T10:29:03&#43;08:00'/><meta property='og:image' content='https://moegirl.uk/images/c/c9/Archlinux_chan.png?20221105073224' />
 <meta name="twitter:title" content="Archlinux">
-<meta name="twitter:description" content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1 2 1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1 2 3 4 5 6 7 8 1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这\r前期准备：\r1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动 2开机时使用U盘启动 无线网卡连接网络（有线可以略过）\r1.iwctl 2.device list (列出所有WIFI设备) 3.station [网卡名称] scan (扫描网络) 4.station [网卡名称] get-networks (显示所有网络) 5.station [网卡名称] connect [WIFI名称] 输入密码 Ctrl + d 退出 ping一下看看是否连接到网络 （ping www.baidu.com） 连上网后，更新系统时间\r1.timedatectl (更新系统时间)\n"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='https://moegirl.uk/images/c/c9/Archlinux_chan.png?20221105073224' />
     <link rel="shortcut icon" href="/favicon.ico" />
 
@@ -428,30 +428,10 @@
     
     <h1 id="安装了下arch双系统真不好安啊现把所有需要用到的代码写在这">安装了下arch双系统，真不好安啊，现把所有需要用到的代码写在这
 </h1><h2 id="前期准备">前期准备：
-</h2><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动  
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.制作好系统盘，在制作系统盘时需注意分区类型使用GPT，然后在主板关闭安全启动  
 </span></span><span class="line"><span class="cl">2开机时使用U盘启动 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="无线网卡连接网络有线可以略过">无线网卡连接网络（有线可以略过）
-</h2><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.iwctl 
+</span></span></code></pre></div><h2 id="无线网卡连接网络有线可以略过">无线网卡连接网络（有线可以略过）
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.iwctl 
 </span></span><span class="line"><span class="cl">2.device list (列出所有WIFI设备) 
 </span></span><span class="line"><span class="cl">3.station [网卡名称] scan (扫描网络)  
 </span></span><span class="line"><span class="cl">4.station [网卡名称] get-networks (显示所有网络)  
@@ -459,32 +439,12 @@
 </span></span><span class="line"><span class="cl">输入密码
 </span></span><span class="line"><span class="cl">Ctrl  + d 退出  
 </span></span><span class="line"><span class="cl">ping一下看看是否连接到网络  （ping www.baidu.com）  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="连上网后更新系统时间">连上网后，更新系统时间
+</span></span></code></pre></div><h2 id="连上网后更新系统时间">连上网后，更新系统时间
 </h2><blockquote>
 <p>1.timedatectl (更新系统时间)</p></blockquote>
 <h2 id="分区">分区
 </h2><h3 id="分区-1">分区
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.fdisk -l (查看自己分区)  
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.fdisk -l (查看自己分区)  
 </span></span><span class="line"><span class="cl">找到我们要安装的硬盘，单 nvme 盘为 /dev/nvme0n1;单 sata 盘为 /dev/sda1  
 </span></span><span class="line"><span class="cl">2.cfdisk + [你的硬盘] 
 </span></span><span class="line"><span class="cl">3.Type 选择第一个 efi system  
@@ -498,88 +458,34 @@
 </span></span><span class="line"><span class="cl">10.Write 写入
 </span></span><span class="line"><span class="cl">11.Quit 退出  
 </span></span><span class="line"><span class="cl">12.再次执行 fdisk -l 看看是否分好  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="格式化分区">格式化分区
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.mkfs.[文件系统] （-f）/dev/[分区编号]
+</span></span></code></pre></div><h3 id="格式化分区">格式化分区
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.mkfs.[文件系统] （-f）/dev/[分区编号]
 </span></span><span class="line"><span class="cl">例： mkfs.btrfs -f /dev/nvme0n1p4 
 </span></span><span class="line"><span class="cl">    mkfs.ext4 /dev/nvme0n1p4  
 </span></span><span class="line"><span class="cl">2.mkfs.btrfs -f /dev/nvme0n1p5 (格式化 home 分区)  
 </span></span><span class="line"><span class="cl">3.mkswap /dev/nvme0n1p6 (初始化swap分区)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="挂载分区">挂载分区
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">一定要先挂载根分区  
+</span></span></code></pre></div><h3 id="挂载分区">挂载分区
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">一定要先挂载根分区  
 </span></span><span class="line"><span class="cl">1.mount /dev/[根分区编号] /mnt  
 </span></span><span class="line"><span class="cl">例：mount /dev/nvme0n1p4 /mnt  
 </span></span><span class="line"><span class="cl">2.mount --mkdir /dev/[home分区编号] /mnt/home （挂载根分区）
 </span></span><span class="line"><span class="cl">3.mount --mkdir /dev/[efi分区编号] /mnt/efi  （挂载efi分区）  
 </span></span><span class="line"><span class="cl">例：mount --mkdir /dev/nvme0n1p1 /mnt/efi  
 </span></span><span class="line"><span class="cl">4.swapon /dev/[交换空间分区编号] （挂载交换分区）  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="配置国内镜像源">配置国内镜像源
-</h2><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.nano /etc/pacman.d/mirrorlist  
+</span></span></code></pre></div><h2 id="配置国内镜像源">配置国内镜像源
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.nano /etc/pacman.d/mirrorlist  
 </span></span><span class="line"><span class="cl">2.在第一行添加
 </span></span><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/$repo/os/$arch  
 </span></span><span class="line"><span class="cl">3.Ctrl + o 保存
 </span></span><span class="line"><span class="cl">4.Ctrl + x 退出  
 </span></span><span class="line"><span class="cl">5.pacman -Syy (刷新)  
 </span></span><span class="line"><span class="cl">6.pacman -S archlinux-keyring (重新安装密钥)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="安装基本系统">安装基本系统
-</h2><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.pacstrap /mnt [软件包]  
+</span></span></code></pre></div><h2 id="安装基本系统">安装基本系统
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.pacstrap /mnt [软件包]  
 </span></span><span class="line"><span class="cl">base （基础系统），base-devel (工具包) 
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>例：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacstrap /mnt base base-devel linux-zen linux-zen-headers linux-firmware networkmanager grub os-prober efibootmgr ntfs-3g amd-ucode bluez bluez-utils nano  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>一路回车就可以</p>
+</span></span></code></pre></div><p>例：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">pacstrap /mnt base base-devel linux-zen linux-zen-headers linux-firmware networkmanager grub os-prober efibootmgr ntfs-3g amd-ucode bluez bluez-utils nano  
+</span></span></code></pre></div><p>一路回车就可以</p>
 <h2 id="创建-fstab-自动挂载配置文件">创建 fstab (自动挂载配置文件)
 </h2><blockquote>
 <p>1.genfstab -U /mnt &raquo; /mnt/etc/fstab</p></blockquote>
@@ -595,17 +501,9 @@
 <p>1.hwclock –systohc</p></blockquote>
 <h2 id="本地化">本地化
 </h2><h3 id="编辑localegen">编辑locale.gen
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.nano /etc/locale.gen {删除 en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8 前的&#34;#&#34;} 
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">1.nano /etc/locale.gen {删除 en_US.UTF-8 UTF-8 和 zh_CN.UTF-8 UTF-8 前的&#34;#&#34;} 
 </span></span><span class="line"><span class="cl">2.locale-gen (生成locale)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="编辑localeconf">编辑locale.conf:
+</span></span></code></pre></div><h3 id="编辑localeconf">编辑locale.conf:
 </h3><blockquote>
 <p>1.nano /etc/locale.conf  {添加 LANG=en_US.UTF-8}</p></blockquote>
 <h2 id="设置主机名">设置主机名
@@ -636,17 +534,9 @@
 </h3><blockquote>
 <p>1.nano /etc/default/grub {去掉 GRUB_DISABLE_OS_PROBER=false 前的“#”}</p></blockquote>
 <h3 id="安装-grub-服务">安装 grub 服务
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="mf">1.</span><span class="n">grub</span><span class="o">-</span><span class="n">install</span> <span class="o">--</span><span class="n">target</span><span class="o">=</span><span class="n">x86_64</span><span class="o">-</span><span class="n">efi</span> <span class="o">--</span><span class="n">efi</span><span class="o">-</span><span class="n">directory</span><span class="o">=/</span><span class="n">efi</span> <span class="o">--</span><span class="n">bootloader</span><span class="o">-</span><span class="n">id</span><span class="o">=</span><span class="n">grub</span>  
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="mf">1.</span><span class="n">grub</span><span class="o">-</span><span class="n">install</span> <span class="o">--</span><span class="n">target</span><span class="o">=</span><span class="n">x86_64</span><span class="o">-</span><span class="n">efi</span> <span class="o">--</span><span class="n">efi</span><span class="o">-</span><span class="n">directory</span><span class="o">=/</span><span class="n">efi</span> <span class="o">--</span><span class="n">bootloader</span><span class="o">-</span><span class="n">id</span><span class="o">=</span><span class="n">grub</span>  
 </span></span><span class="line"><span class="cl"><span class="mf">2.</span><span class="n">grub</span><span class="o">-</span><span class="n">mkconfig</span> <span class="o">-</span><span class="n">o</span> <span class="o">/</span><span class="n">boot</span><span class="o">/</span><span class="n">grub</span><span class="o">/</span><span class="n">grub</span><span class="o">.</span><span class="n">cfg</span> <span class="p">(</span><span class="err">更新</span> <span class="n">grub</span> <span class="err">向导</span><span class="p">)</span>  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="安装kde">安装KDE
+</span></span></code></pre></div><h1 id="安装kde">安装KDE
 </h1><blockquote>
 <p>sudo pacman -S plasma</p></blockquote>
 <h2 id="开机自启显示管理">开机自启显示管理
@@ -663,15 +553,8 @@
 </h2><blockquote>
 <p>reboot</p></blockquote>
 <h1 id="进入系统">进入系统
-</h1><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">alt + Ctrl + T 打开终端
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="更新-grub">更新 grub
+</h1><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">alt + Ctrl + T 打开终端
+</span></span></code></pre></div><h2 id="更新-grub">更新 grub
 </h2><blockquote>
 <p>sudo grub-mkconfig -o /boot/grub/grub.cfg</p></blockquote>
 <h2 id="安装中文字体">安装中文字体
@@ -680,25 +563,13 @@
 <p>设置语言后重启</p>
 <h2 id="配置国内源">配置国内源
 </h2><h3 id="配置国内源-1">配置国内源
-</h3><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/pacman.conf
+</h3><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo nano /etc/pacman.conf
 </span></span><span class="line"><span class="cl">开启32位库，{去掉 [multilib]及下一行前的 &#34;#&#34;}  
 </span></span><span class="line"><span class="cl">然后在下面添加：
 </span></span><span class="line"><span class="cl">Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch  (清华源)或
 </span></span><span class="line"><span class="cl">Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch           (科大源)或  
 </span></span><span class="line"><span class="cl">Server = https://repo.huaweicloud.com/archlinux/$repo/os/$srch   (华为源)  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="刷新软件包">刷新软件包
+</span></span></code></pre></div><h3 id="刷新软件包">刷新软件包
 </h3><blockquote>
 <p>sudo pacman -Syy</p></blockquote>
 <h3 id="导入密钥">导入密钥
@@ -708,79 +579,29 @@
 </h2><blockquote>
 <p>sudo pacman -S archlinux-appstream-data packagekit-qt6 fwupd</p></blockquote>
 <h2 id="安装-aur-助手-yay">安装 aur 助手 yay
-</h2><div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S yay
+</h2><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">sudo pacman -S yay
 </span></span><span class="line"><span class="cl">yay -Syy
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="安装中文输入法参照-archwiki">安装中文输入法参照 ArchWiKi
+</span></span></code></pre></div><h2 id="安装中文输入法参照-archwiki">安装中文输入法参照 ArchWiKi
 </h2><p>推荐Fcitx5</p>
 <h1 id="yay">yay
 </h1><h2 id="使用-yay-进行包管理">使用 Yay 进行包管理
 </h2><p>Yay 遵循与 pacman 类似（但不相同）的命令结构。所以你用 Yay 管理 AUR 包应该不难。</p>
 <p>搜索软件包：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay search_term
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>安装软件包：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S package_name
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>删除软件包：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -R package_name
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>要删除包及其依赖项：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -Rns package_name
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>仅升级 AUR 包：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -Sua
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>Yay 还能够升级非 AUR 软件包。上面的 a 标志将其限制为 AUR。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay search_term
+</span></span></code></pre></div><p>安装软件包：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -S package_name
+</span></span></code></pre></div><p>删除软件包：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -R package_name
+</span></span></code></pre></div><p>要删除包及其依赖项：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -Rns package_name
+</span></span></code></pre></div><p>仅升级 AUR 包：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yay -Sua
+</span></span></code></pre></div><p>Yay 还能够升级非 AUR 软件包。上面的 a 标志将其限制为 AUR。</p>
 <h2 id="将-yay-升级到新版本">将 Yay 升级到新版本
 </h2><p>现在，你可能想知道如何将 Yay 升级到可用的新版本。</p>
 <p>答案是你不需要做任何特别的事情。当你运行以下命令时，Yay 可以自行更新：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yay -Sua  
-</span></span></code></pre></td></tr></table>
-</div>
-</div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yay -Sua  
+</span></span></code></pre></div>
 </section>
 
 
@@ -928,6 +749,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

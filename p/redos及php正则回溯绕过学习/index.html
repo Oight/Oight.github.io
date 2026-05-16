@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/redos%E5%8F%8Aphp%E6%AD%A3%E5%88%99%E5%9B%9E%E6%BA%AF%E7%BB%95%E8%BF%87%E5%AD%A6%E4%B9%A0/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="ReDos及PHP正则回溯绕过学习">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="ReDos及PHP正则回溯绕过学习">
 <meta property='og:description' content="ReDos及PHP正则回溯绕过学习\r是谁都5202年了8102年的知识点还没见过٩(ŏ﹏ŏ、)۶\nReDos\rReDos(正则表达式拒绝服务攻击) 是一种利用正则表达式引擎缺陷来发起的拒绝服务攻击.\n">
 <meta property='og:url' content='https://Oight.github.io/p/redos%E5%8F%8Aphp%E6%AD%A3%E5%88%99%E5%9B%9E%E6%BA%AF%E7%BB%95%E8%BF%87%E5%AD%A6%E4%B9%A0/'>
 <meta property='og:site_name' content='Oight'>
@@ -435,66 +435,7 @@
 <p>我们用<code>ABC</code>来做匹配,因为没有用D结尾,所以正则最终会失败,但在试图匹配时，正则表达式引擎会尝试所有可能的组合来看看是否可以成功匹配，特别是在 <code>(B|C+)</code> 和后面的 <code>+</code> 量词之间。</p>
 <p>正则会尝试匹配尽可能多的 <code>C</code>，然后再尝试匹配 <code>D</code>。当匹配 <code>D</code> 失败时，它会回溯，并尝试匹配稍微少一些的 <code>C</code>，再尝试匹配 <code>D</code>。这种尝试和回溯的过程会对每个可能的 <code>C</code> 的组合进行重复，导致指数级的尝试次数。这种指数级的回溯也叫做灾难级回溯，导致服务器性能大量降低。</p>
 <p>用脚本绘图看看匹配时间:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">re</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">math</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -549,9 +490,7 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&#34;__main__&#34;</span><span class="p">:</span>
 </span></span><span class="line"><span class="cl">    <span class="n">main</span><span class="p">()</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>不止回溯,正则表达式匹配还有贪婪和非贪婪模式</p>
+</span></span></code></pre></div><p>不止回溯,正则表达式匹配还有贪婪和非贪婪模式</p>
 <p>对于RCRE(PHP正则表达式)</p>
 <p>有4个比较常用的元字符：</p>
 <ul>
@@ -572,20 +511,7 @@
     >快速了解-ReDoS</a></p>
 <h3 id="ctf中的应用">CTF中的应用
 </h3><p>在CTF中,如果有正则表达式存在ReDos漏洞,则我们可以利用服务器返回时间的不同来爆破flag.</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span><span class="lnt">9
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">time</span><span class="p">(</span><span class="s1">&#39;CTF{a&#39;</span><span class="p">);</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">time</span><span class="p">(</span><span class="s1">&#39;CTF{a&#39;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sr">/CTF{[a](((((.*)*)*)*)*)!/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="s1">&#39;CTF{this_is_flag}&#39;</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">timeEnd</span><span class="p">(</span><span class="s1">&#39;CTF{a&#39;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="c1">// CTF{a: 0.071ms
@@ -594,38 +520,18 @@
 </span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="sr">/CTF{[t](((((.*)*)*)*)*)!/</span><span class="p">.</span><span class="nx">test</span><span class="p">(</span><span class="s1">&#39;CTF{this_is_flag}&#39;</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl"><span class="nx">console</span><span class="p">.</span><span class="nx">timeEnd</span><span class="p">(</span><span class="s1">&#39;CTF{t&#39;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="c1">// CTF{t: 24.577s
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><h2 id="php正则回溯绕过">PHP正则回溯绕过
+</span></span></span></code></pre></div><h2 id="php正则回溯绕过">PHP正则回溯绕过
 </h2><p>PHP为了防止正则表达式的拒绝服务攻击（reDOS），给pcre设定了一个回溯次数上限<code>pcre.backtrack_limit</code>,上限默认是100万,而当我们的回溯次数超过了100万,preg_match函数就不再返回0或1,而是返回false,表示此次执行失败,失败的原因是回溯次数超出了限制.</p>
 <p>比如,在这个WAF中:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s1">&#39;/UNION.+?SELECT/is&#39;</span><span class="p">,</span> <span class="nv">$input</span><span class="p">))</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s1">&#39;/UNION.+?SELECT/is&#39;</span><span class="p">,</span> <span class="nv">$input</span><span class="p">))</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">die</span><span class="p">(</span><span class="s1">&#39;SQL Injection&#39;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>就可以使用大量回溯绕过</p>
+</span></span></code></pre></div><p>就可以使用大量回溯绕过</p>
 <p>同样的:</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s1">&#39;/UNION.+?SELECT/is&#39;</span><span class="p">,</span> <span class="nv">$input</span><span class="p">))</span> <span class="p">{</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s1">&#39;/UNION.+?SELECT/is&#39;</span><span class="p">,</span> <span class="nv">$input</span><span class="p">))</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">    <span class="k">die</span><span class="p">(</span><span class="s1">&#39;SQL Injection&#39;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>虽然是非贪婪模式,但仍然可以通过传大量的a来使回溯次数超过限制,进而绕过WAF.</p>
+</span></span></code></pre></div><p>虽然是非贪婪模式,但仍然可以通过传大量的a来使回溯次数超过限制,进而绕过WAF.</p>
 <h2 id="参考">参考:
 </h2><blockquote>
 <p><a class="link" href="https://furina.org.cn/2023/10/13/redos/#0x02-%E5%BF%AB%E9%80%9F%E4%BA%86%E8%A7%A3-ReDoS"  target="_blank" rel="noopener"
@@ -819,6 +725,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

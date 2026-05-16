@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/rust%E5%AD%A6%E4%B9%A0/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="Rust学习">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="Rust学习">
 <meta property='og:description' content="在网络安全的学习中越来越发现没有编程基础寸步难行，同时我也想要学习相关的程序开发，因为Rust功能强大，并且是系统语言，或许算比较适合我的语言？（但愿吧）\n">
 <meta property='og:url' content='https://Oight.github.io/p/rust%E5%AD%A6%E4%B9%A0/'>
 <meta property='og:site_name' content='Oight'>
@@ -399,41 +399,16 @@
 <p>cd Hello_World</p></blockquote>
 <p>有时候发现程序无法编译？先看看是否进入了正确的项目目录下。</p>
 <p>我们来看看这个项目的项目结构：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ tree
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">$ tree
 </span></span><span class="line"><span class="cl">.
 </span></span><span class="line"><span class="cl">├── .git
 </span></span><span class="line"><span class="cl">├── .gitignore
 </span></span><span class="line"><span class="cl">├── Cargo.toml
 </span></span><span class="line"><span class="cl">└── src
 </span></span><span class="line"><span class="cl">    └── main.rs
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>其中，<strong>Cargo.toml</strong> 是 <strong>cargo</strong> 特有的项目数据描述文件。它存储了项目的所有元配置信息，如果 Rust 开发者希望 Rust 项目能够按照期望的方式进行构建、测试和运行，那么，必须按照合理的方式构建 <strong>Cargo.toml</strong> 。我们可以理解为这里存储了这个项目中所有我们需要的依赖库，我们在这里告诉程序我们要导入哪些库。</p>
+</span></span></code></pre></div><p>其中，<strong>Cargo.toml</strong> 是 <strong>cargo</strong> 特有的项目数据描述文件。它存储了项目的所有元配置信息，如果 Rust 开发者希望 Rust 项目能够按照期望的方式进行构建、测试和运行，那么，必须按照合理的方式构建 <strong>Cargo.toml</strong> 。我们可以理解为这里存储了这个项目中所有我们需要的依赖库，我们在这里告诉程序我们要导入哪些库。</p>
 <p>_Cargo.toml_一般是这个样子：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span><span class="lnt">6
-</span><span class="lnt">7
-</span><span class="lnt">8
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="err">//</span> <span class="nx">package</span> <span class="err">配置段落</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="err">//</span> <span class="nx">package</span> <span class="err">配置段落</span>
 </span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">package</span><span class="p">]</span> 
 </span></span><span class="line"><span class="cl"><span class="nx">name</span> <span class="p">=</span> <span class="s2">&#34;world_hello&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="nx">version</span> <span class="p">=</span> <span class="s2">&#34;0.1.0&#34;</span>
@@ -441,30 +416,10 @@
 </span></span><span class="line"><span class="cl"><span class="err">//</span> <span class="err">定义项目依赖</span> 
 </span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">dependencies</span><span class="p">]</span>   
 </span></span><span class="line"><span class="cl"><span class="err">//</span> <span class="err">这里刚打开是空的，我们需要把我们要的库复制到这里</span>  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="main函数">main函数
+</span></span></code></pre></div><h3 id="main函数">main函数
 </h3><p>接下来我们来看看 <code>main.rs</code> ，此文件是当前 Rust 工程的入口文件，每一个新建的Rust项目都会有这个文件。</p>
 <p>我们来看看这个文件：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// 这是注释内容，将会被编译器忽略掉
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="c1">// 这是注释内容，将会被编译器忽略掉
 </span></span></span><span class="line"><span class="cl"><span class="c1">// 可以单击那边的按钮 &#34;Run&#34; 来测试这段代码 -&gt;
 </span></span></span><span class="line"><span class="cl"><span class="c1">// 若想用键盘操作，可以使用快捷键 &#34;Ctrl + Enter&#34; 来运行
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">
@@ -478,28 +433,17 @@
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// 将文本打印到控制台
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="w">    </span><span class="fm">println!</span><span class="p">(</span><span class="s">&#34;Hello World!&#34;</span><span class="p">);</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>这几行定义了一个名叫 main 的函数。main 函数是一个特殊的函数：在可执行的 Rust 程序中，它总是最先运行的代码。第一行代码声明了一个叫做 main 的函数，它没有参数也没有返回值。如果有参数的话，它们的名称应该出现在小括号 () 中。</p>
+</span></span></span></code></pre></div><p>这几行定义了一个名叫 main 的函数。main 函数是一个特殊的函数：在可执行的 Rust 程序中，它总是最先运行的代码。第一行代码声明了一个叫做 main 的函数，它没有参数也没有返回值。如果有参数的话，它们的名称应该出现在小括号 () 中。</p>
 <p>函数体被包裹在 {} 中。Rust 要求所有函数体都要用花括号包裹起来。一般来说，将左花括号与函数声明置于同一行并以空格分隔，是良好的代码风格。</p>
 <p>很简单吧，fn 是定义函数，main是函数名，被{}包裹起来的是函数体。</p>
 <p>在函数体中，我们看到使用<code>println!(&quot;Hello World!&quot;);</code>输出了 Hello World！</p>
 <p>这里有几个点需要注意一下，在Rust中 <code>println!</code> 调用了一个 Rust 宏（macro）。如果是调用函数，则应输入 <code>println（没有!）</code>  关于宏，我们后面再说，现在你只需记住，当看到符号 ! 的时候，就意味着调用的是宏而不是普通函数，并且宏并不总是遵循与函数相同的规则。</p>
 <p>另外，这个语句以<code>;</code>结尾，Rust中的大多数语句都以 ; 结尾，但 ; 并不是简单的行与行之间的分割符，而是标致着一个语句的结束。在语句未结束时使用 ; 是错误的。</p>
 <p>例如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span>: <span class="kt">i32</span><span class="p">)</span><span class="w"> </span>-&gt;<span class="kt">i32</span> <span class="p">{</span><span class="w">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="k">fn</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span>: <span class="kt">i32</span><span class="p">)</span><span class="w"> </span>-&gt;<span class="kt">i32</span> <span class="p">{</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">  
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里会返回一个 i32 的值，但如果加了 ; 它会返回()</p>
+</span></span></span></code></pre></div><p>这里会返回一个 i32 的值，但如果加了 ; 它会返回()</p>
 <p>这里简单的提一嘴，并不是我们现在要讨论的核心，但这个小知识点还是要记住的。</p>
 <p>现在我们让它跑起来：</p>
 <p>在终端中，我们输入：</p>
@@ -534,26 +478,11 @@ cargo build –release</p></blockquote>
 <h2 id="变量">变量
 </h2><p>首先必须说明，Rust 是强类型语言，但具有自动判断变量类型的能力。这很容易让人与弱类型语言产生混淆。</p>
 <p>默认情况下，Rust 中的变量是不可变的，除非使用 mut 关键字声明为可变变量。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123</span><span class="p">;</span><span class="w">       </span><span class="c1">// 不可变变量
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123</span><span class="p">;</span><span class="w">       </span><span class="c1">// 不可变变量
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span><span class="w">  </span><span class="c1">// 可变变量  
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果要声明变量，需要使用 let 关键字。例如：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123</span><span class="p">;</span><span class="w"> 
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div>
+</span></span></span></code></pre></div><p>如果要声明变量，需要使用 let 关键字。例如：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-rust" data-lang="rust"><span class="line"><span class="cl"><span class="kd">let</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">123</span><span class="p">;</span><span class="w"> 
+</span></span></span></code></pre></div>
 </section>
 
 
@@ -701,6 +630,51 @@ cargo build –release</p></blockquote>
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

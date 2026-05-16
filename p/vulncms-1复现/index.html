@@ -6,7 +6,7 @@
 
 <link rel='canonical' href='https://Oight.github.io/p/vulncms-1%E5%A4%8D%E7%8E%B0/'>
 
-<link rel="stylesheet" href="/scss/style.min.0e9b0dc41309ee439f307e94fe233ae09b70f32858267ed1afae44d0ba448205.css"><meta property='og:title' content="VulnCMS-1复现">
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="VulnCMS-1复现">
 <meta property='og:description' content="VulnCMS-1复现\r环境搭建\r搭建靶场环境我选择的是使用Vmware + VirtualBox，Vmware运行kali攻击机，VirtualBox运行Vulnhub靶机的方案，整体拓扑为：\n">
 <meta property='og:url' content='https://Oight.github.io/p/vulncms-1%E5%A4%8D%E7%8E%B0/'>
 <meta property='og:site_name' content='Oight'>
@@ -337,7 +337,7 @@
 
 
                 <time class="article-time--reading">
-                    阅读时长: 8 分钟
+                    阅读时长: 7 分钟
                 </time>
             </div>
         
@@ -355,19 +355,10 @@
     <h1 id="vulncms-1复现">VulnCMS-1复现
 </h1><h2 id="环境搭建">环境搭建
 </h2><p>搭建靶场环境我选择的是使用Vmware + VirtualBox，Vmware运行kali攻击机，VirtualBox运行Vulnhub靶机的方案，整体拓扑为：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  宿主机（Windows) : 192.168.56.1
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  宿主机（Windows) : 192.168.56.1
 </span></span><span class="line"><span class="cl">  ├─ VMware Workstation → Kali Linux（主力攻击机）:192.168.56.101
 </span></span><span class="line"><span class="cl">  └─ Oracle VirtualBox → VulnHub靶机: 192.168.56.102
-</span></span></code></pre></td></tr></table>
-</div>
-</div><h3 id="具体配置">具体配置：
+</span></span></code></pre></div><h3 id="具体配置">具体配置：
 </h3><h4 id="vmware">Vmware
 </h4><p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrms9vhj30oz0lltev.jpg"
 	
@@ -650,73 +641,7 @@
 	
 	
 ></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// configuration.php
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// configuration.php
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">&lt;?</span><span class="nx">php</span>
 </span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">JConfig</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$offline</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">;</span>
@@ -778,9 +703,7 @@
 </span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$lifetime</span> <span class="o">=</span> <span class="s1">&#39;15&#39;</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">        <span class="k">public</span> <span class="nv">$session_handler</span> <span class="o">=</span> <span class="s1">&#39;database&#39;</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>由于是低权限用户，没法到根目录下去，联想到在Joomla数据库中有一个账户elliot，和可疑的邮箱，用这个登一下22端口的ssh试一试</p>
+</span></span></code></pre></div><p>由于是低权限用户，没法到根目录下去，联想到在Joomla数据库中有一个账户elliot，和可疑的邮箱，用这个登一下22端口的ssh试一试</p>
 <p><img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnry5csyj315o0uub24.jpg"
 	
 	
@@ -889,40 +812,7 @@
 <p>所以我们最后来分析一下造成joomla 3.4.3 SQL注入的原因</p>
 <h3 id="漏洞分析">漏洞分析
 </h3><p>最开始我们的payload会到<code>administrator/components/com_contenthistory/models/history.php</code>下的<code>getListQuery()</code>函数：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">protected</span> <span class="k">function</span> <span class="nf">getListQuery</span><span class="p">()</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">protected</span> <span class="k">function</span> <span class="nf">getListQuery</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl">	<span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="c1">// Create a new query object.
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="nv">$db</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">getDbo</span><span class="p">();</span>
@@ -951,27 +841,8 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nv">$query</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>输入会给到getState函数，进去看看，在<code>libraries/legacy/model/legacy.php</code>中</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="nf">getState</span><span class="p">(</span><span class="nv">$property</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$default</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
+</span></span></code></pre></div><p>输入会给到getState函数，进去看看，在<code>libraries/legacy/model/legacy.php</code>中</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">public</span> <span class="k">function</span> <span class="nf">getState</span><span class="p">(</span><span class="nv">$property</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$default</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">__state_set</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">		<span class="p">{</span>
@@ -984,34 +855,8 @@
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">		<span class="k">return</span> <span class="nv">$property</span> <span class="o">===</span> <span class="k">null</span> <span class="o">?</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">state</span> <span class="o">:</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">state</span><span class="o">-&gt;</span><span class="na">get</span><span class="p">(</span><span class="nv">$property</span><span class="p">,</span> <span class="nv">$default</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到，这里会判断model状态是否被设置，如果没有会调用populateState()函数来设置，去看看实现</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// administrator/components/com_contenthistory/models/history.php
+</span></span></code></pre></div><p>可以看到，这里会判断model状态是否被设置，如果没有会调用populateState()函数来设置，去看看实现</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// administrator/components/com_contenthistory/models/history.php
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>	<span class="k">protected</span> <span class="k">function</span> <span class="nf">populateState</span><span class="p">(</span><span class="nv">$ordering</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$direction</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="nv">$input</span> <span class="o">=</span> <span class="nx">JFactory</span><span class="o">::</span><span class="na">getApplication</span><span class="p">()</span><span class="o">-&gt;</span><span class="na">input</span><span class="p">;</span>
@@ -1031,154 +876,8 @@
 </span></span><span class="line"><span class="cl">		<span class="c1">// List state information.
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span>		<span class="k">parent</span><span class="o">::</span><span class="na">populateState</span><span class="p">(</span><span class="s1">&#39;h.save_date&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>可以看到，这里获取了item_id等，强制转型成integer然后用setState函数来赋值，即从用户输入中取出item_id,type_id,type_alias,等几个变量，对当前model的属性进行赋值，由于可以控制的参数都被强制转成整形，所以只能看看其他地方，可以看到最后继承了populateState，去看看父类是怎么实现的</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">  1
-</span><span class="lnt">  2
-</span><span class="lnt">  3
-</span><span class="lnt">  4
-</span><span class="lnt">  5
-</span><span class="lnt">  6
-</span><span class="lnt">  7
-</span><span class="lnt">  8
-</span><span class="lnt">  9
-</span><span class="lnt"> 10
-</span><span class="lnt"> 11
-</span><span class="lnt"> 12
-</span><span class="lnt"> 13
-</span><span class="lnt"> 14
-</span><span class="lnt"> 15
-</span><span class="lnt"> 16
-</span><span class="lnt"> 17
-</span><span class="lnt"> 18
-</span><span class="lnt"> 19
-</span><span class="lnt"> 20
-</span><span class="lnt"> 21
-</span><span class="lnt"> 22
-</span><span class="lnt"> 23
-</span><span class="lnt"> 24
-</span><span class="lnt"> 25
-</span><span class="lnt"> 26
-</span><span class="lnt"> 27
-</span><span class="lnt"> 28
-</span><span class="lnt"> 29
-</span><span class="lnt"> 30
-</span><span class="lnt"> 31
-</span><span class="lnt"> 32
-</span><span class="lnt"> 33
-</span><span class="lnt"> 34
-</span><span class="lnt"> 35
-</span><span class="lnt"> 36
-</span><span class="lnt"> 37
-</span><span class="lnt"> 38
-</span><span class="lnt"> 39
-</span><span class="lnt"> 40
-</span><span class="lnt"> 41
-</span><span class="lnt"> 42
-</span><span class="lnt"> 43
-</span><span class="lnt"> 44
-</span><span class="lnt"> 45
-</span><span class="lnt"> 46
-</span><span class="lnt"> 47
-</span><span class="lnt"> 48
-</span><span class="lnt"> 49
-</span><span class="lnt"> 50
-</span><span class="lnt"> 51
-</span><span class="lnt"> 52
-</span><span class="lnt"> 53
-</span><span class="lnt"> 54
-</span><span class="lnt"> 55
-</span><span class="lnt"> 56
-</span><span class="lnt"> 57
-</span><span class="lnt"> 58
-</span><span class="lnt"> 59
-</span><span class="lnt"> 60
-</span><span class="lnt"> 61
-</span><span class="lnt"> 62
-</span><span class="lnt"> 63
-</span><span class="lnt"> 64
-</span><span class="lnt"> 65
-</span><span class="lnt"> 66
-</span><span class="lnt"> 67
-</span><span class="lnt"> 68
-</span><span class="lnt"> 69
-</span><span class="lnt"> 70
-</span><span class="lnt"> 71
-</span><span class="lnt"> 72
-</span><span class="lnt"> 73
-</span><span class="lnt"> 74
-</span><span class="lnt"> 75
-</span><span class="lnt"> 76
-</span><span class="lnt"> 77
-</span><span class="lnt"> 78
-</span><span class="lnt"> 79
-</span><span class="lnt"> 80
-</span><span class="lnt"> 81
-</span><span class="lnt"> 82
-</span><span class="lnt"> 83
-</span><span class="lnt"> 84
-</span><span class="lnt"> 85
-</span><span class="lnt"> 86
-</span><span class="lnt"> 87
-</span><span class="lnt"> 88
-</span><span class="lnt"> 89
-</span><span class="lnt"> 90
-</span><span class="lnt"> 91
-</span><span class="lnt"> 92
-</span><span class="lnt"> 93
-</span><span class="lnt"> 94
-</span><span class="lnt"> 95
-</span><span class="lnt"> 96
-</span><span class="lnt"> 97
-</span><span class="lnt"> 98
-</span><span class="lnt"> 99
-</span><span class="lnt">100
-</span><span class="lnt">101
-</span><span class="lnt">102
-</span><span class="lnt">103
-</span><span class="lnt">104
-</span><span class="lnt">105
-</span><span class="lnt">106
-</span><span class="lnt">107
-</span><span class="lnt">108
-</span><span class="lnt">109
-</span><span class="lnt">110
-</span><span class="lnt">111
-</span><span class="lnt">112
-</span><span class="lnt">113
-</span><span class="lnt">114
-</span><span class="lnt">115
-</span><span class="lnt">116
-</span><span class="lnt">117
-</span><span class="lnt">118
-</span><span class="lnt">119
-</span><span class="lnt">120
-</span><span class="lnt">121
-</span><span class="lnt">122
-</span><span class="lnt">123
-</span><span class="lnt">124
-</span><span class="lnt">125
-</span><span class="lnt">126
-</span><span class="lnt">127
-</span><span class="lnt">128
-</span><span class="lnt">129
-</span><span class="lnt">130
-</span><span class="lnt">131
-</span><span class="lnt">132
-</span><span class="lnt">133
-</span><span class="lnt">134
-</span><span class="lnt">135
-</span><span class="lnt">136
-</span><span class="lnt">137
-</span><span class="lnt">138
-</span><span class="lnt">139
-</span><span class="lnt">140
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// libraries/legacy/model/list.php
+</span></span></code></pre></div><p>可以看到，这里获取了item_id等，强制转型成integer然后用setState函数来赋值，即从用户输入中取出item_id,type_id,type_alias,等几个变量，对当前model的属性进行赋值，由于可以控制的参数都被强制转成整形，所以只能看看其他地方，可以看到最后继承了populateState，去看看父类是怎么实现的</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// libraries/legacy/model/list.php
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">protected</span> <span class="k">function</span> <span class="nf">populateState</span><span class="p">(</span><span class="nv">$ordering</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$direction</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">	<span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="c1">// If the context is set, assume that stateful lists are used.
@@ -1318,78 +1017,8 @@
 </span></span><span class="line"><span class="cl">			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.limit&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="p">}</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>在这一部分代码中：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span><span class="lnt">50
-</span><span class="lnt">51
-</span><span class="lnt">52
-</span><span class="lnt">53
-</span><span class="lnt">54
-</span><span class="lnt">55
-</span><span class="lnt">56
-</span><span class="lnt">57
-</span><span class="lnt">58
-</span><span class="lnt">59
-</span><span class="lnt">60
-</span><span class="lnt">61
-</span><span class="lnt">62
-</span><span class="lnt">63
-</span><span class="lnt">64
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="nv">$list</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.list&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(),</span> <span class="s1">&#39;array&#39;</span><span class="p">))</span>
+</span></span></code></pre></div><p>在这一部分代码中：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="nv">$list</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.list&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(),</span> <span class="s1">&#39;array&#39;</span><span class="p">))</span>
 </span></span><span class="line"><span class="cl">			<span class="p">{</span>
 </span></span><span class="line"><span class="cl">				<span class="k">foreach</span> <span class="p">(</span><span class="nv">$list</span> <span class="k">as</span> <span class="nv">$name</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">				<span class="p">{</span>
@@ -1453,19 +1082,10 @@
 </span></span><span class="line"><span class="cl">					<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.&#39;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">				<span class="p">}</span>
 </span></span><span class="line"><span class="cl">			<span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里会从http请求中获取名为list的数组，可以看到最开始我们的参数&rsquo;list.select&rsquo;没有对应的处理逻辑，就会走default即不做任何处理，这导致了后续子类的populateState在对model的属性进行赋值的时候没有任何的过滤。所以我们可以控制$this-&gt;getState(‘list.select’)的返回值，构造SQL注入。</p>
+</span></span></code></pre></div><p>这里会从http请求中获取名为list的数组，可以看到最开始我们的参数&rsquo;list.select&rsquo;没有对应的处理逻辑，就会走default即不做任何处理，这导致了后续子类的populateState在对model的属性进行赋值的时候没有任何的过滤。所以我们可以控制$this-&gt;getState(‘list.select’)的返回值，构造SQL注入。</p>
 <p>POC：</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">/</span><span class="nx">index</span><span class="o">.</span><span class="nx">php</span><span class="o">?</span><span class="nx">option</span><span class="o">=</span><span class="nx">com_contenthistory</span><span class="o">&amp;</span><span class="nx">view</span><span class="o">=</span><span class="nx">history</span><span class="o">&amp;</span><span class="nx">item_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">ordering</span><span class="p">]</span><span class="o">=&amp;</span><span class="nx">type_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">select</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="nx">exp</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="nx">select</span> <span class="o">*</span> <span class="nx">from</span><span class="p">(</span><span class="nx">select</span> <span class="nx">md5</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="nx">x</span><span class="p">)))</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>多一个<code>list[ordering]=</code>是为了把原SQL中的order by字段值清空，否则会报Unknown column ‘Array’的错。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">/</span><span class="nx">index</span><span class="o">.</span><span class="nx">php</span><span class="o">?</span><span class="nx">option</span><span class="o">=</span><span class="nx">com_contenthistory</span><span class="o">&amp;</span><span class="nx">view</span><span class="o">=</span><span class="nx">history</span><span class="o">&amp;</span><span class="nx">item_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">ordering</span><span class="p">]</span><span class="o">=&amp;</span><span class="nx">type_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">select</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="nx">exp</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="nx">select</span> <span class="o">*</span> <span class="nx">from</span><span class="p">(</span><span class="nx">select</span> <span class="nx">md5</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="nx">x</span><span class="p">)))</span>
+</span></span></code></pre></div><p>多一个<code>list[ordering]=</code>是为了把原SQL中的order by字段值清空，否则会报Unknown column ‘Array’的错。</p>
 
 </section>
 
@@ -1655,6 +1275,51 @@
         document.head.appendChild(customFont);
     }());
 </script>
+  <script>
+    (function () {
+      const maxHeight = 420;
 
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
     </body>
 </html>
