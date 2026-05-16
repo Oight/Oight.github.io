@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cn" dir="ltr">
     <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" [!CAUTION]\n喜报！\n我的博客终于有图了！喜大普奔！！！\n">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" [!CAUTION]\n喜报！\n我的博客终于有图了！喜大普奔！！！\n2026/5/16日更新：\n这次使用的方案是微博图床＋一些其他厂商的CDN服务（主要是应对微博防盗链）\nWordPress\r加速域名：\n">
 <title>图片更新</title>
 
 <link rel='canonical' href='https://Oight.github.io/p/%E5%9B%BE%E7%89%87%E6%9B%B4%E6%96%B0/'>
 
 <link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="图片更新">
-<meta property='og:description' content=" [!CAUTION]\n喜报！\n我的博客终于有图了！喜大普奔！！！\n">
+<meta property='og:description' content=" [!CAUTION]\n喜报！\n我的博客终于有图了！喜大普奔！！！\n2026/5/16日更新：\n这次使用的方案是微博图床＋一些其他厂商的CDN服务（主要是应对微博防盗链）\nWordPress\r加速域名：\n">
 <meta property='og:url' content='https://Oight.github.io/p/%E5%9B%BE%E7%89%87%E6%9B%B4%E6%96%B0/'>
 <meta property='og:site_name' content='Oight'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-05-07T10:29:47&#43;08:00'/><meta property='article:modified_time' content='2026-05-07T10:29:47&#43;08:00'/>
 <meta name="twitter:title" content="图片更新">
-<meta name="twitter:description" content=" [!CAUTION]\n喜报！\n我的博客终于有图了！喜大普奔！！！\n">
+<meta name="twitter:description" content=" [!CAUTION]\n喜报！\n我的博客终于有图了！喜大普奔！！！\n2026/5/16日更新：\n这次使用的方案是微博图床＋一些其他厂商的CDN服务（主要是应对微博防盗链）\nWordPress\r加速域名：\n">
     <link rel="shortcut icon" href="/favicon.ico" />
 
     </head>
@@ -239,7 +239,44 @@
     </ol>
 </aside>
 
-    
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li>
+      <ol>
+        <li><a href="#wordpress">WordPress</a></li>
+        <li><a href="#cdnjson">cdnjson</a></li>
+        <li><a href="#ipfsscan">ipfsscan</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
 
             <main class="main full-width">
     <article class="main-article">
@@ -314,6 +351,31 @@
 <p>[!CAUTION]</p>
 <p>喜报！</p></blockquote>
 <p>我的博客终于有图了！喜大普奔！！！</p>
+<p>2026/5/16日更新：</p>
+<p>这次使用的方案是微博图床＋一些其他厂商的CDN服务（主要是应对微博防盗链）</p>
+<h3 id="wordpress">WordPress
+</h3><p>加速域名：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">i0.wp.com
+</span></span><span class="line"><span class="cl">i1.wp.com
+</span></span><span class="line"><span class="cl">i2.wp.com
+</span></span><span class="line"><span class="cl">i3.wp.com
+</span></span></code></pre></div><p>使用方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">https://i0.wp.com/不带https协议前缀的图片URL
+</span></span></code></pre></div><p>实测这个速度不如cdnjson</p>
+<h3 id="cdnjson">cdnjson
+</h3><p>加速域名：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cdn.cdnjson.com
+</span></span></code></pre></div><p>使用方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">https://cdn.cdnjson.com/pic.html?url=
+</span></span><span class="line"><span class="cl">https://cdn.cdnjson.com/不带https协议前缀的图片URL
+</span></span></code></pre></div><h3 id="ipfsscan">ipfsscan
+</h3><p>加速域名：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">cdn.ipfsscan.io/weibo/
+</span></span></code></pre></div><p>使用方法：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">https://cdn.ipfsscan.io/weibo/去掉微博图片链接中域名部分后的链接
+</span></span></code></pre></div><p>BTW，今天还稍微小修了一下博客以前存在的问题</p>
+<p>比如以前代码块行号总是坏掉，所以这次直接扬掉了（</p>
+<p>同时加入了代码框边框以及默认代码收起</p>
 
 </section>
 
