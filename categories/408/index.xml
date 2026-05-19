@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>408 on Oight</title>
+        <link>https://Oight.github.io/categories/408/</link>
+        <description>Recent content in 408 on Oight</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Oight</copyright>
+        <lastBuildDate>Tue, 19 May 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://Oight.github.io/categories/408/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>敲下回车后都发生了什么</title>
+        <link>https://Oight.github.io/p/%E6%95%B2%E4%B8%8B%E5%9B%9E%E8%BD%A6%E5%90%8E%E9%83%BD%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</link>
+        <pubDate>Tue, 19 May 2026 00:00:00 +0000</pubDate>
+        
+        <guid>https://Oight.github.io/p/%E6%95%B2%E4%B8%8B%E5%9B%9E%E8%BD%A6%E5%90%8E%E9%83%BD%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88/</guid>
+        <description>&lt;h1 id=&#34;敲下回车后都发生了什么&#34;&gt;敲下回车后都发生了什么
+&lt;/h1&gt;&lt;p&gt;某天在水群的时候看见了一句话&amp;quot;计网的几层也可以通过输入网址敲击回车后发生了什么串起来&amp;quot;,刚好也在补基础，所以就窃取了灵感，学习一下计网的基础知识，顺便水一篇博客&lt;/p&gt;
+&lt;p&gt;每天我们都无数次通过浏览器这个通向全世界的窗口来上网冲浪，但鲜少有人注意当我们每次在地址栏输入网址，按下enter键后都发生了什么&lt;/p&gt;
+&lt;h3 id=&#34;浏览器解析url&#34;&gt;浏览器解析URL
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;URL&lt;/strong&gt;（同意资源定位符）是因特网中的唯一资源的地址。它是浏览器用于检索已发布资源（例如HTML页面，CSS文档，图像等）的关键机制之一。&lt;/p&gt;
+&lt;p&gt;理论上说，每个有效的 URL 都指向一个唯一的资源。&lt;/p&gt;
+&lt;p&gt;比如有这样一个URL：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://www.example.com:443/path/index.html?name=alice#section&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://www.example.com:443/path/index.html?name=alice#section&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;它可以拆成：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;部分&lt;/th&gt;
+          &lt;th&gt;含义&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;https&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;使用 HTTPS 协议&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;www.example.com&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;目标域名&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;443&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;端口号，HTTPS 默认 443&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;/path/index.html&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;请求路径&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;?name=alice&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;查询参数&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;&lt;code&gt;#section&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;页面内片段，不会发送给服务器&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;浏览器首先要弄清楚三件事：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;用什么协议访问？&lt;/li&gt;
+&lt;li&gt;访问哪个主机？&lt;/li&gt;
+&lt;li&gt;请求哪个资源？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果没有显式写端口，浏览器会根据协议补默认端口：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;协议&lt;/th&gt;
+          &lt;th&gt;默认端口&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;HTTP&lt;/td&gt;
+          &lt;td&gt;80&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;HTTPS&lt;/td&gt;
+          &lt;td&gt;443&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;dns解析&#34;&gt;DNS解析
+&lt;/h3&gt;&lt;p&gt;真正的网址看上去并不像你输入到地址栏中的那样美好且容易记忆。它们是特殊的数字，像 &lt;code&gt;192.0.2.172&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;这串数字叫做IP地址，它代表的是web上独一无二的位置。然而，它并不容易记忆，不是吗？那就是发明域名系统（DNS）的原因。这个系统使用特殊的服务器将你输入到浏览器（如“mozilla.org”）的网址匹配到网站真实的（IP）地址。&lt;/p&gt;
+&lt;p&gt;当你输入&lt;code&gt;www.example.com&lt;/code&gt;时，浏览器需要先知道这个域名对应哪个IP地址&lt;/p&gt;
+&lt;p&gt;DNS 查询通常会按下面顺序尝试：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;浏览器 DNS 缓存&lt;/li&gt;
+&lt;li&gt;操作系统 DNS 缓存&lt;/li&gt;
+&lt;li&gt;hosts 文件&lt;/li&gt;
+&lt;li&gt;本地 DNS 服务器&lt;/li&gt;
+&lt;li&gt;根 DNS 服务器&lt;/li&gt;
+&lt;li&gt;顶级域 DNS 服务器，比如 &lt;code&gt;.com&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;权威 DNS 服务器&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;最终得到类似结果：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;www.example.com -&amp;gt; 93.184.216.34
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这一步主要用到的协议是DNS协议，跑在最顶端的应用层&lt;/p&gt;
+&lt;p&gt;DNS 一般使用 UDP 53 端口，但在响应过大、区域传输等场景下也可能使用 TCP。&lt;/p&gt;
+&lt;h3 id=&#34;判断目标-ip-在不在同一个网络&#34;&gt;判断目标 IP 在不在同一个网络
+&lt;/h3&gt;&lt;p&gt;拿到 IP 后，主机会判断目标地址是否和自己处于同一个局域网。&lt;/p&gt;
+&lt;p&gt;假设本机信息如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;本机 IP：192.168.1.100
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;子网掩码：255.255.255.0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;默认网关：192.168.1.1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;目标 IP：93.184.216.34
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过子网掩码判断后，发现目标 IP 不在本地局域网。&lt;/p&gt;
+&lt;p&gt;于是数据不能直接发给目标服务器，而是先发给默认网关，也就是路由器。&lt;/p&gt;
+&lt;p&gt;这里涉及几个概念：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;概念&lt;/th&gt;
+          &lt;th&gt;作用&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;IP 地址&lt;/td&gt;
+          &lt;td&gt;标识网络中的主机&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;子网掩码&lt;/td&gt;
+          &lt;td&gt;判断两个 IP 是否在同一网段&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;默认网关&lt;/td&gt;
+          &lt;td&gt;访问外部网络时的下一跳&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;路由表&lt;/td&gt;
+          &lt;td&gt;决定数据包下一步发往哪里&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;这一阶段主要对应：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;网络层次&lt;/th&gt;
+          &lt;th&gt;协议 / 概念&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;网络层&lt;/td&gt;
+          &lt;td&gt;IP、路由&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h4 id=&#34;为什么数据不能直接发给目标服务器呢&#34;&gt;为什么数据不能直接发给目标服务器呢？
+&lt;/h4&gt;&lt;p&gt;我们先构建一个简单的网络：&lt;/p&gt;
+&lt;p&gt;当两台计算机需要通信的时候，你必须要连接他们，无论通过有线方式（通常是网线）或是无线方式（比如 WiFi 或蓝牙）。所有现代计算机都支持这些连接。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-1.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;png1&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;通常一个网络不仅限于两台计算机。你可以尽你所想地连接计算机，但是情况立刻变得复杂了。如果你尝试连接，比如说十台计算机，每台电脑有九个插头，总共需要 45 条网线。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-2.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;png2&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;为了解决这个问题，网络上的每台计算机需要连接到一个叫做网络交换机（&lt;em&gt;network switch&lt;/em&gt;）的小型特殊计算机。交换机只干一件事：就像火车站的调度员，它要确保从一台计算机上发出的消息仅可以到达目标计算机。为了把消息发送给计算机 B，计算机 A 必须把信息发送给交换机，交换机将收到的信息转发给计算机 B。计算机 B 不会收到发给其他计算机的消息，发给计算机 B  的消息也不会传到局域网上的其他计算机上。&lt;/p&gt;
+&lt;p&gt;一旦我们把交换机加入到这个系统，我们的网络中便只需要十条网线：每台计算机一个插口，交换机上十个插口。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-3.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;png3&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h5 id=&#34;网络中的网&#34;&gt;网络中的网
+&lt;/h5&gt;&lt;p&gt;到目前为止一切都很好。但是我们要连接成百上千、上亿台计算机呢？当然一台交换机覆盖不了这么远，但是，如果你阅读得比较认真，我们曾提到交换机像其他计算机一样，所以我们为什么不把两个交换机彼此连接呢？&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-4.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;png4&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;你可以想象我们可以无限地将交换机连接起来，形成这样的网络：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-5.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;png5&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;但是在现实中，这样会导致许多工程问题。数据包需要经过的交换机越多，到达目的地的时间就越长。而且你不能只依赖这种树状结构的交换机集群，因为一旦某个交换机节点故障，就会导致大面积的断网，这会使你的网络变得脆弱。为了解决这个问题，我们将每个网络保持在一个较小的规模，并使用一种名为&lt;em&gt;路由器&lt;/em&gt;（router）的设备来连接每个网络。路由器是一种负责在不同网络之间转发消息的计算机，其运作原理类似邮局：当数据包到达时，它会读取收件人的地址，直接将数据包转发给正确的收件人，而无需经过层层中转。&lt;/p&gt;
+&lt;p&gt;我们来解释一下上面这段话，&lt;/p&gt;
+&lt;h6 id=&#34;首先路由器比纯使用交换机好在哪&#34;&gt;首先路由器比纯使用交换机好在哪：
+&lt;/h6&gt;&lt;p&gt;首先，交换机工作在数据链路层（二层），转发依据是 MAC 地址。当一个设备想找到另一个设备时，它会发送广播帧（比如 ARP 请求），交换机必须把这个广播复制到所有端口。&lt;/p&gt;
+&lt;p&gt;如果只有几十台设备，广播影响可以忽略。但如果把全世界的设备都连成一个二层网络，任何一台设备发出的广播，都会瞬间扩散到整个地球。每一台设备都会不断收到海量与自己无关的广播，CPU 被占用，带宽被耗尽，这就是广播风暴。结果就是，全世界网络一起瘫痪。&lt;/p&gt;
+&lt;p&gt;其次，交换机靠 MAC 地址表来寻址，二路由器使用IP地址来寻址，这样做的好处是可以把全世界切割成无数小的子网。你发往“大洋彼岸”的数据，只需要知道下一跳路由器在哪，完全不需要知道对方具体的 MAC 地址。&lt;/p&gt;
+&lt;p&gt;第三点，路由器直接可以通过路由协议（OSPF、BGP等），可以像导航地图一样实时计算最佳路径。当某条海缆断了，路由器能动态绕行，这是交换机二层网络永远做不到的。&lt;/p&gt;
+&lt;h6 id=&#34;为什么某个交换机节点故障了会导致大面积的断网但路由器不会&#34;&gt;为什么某个交换机节点故障了会导致大面积的断网，但路由器不会
+&lt;/h6&gt;&lt;p&gt;使用纯交换机组成树形结构的网络像是这样的：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            ┌─────────────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            │  核心交换机  │  ⬅️ 这台坏了 👇
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            └──┬──┬──┬──┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        ┌─────┘  │  └─────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   ┌────┴────┐   │  ┌────┴────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   │ 交换机A │   │  │ 交换机B │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   └──┬──┬──┘   │  └──┬──┬──┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     PC1 PC2    PC3   PC4 PC5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;核心交换机一旦宕机，所有的 PC 全部无法通信，整个网络完全瘫痪。即便交换机A、B都完好，它们也失去了与上层连接的通路，没有任何备用路径（因为树形结构没有环路，或者即便有环路也会被 STP 阻塞成无环树）。&lt;/p&gt;
+&lt;p&gt;但如果使用路由器把网络切成小块的话是这样的:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  网络1 (小)           网络2 (小)            网络3 (小)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ┌─────────┐         ┌─────────┐          ┌─────────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  │ PC1 PC2 │         │ PC3 PC4 │          │ PC5 PC6 │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  └────┬────┘         └────┬────┘          └────┬────┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       │                   │                    │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ┌────┴────┐         ┌────┴────┐          ┌────┴────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  │ 路由器1  │◄───────►│ 路由器2  │◄────────►│ 路由器3  │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  └─────────┘         └────┬────┘          └─────────┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                           ⬆️ 这台路由器2 挂了
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;网络2 内部：PC3 和 PC4 之间仍然可以互相通信（它们连在同一个交换机或路由器内网口，属于同一广播域，不依赖路由器2）。&lt;/p&gt;
+&lt;p&gt;网络2 访问外部：网络2 里的设备无法再访问网络1、网络3 以及互联网。&lt;/p&gt;
+&lt;p&gt;网络1 和网络3：它们之间的通信完全不受影响，可以继续正常互访。&lt;/p&gt;
+&lt;p&gt;结论：路由器2 的故障只让它负责的“网络2”对外断网，影响范围被牢牢限制在一个小区域内，没有扩散到其他网络。&lt;/p&gt;
+&lt;p&gt;而且路由器还支持冗余协议（如 VRRP/HSRP）和动态路由，所以可以这样设计：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        网络1                网络2 (关键网络)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       ┌──────┐            ┌──────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       │ R1   │            │ 虚拟网关 │  (VIP: 192.168.2.1)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       └──┬───┘            └──┬───┬──┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │                   │   │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │      ┌────────────┘   └────────────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │      │                             │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       ┌──┴──────┴──┐                     ┌────┴─────┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       │   骨干网络   │                     │          │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;       └──┬──────┬──┘                  ┌──┴──┐   ┌──┴──┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │      │                     │ R2a │   │ R2b │  (真实路由器)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │      │                     └──┬──┘   └──┬──┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │      └──────────────┬────────┘         │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │                     │                  │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │                  ┌──┴──────────────────┴──┐
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │                  │   交换机 (网络2内部)    │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │                  └─────┬──────┬──────────┘
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          │                        │      │
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;          └─────(其他网络)─────   PC3    PC4
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;R2a 和 R2b 是一对冗余路由器，共同对外虚拟出一个“虚拟网关”（VIP）。&lt;/p&gt;
+&lt;p&gt;正常情况下，R2a 负责转发，R2b 处于备份状态。&lt;/p&gt;
+&lt;p&gt;一旦 R2a 宕机，R2b 会立刻接管虚拟网关，网络2 的内部设备对外通信几乎不受影响（仅丢失极少量正在传输的包）。&lt;/p&gt;
+&lt;p&gt;对于网络1 和更远的网络，动态路由协议会立刻发现 R2a 失效，将流量自动绕行到 R2b，整个互联网不会因为这一台路由器故障而瘫痪。&lt;/p&gt;
+&lt;p&gt;这时候就有人要问了，为什么交换机不能使用冗余设计来消灭单点故障&lt;/p&gt;
+&lt;p&gt;这是因为交换机中MAC地址表大小是有限的，当交换机的地址表中没找到对应的MAC地址的时候，就会进行全网广播，然而当形成环路的时候，广播操作就会一直在交换机之间发生，然后无限死循环，造成全网瘫痪。所以，为了避免这种情况的发生，二层网络物理上不能有环路。&lt;/p&gt;
+&lt;p&gt;所以我们回到前面，我们就可以用路由器来将一个个小网络连接起来&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-6.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;png6&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;下一步是将我们网络中的消息发送至目标网络。为此，我们将通过互联网服务提供商（ISP）连接至互联网。ISP  是管理特殊路由器的公司，这些路由器相互连接，并能访问其他 ISP 的路由器。因此，来自我们网络的消息将通过 ISP  网络的网络传输至目标网络。整个互联网正是由这样的网络基础设施构成的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work/internet-schema-7.png&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;png7&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;arp通过-ip-找到-mac-地址&#34;&gt;ARP：通过 IP 找到 MAC 地址
+&lt;/h3&gt;&lt;p&gt;即使知道要把数据交给默认网关，主机还需要知道网关的 MAC 地址。&lt;/p&gt;
+&lt;p&gt;因为在局域网里，数据链路层真正转发的是 MAC 帧。&lt;/p&gt;
+&lt;p&gt;主机会发送 ARP 请求：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;谁是 192.168.1.1？请告诉 192.168.1.100
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;路由器回复：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;192.168.1.1 的 MAC 地址是 aa:bb:cc:dd:ee:ff
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;之后，本机会把数据封装成以太网帧，发给网关的 MAC 地址。&lt;/p&gt;
+&lt;p&gt;这里要注意一个重要点：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;IP 地址用于跨网络寻址，MAC 地址用于同一个局域网内的下一跳转发。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;这一阶段主要对应：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;网络层次&lt;/th&gt;
+          &lt;th&gt;协议 / 概念&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;数据链路层&lt;/td&gt;
+          &lt;td&gt;ARP、MAC、以太网帧&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;tcp-三次握手建立可靠连接&#34;&gt;TCP 三次握手：建立可靠连接
+&lt;/h3&gt;&lt;p&gt;在大多数情况下，一个HTTP请求会对应一个TCP连接。HTTP是基于TCP协议的，它使用TCP来传输HTTP请求和响应数据。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;HTTP 1.0 和HTTP 2.0都基于TCP，而HTTP 3.0基于UDP&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;TCP 三次握手过程如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;客户端 -&amp;gt; 服务器：SYN
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;服务器 -&amp;gt; 客户端：SYN + ACK
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;客户端 -&amp;gt; 服务器：ACK
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;三次握手的目的：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;确认双方都能发送和接收数据&lt;/li&gt;
+&lt;li&gt;协商初始序列号&lt;/li&gt;
+&lt;li&gt;建立可靠传输连接&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;TCP 提供的能力包括：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;能力&lt;/th&gt;
+          &lt;th&gt;说明&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;可靠传输&lt;/td&gt;
+          &lt;td&gt;丢包后可以重传&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;有序传输&lt;/td&gt;
+          &lt;td&gt;接收方按顺序交付数据&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;流量控制&lt;/td&gt;
+          &lt;td&gt;防止发送方把接收方打爆&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;拥塞控制&lt;/td&gt;
+          &lt;td&gt;避免把网络链路打爆&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;端口复用&lt;/td&gt;
+          &lt;td&gt;用端口区分不同应用进程&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;这一阶段主要对应：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;网络层次&lt;/th&gt;
+          &lt;th&gt;协议&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;传输层&lt;/td&gt;
+          &lt;td&gt;TCP&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;tls-握手https-为什么安全&#34;&gt;TLS 握手：HTTPS 为什么安全
+&lt;/h3&gt;&lt;p&gt;如果 URL 是 &lt;code&gt;https://&lt;/code&gt;，TCP 连接建立后，还不能直接发送 HTTP 明文请求。&lt;/p&gt;
+&lt;p&gt;浏览器和服务器还要进行 TLS 握手。&lt;/p&gt;
+&lt;p&gt;TLS 握手主要做几件事：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;协商 TLS 版本&lt;/li&gt;
+&lt;li&gt;协商加密套件&lt;/li&gt;
+&lt;li&gt;服务器发送证书&lt;/li&gt;
+&lt;li&gt;浏览器验证证书是否可信&lt;/li&gt;
+&lt;li&gt;双方协商出会话密钥&lt;/li&gt;
+&lt;li&gt;后续 HTTP 数据使用会话密钥加密传输&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;证书验证主要是为了确认：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;我访问的真的是 www.example.com，而不是中间人伪造的网站。
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;TLS 解决的问题包括：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;问题&lt;/th&gt;
+          &lt;th&gt;TLS 的作用&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;窃听&lt;/td&gt;
+          &lt;td&gt;加密传输内容&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;篡改&lt;/td&gt;
+          &lt;td&gt;校验数据完整性&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;冒充&lt;/td&gt;
+          &lt;td&gt;通过证书验证服务器身份&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;TLS 通常被认为位于应用层和传输层之间，也可以理解为 HTTPS 的安全基础。&lt;/p&gt;
+&lt;p&gt;关于TCP和TLS我以前的&lt;a class=&#34;link&#34; href=&#34;https://oight.github.io/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;TLS Poison 攻击学习&lt;/a&gt;中都有提到过&lt;/p&gt;
+&lt;h3 id=&#34;数据是如何被一层层封装的&#34;&gt;数据是如何被一层层封装的
+&lt;/h3&gt;&lt;p&gt;浏览器生成 HTTP 请求后，数据不会直接裸奔到网络上。&lt;/p&gt;
+&lt;p&gt;它会被一层层封装：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;HTTP 数据
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓ 加 TCP 头
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TCP Segment
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓ 加 IP 头
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;IP Packet
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓ 加 Ethernet 头和尾
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Ethernet Frame
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓ 转成电信号 / 光信号 / 无线电波
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;物理介质上传输
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;接收方则反过来一层层拆包：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Ethernet Frame
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓ 去掉以太网头尾
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;IP Packet
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓ 去掉 IP 头
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TCP Segment
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓ 去掉 TCP 头
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;HTTP 数据
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;每一层只关心自己的职责：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;层次&lt;/th&gt;
+          &lt;th&gt;关注点&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;应用层&lt;/td&gt;
+          &lt;td&gt;传什么业务数据&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;传输层&lt;/td&gt;
+          &lt;td&gt;进程到进程，可靠性，端口&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;网络层&lt;/td&gt;
+          &lt;td&gt;主机到主机，IP 和路由&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;数据链路层&lt;/td&gt;
+          &lt;td&gt;相邻节点之间，MAC 和帧&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;物理层&lt;/td&gt;
+          &lt;td&gt;比特如何在介质上传输&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;路由器在中间做了什么&#34;&gt;路由器在中间做了什么
+&lt;/h3&gt;&lt;p&gt;数据包从你的电脑到服务器，通常会经过多个路由器。&lt;/p&gt;
+&lt;p&gt;每个路由器主要做这些事：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;收到数据帧&lt;/li&gt;
+&lt;li&gt;拆掉当前链路层头部&lt;/li&gt;
+&lt;li&gt;查看 IP 包的目标地址&lt;/li&gt;
+&lt;li&gt;查询路由表&lt;/li&gt;
+&lt;li&gt;找到下一跳&lt;/li&gt;
+&lt;li&gt;重新封装新的链路层帧&lt;/li&gt;
+&lt;li&gt;转发出去&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;一个很重要的点：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;源 IP 和目标 IP 通常在传输过程中不变，但每一跳的源 MAC 和目标 MAC 都会变化。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;例如：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;电脑 -&amp;gt; 家用路由器
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;源 MAC：电脑 MAC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;目标 MAC：路由器 MAC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;路由器 -&amp;gt; 下一跳运营商设备
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;源 MAC：路由器出口 MAC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;目标 MAC：下一跳设备 MAC
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;IP 负责端到端，MAC 负责下一跳。&lt;/p&gt;
+&lt;h3 id=&#34;服务器处理请求&#34;&gt;服务器处理请求
+&lt;/h3&gt;&lt;p&gt;服务器收到 HTTP 请求后，可能经历：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Nginx / Apache / Caddy
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;反向代理
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;后端应用服务
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;缓存 / 数据库
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;生成响应
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;例如访问一个动态页面时，后端可能会：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;解析请求路径和参数&lt;/li&gt;
+&lt;li&gt;校验 Cookie 或 Token&lt;/li&gt;
+&lt;li&gt;查询 Redis 缓存&lt;/li&gt;
+&lt;li&gt;查询 MySQL / PostgreSQL&lt;/li&gt;
+&lt;li&gt;渲染 HTML 或返回 JSON&lt;/li&gt;
+&lt;li&gt;交给 Web 服务器返回给浏览器&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果是静态资源，比如图片、CSS、JS，服务器可能直接从磁盘或 CDN 返回。&lt;/p&gt;
+&lt;h3 id=&#34;浏览器解析并渲染页面&#34;&gt;浏览器解析并渲染页面
+&lt;/h3&gt;&lt;p&gt;浏览器收到 HTML 后，会开始渲染页面。&lt;/p&gt;
+&lt;p&gt;大致流程：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;解析 HTML，构建 DOM 树&lt;/li&gt;
+&lt;li&gt;解析 CSS，构建 CSSOM 树&lt;/li&gt;
+&lt;li&gt;合并 DOM 和 CSSOM，生成渲染树&lt;/li&gt;
+&lt;li&gt;Layout，计算元素位置和大小&lt;/li&gt;
+&lt;li&gt;Paint，绘制像素&lt;/li&gt;
+&lt;li&gt;Composite，合成图层并显示&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果 HTML 中引用了 CSS、JS、图片、字体等资源：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-html&#34; data-lang=&#34;html&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;link&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;rel&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;stylesheet&amp;#34;&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;href&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/style.css&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;script&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/main.js&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;script&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;img&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/logo.png&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;浏览器还会继续发起新的网络请求。&lt;/p&gt;
+&lt;p&gt;这些请求可能会：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;复用已有 TCP/TLS 连接&lt;/li&gt;
+&lt;li&gt;使用缓存&lt;/li&gt;
+&lt;li&gt;重新 DNS 查询&lt;/li&gt;
+&lt;li&gt;走 CDN&lt;/li&gt;
+&lt;li&gt;使用 HTTP/2 多路复用&lt;/li&gt;
+&lt;li&gt;使用 HTTP/3 over QUIC&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;用这个过程串起网络分层&#34;&gt;用这个过程串起网络分层
+&lt;/h3&gt;&lt;p&gt;现在回头看，输入网址这件事正好把网络分层串起来了。&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;网络层次&lt;/th&gt;
+          &lt;th&gt;在这个过程中的体现&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;应用层&lt;/td&gt;
+          &lt;td&gt;DNS、HTTP、HTTPS&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;传输层&lt;/td&gt;
+          &lt;td&gt;TCP、UDP、端口、可靠传输&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;网络层&lt;/td&gt;
+          &lt;td&gt;IP、路由、跨网段转发&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;数据链路层&lt;/td&gt;
+          &lt;td&gt;MAC、ARP、以太网帧&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;物理层&lt;/td&gt;
+          &lt;td&gt;网线、光纤、Wi-Fi 信号&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;如果用 OSI 七层模型表示：&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;OSI 七层&lt;/th&gt;
+          &lt;th&gt;对应例子&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;应用层&lt;/td&gt;
+          &lt;td&gt;HTTP、DNS&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;表示层&lt;/td&gt;
+          &lt;td&gt;TLS、编码、压缩&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;会话层&lt;/td&gt;
+          &lt;td&gt;会话状态、连接管理&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;传输层&lt;/td&gt;
+          &lt;td&gt;TCP、UDP&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;网络层&lt;/td&gt;
+          &lt;td&gt;IP、路由&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;数据链路层&lt;/td&gt;
+          &lt;td&gt;Ethernet、MAC、ARP&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;物理层&lt;/td&gt;
+          &lt;td&gt;电信号、光信号、无线电波&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;总流程图&#34;&gt;总流程图
+&lt;/h3&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;输入 URL
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;浏览器解析 URL
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;DNS 查询域名对应 IP
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;判断目标是否在同一网段
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ARP 获取下一跳 MAC 地址
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TCP 三次握手
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TLS 握手
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;发送 HTTP 请求
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;服务器处理请求
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;返回 HTTP 响应
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;数据逐层拆包
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  ↓
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;浏览器解析并渲染页面
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;总结&#34;&gt;总结
+&lt;/h2&gt;&lt;p&gt;输入网址并按下回车，看起来只是一个简单动作，但背后串起了计算机网络的大部分核心知识。&lt;/p&gt;
+&lt;p&gt;DNS 负责把域名变成 IP，IP 和路由负责把数据送到目标网络，ARP 和 MAC 负责局域网内的下一跳转发，TCP 负责可靠连接，TLS 负责安全加密，HTTP 负责应用层语义，浏览器最终负责解析和渲染页面。&lt;/p&gt;
+&lt;p&gt;如果把这些知识孤立地背，很容易混乱；但如果沿着“一次网页访问”的路径去看，每一层为什么存在、解决什么问题，就会清楚很多。&lt;/p&gt;
+&lt;h2 id=&#34;参考&#34;&gt;参考
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://developer.mozilla.org/zh-CN/docs/Learn_web_development/Howto/Web_mechanics/How_does_the_Internet_work&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;互联网是如何工作的?&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
