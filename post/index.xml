@@ -10210,51 +10210,52 @@ alt="1"
 >&lt;/p>
 &lt;p>刚刚进来是这样的画面，左上角是符号表区，右边会呈现汇编与伪代码，默认是C格式的伪代码&lt;/p>
 &lt;p>主要用到的也是这两个部分&lt;/p>
+&lt;p>和IDA一样，可以在左侧使用Ctrl + r 来进行搜索，搜索main的时候，有时候是main，有时候会被解析成&lt;code>invoke_main&lt;/code>&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1idgb0u92jjj31ir116hdt.jpg"
 loading="lazy"
 alt="2"
 >&lt;/p>
-&lt;p>和IDA一样，可以在左侧使用Ctrl + r 来进行搜索，搜索main的时候，有时候是main，有时候会被解析成&lt;code>invoke_main&lt;/code>&lt;/p>
+&lt;p>双击左边&lt;code>invoke_main&lt;/code>会跳到&lt;code>invoke_main&lt;/code>函数，如果是main的话就会直接跳到main&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1idgb4agap0j31z315ee81.jpg"
 loading="lazy"
 alt="3"
 >&lt;/p>
-&lt;p>双击左边&lt;code>invoke_main&lt;/code>会跳到&lt;code>invoke_main&lt;/code>函数，如果是main的话就会直接跳到main，这里需要再点击一下&lt;code>invoke_main&lt;/code>中的&lt;/p>
+&lt;p>这里需要再点击一下&lt;code>invoke_main&lt;/code>中的&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1idgb79uooxj30qt095jvu.jpg"
 loading="lazy"
 alt="4"
 >&lt;/p>
 &lt;p>然后这里引用了一个jump函数，再点一下就可以jump到main中了&lt;/p>
+&lt;p>可以看到这里就是主逻辑了&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1idgb9yno4zj310211mayp.jpg"
 loading="lazy"
 alt="5"
 >&lt;/p>
-&lt;p>可以看到这里就是主逻辑了&lt;/p>
+&lt;p>可以看到显然&lt;code>j_sub_1400795e0&lt;/code>函数就是Rc4算法，为了让程序更好看我们有时候会给函数改个名字，这时候会用到右键菜单&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1idgbe2i1quj318z10k1k2.jpg"
 loading="lazy"
 alt="6"
 >&lt;/p>
-&lt;p>可以看到显然&lt;code>j_sub_1400795e0&lt;/code>函数就是Rc4算法，为了让程序更好看我们有时候会给函数改个名字，这时候会用到右键菜单&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1idgbgif0wzj30h50phah9.jpg"
 loading="lazy"
 alt="7"
 >&lt;/p>
 &lt;p>点击这个选项进行重命名&lt;/p>
+&lt;p>需要注意的是，我们命名的时候建议进函数里面来重命名，不然可能会不成功&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1idgbkq9e8tj318d0vltxj.jpg"
 loading="lazy"
 alt="8"
 >&lt;/p>
-&lt;p>需要注意的是，我们命名的时候建议进函数里面来重命名，不然可能会不成功&lt;/p>
+&lt;p>可以看到外面变成了&lt;code>j_Rc4&lt;/code>里面是Rc4&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1idgbm4culwj30zk0zx1ge.jpg"
 loading="lazy"
 alt="9"
 >&lt;/p>
-&lt;p>可以看到外面变成了&lt;code>j_Rc4&lt;/code>里面是Rc4&lt;/p>
+&lt;p>同样的，也可以用Rename Variable选项来重命名函数参数&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1idgbodi8rkj31640qz1a0.jpg"
 loading="lazy"
 alt="10"
 >&lt;/p>
-&lt;p>同样的，也可以用Rename Variable选项来重命名函数参数&lt;/p>
 &lt;p>看一眼Rc4函数&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="mf">1400795e0&lt;/span> &lt;span class="kt">uint32_t&lt;/span> &lt;span class="nf">Rc4&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">char&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">arg1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">char&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">arg2&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">char&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">arg3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">uint32_t&lt;/span> &lt;span class="n">arg4&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">int64_t&lt;/span> &lt;span class="n">arg5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">int32_t&lt;/span> &lt;span class="n">arg6&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
@@ -10456,11 +10457,11 @@ loading="lazy"
 alt="12"
 >&lt;/p>
 &lt;p>选中之后要提取的数据后右键&lt;/p>
+&lt;p>点击Copy As -&amp;gt; C Array -&amp;gt; 8-bit Elements 一般都是使用这个格式来提取数据&lt;/p>
 &lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1idgcn51smcj315a0klwxl.jpg"
 loading="lazy"
 alt="13"
 >&lt;/p>
-&lt;p>点击Copy As -&amp;gt; C Array -&amp;gt; 8-bit Elements 一般都是使用这个格式来提取数据&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">byte_6000&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">[&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mh">0x1b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x9b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xfb&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x19&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x06&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x6a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xb5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x3b&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x7c&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xba&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x03&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xf3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x91&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xb8&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xb6&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x3d&lt;/span>&lt;span class="p">,&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mh">0x8a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xc1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x48&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x2e&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x50&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x11&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xe7&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xc7&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x4f&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xb1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x27&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xcf&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xf3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0xae&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x03&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x09&lt;/span>&lt;span class="p">,&lt;/span>
