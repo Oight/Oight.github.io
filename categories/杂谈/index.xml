@@ -13,6 +13,8 @@
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用方法：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">https://i0.wp.com/不带https协议前缀的图片URL
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>实测这个速度不如cdnjson&lt;/p>
+&lt;blockquote>
+&lt;p>2025/5/24 更新，cdnjson已不可用，可以考虑使用wordpress的加速服务&lt;/p>&lt;/blockquote>
 &lt;h3 id="cdnjson">cdnjson
 &lt;/h3>&lt;p>加速域名：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">cdn.cdnjson.com

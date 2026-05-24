@@ -591,11 +591,11 @@ alt="png7"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">  └─ Oracle VirtualBox → VulnHub靶机: 192.168.56.102
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="具体配置">具体配置：
 &lt;/h3>&lt;h4 id="vmware">Vmware
-&lt;/h4>&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrms9vhj30oz0lltev.jpg"
+&lt;/h4>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrms9vhj30oz0lltev.jpg"
 loading="lazy"
 alt="image-20260415130029235"
 >&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrn10hej30th0y5qbo.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrn10hej30th0y5qbo.jpg"
 loading="lazy"
 alt="image-20260415130231211"
 >&lt;/p>
@@ -606,7 +606,7 @@ alt="image-20260415130231211"
 &lt;p>连接方式选择：仅主机 (Host-Only) 网络。&lt;/p>
 &lt;p>验证：&lt;/p>
 &lt;p>在kali中使用ifconfig：&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrnmfatj30kg07u43x.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrnmfatj30kg07u43x.jpg"
 loading="lazy"
 alt="image-20260415130711680"
 >&lt;/p>
@@ -614,117 +614,117 @@ alt="image-20260415130711680"
 &lt;h3 id="漏洞复现">漏洞复现
 &lt;/h3>&lt;p>本次的靶机选取的是vulnhub中的VulnCMS-1&lt;/p>
 &lt;p>渗透测试本质是信息搜集，所以我们先做下c段嗅探，使用nmap来扫描192.168.56.0/24 段内存活的主机地址：&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrnxqifj312v0eenan.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwnrnxqifj312v0eenan.jpg"
 loading="lazy"
 alt="image-20260415131249023"
 >&lt;/p>
 &lt;p>可以看到，1是网关地址，100是DHCP服务器，101是我们的kali攻击机，则102即为我们的靶机地址，继续使用nmap扫下端口，看看靶机上都跑了哪些服务&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrovgt5j30za0dhgy9.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwnrovgt5j30za0dhgy9.jpg"
 loading="lazy"
 alt="image-20260415131954549"
 >&lt;/p>
 &lt;p>可以看到这里开放了22，80，5000，8081和9001端口，22端口是ssh，80端口是http服务&lt;/p>
 &lt;p>先探测一下web服务，这里我们使用gobuster, Gobuster 是一款用 Go 编写的高效目录、文件、DNS 子域及虚拟主机枚举工具，常用于渗透测试和信息收集。&lt;/p>
 &lt;p>我们来枚举一下目录：&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrpds2tj30yd0jldyp.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwnrpds2tj30yd0jldyp.jpg"
 loading="lazy"
 alt="image-20260415132551109"
 >&lt;/p>
 &lt;p>访问一下&lt;code>http://192.168.56.102/vulnerable/&lt;/code>&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrpvvydj30sx0blwj8.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwnrpvvydj30sx0blwj8.jpg"
 loading="lazy"
 alt="image-20260415133027007"
 >&lt;/p>
 &lt;p>是几张图片&lt;/p>
 &lt;p>访问robots.txt:&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrpk35ej30r90750ts.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrpk35ej30r90750ts.jpg"
 loading="lazy"
 alt="image-20260415132713472"
 >&lt;/p>
 &lt;p>/about.html:&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrpqlyfj31yz0fawlo.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrpqlyfj31yz0fawlo.jpg"
 loading="lazy"
 alt="image-20260415132903969"
 >&lt;/p>
 &lt;p>似乎没什么有用的信息&lt;/p>
 &lt;p>访问一下其它端口&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrq4rx1j30rw120n60.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwnrq4rx1j30rw120n60.jpg"
 loading="lazy"
 alt="image-20260415133218787"
 >&lt;/p>
 &lt;p>5000端口上跑了一个WordPress&lt;/p>
 &lt;p>访问helloworld的时候发现跳转到了&lt;code>http://fsociety.web:5000/hello-world/&lt;/code>&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrqd2wxj31z30zdtmd.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrqd2wxj31z30zdtmd.jpg"
 loading="lazy"
 alt="image-20260415133352036"
 >&lt;/p>
 &lt;p>继续探测WordPress服务的web目录&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrroyr2j31630v6e81.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrroyr2j31630v6e81.jpg"
 loading="lazy"
 alt="image-20260415140733940"
 >&lt;/p>
 &lt;p>可以发现有wp-login.php和rss&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrs79kxj30on0hygrg.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrs79kxj30on0hygrg.jpg"
 loading="lazy"
 alt="image-20260415140920524"
 >&lt;/p>
 &lt;p>在rss里发现了版本信息： WordPress/5.7.2，但很遗憾这个版本似乎没有什么可利用的CVE&lt;/p>
 &lt;p>wp-admin.php也没有弱密码&lt;/p>
 &lt;p>先换个端口探测&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrsn3oyj30qb0qwe4s.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrsn3oyj30qb0qwe4s.jpg"
 loading="lazy"
 alt="image-20260415142007994"
 >&lt;/p>
 &lt;p>看到8081端口有README.txt&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrsxddaj30tb0wstnm.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwnrsxddaj30tb0wstnm.jpg"
 loading="lazy"
 alt="image-20260415142050597"
 >&lt;/p>
 &lt;p>所以8081上跑了一个Joomla ，Joomla是一个开源的内容管理系统（cms），联想到这个靶机的名字是VulnCMS，应该是在这里做文章&lt;/p>
 &lt;p>使用joomscan进行扫描：&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrtex97j30oc0rrkfl.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrtex97j30oc0rrkfl.jpg"
 loading="lazy"
 alt="image-20260415142541155"
 >&lt;/p>
 &lt;p>可以看到这里跑的Joomla版本是3.4.3，第一个就是SQL注入漏洞&lt;/p>
 &lt;p>可以用msf利用，具体漏洞分析会写在最后&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrtpflij30w70alk0o.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwnrtpflij30w70alk0o.jpg"
 loading="lazy"
 alt="image-20260415151207323"
 >&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnruslrdj31220j7twv.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnruslrdj31220j7twv.jpg"
 loading="lazy"
 alt="image-20260415151502240"
 >&lt;/p>
 &lt;p>直接读取到了数据库信息，可以看到这里有一个和其他的都不一样的邮箱&lt;/p>
 &lt;p>继续探测9001端口&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrvsaswj30l00qtqmt.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwnrvsaswj30l00qtqmt.jpg"
 loading="lazy"
 alt="image-20260415151855498"
 >&lt;/p>
 &lt;p>可以看到依旧有README.txt ，&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrw0h1zj30pc0faadn.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwnrw0h1zj30pc0faadn.jpg"
 loading="lazy"
 alt="image-20260415151930658"
 >&lt;/p>
 &lt;p>9001端口跑的是Drupal，Drupal 是一个使用 PHP 语言编写的开源内容管理框架（CMF）&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnrw8v4aj30pg0cu78p.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwnrw8v4aj30pg0cu78p.jpg"
 loading="lazy"
 alt="image-20260415152051591"
 >&lt;/p>
 &lt;p>可以在/CHANGELOG.txt中看到这里的版本是7.54&lt;/p>
 &lt;p>同样使用msf看看有没有直接可利用的exp&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrwlgvkj30u00ls7m6.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrwlgvkj30u00ls7m6.jpg"
 loading="lazy"
 alt="image-20260415152453330"
 >&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrxarzmj30sb0ax117.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwnrxarzmj30sb0ax117.jpg"
 loading="lazy"
 alt="image-20260415153256269"
 >&lt;/p>
 &lt;p>拿到shell&lt;/p>
 &lt;p>可以发现现在是低权限用户，先看一眼文件&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrxk1haj30ao0kqn1i.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwnrxk1haj30ao0kqn1i.jpg"
 loading="lazy"
 alt="image-20260415153909974"
 >&lt;/p>
@@ -791,51 +791,51 @@ alt="image-20260415153909974"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$session_handler&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;database&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>由于是低权限用户，没法到根目录下去，联想到在Joomla数据库中有一个账户elliot，和可疑的邮箱，用这个登一下22端口的ssh试一试&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwnry5csyj315o0uub24.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwnry5csyj315o0uub24.jpg"
 loading="lazy"
 alt="image-20260415154827384"
 >&lt;/p>
 &lt;p>成功登录，拿到第一个flag&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrydamxj30h905876c.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrydamxj30h905876c.jpg"
 loading="lazy"
 alt="image-20260415154849735"
 >&lt;/p>
 &lt;p>可以看到这里依旧是低权限用户，先用find一下SUID&lt;/p>
 &lt;blockquote>
 &lt;p>find / -perm -4000 -type f&lt;/p>&lt;/blockquote>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnryn2xnj30cy0fcdm1.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnryn2xnj30cy0fcdm1.jpg"
 loading="lazy"
 alt="image-20260415155516440"
 >&lt;/p>
 &lt;p>顺手看一眼有哪些用户&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrz2nhwj30q80mi7n8.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwnrz2nhwj30q80mi7n8.jpg"
 loading="lazy"
 alt="image-20260415160104603"
 >&lt;/p>
 &lt;p>看到除了我们登录上去的elliot之外还有一个用户tyrell，先从这里找突破口&lt;/p>
 &lt;p>在一堆Permission denied中我们找到了：&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrz8k4ej30cj03gjsv.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwnrz8k4ej30cj03gjsv.jpg"
 loading="lazy"
 alt="image-20260415160413050"
 >&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwnrzeu2vj309t00nt8r.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwnrzeu2vj309t00nt8r.jpg"
 loading="lazy"
 alt="image-20260415160650137"
 >&lt;/p>
 &lt;p>看一眼这几个文件&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwnrzl998j30gz0560vg.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwnrzl998j30gz0560vg.jpg"
 loading="lazy"
 alt="image-20260415160731530"
 >&lt;/p>
 &lt;p>拿到了账户密码&lt;/p>
 &lt;p>登录到tyrell账户，依旧是低权限&lt;/p>
 &lt;p>查看下当前账户是否存在可以使用的特权命令或文件：sudo -l，发现存在/bin/journalctl命令。&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwnrzslndj30u304241f.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwnrzslndj30u304241f.jpg"
 loading="lazy"
 alt="image-20260415161342370"
 >&lt;/p>
 &lt;p>journalctl可以用 ! /bin/sh的方式提权&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax2.sinaimg.cn/large/009XQ7msgy1icwns0hjacj30pu07d78f.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1icwns0hjacj30pu07d78f.jpg"
 loading="lazy"
 alt="image-20260415161841863"
 >&lt;/p>
@@ -1274,6 +1274,8 @@ alt="image-20260415161841863"
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用方法：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">https://i0.wp.com/不带https协议前缀的图片URL
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>实测这个速度不如cdnjson&lt;/p>
+&lt;blockquote>
+&lt;p>2025/5/24 更新，cdnjson已不可用，可以考虑使用wordpress的加速服务&lt;/p>&lt;/blockquote>
 &lt;h3 id="cdnjson">cdnjson
 &lt;/h3>&lt;p>加速域名：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">cdn.cdnjson.com
@@ -1317,7 +1319,7 @@ alt="image-20260415161841863"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;/properties&amp;gt;&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;/project&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwn2mnqqsj31z316i1ky.jpg"
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwn2mnqqsj31z316i1ky.jpg"
 loading="lazy"
 alt="image-20260313193031124"
 >&lt;/p>
@@ -1381,22 +1383,22 @@ alt="image-20260313193031124"
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>在 parseObject 方法处下断点调试&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwn2lm571j31730jyngv.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwn2lm571j31730jyngv.jpg"
 loading="lazy"
 alt="image-20260313193534044"
 >&lt;/p>
 &lt;p>步进&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwn2kw0l5j31m911ihdt.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwn2kw0l5j31m911ihdt.jpg"
 loading="lazy"
 alt="image-20260313193751701"
 >&lt;/p>
 &lt;p>可以看到这里使用parse方法把JSON字符串解析为JSONObject对象，步进看看&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwn2k7pmsj319w0potxw.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwn2k7pmsj319w0potxw.jpg"
 loading="lazy"
 alt="image-20260313194105767"
 >&lt;/p>
 &lt;p>这里可以看到一个 DefaultJSONParser ，使用默认解析器来解析，步进看看&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwn2jolbzj31e30v34qp.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwn2jolbzj31e30v34qp.jpg"
 loading="lazy"
 alt="image-20260313194519402"
 >&lt;/p>
@@ -1641,12 +1643,12 @@ Class&lt;?> clazz = TypeUtils.loadClass(typeName, config.getDefaultClassLoader()
 &lt;p>中进行判断，如果是@type就使用加载器进行加载，进行类的反序列化。&lt;/p>
 &lt;p>然后回到 &lt;code>ObjectDeserializer deserializer = config.getDeserializer(clazz);&lt;/code> 步进&lt;/p>
 &lt;p>一路走到ParserConfig.java&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwn2j1grcj31cb0piazw.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwn2j1grcj31cb0piazw.jpg"
 loading="lazy"
 alt="image-20260313200814858"
 >&lt;/p>
 &lt;p>可以看到这里是使用java动态地生成一个反序列化器来实现反序列化&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwn2igbxqj311o0s07qu.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwn2igbxqj311o0s07qu.jpg"
 loading="lazy"
 alt="image-20260313200926896"
 >&lt;/p>
@@ -2063,26 +2065,26 @@ alt="image-20260313200926896"
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">JavaBeanInfo&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">clazz&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">builderClass&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">defaultConstructor&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">buildMethod&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">jsonType&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">fieldList&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这一部分基本算是核心逻辑&lt;/p>
-&lt;p>这里使用反射机制来获取类的所有方法和字段，&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwn2hzjf9j31c609r12l.jpg"
+&lt;p>这里使用反射机制来获取类的所有方法和字段，&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwn2hzjf9j31c609r12l.jpg"
 loading="lazy"
 alt="image-20260313201610880"
 >&lt;/p>
 &lt;p>这里第一个遍历是遍历了所有的set方法，第二个遍历所有公有字段，第三个遍历所有的get方法&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwn2h18tij30ze0s9e4g.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwn2h18tij30ze0s9e4g.jpg"
 loading="lazy"
 alt="image-20260313211809214"
 >&lt;/p>
 &lt;p>在遍历的get方法的时候，只有存在只有get方法没有set方法的方法才会被加入列表&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax3.sinaimg.cn/large/009XQ7msgy1icwn2glt4qj319e084qb1.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1icwn2glt4qj319e084qb1.jpg"
 loading="lazy"
 alt="image-20260313211933672"
 >&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax1.sinaimg.cn/large/009XQ7msgy1icwn2gc7pwj312t0rnx2i.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1icwn2gc7pwj312t0rnx2i.jpg"
 loading="lazy"
 alt="image-20260313212005542"
 >&lt;/p>
 &lt;p>这里存在一个isasm开关，是很多人调试失败的原因，这里如果isasm开着（默认开启），则会动态生成一个加载器，而不是使用默认的加载器，而动态的加载器无法调试，我们去写一个只有get没有set的方法就可以了&lt;/p>
-&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwn2hpac4j31e30xgb29.jpg"
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwn2hpac4j31e30xgb29.jpg"
 loading="lazy"
 alt="image-20260313203750545"
 >&lt;/p>
@@ -2098,7 +2100,7 @@ alt="image-20260313203750545"
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Runtime&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getRuntime&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="na">exec&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">cmd&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://cdn.cdnjson.com/pic.html?url=https://tvax4.sinaimg.cn/large/009XQ7msgy1icwn2fk72rj31z316cu0x.jpg"
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1icwn2fk72rj31z316cu0x.jpg"
 loading="lazy"
 alt="image-20260313212441373"
 >&lt;/p>
