@@ -1,31 +1,51 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>杂谈 on Oight</title><link>https://Oight.github.io/categories/%E6%9D%82%E8%B0%88/</link><description>Recent content in 杂谈 on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Thu, 07 May 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/%E6%9D%82%E8%B0%88/index.xml" rel="self" type="application/rss+xml"/><item><title>图片更新</title><link>https://Oight.github.io/p/%E5%9B%BE%E7%89%87%E6%9B%B4%E6%96%B0/</link><pubDate>Thu, 07 May 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/%E5%9B%BE%E7%89%87%E6%9B%B4%E6%96%B0/</guid><description>&lt;blockquote>
-&lt;p>[!CAUTION]&lt;/p>
-&lt;p>喜报！&lt;/p>&lt;/blockquote>
-&lt;p>我的博客终于有图了！喜大普奔！！！&lt;/p>
-&lt;p>2026/5/16日更新：&lt;/p>
-&lt;p>这次使用的方案是微博图床＋一些其他厂商的CDN服务（主要是应对微博防盗链）&lt;/p>
-&lt;h3 id="wordpress">WordPress
-&lt;/h3>&lt;p>加速域名：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">i0.wp.com
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">i1.wp.com
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">i2.wp.com
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">i3.wp.com
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用方法：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">https://i0.wp.com/不带https协议前缀的图片URL
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>实测这个速度不如cdnjson&lt;/p>
-&lt;blockquote>
-&lt;p>2025/5/24 更新，cdnjson已不可用，可以考虑使用wordpress的加速服务&lt;/p>&lt;/blockquote>
-&lt;h3 id="cdnjson">cdnjson
-&lt;/h3>&lt;p>加速域名：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">cdn.cdnjson.com
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用方法：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">https://cdn.cdnjson.com/pic.html?url=
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">https://cdn.cdnjson.com/不带https协议前缀的图片URL
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="ipfsscan">ipfsscan
-&lt;/h3>&lt;p>加速域名：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">cdn.ipfsscan.io/weibo/
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用方法：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">https://cdn.ipfsscan.io/weibo/去掉微博图片链接中域名部分后的链接
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>BTW，今天还稍微小修了一下博客以前存在的问题&lt;/p>
-&lt;p>比如以前代码块行号总是坏掉，所以这次直接扬掉了（&lt;/p>
-&lt;p>同时加入了代码框边框以及默认代码收起&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>杂谈 on Oight</title>
+        <link>https://Oight.github.io/categories/%E6%9D%82%E8%B0%88/</link>
+        <description>Recent content in 杂谈 on Oight</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Oight</copyright>
+        <lastBuildDate>Thu, 07 May 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/%E6%9D%82%E8%B0%88/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>图片更新</title>
+        <link>https://Oight.github.io/p/%E5%9B%BE%E7%89%87%E6%9B%B4%E6%96%B0/</link>
+        <pubDate>Thu, 07 May 2026 10:29:47 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/p/%E5%9B%BE%E7%89%87%E6%9B%B4%E6%96%B0/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;[!CAUTION]&lt;/p&gt;
+&lt;p&gt;喜报！&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;我的博客终于有图了！喜大普奔！！！&lt;/p&gt;
+&lt;p&gt;2026/5/16日更新：&lt;/p&gt;
+&lt;p&gt;这次使用的方案是微博图床＋一些其他厂商的CDN服务（主要是应对微博防盗链）&lt;/p&gt;
+&lt;h3 id=&#34;wordpress&#34;&gt;WordPress
+&lt;/h3&gt;&lt;p&gt;加速域名：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;i0.wp.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;i1.wp.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;i2.wp.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;i3.wp.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用方法：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://i0.wp.com/不带https协议前缀的图片URL
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;实测这个速度不如cdnjson&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;2025/5/24 更新，cdnjson已不可用，可以考虑使用wordpress的加速服务&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;cdnjson&#34;&gt;cdnjson
+&lt;/h3&gt;&lt;p&gt;加速域名：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cdn.cdnjson.com
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用方法：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://cdn.cdnjson.com/pic.html?url=
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://cdn.cdnjson.com/不带https协议前缀的图片URL
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;ipfsscan&#34;&gt;ipfsscan
+&lt;/h3&gt;&lt;p&gt;加速域名：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cdn.ipfsscan.io/weibo/
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;使用方法：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;https://cdn.ipfsscan.io/weibo/去掉微博图片链接中域名部分后的链接
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;BTW，今天还稍微小修了一下博客以前存在的问题&lt;/p&gt;
+&lt;p&gt;比如以前代码块行号总是坏掉，所以这次直接扬掉了（&lt;/p&gt;
+&lt;p&gt;同时加入了代码框边框以及默认代码收起&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

