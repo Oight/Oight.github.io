@@ -799,7 +799,7 @@ alt="image-20260313203750545"
 >&lt;/p>
 &lt;p>可以看到最后这里是通过invoke的方式来执行方法&lt;/p>
 &lt;p>所以我们可以捋一捋，fastjson通过指定@type的值来实现定位某类，而这种方法进行反序列化，会执行类的构造方法和属性相关的get，set方法，也造成了这个漏洞的产生&lt;/p>
-&lt;p>我们试着谈一个计算器：&lt;/p>
+&lt;p>我们试着弹一个计算器：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">org.example&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">java.io.IOException&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">

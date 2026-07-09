@@ -3881,7 +3881,7 @@ alt="image-20260313203750545"
 >&lt;/p>
 &lt;p>可以看到最后这里是通过invoke的方式来执行方法&lt;/p>
 &lt;p>所以我们可以捋一捋，fastjson通过指定@type的值来实现定位某类，而这种方法进行反序列化，会执行类的构造方法和属性相关的get，set方法，也造成了这个漏洞的产生&lt;/p>
-&lt;p>我们试着谈一个计算器：&lt;/p>
+&lt;p>我们试着弹一个计算器：&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">org.example&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">import&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">java.io.IOException&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
@@ -14898,4 +14898,21 @@ Hackerbar（浏览器插件，传参的好帮手）
 &lt;li>&lt;code>array_search(&amp;quot;QCyyds&amp;quot;, $qc[&amp;quot;n&amp;quot;])&lt;/code>：在 &lt;code>$qc[&amp;quot;n&amp;quot;]&lt;/code> 的值（&lt;code>0&lt;/code>）中找 &lt;code>&amp;quot;QCyyds&amp;quot;&lt;/code>。因为 &lt;code>0 == &amp;quot;QCyyds&amp;quot;&lt;/code> 为真，找到了，返回键名 0，不等于 &lt;code>false&lt;/code>，继续。&lt;/li>
 &lt;li>&lt;code>foreach&lt;/code> 循环：检查 &lt;code>$qc[&amp;quot;n&amp;quot;]&lt;/code> 中的元素 &lt;code>0&lt;/code> 是否 &lt;code>=== &amp;quot;QCyyds&amp;quot;&lt;/code>。因为 &lt;code>0 === &amp;quot;QCyyds&amp;quot;&lt;/code> 为假，不退出，继续。&lt;/li>
 &lt;li>成功走到 &lt;code>echo $flag;&lt;/code>&lt;/li>
-&lt;/ol></description></item><item><title>Archives</title><link>https://Oight.github.io/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://Oight.github.io/archives/</guid><description/></item><item><title>Search</title><link>https://Oight.github.io/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/search/</guid><description/></item><item><title>关于</title><link>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</guid><description>&lt;p>希望我能脚踏实地，做点实事。&lt;/p></description></item><item><title>友情链接</title><link>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid><description/></item></channel></rss>
+&lt;/ol></description></item><item><title>Archives</title><link>https://Oight.github.io/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://Oight.github.io/archives/</guid><description/></item><item><title/><link>https://Oight.github.io/p/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/p/</guid><description>&lt;p>如你所见，这是一篇随笔，起因是我在经过三天的摸鱼终于水了一篇博客后实在不想干活，但又不能让别人看出我无所事事，所以开始写这篇随笔&lt;/p>
+&lt;p>不知不觉我打CTF已经快两年了，在这两年中我最大的感悟是震撼&lt;/p>
+&lt;p>最开始的我可以说是一个完完全全的小白，甚至没有怎么摸过电脑，计算机知识空得像张白纸，反正莫名其妙的我就加入了一个CTF实验室开始打CTF。&lt;/p>
+&lt;p>最开始我的学习方式是从别人口中偷听那些我没有听说过的听起来很高大上的技术名词，然后偷偷地去搜索学习，学会一个词就会有下一个完全陌生的词出现，学会之后又会有，最开始我以为我很快可以追上他们，但越学越发觉自己很无力，每天都过得很痛苦，学习的过程可能是快乐的，但永远比别人差的滋味似乎有点难熬&lt;/p>
+&lt;p>后来我开始打一些线上的新生赛，又全都是我没听说过的陌生名词，现在不止可以从别人口中学东西了，也可以从题目描述里学，我加了很多新生赛的群，群里有超级多的天才少年，像天上璀璨的星星一样，他们早早就加入了各个联合战队，狠狠AK我毫无头绪的题目，那时候我很憧憬，我觉得我和他们的差距是暂时的，他们厉害是因为接触得早，只要我努力，有朝一日也能像他们一样厉害。&lt;/p>
+&lt;p>我开始打很多线上赛，有新生赛，有联赛，甚至有国际赛，然而总是爆零多出题少，也由于此，我非常胆怯于向联合战队投简历，反正投了也是要挂的&lt;/p>
+&lt;p>就这样，我在爆零中度过了我CTF的第一年&lt;/p>
+&lt;p>与此同时，GPT开始进入我的视野，最开始是可以白嫖GPT5.1，大家发现它的实力好像很强，以前Re手哼哧哼哧逆一天的题目，似乎只需要把附件丢给它就可以吐出flag&lt;/p>
+&lt;p>慢慢的，到招新的时候了，实验室里也来了一位天才少年，他学东西非常快，他玩很多很高大上很有意思的东西，我觉得他留在这里是屈才的，他进度很快就超过我了，他在线下赛上做出了题，于此同时我在所有的线下赛都保持了爆零的好成绩。虽然我早就明白我和天才少年的差距不止接触计算机早晚的差距，但天赋差距的鸿沟第一次以这样直观的形式展现在我面前，于此同时，和我同时“出道”的天才少年们都已经到达了我无法想象的高度，他们开始从各个CTF比赛的QQ群里消失，取而代之的是偶尔在社交媒体上出现的各种高级会议或展览，数不尽的冠军和CVE编号，各个CTF比赛的群里新一波的天才少年开始冒头，然后很快被各个战队挖走&lt;/p>
+&lt;p>由于AI的影响，战队的要求也陡然上升，然而我的能力依旧止步不前，似乎还不如最开始，因为最开始我还很喜欢学，现在似乎已经有点丧失学习能力了，感觉对所有事务都提不起兴趣的说&lt;/p>
+&lt;p>所有的CTF线上赛都被AI如风卷残云一般AK，最开始的时候，出题人都在想方设法阻止AI，对应的是题目难度开始指数级上升，题目一开始还能防住AI，而人类大能可以做，但AI发展太过于迅速，完全变成了群魔乱舞，人类做不出的AI能做，AI做不出的人类完全没法做，社区似乎也从一开始的手搓才是灵魂，变成了“古法CTF已经是非物质文化遗产了”&lt;/p>
+&lt;p>有新生问过我，“现在AI这么强了，如何能摆脱AI的影响真正学到东西？CTFer还有什么意义？”&lt;/p>
+&lt;p>我似乎只能回答第一个问题，AI导致马太效应大幅度提高，对于新手来说门槛越来越过，谁能越早拜托对AI的依赖，谁越能走得更远，要摆脱AI桎梏，真正学到东西，才能更好地驾驭AI；&lt;/p>
+&lt;p>但目前来看，我依旧坚持只要真正学到真东西，才能在AI时代生存这个观点，但想要摆脱AI的影响似乎有点不太可能了&lt;/p>
+&lt;p>但似乎只有我要被AI代替了，所有人都在AI狂潮中变得越来越好，只有我至今在不断爆零，一直写不明白代码，想不用AI学点真东西，但发现怎么都看不懂，学得超级慢，遇见需求又只能求助AI，照着AI的一行行抄，有时候没有时间直接当yes工程师了&lt;/p>
+&lt;p>回顾这两年，我似乎学到了什么，但好像什么也没学会，我无法用知识创造任何东西，也没实质性获得任何奖项，似乎也变得有点厌学，我不知道生活是变好了还是变坏了，但我感觉依旧一样痛苦。&lt;/p>
+&lt;p>低头一看20:30了，洋洋洒洒写了一堆不知所云的东西，反正这个流水账也没人看，但也难说（）&lt;/p>
+&lt;p>又到一年招新的时候了，前面这个了刚好1555字，那就这样吧&lt;/p></description></item><item><title>Search</title><link>https://Oight.github.io/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/search/</guid><description/></item><item><title>关于</title><link>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</guid><description>&lt;p>希望我能脚踏实地，做点实事。&lt;/p></description></item><item><title>友情链接</title><link>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid><description/></item></channel></rss>
