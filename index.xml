@@ -493,7 +493,398 @@ Google 公司&lt;/p>
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// 使用的机器数等信息。
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>分布式学习(一)</title><link>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%B8%80/</link><pubDate>Thu, 23 Jul 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid><description>&lt;h1 id="分布式学习">分布式学习
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>分布式学习(二)</title><link>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%BA%8C/</link><pubDate>Sat, 01 Aug 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%BA%8C/</guid><description>&lt;h1 id="分布式学习二">分布式学习(二)
+&lt;/h1>&lt;p>在上一篇博客中了解完为什么要有分布式系统,分布式系统解决了什么问题,又带来了哪些新的挑战后,在这一篇中就要正式开始学习分布式系统了&lt;/p>
+&lt;p>在本章中,将从分布式系统通信入手,介绍分布式系统中对&lt;strong>一致性与可用性的权衡&lt;/strong>：CAP、BASE、最终一致性、中心化与去中心化、共识算法。&lt;/p>
+&lt;h2 id="分布式系统通信机制">分布式系统通信机制
+&lt;/h2>&lt;p>在分布式系统中,广播是一种非常常见的通信要求: 一个节点产生了某个信息,需要让其他节点都知道.&lt;/p>
+&lt;p>例如: 配置变更通知, 成员上下线, 路由表更新, 缓存失效, 状态同步, 元数据传播, 故障检测, 集群状态扩散等等&lt;/p>
+&lt;p>分布式系统通信在传播模型(信息如何在多个节点之间扩散)上有两种: 中心化广播和Gossip协议&lt;/p>
+&lt;h3 id="中心化广播">中心化广播
+&lt;/h3>&lt;p>中心化广播是有一个中心节点或中心组件负责把消息发给所有目标节点&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ifg45lbc85j31ih13s7mj.jpg"
+loading="lazy"
+alt="1"
+>&lt;/p>
+&lt;p>如图,上图中的拓扑就是中心化广播的经典结构&lt;/p>
+&lt;p>中心化广播并不只有一种实现,常见有以下几类:&lt;/p>
+&lt;p>&lt;strong>主节点广播&lt;/strong>: 集群中有一个Master 或Leader ,由它负责广播.&lt;/p>
+&lt;p>典型应用:&lt;/p>
+&lt;ul>
+&lt;li>Raft 中 Leader 向 Follower 复制日志&lt;/li>
+&lt;li>ZooKeeper 中 Leader 广播事务&lt;/li>
+&lt;li>HDFS NameNode 管理元数据&lt;/li>
+&lt;li>某些主从数据库复制&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>中心 Broker 广播&lt;/strong>: 消息不是由业务节点直接广播,而是交给中心消息中间件.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">// 像这样
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Producer -&amp;gt; Broker -&amp;gt; Consumer1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -&amp;gt; Consumer2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -&amp;gt; Consumer3
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>典型应用:&lt;/p>
+&lt;ul>
+&lt;li>Kafka&lt;/li>
+&lt;li>RocketMQ&lt;/li>
+&lt;li>RabbitMQ&lt;/li>
+&lt;li>Pulsar&lt;/li>
+&lt;li>Redis Pub/Sub&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>发布/订阅模型&lt;/strong>&lt;/p>
+&lt;p>中心化广播经常以发布/订阅形式出现.&lt;/p>
+&lt;p>Publisher 发布消息
+Subscriber 订阅消息
+中心组件负责分发&lt;/p>
+&lt;p>典型应用:&lt;/p>
+&lt;ul>
+&lt;li>消息队列&lt;/li>
+&lt;li>事件总线&lt;/li>
+&lt;li>配置中心&lt;/li>
+&lt;li>注册中心&lt;/li>
+&lt;li>协调服务&lt;/li>
+&lt;/ul>
+&lt;h4 id="中心化广播的工作原理">中心化广播的工作原理
+&lt;/h4>&lt;p>以一个配置中心为例:&lt;/p>
+&lt;ol>
+&lt;li>管理员修改配置&lt;/li>
+&lt;li>配置中心保存新配置&lt;/li>
+&lt;li>配置中心向所有客户端广播配置变更&lt;/li>
+&lt;li>客户端收到通知后拉取最新配置&lt;/li>
+&lt;li>客户端应用新配置&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Admin
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> v
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Config Center
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; App Instance 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; App Instance 2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; App Instance 3
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>消息队列的流程是这样:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Producer
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> v
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Broker
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; Consumer Group A
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; Consumer Group B
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; Consumer Group C
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="中心化广播的优缺点">中心化广播的优缺点
+&lt;/h4>&lt;p>&lt;strong>优点:&lt;/strong>&lt;/p>
+&lt;p>消息来源明确,所有消息都来自中心节点,所以&lt;/p>
+&lt;ul>
+&lt;li>权限控制简单&lt;/li>
+&lt;li>审计方便&lt;/li>
+&lt;li>版本管理方便&lt;/li>
+&lt;li>数据权威性高&lt;/li>
+&lt;/ul>
+&lt;p>例如配置中心配置只能由 Config Center 发布&lt;/p>
+&lt;p>这样可以避免多个节点随意修改配置导致混乱。&lt;/p>
+&lt;p>容易保证顺序,如果所有消息都从中心节点发出，那么中心节点可以统一编号。&lt;/p>
+&lt;p>适合强管理场景&lt;/p>
+&lt;p>例如：&lt;/p>
+&lt;ul>
+&lt;li>配置下发&lt;/li>
+&lt;li>任务分发&lt;/li>
+&lt;li>权限变更&lt;/li>
+&lt;li>集群调度&lt;/li>
+&lt;li>元数据管理&lt;/li>
+&lt;/ul>
+&lt;p>这些场景通常需要一个权威中心。&lt;/p>
+&lt;p>缺点:&lt;/p>
+&lt;p>中心节点是单点风险&lt;/p>
+&lt;p>中心节点压力大&lt;/p>
+&lt;p>扩展性受限&lt;/p>
+&lt;p>容易出现广播风暴&lt;/p>
+&lt;p>网络故障时恢复复杂&lt;/p>
+&lt;h3 id="gossip-协议">Gossip 协议
+&lt;/h3>&lt;p>Gossip 协议也叫：&lt;/p>
+&lt;ul>
+&lt;li>流言协议&lt;/li>
+&lt;li>谣言传播协议&lt;/li>
+&lt;li>epidemic protocol，流行病协议&lt;/li>
+&lt;/ul>
+&lt;p>它的核心思想是：&lt;/p>
+&lt;blockquote>
+&lt;p>节点之间随机互相通信，每个节点把自己知道的信息告诉其他节点，经过多轮传播后，整个集群最终都知道这个信息。&lt;/p>&lt;/blockquote>
+&lt;p>非常像现实中的“传谣言”：A 知道一个消息, A 告诉 B 和 C, B 告诉 D 和 E, C 告诉 F 和 G
+&amp;hellip;
+最后所有人都知道了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ifg56q8rcaj31z415e4qp.jpg"
+loading="lazy"
+alt="2"
+>&lt;/p>
+&lt;p>Gossip 没有强中心节点,每个节点既是信息接收者，也是信息传播者。&lt;/p>
+&lt;h4 id="gossip-的传播方式">Gossip 的传播方式
+&lt;/h4>&lt;p>Gossip有三种传播方式&lt;/p>
+&lt;p>PUSH模式:&lt;/p>
+&lt;p>发送方主动推送消息给邻居，实现简单，但可能产生冗余传输。&lt;/p>
+&lt;p>PULL模式:&lt;/p>
+&lt;p>接收方主动拉取未知消息，网络流量低，但收敛速度较慢。&lt;/p>
+&lt;p>BOTH模式(结合 push 和 pull):&lt;/p>
+&lt;p>双向交换状态，收敛最快，是实际应用中最常用的模式。&lt;/p>
+&lt;h4 id="gossip-协议的工作原理">Gossip 协议的工作原理
+&lt;/h4>&lt;p>可参考图中传播过程模拟&lt;/p>
+&lt;p>Gossip 的传播速度通常是指数级的。&lt;/p>
+&lt;p>假设每个节点每轮告诉 2 个节点：&lt;/p>
+&lt;p>第 0 轮：1 个节点知道
+第 1 轮：3 个节点知道
+第 2 轮：9 个节点知道
+第 3 轮：27 个节点知道
+第 4 轮：81 个节点知道&lt;/p>
+&lt;p>理论上，知道消息的节点数量会按指数增长。&lt;/p>
+&lt;p>所以在大规模集群中，Gossip 可以在较少轮次内让信息覆盖大部分节点。&lt;/p>
+&lt;p>例如 10000 个节点，可能只需要十几轮或几十轮就能基本传播完成。&lt;/p>
+&lt;h4 id="gossip-的收敛性">Gossip 的收敛性
+&lt;/h4>&lt;p>Gossip 通常提供的是：&lt;/p>
+&lt;blockquote>
+&lt;p>最终一致性，而不是强一致性。&lt;/p>&lt;/blockquote>
+&lt;p>也就是说：某个时刻： A 知道 version = 42, B 还不知道, C 知道 version = 41&lt;/p>
+&lt;p>这是正常的。但只要网络最终可达，经过多轮交换，所有节点最终会收敛到相同状态。&lt;/p>
+&lt;h4 id="gossip-的常见用途">Gossip 的常见用途
+&lt;/h4>&lt;p>&lt;strong>成员管理&lt;/strong>:&lt;/p>
+&lt;p>集群需要知道哪些节点存活。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">节点 A 怀疑节点 B 宕机
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">A 把这个怀疑传播出去
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">其他节点收到后也增加对 B 的怀疑分数
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">当怀疑分数超过阈值，大家认为 B 下线
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>典型系统：&lt;/p>
+&lt;blockquote>
+&lt;p>Cassandra
+Consul
+Redis Cluster
+Amazon Dynamo&lt;/p>&lt;/blockquote>
+&lt;p>&lt;strong>故障检测&lt;/strong>:&lt;/p>
+&lt;p>Gossip 可以结合心跳和 phi accrual failure detector。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">每个节点定期和其他节点通信
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">如果长时间收不到某节点消息
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">就标记为 suspect
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">再传播 suspect 信息
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>元数据传播&lt;/strong>:&lt;/p>
+&lt;p>例如：&lt;/p>
+&lt;ul>
+&lt;li>节点地址&lt;/li>
+&lt;li>节点角色&lt;/li>
+&lt;li>数据分片信息&lt;/li>
+&lt;li>路由表&lt;/li>
+&lt;li>负载情况&lt;/li>
+&lt;li>版本号&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>状态同步&lt;/strong>:&lt;/p>
+&lt;p>例如:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">每个节点维护一份集群状态
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">节点之间互相同步差异
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">最终所有节点状态一致
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>反熵 Anti-Entropy&lt;/strong>:&lt;/p>
+&lt;p>Gossip 常用于反熵，即修复节点之间的数据差异。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">A 和 B 比较 Merkle Tree
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">发现某些 key 不一致
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">然后同步这些 key
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Cassandra、Dynamo 等系统使用类似思想。&lt;/p>
+&lt;h4 id="gossip的优缺点">Gossip的优缺点
+&lt;/h4>&lt;p>优点:&lt;/p>
+&lt;p>去中心化：无主节点，任意节点均可发起，系统鲁棒性极强。
+容错性强：节点宕机或网络抖动不影响整体传播路径。
+极高扩展性：O(log N) 轮即可覆盖全网，适合万级节点集群。&lt;/p>
+&lt;p>缺点:&lt;/p>
+&lt;p>最终一致：存在传播延迟，不适用于强一致性要求的场景。
+网络冗余：节点可能多次收到同一消息，增加带宽消耗。
+拜占庭容错：默认节点诚实，难以抵御恶意节点的信息污染。&lt;/p>
+&lt;p>分布式系统通信在具体实现上分为同步与异步两种&lt;/p>
+&lt;p>同步与异步主要关注的点在于 &amp;ldquo;调用方发出请求后,是否必须要等待结果才能继续执行?&amp;rdquo;&lt;/p>
+&lt;h3 id="同步通信">同步通信
+&lt;/h3>&lt;p>调用方发出请求后,通常需要等待对方处理并返回结果,才能继续后续逻辑.&lt;/p>
+&lt;p>例如:&lt;/p>
+&lt;p>服务A调用服务B:&lt;/p>
+&lt;p>A: 请帮我查询订单&lt;/p>
+&lt;p>B:处理中&lt;/p>
+&lt;p>B:返回结果&lt;/p>
+&lt;p>A:拿到结果后继续执行&lt;/p>
+&lt;p>在整个过程中如果B没有返回结果,A就一直等待.&lt;/p>
+&lt;h4 id="同步通信的优缺点">同步通信的优缺点
+&lt;/h4>&lt;p>优点:&lt;/p>
+&lt;p>1.编程模型简单&lt;/p>
+&lt;p>同步调用符合人的直觉：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">Result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">service&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">call&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">if&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">isSuccess&lt;/span>&lt;span class="p">())&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 成功&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">else&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 失败&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>逻辑清晰，容易理解和调试。&lt;/p>
+&lt;p>2.可以立即得到结果&lt;/p>
+&lt;p>调用方可以马上知道成功还是失败,&lt;/p>
+&lt;p>3.适合强一致场景&lt;/p>
+&lt;p>缺点:&lt;/p>
+&lt;p>1.容易阻塞&lt;/p>
+&lt;p>2.耦合度高&lt;/p>
+&lt;p>调用方依赖被调用方的可用性&lt;/p>
+&lt;p>3.容易级联故障&lt;/p>
+&lt;p>一个下游服务慢,可能拖垮整个链路&lt;/p>
+&lt;h3 id="异步通信">异步通信
+&lt;/h3>&lt;p>请求方发出请求后，不需要立即等待结果，就可以继续执行其他任务。结果稍后通过回调、通知、消息、轮询等方式获得。&lt;/p>
+&lt;p>例如:&lt;/p>
+&lt;p>服务A 发送消息给 服务B：
+A：请处理订单
+A：我继续做别的事情
+B：后台处理
+B：处理完成后通知 A，或者 A 稍后查询结果&lt;/p>
+&lt;h4 id="异步通信的优缺点">异步通信的优缺点
+&lt;/h4>&lt;p>优点:&lt;/p>
+&lt;p>1.提高响应速度&lt;/p>
+&lt;p>把非核心逻辑放到后台处理&lt;/p>
+&lt;p>2.解耦系统&lt;/p>
+&lt;p>服务之间不直接调用,而是通过消息或事件通信&lt;/p>
+&lt;p>3.削峰填谷&lt;/p>
+&lt;p>高流量时,消息队列可以缓冲请求,避免数据库被瞬时流量打垮&lt;/p>
+&lt;p>4.提高可用性&lt;/p>
+&lt;p>某个下游服务故障,不一定影响主流程&lt;/p>
+&lt;p>缺点:&lt;/p>
+&lt;p>1.复杂度更高&lt;/p>
+&lt;p>异步系统需要处理很多问题:&lt;/p>
+&lt;ul>
+&lt;li>消息丢失&lt;/li>
+&lt;li>消息重复&lt;/li>
+&lt;li>消费顺序&lt;/li>
+&lt;li>消费失败&lt;/li>
+&lt;li>重试策略&lt;/li>
+&lt;li>死信队列&lt;/li>
+&lt;li>幂等性&lt;/li>
+&lt;li>最终一致性&lt;/li>
+&lt;li>状态查询&lt;/li>
+&lt;/ul>
+&lt;p>2.不能立即知道结果&lt;/p>
+&lt;p>3.调试和排查困难&lt;/p>
+&lt;p>在了解完前置知识后,接下来介绍在分布式中非常重要的理论: &lt;strong>CAP理论&lt;/strong>&lt;/p>
+&lt;h2 id="cap定理">CAP定理
+&lt;/h2>&lt;p>CAP定理起源于 2000 年，由加州大学伯克利分校的 Eric Brewer 教授在分布式计算原理研讨会（PODC）上提出，因此 CAP 定理又被称作 &lt;strong>布鲁尔定理（Brewer’s theorem）&lt;/strong>&lt;/p>
+&lt;p>2 年后，麻省理工学院的 Seth Gilbert 和 Nancy Lynch 发表了布鲁尔猜想的证明，CAP 理论正式成为分布式领域的定理。&lt;/p>
+&lt;p>CAP 定理讨论 Consistency（一致性）、Availability（可用性）和 Partition Tolerance（分区容错）。&lt;/p>
+&lt;p>&lt;strong>一致性（Consistency）&lt;/strong>：在 Gilbert/Lynch（2002）的证明语境里，CAP 的一致性 C 指的是 &lt;strong>Atomic Consistency&lt;/strong>，通常等同于 &lt;strong>Linearizability（线性一致性）&lt;/strong>。即所有操作按实时顺序线性化，即写操作一旦完成，后续所有读操作都必须返回该写入的值（或更新的值）。&lt;strong>注意：&lt;/strong> 这里的 Consistency 与数据库 ACID 中的 Consistency（一致性约束）含义不同，后者指事务执行前后数据库状态满足完整性约束。&lt;/p>
+&lt;p>&lt;strong>可用性（Availability）&lt;/strong>：非故障的节点必须对每个请求返回响应（不讨论响应快慢）。&lt;strong>注意&lt;/strong>：这是 CAP 理论中的严格定义，不包含工程中的延迟/SLA 指标（如「1s 内返回」）。&lt;/p>
+&lt;p>&lt;strong>分区容错性（Partition Tolerance）&lt;/strong>：CAP 里的 P 本质上是在假设异步网络（可能延迟/丢包/分区），不是一个你「选择要不要」的功能。真正的权衡是：当分区发生时，你必须在**线性一致（CAP 的 Consistency=Linearizability）&lt;strong>与&lt;/strong>CAP-Availability（任何非故障节点都要对请求给非错误响应）**之间做选择。&lt;/p>
+&lt;p>&lt;strong>什么是网络分区？&lt;/strong>&lt;/p>
+&lt;p>分布式系统中，多个节点之间的网络本来是连通的，但是因为某些故障（比如部分节点网络出了问题）某些节点之间不连通了，整个网络就分成了几块区域，这就叫 &lt;strong>网络分区&lt;/strong>。&lt;/p>
+&lt;h3 id="并非三选二实为二选一">并非三选二,实为二选一
+&lt;/h3>&lt;p>在很多描述中会把CAP定理描述为&amp;quot;一致性、可用性、分区容忍性三者你只能同时达到其中两个,不可能同时达成&amp;quot;,但在实际应用中,网络分区是无法避免的,所以我们必须要满足分区容错性&lt;/p>
+&lt;h4 id="为什么不可能选择ca架构">为什么不可能选择CA架构
+&lt;/h4>&lt;p>因为分布式系统离不开网络通信,而网络故障是常态:&lt;/p>
+&lt;ul>
+&lt;li>心跳检测可能因网络抖动丢包，导致误判节点故障&lt;/li>
+&lt;li>数据同步过程中可能因包丢失导致不一致，系统为达成一致会不断重试，造成请求阻塞&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>因此，在异步网络模型下（分区可能发生），当分区发生时，必须在线性一致性与 CAP-可用性之间取舍。&lt;/strong> 能够保证 CA 的只有单机系统——因为只有一个节点，数据写入成功后所有请求都能看到相同数据；只要这个节点活着，系统就可用。&lt;/p>
+&lt;h4 id="cp架构一致性分区容错">CP架构(一致性+分区容错)
+&lt;/h4>&lt;ul>
+&lt;li>发生分区时，&lt;strong>拒绝服务&lt;/strong>（牺牲可用性），以保证数据一致。&lt;/li>
+&lt;li>典型系统：&lt;strong>ZooKeeper、etcd、HBase、MongoDB（默认配置）&lt;/strong>&lt;/li>
+&lt;li>适用场景：金融交易、配置管理、分布式锁等对正确性要求极高的场景。&lt;/li>
+&lt;/ul>
+&lt;h4 id="ap可用性--分区容错">AP（可用性 + 分区容错）
+&lt;/h4>&lt;ul>
+&lt;li>
+&lt;p>发生分区时，&lt;strong>继续提供服务&lt;/strong>（可能返回旧数据），以保证可用。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>典型系统：&lt;strong>Cassandra、DynamoDB、CouchDB、Eureka&lt;/strong>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>适用场景：电商商品展示、社交动态、DNS 等对实时一致性要求不高的场景。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>选择 CP 还是 AP 的关键在于当前的业务场景，没有定论&lt;/strong>：比如对于需要确保强一致性的场景如分布式锁、配置管理会选择 CP；对于高可用优先的场景如微服务注册中心会选择 AP。&lt;/p>
+&lt;h3 id="cap理论的适用范围">CAP理论的适用范围
+&lt;/h3>&lt;p>CAP 理论主要讨论单个数据对象在副本复制场景下的一致性与可用性权衡。&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>更贴近 CAP 讨论模型&lt;/th>
+&lt;th>需要拆分到分片/对象/操作级别分析&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Redis 主从/哨兵集群&lt;/td>
+&lt;td>业务系统（无状态服务）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>MySQL 主从/多主集群&lt;/td>
+&lt;td>Redis-Cluster（每个 shard 仍有副本）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>MongoDB 副本集&lt;/td>
+&lt;td>MongoDB-Cluster（分片 + 副本并存）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ZooKeeper、etcd&lt;/td>
+&lt;td>分库分表（跨分片事务需额外协调）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Kafka、RocketMQ&lt;/td>
+&lt;td>大多数微服务应用*&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>说明&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>CAP 讨论模型&lt;/strong>：单个读写寄存器（single register）的副本复制语义&lt;/li>
+&lt;li>&lt;strong>复杂系统&lt;/strong>：需要拆解到「每个对象/分区/操作」的一致性语义讨论&lt;/li>
+&lt;li>&lt;strong>分片 + 副本&lt;/strong>：分片系统每个 shard 通常仍有副本复制，一致性与可用性权衡仍在&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>&lt;strong>业务系统与 CAP 的深度关联&lt;/strong>：&lt;/p>
+&lt;p>业务系统本身虽不涉及副本同步，但&lt;strong>深受底层组件 CAP 属性的影响&lt;/strong>。忽视这一点会导致系统在遭遇网络分区时发生级联雪崩（Cascading Failure）。&lt;/p>
+&lt;p>&lt;strong>受 CAP 属性影响的业务场景&lt;/strong>：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>业务场景&lt;/th>
+&lt;th>底层组件&lt;/th>
+&lt;th>CP 组件的影响&lt;/th>
+&lt;th>AP 组件的影响&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>RPC 路由&lt;/td>
+&lt;td>注册中心（如 Nacos CP 模式）&lt;/td>
+&lt;td>注册期间不可用，请求被拒绝&lt;/td>
+&lt;td>可能路由到已下线实例，需要重试&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>分布式锁&lt;/td>
+&lt;td>Redis（AP）/ ZooKeeper（CP）&lt;/td>
+&lt;td>性能较低但可靠&lt;/td>
+&lt;td>性能高但可能锁失效&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>限流熔断&lt;/td>
+&lt;td>Redis 计数器&lt;/td>
+&lt;td>可能读到旧计数，限流失效&lt;/td>
+&lt;td>同左&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>缓存更新&lt;/td>
+&lt;td>Redis 主从&lt;/td>
+&lt;td>主从切换时可能丢数据&lt;/td>
+&lt;td>同左&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>消息消费&lt;/td>
+&lt;td>Kafka&lt;/td>
+&lt;td>消费进度同步慢，重复消费&lt;/td>
+&lt;td>同左&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>实践建议&lt;/strong>：业务开发者虽然不需要「实践」CAP 理论，但&lt;strong>必须理解 CAP 理论&lt;/strong>，以便：&lt;/p>
+&lt;ul>
+&lt;li>为不同业务场景选择合适的组件（CP 或 AP）&lt;/li>
+&lt;li>理解所选组件在网络分区时的行为特征&lt;/li>
+&lt;li>设计符合业务需求的容错机制（重试、熔断、降级）&lt;/li>
+&lt;/ul>&lt;/blockquote>
+&lt;p>很多开发者认为自己在「实践 CAP 理论」，实际上只是站在已有组件上做选择（用 CP 还是 AP），而非真正实践该理论。真正需要实践 CAP 的是研发 Redis、MySQL 这类分布式存储组件的工程师。&lt;/p>
+&lt;h3 id="">
+&lt;/h3></description></item><item><title>分布式学习(一)</title><link>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%B8%80/</link><pubDate>Thu, 23 Jul 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid><description>&lt;h1 id="分布式学习">分布式学习
 &lt;/h1>&lt;h2 id="什么是分布式">什么是分布式
 &lt;/h2>&lt;p>分布式是这样定义的:&lt;/p>
 &lt;blockquote>
@@ -15650,395 +16041,4 @@ Hackerbar（浏览器插件，传参的好帮手）
 &lt;li>&lt;code>array_search(&amp;quot;QCyyds&amp;quot;, $qc[&amp;quot;n&amp;quot;])&lt;/code>：在 &lt;code>$qc[&amp;quot;n&amp;quot;]&lt;/code> 的值（&lt;code>0&lt;/code>）中找 &lt;code>&amp;quot;QCyyds&amp;quot;&lt;/code>。因为 &lt;code>0 == &amp;quot;QCyyds&amp;quot;&lt;/code> 为真，找到了，返回键名 0，不等于 &lt;code>false&lt;/code>，继续。&lt;/li>
 &lt;li>&lt;code>foreach&lt;/code> 循环：检查 &lt;code>$qc[&amp;quot;n&amp;quot;]&lt;/code> 中的元素 &lt;code>0&lt;/code> 是否 &lt;code>=== &amp;quot;QCyyds&amp;quot;&lt;/code>。因为 &lt;code>0 === &amp;quot;QCyyds&amp;quot;&lt;/code> 为假，不退出，继续。&lt;/li>
 &lt;li>成功走到 &lt;code>echo $flag;&lt;/code>&lt;/li>
-&lt;/ol></description></item><item><title>Archives</title><link>https://Oight.github.io/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://Oight.github.io/archives/</guid><description/></item><item><title/><link>https://Oight.github.io/p/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/p/</guid><description>&lt;h1 id="分布式学习二">分布式学习(二)
-&lt;/h1>&lt;p>在上一篇博客中了解完为什么要有分布式系统,分布式系统解决了什么问题,又带来了哪些新的挑战后,在这一篇中就要正式开始学习分布式系统了&lt;/p>
-&lt;p>在本章中,将从分布式系统通信入手,介绍分布式系统中对&lt;strong>一致性与可用性的权衡&lt;/strong>：CAP、BASE、最终一致性、中心化与去中心化、共识算法。&lt;/p>
-&lt;h2 id="分布式系统通信机制">分布式系统通信机制
-&lt;/h2>&lt;p>在分布式系统中,广播是一种非常常见的通信要求: 一个节点产生了某个信息,需要让其他节点都知道.&lt;/p>
-&lt;p>例如: 配置变更通知, 成员上下线, 路由表更新, 缓存失效, 状态同步, 元数据传播, 故障检测, 集群状态扩散等等&lt;/p>
-&lt;p>分布式系统通信在传播模型(信息如何在多个节点之间扩散)上有两种: 中心化广播和Gossip协议&lt;/p>
-&lt;h3 id="中心化广播">中心化广播
-&lt;/h3>&lt;p>中心化广播是有一个中心节点或中心组件负责把消息发给所有目标节点&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ifg45lbc85j31ih13s7mj.jpg"
-loading="lazy"
-alt="1"
->&lt;/p>
-&lt;p>如图,上图中的拓扑就是中心化广播的经典结构&lt;/p>
-&lt;p>中心化广播并不只有一种实现,常见有以下几类:&lt;/p>
-&lt;p>&lt;strong>主节点广播&lt;/strong>: 集群中有一个Master 或Leader ,由它负责广播.&lt;/p>
-&lt;p>典型应用:&lt;/p>
-&lt;ul>
-&lt;li>Raft 中 Leader 向 Follower 复制日志&lt;/li>
-&lt;li>ZooKeeper 中 Leader 广播事务&lt;/li>
-&lt;li>HDFS NameNode 管理元数据&lt;/li>
-&lt;li>某些主从数据库复制&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>中心 Broker 广播&lt;/strong>: 消息不是由业务节点直接广播,而是交给中心消息中间件.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">// 像这样
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Producer -&amp;gt; Broker -&amp;gt; Consumer1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -&amp;gt; Consumer2
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -&amp;gt; Consumer3
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>典型应用:&lt;/p>
-&lt;ul>
-&lt;li>Kafka&lt;/li>
-&lt;li>RocketMQ&lt;/li>
-&lt;li>RabbitMQ&lt;/li>
-&lt;li>Pulsar&lt;/li>
-&lt;li>Redis Pub/Sub&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>发布/订阅模型&lt;/strong>&lt;/p>
-&lt;p>中心化广播经常以发布/订阅形式出现.&lt;/p>
-&lt;p>Publisher 发布消息
-Subscriber 订阅消息
-中心组件负责分发&lt;/p>
-&lt;p>典型应用:&lt;/p>
-&lt;ul>
-&lt;li>消息队列&lt;/li>
-&lt;li>事件总线&lt;/li>
-&lt;li>配置中心&lt;/li>
-&lt;li>注册中心&lt;/li>
-&lt;li>协调服务&lt;/li>
-&lt;/ul>
-&lt;h4 id="中心化广播的工作原理">中心化广播的工作原理
-&lt;/h4>&lt;p>以一个配置中心为例:&lt;/p>
-&lt;ol>
-&lt;li>管理员修改配置&lt;/li>
-&lt;li>配置中心保存新配置&lt;/li>
-&lt;li>配置中心向所有客户端广播配置变更&lt;/li>
-&lt;li>客户端收到通知后拉取最新配置&lt;/li>
-&lt;li>客户端应用新配置&lt;/li>
-&lt;/ol>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Admin
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> v
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Config Center
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; App Instance 1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; App Instance 2
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; App Instance 3
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>消息队列的流程是这样:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Producer
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> v
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Broker
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; Consumer Group A
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; Consumer Group B
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> |------&amp;gt; Consumer Group C
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="中心化广播的优缺点">中心化广播的优缺点
-&lt;/h4>&lt;p>&lt;strong>优点:&lt;/strong>&lt;/p>
-&lt;p>消息来源明确,所有消息都来自中心节点,所以&lt;/p>
-&lt;ul>
-&lt;li>权限控制简单&lt;/li>
-&lt;li>审计方便&lt;/li>
-&lt;li>版本管理方便&lt;/li>
-&lt;li>数据权威性高&lt;/li>
-&lt;/ul>
-&lt;p>例如配置中心配置只能由 Config Center 发布&lt;/p>
-&lt;p>这样可以避免多个节点随意修改配置导致混乱。&lt;/p>
-&lt;p>容易保证顺序,如果所有消息都从中心节点发出，那么中心节点可以统一编号。&lt;/p>
-&lt;p>适合强管理场景&lt;/p>
-&lt;p>例如：&lt;/p>
-&lt;ul>
-&lt;li>配置下发&lt;/li>
-&lt;li>任务分发&lt;/li>
-&lt;li>权限变更&lt;/li>
-&lt;li>集群调度&lt;/li>
-&lt;li>元数据管理&lt;/li>
-&lt;/ul>
-&lt;p>这些场景通常需要一个权威中心。&lt;/p>
-&lt;p>缺点:&lt;/p>
-&lt;p>中心节点是单点风险&lt;/p>
-&lt;p>中心节点压力大&lt;/p>
-&lt;p>扩展性受限&lt;/p>
-&lt;p>容易出现广播风暴&lt;/p>
-&lt;p>网络故障时恢复复杂&lt;/p>
-&lt;h3 id="gossip-协议">Gossip 协议
-&lt;/h3>&lt;p>Gossip 协议也叫：&lt;/p>
-&lt;ul>
-&lt;li>流言协议&lt;/li>
-&lt;li>谣言传播协议&lt;/li>
-&lt;li>epidemic protocol，流行病协议&lt;/li>
-&lt;/ul>
-&lt;p>它的核心思想是：&lt;/p>
-&lt;blockquote>
-&lt;p>节点之间随机互相通信，每个节点把自己知道的信息告诉其他节点，经过多轮传播后，整个集群最终都知道这个信息。&lt;/p>&lt;/blockquote>
-&lt;p>非常像现实中的“传谣言”：A 知道一个消息, A 告诉 B 和 C, B 告诉 D 和 E, C 告诉 F 和 G
-&amp;hellip;
-最后所有人都知道了&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ifg56q8rcaj31z415e4qp.jpg"
-loading="lazy"
-alt="2"
->&lt;/p>
-&lt;p>Gossip 没有强中心节点,每个节点既是信息接收者，也是信息传播者。&lt;/p>
-&lt;h4 id="gossip-的传播方式">Gossip 的传播方式
-&lt;/h4>&lt;p>Gossip有三种传播方式&lt;/p>
-&lt;p>PUSH模式:&lt;/p>
-&lt;p>发送方主动推送消息给邻居，实现简单，但可能产生冗余传输。&lt;/p>
-&lt;p>PULL模式:&lt;/p>
-&lt;p>接收方主动拉取未知消息，网络流量低，但收敛速度较慢。&lt;/p>
-&lt;p>BOTH模式(结合 push 和 pull):&lt;/p>
-&lt;p>双向交换状态，收敛最快，是实际应用中最常用的模式。&lt;/p>
-&lt;h4 id="gossip-协议的工作原理">Gossip 协议的工作原理
-&lt;/h4>&lt;p>可参考图中传播过程模拟&lt;/p>
-&lt;p>Gossip 的传播速度通常是指数级的。&lt;/p>
-&lt;p>假设每个节点每轮告诉 2 个节点：&lt;/p>
-&lt;p>第 0 轮：1 个节点知道
-第 1 轮：3 个节点知道
-第 2 轮：9 个节点知道
-第 3 轮：27 个节点知道
-第 4 轮：81 个节点知道&lt;/p>
-&lt;p>理论上，知道消息的节点数量会按指数增长。&lt;/p>
-&lt;p>所以在大规模集群中，Gossip 可以在较少轮次内让信息覆盖大部分节点。&lt;/p>
-&lt;p>例如 10000 个节点，可能只需要十几轮或几十轮就能基本传播完成。&lt;/p>
-&lt;h4 id="gossip-的收敛性">Gossip 的收敛性
-&lt;/h4>&lt;p>Gossip 通常提供的是：&lt;/p>
-&lt;blockquote>
-&lt;p>最终一致性，而不是强一致性。&lt;/p>&lt;/blockquote>
-&lt;p>也就是说：某个时刻： A 知道 version = 42, B 还不知道, C 知道 version = 41&lt;/p>
-&lt;p>这是正常的。但只要网络最终可达，经过多轮交换，所有节点最终会收敛到相同状态。&lt;/p>
-&lt;h4 id="gossip-的常见用途">Gossip 的常见用途
-&lt;/h4>&lt;p>&lt;strong>成员管理&lt;/strong>:&lt;/p>
-&lt;p>集群需要知道哪些节点存活。&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">节点 A 怀疑节点 B 宕机
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">A 把这个怀疑传播出去
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">其他节点收到后也增加对 B 的怀疑分数
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">当怀疑分数超过阈值，大家认为 B 下线
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>典型系统：&lt;/p>
-&lt;blockquote>
-&lt;p>Cassandra
-Consul
-Redis Cluster
-Amazon Dynamo&lt;/p>&lt;/blockquote>
-&lt;p>&lt;strong>故障检测&lt;/strong>:&lt;/p>
-&lt;p>Gossip 可以结合心跳和 phi accrual failure detector。&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">每个节点定期和其他节点通信
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">如果长时间收不到某节点消息
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">就标记为 suspect
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">再传播 suspect 信息
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>元数据传播&lt;/strong>:&lt;/p>
-&lt;p>例如：&lt;/p>
-&lt;ul>
-&lt;li>节点地址&lt;/li>
-&lt;li>节点角色&lt;/li>
-&lt;li>数据分片信息&lt;/li>
-&lt;li>路由表&lt;/li>
-&lt;li>负载情况&lt;/li>
-&lt;li>版本号&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>状态同步&lt;/strong>:&lt;/p>
-&lt;p>例如:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">每个节点维护一份集群状态
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">节点之间互相同步差异
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">最终所有节点状态一致
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>反熵 Anti-Entropy&lt;/strong>:&lt;/p>
-&lt;p>Gossip 常用于反熵，即修复节点之间的数据差异。&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">A 和 B 比较 Merkle Tree
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">发现某些 key 不一致
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">然后同步这些 key
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Cassandra、Dynamo 等系统使用类似思想。&lt;/p>
-&lt;h4 id="gossip的优缺点">Gossip的优缺点
-&lt;/h4>&lt;p>优点:&lt;/p>
-&lt;p>去中心化：无主节点，任意节点均可发起，系统鲁棒性极强。
-容错性强：节点宕机或网络抖动不影响整体传播路径。
-极高扩展性：O(log N) 轮即可覆盖全网，适合万级节点集群。&lt;/p>
-&lt;p>缺点:&lt;/p>
-&lt;p>最终一致：存在传播延迟，不适用于强一致性要求的场景。
-网络冗余：节点可能多次收到同一消息，增加带宽消耗。
-拜占庭容错：默认节点诚实，难以抵御恶意节点的信息污染。&lt;/p>
-&lt;p>分布式系统通信在具体实现上分为同步与异步两种&lt;/p>
-&lt;p>同步与异步主要关注的点在于 &amp;ldquo;调用方发出请求后,是否必须要等待结果才能继续执行?&amp;rdquo;&lt;/p>
-&lt;h3 id="同步通信">同步通信
-&lt;/h3>&lt;p>调用方发出请求后,通常需要等待对方处理并返回结果,才能继续后续逻辑.&lt;/p>
-&lt;p>例如:&lt;/p>
-&lt;p>服务A调用服务B:&lt;/p>
-&lt;p>A: 请帮我查询订单&lt;/p>
-&lt;p>B:处理中&lt;/p>
-&lt;p>B:返回结果&lt;/p>
-&lt;p>A:拿到结果后继续执行&lt;/p>
-&lt;p>在整个过程中如果B没有返回结果,A就一直等待.&lt;/p>
-&lt;h4 id="同步通信的优缺点">同步通信的优缺点
-&lt;/h4>&lt;p>优点:&lt;/p>
-&lt;p>1.编程模型简单&lt;/p>
-&lt;p>同步调用符合人的直觉：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="n">Result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">service&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">call&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">if&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">result&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">isSuccess&lt;/span>&lt;span class="p">())&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 成功&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">else&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="c1">// 失败&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>逻辑清晰，容易理解和调试。&lt;/p>
-&lt;p>2.可以立即得到结果&lt;/p>
-&lt;p>调用方可以马上知道成功还是失败,&lt;/p>
-&lt;p>3.适合强一致场景&lt;/p>
-&lt;p>缺点:&lt;/p>
-&lt;p>1.容易阻塞&lt;/p>
-&lt;p>2.耦合度高&lt;/p>
-&lt;p>调用方依赖被调用方的可用性&lt;/p>
-&lt;p>3.容易级联故障&lt;/p>
-&lt;p>一个下游服务慢,可能拖垮整个链路&lt;/p>
-&lt;h3 id="异步通信">异步通信
-&lt;/h3>&lt;p>请求方发出请求后，不需要立即等待结果，就可以继续执行其他任务。结果稍后通过回调、通知、消息、轮询等方式获得。&lt;/p>
-&lt;p>例如:&lt;/p>
-&lt;p>服务A 发送消息给 服务B：
-A：请处理订单
-A：我继续做别的事情
-B：后台处理
-B：处理完成后通知 A，或者 A 稍后查询结果&lt;/p>
-&lt;h4 id="异步通信的优缺点">异步通信的优缺点
-&lt;/h4>&lt;p>优点:&lt;/p>
-&lt;p>1.提高响应速度&lt;/p>
-&lt;p>把非核心逻辑放到后台处理&lt;/p>
-&lt;p>2.解耦系统&lt;/p>
-&lt;p>服务之间不直接调用,而是通过消息或事件通信&lt;/p>
-&lt;p>3.削峰填谷&lt;/p>
-&lt;p>高流量时,消息队列可以缓冲请求,避免数据库被瞬时流量打垮&lt;/p>
-&lt;p>4.提高可用性&lt;/p>
-&lt;p>某个下游服务故障,不一定影响主流程&lt;/p>
-&lt;p>缺点:&lt;/p>
-&lt;p>1.复杂度更高&lt;/p>
-&lt;p>异步系统需要处理很多问题:&lt;/p>
-&lt;ul>
-&lt;li>消息丢失&lt;/li>
-&lt;li>消息重复&lt;/li>
-&lt;li>消费顺序&lt;/li>
-&lt;li>消费失败&lt;/li>
-&lt;li>重试策略&lt;/li>
-&lt;li>死信队列&lt;/li>
-&lt;li>幂等性&lt;/li>
-&lt;li>最终一致性&lt;/li>
-&lt;li>状态查询&lt;/li>
-&lt;/ul>
-&lt;p>2.不能立即知道结果&lt;/p>
-&lt;p>3.调试和排查困难&lt;/p>
-&lt;p>在了解完前置知识后,接下来介绍在分布式中非常重要的理论: &lt;strong>CAP理论&lt;/strong>&lt;/p>
-&lt;h2 id="cap定理">CAP定理
-&lt;/h2>&lt;p>CAP定理起源于 2000 年，由加州大学伯克利分校的 Eric Brewer 教授在分布式计算原理研讨会（PODC）上提出，因此 CAP 定理又被称作 &lt;strong>布鲁尔定理（Brewer’s theorem）&lt;/strong>&lt;/p>
-&lt;p>2 年后，麻省理工学院的 Seth Gilbert 和 Nancy Lynch 发表了布鲁尔猜想的证明，CAP 理论正式成为分布式领域的定理。&lt;/p>
-&lt;p>CAP 定理讨论 Consistency（一致性）、Availability（可用性）和 Partition Tolerance（分区容错）。&lt;/p>
-&lt;p>&lt;strong>一致性（Consistency）&lt;/strong>：在 Gilbert/Lynch（2002）的证明语境里，CAP 的一致性 C 指的是 &lt;strong>Atomic Consistency&lt;/strong>，通常等同于 &lt;strong>Linearizability（线性一致性）&lt;/strong>。即所有操作按实时顺序线性化，即写操作一旦完成，后续所有读操作都必须返回该写入的值（或更新的值）。&lt;strong>注意：&lt;/strong> 这里的 Consistency 与数据库 ACID 中的 Consistency（一致性约束）含义不同，后者指事务执行前后数据库状态满足完整性约束。&lt;/p>
-&lt;p>&lt;strong>可用性（Availability）&lt;/strong>：非故障的节点必须对每个请求返回响应（不讨论响应快慢）。&lt;strong>注意&lt;/strong>：这是 CAP 理论中的严格定义，不包含工程中的延迟/SLA 指标（如「1s 内返回」）。&lt;/p>
-&lt;p>&lt;strong>分区容错性（Partition Tolerance）&lt;/strong>：CAP 里的 P 本质上是在假设异步网络（可能延迟/丢包/分区），不是一个你「选择要不要」的功能。真正的权衡是：当分区发生时，你必须在**线性一致（CAP 的 Consistency=Linearizability）&lt;strong>与&lt;/strong>CAP-Availability（任何非故障节点都要对请求给非错误响应）**之间做选择。&lt;/p>
-&lt;p>&lt;strong>什么是网络分区？&lt;/strong>&lt;/p>
-&lt;p>分布式系统中，多个节点之间的网络本来是连通的，但是因为某些故障（比如部分节点网络出了问题）某些节点之间不连通了，整个网络就分成了几块区域，这就叫 &lt;strong>网络分区&lt;/strong>。&lt;/p>
-&lt;h3 id="并非三选二实为二选一">并非三选二,实为二选一
-&lt;/h3>&lt;p>在很多描述中会把CAP定理描述为&amp;quot;一致性、可用性、分区容忍性三者你只能同时达到其中两个,不可能同时达成&amp;quot;,但在实际应用中,网络分区是无法避免的,所以我们必须要满足分区容错性&lt;/p>
-&lt;h4 id="为什么不可能选择ca架构">为什么不可能选择CA架构
-&lt;/h4>&lt;p>因为分布式系统离不开网络通信,而网络故障是常态:&lt;/p>
-&lt;ul>
-&lt;li>心跳检测可能因网络抖动丢包，导致误判节点故障&lt;/li>
-&lt;li>数据同步过程中可能因包丢失导致不一致，系统为达成一致会不断重试，造成请求阻塞&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>因此，在异步网络模型下（分区可能发生），当分区发生时，必须在线性一致性与 CAP-可用性之间取舍。&lt;/strong> 能够保证 CA 的只有单机系统——因为只有一个节点，数据写入成功后所有请求都能看到相同数据；只要这个节点活着，系统就可用。&lt;/p>
-&lt;h4 id="cp架构一致性分区容错">CP架构(一致性+分区容错)
-&lt;/h4>&lt;ul>
-&lt;li>发生分区时，&lt;strong>拒绝服务&lt;/strong>（牺牲可用性），以保证数据一致。&lt;/li>
-&lt;li>典型系统：&lt;strong>ZooKeeper、etcd、HBase、MongoDB（默认配置）&lt;/strong>&lt;/li>
-&lt;li>适用场景：金融交易、配置管理、分布式锁等对正确性要求极高的场景。&lt;/li>
-&lt;/ul>
-&lt;h4 id="ap可用性--分区容错">AP（可用性 + 分区容错）
-&lt;/h4>&lt;ul>
-&lt;li>
-&lt;p>发生分区时，&lt;strong>继续提供服务&lt;/strong>（可能返回旧数据），以保证可用。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>典型系统：&lt;strong>Cassandra、DynamoDB、CouchDB、Eureka&lt;/strong>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>适用场景：电商商品展示、社交动态、DNS 等对实时一致性要求不高的场景。&lt;/p>
-&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>选择 CP 还是 AP 的关键在于当前的业务场景，没有定论&lt;/strong>：比如对于需要确保强一致性的场景如分布式锁、配置管理会选择 CP；对于高可用优先的场景如微服务注册中心会选择 AP。&lt;/p>
-&lt;h3 id="cap理论的适用范围">CAP理论的适用范围
-&lt;/h3>&lt;p>CAP 理论主要讨论单个数据对象在副本复制场景下的一致性与可用性权衡。&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>更贴近 CAP 讨论模型&lt;/th>
-&lt;th>需要拆分到分片/对象/操作级别分析&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>Redis 主从/哨兵集群&lt;/td>
-&lt;td>业务系统（无状态服务）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>MySQL 主从/多主集群&lt;/td>
-&lt;td>Redis-Cluster（每个 shard 仍有副本）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>MongoDB 副本集&lt;/td>
-&lt;td>MongoDB-Cluster（分片 + 副本并存）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>ZooKeeper、etcd&lt;/td>
-&lt;td>分库分表（跨分片事务需额外协调）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>Kafka、RocketMQ&lt;/td>
-&lt;td>大多数微服务应用*&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>说明&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>CAP 讨论模型&lt;/strong>：单个读写寄存器（single register）的副本复制语义&lt;/li>
-&lt;li>&lt;strong>复杂系统&lt;/strong>：需要拆解到「每个对象/分区/操作」的一致性语义讨论&lt;/li>
-&lt;li>&lt;strong>分片 + 副本&lt;/strong>：分片系统每个 shard 通常仍有副本复制，一致性与可用性权衡仍在&lt;/li>
-&lt;/ul>
-&lt;blockquote>
-&lt;p>&lt;strong>业务系统与 CAP 的深度关联&lt;/strong>：&lt;/p>
-&lt;p>业务系统本身虽不涉及副本同步，但&lt;strong>深受底层组件 CAP 属性的影响&lt;/strong>。忽视这一点会导致系统在遭遇网络分区时发生级联雪崩（Cascading Failure）。&lt;/p>
-&lt;p>&lt;strong>受 CAP 属性影响的业务场景&lt;/strong>：&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>业务场景&lt;/th>
-&lt;th>底层组件&lt;/th>
-&lt;th>CP 组件的影响&lt;/th>
-&lt;th>AP 组件的影响&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>RPC 路由&lt;/td>
-&lt;td>注册中心（如 Nacos CP 模式）&lt;/td>
-&lt;td>注册期间不可用，请求被拒绝&lt;/td>
-&lt;td>可能路由到已下线实例，需要重试&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>分布式锁&lt;/td>
-&lt;td>Redis（AP）/ ZooKeeper（CP）&lt;/td>
-&lt;td>性能较低但可靠&lt;/td>
-&lt;td>性能高但可能锁失效&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>限流熔断&lt;/td>
-&lt;td>Redis 计数器&lt;/td>
-&lt;td>可能读到旧计数，限流失效&lt;/td>
-&lt;td>同左&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>缓存更新&lt;/td>
-&lt;td>Redis 主从&lt;/td>
-&lt;td>主从切换时可能丢数据&lt;/td>
-&lt;td>同左&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>消息消费&lt;/td>
-&lt;td>Kafka&lt;/td>
-&lt;td>消费进度同步慢，重复消费&lt;/td>
-&lt;td>同左&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>实践建议&lt;/strong>：业务开发者虽然不需要「实践」CAP 理论，但&lt;strong>必须理解 CAP 理论&lt;/strong>，以便：&lt;/p>
-&lt;ul>
-&lt;li>为不同业务场景选择合适的组件（CP 或 AP）&lt;/li>
-&lt;li>理解所选组件在网络分区时的行为特征&lt;/li>
-&lt;li>设计符合业务需求的容错机制（重试、熔断、降级）&lt;/li>
-&lt;/ul>&lt;/blockquote>
-&lt;p>很多开发者认为自己在「实践 CAP 理论」，实际上只是站在已有组件上做选择（用 CP 还是 AP），而非真正实践该理论。真正需要实践 CAP 的是研发 Redis、MySQL 这类分布式存储组件的工程师。&lt;/p>
-&lt;h3 id="">
-&lt;/h3></description></item><item><title>Search</title><link>https://Oight.github.io/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/search/</guid><description/></item><item><title>关于</title><link>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</guid><description>&lt;p>希望我能脚踏实地，做点实事。&lt;/p></description></item><item><title>友情链接</title><link>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid><description/></item></channel></rss>
+&lt;/ol></description></item><item><title>Archives</title><link>https://Oight.github.io/archives/</link><pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate><guid>https://Oight.github.io/archives/</guid><description/></item><item><title>Search</title><link>https://Oight.github.io/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/search/</guid><description/></item><item><title>关于</title><link>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%85%B3%E4%BA%8E/</guid><description>&lt;p>希望我能脚踏实地，做点实事。&lt;/p></description></item><item><title>友情链接</title><link>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://Oight.github.io/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/</guid><description/></item></channel></rss>
