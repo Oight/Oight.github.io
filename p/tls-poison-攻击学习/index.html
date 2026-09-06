@@ -1,186 +1,992 @@
-<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="TLS Poison 攻击学习\r在 Black Hat USA 2020 - When TLS Hacks You 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.\n"><title>TLS Poison 攻击学习</title><link rel=canonical href=https://Oight.github.io/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/><link rel=stylesheet href=/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css><meta property='og:title' content="TLS Poison 攻击学习"><meta property='og:description' content="TLS Poison 攻击学习\r在 Black Hat USA 2020 - When TLS Hacks You 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.\n"><meta property='og:url' content='https://Oight.github.io/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/'><meta property='og:site_name' content='Oight'><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:published_time' content='2025-12-07T00:00:00+00:00'><meta property='article:modified_time' content='2025-12-07T00:00:00+00:00'><meta name=twitter:title content="TLS Poison 攻击学习"><meta name=twitter:description content="TLS Poison 攻击学习\r在 Black Hat USA 2020 - When TLS Hacks You 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.\n"><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
-<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu_37edead8cd3c258e.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar>
-</a><span class=emoji>🐧</span></figure><div class=site-meta><h1 class=site-name><a href=/>Oight</a></h1><h2 class=site-description>Talk is cheap. Show me the code.</h2></div></header><ol class=menu-social><li><a href=https://space.bilibili.com/696224138 target=_blank title=bilibili rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7a4 4 0 01-4-4v-6z"/><path d="M8 3l2 3"/><path d="M16 3l-2 3"/><path d="M9 13v-2"/><path d="M15 11v2"/></svg></a></li><li><a href=https://github.com/Oight target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
-<span>主页</span></a></li><li><a href=/%E5%85%B3%E4%BA%8E/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
-<span>关于</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
-<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
-<span>Search</span></a></li><li><a href=/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
-<span>友情链接</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#关于tls>关于TLS</a><ol><li><ol><li><a href=#tls-handshake>TLS Handshake</a></li><li><a href=#tls-record>TLS Record</a></li></ol></li><li><a href=#tls-12>TLS 1.2</a><ol><li><a href=#tls-12-hankshake>TLS 1.2 HankShake</a></li><li><a href=#tls-12-session-resumption-overview>TLS 1.2 Session Resumption Overview</a></li><li><a href=#tls-12-session-resumption---session-id>TLS 1.2 Session Resumption - Session ID</a></li><li><a href=#session-ticket>Session Ticket</a></li></ol></li><li><a href=#tls-13>TLS 1.3</a><ol><li><a href=#tls-13-psk>TLS 1.3 PSK</a></li></ol></li></ol></li><li><a href=#dns-rebinding>DNS Rebinding</a></li><li><a href=#tls-posion>TLS posion</a><ol><li><a href=#攻击思路>攻击思路</a></li></ol></li><li><a href=#参考>参考</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%A4%8D%E7%8E%B0/>复现</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/>TLS Poison 攻击学习</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
-<time class=article-time--published>2025-12-07</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>阅读时长: 19 分钟</time></div></footer></div></header><section class=article-content><h1 id=tls-poison-攻击学习>TLS Poison 攻击学习</h1><p>在 <a class=link href=https://www.blackhat.com/us-20/briefings/schedule/#when-tls-hacks-you-19446 target=_blank rel=noopener>Black Hat USA 2020 - When TLS Hacks You</a> 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.</p><h2 id=关于tls>关于TLS</h2><p>TLS(传输层安全性协议 英语: <strong>T</strong>ransport <strong>L</strong>ayer <strong>S</strong>ecurity，缩写：<strong>TLS</strong>)是 是一种广泛采用的安全性协议，旨在促进互联网通信的私密性和数据安全性。TLS 的主要用例是对 Web 应用和服务器之间的通信（例如，Web 浏览器加载网站）进行加密。TLS 还可以用于加密其他通信，如电子邮件、消息传递和 IP 语音 (VoIP) 等。在本文中，我们将重点介绍 TLS 在 Web 应用安全中发挥的作用。</p><p>TLS 由互联网工程任务组（Internet Engineering Task Force, IETF）提出，协议的第一个版本于 1999 年发布。最新版本是 TLS 1.3，发布于 2018 年。</p><p>Netscape 于 1995 年开发了安全套接字层 (SSL),用于确保互联网通信中的隐私、身份验证和数据完整性。SSL 是TLS协议的直接前身。在 1999 年，互联网工程任务组（IETF）提出了对 SSL 的更新。由于此更新是由 IETF 开发的，不再牵涉到 Netscape，因此名称更改为 TLS。SSL 的最终版本（3.0）与 TLS 的第一版本之间并无明显差异，应用名称更改只是表示所有权改变。</p><p>由于它们紧密地联系在一起，这两个术语经常互换使用并混为一谈。有些人仍然使用 SSL 来指代 TLS，其他人则使用术语“SSL/TLS 加密”，因为 SSL 仍然具有很大的知名度。</p><p>如今,TLS/SSL在互联网上有着广泛的应用,该协议由两层组成： TLS 记录协议（TLS Record）和 TLS 握手协议（TLS Handshake）。</p><h4 id=tls-handshake>TLS Handshake</h4><p>TLS 握手是启动 TLS 通信会话的过程。在 TLS 握手过程中，通信双方交换消息以相互确认，彼此验证，确立它们将使用的加密算法，并生成一致的会话密钥。TLS 握手是 HTTPS 工作原理的基础部分。</p><p>在 TLS 握手过程中，客户端和服务器一同执行以下操作：</p><ul><li>指定将要使用的 TLS 版本（TLS 1.0、1.2、1.3 等）</li><li>决定将要使用哪些密码套件</li><li>通过服务器的公钥和 SSL 证书颁发机构的数字签名来验证服务器的身份</li><li>生成会话密钥，以在握手完成后使用对称加密</li></ul><p>TLS 握手是由客户端和服务器交换的一系列数据报或消息。TLS 握手涉及多个步骤，因为客户端和服务器要交换完成握手和进行进一步对话所需的信息。</p><p>TLS 握手中的确切步骤将根据所使用的密钥交换算法的种类和双方支持的密码套件而有所不同。RSA 密钥交换算法虽然现在被认为不安全，但曾在 1.3 之前的 TLS 版本中使用。</p><p><strong>TLS 握手的步骤:</strong></p><ol><li><strong>“客户端问候（client hello）” 消息：</strong> 客户端通过向服务器发送“问候”消息来开始握手。该消息将包含客户端支持的 TLS 版本，支持的密码套件，以及一串称为“客户端随机数（client random）”的随机字节。</li><li><strong>“服务器问候（server hello）”消息：</strong> 作为对 client hello 消息的回复，服务器发送一条消息，内含服务器的 SSL 证书、服务器选择的密码套件，以及“服务器随机数（server random）”，即由服务器生成的另一串随机字节。</li><li><strong>身份验证：</strong> 客户端使用颁发该证书的证书颁发机构验证服务器的 SSL 证书。此举确认服务器是其声称的身份，且客户端正在与该域的实际所有者进行交互。</li><li><strong>预主密钥：</strong> 客户端再发送一串随机字节，即“预主密钥（premaster secret）”。预主密钥是使用公钥加密的，只能使用服务器的私钥解密。（客户端从服务器的 SSL 证书中获得<a class=link href=https://www.cloudflare-cn.com/learning/ssl/how-does-public-key-encryption-work/ target=_blank rel=noopener>公钥</a>。）</li><li>**私钥被使用：**服务器对预主密钥进行解密。</li><li>**生成会话密钥：**客户端和服务器均使用客户端随机数、服务器随机数和预主密钥生成会话密钥。双方应得到相同的结果。</li><li>**客户端就绪：**客户端发送一条“已完成”消息，该消息用会话密钥加密。</li><li>**服务器就绪：**服务器发送一条“已完成”消息，该消息用会话密钥加密。</li><li>**实现安全对称加密：**已完成握手，并使用会话密钥继续进行通信。</li></ol><p>所有 TLS 握手均使用非对称加密（公钥和私钥），但并非全都会在生成会话密钥的过程中使用私钥。例如，短暂的 Diffie-Hellman 握手过程如下：</p><ol><li>**客户端问候：**客户端发送客户端问候消息，内含协议版本、客户端随机数和密码套件列表。</li><li>**服务器问候：**服务器以其 SSL 证书、其选定的密码套件和服务器随机数回复。与上述 RSA 握手相比，服务器在此消息中还包括以下内容（步骤 3）：</li><li>**服务器的数字签名：**服务器对到此为止的所有消息计算出一个数字签名。</li><li>**数字签名确认：**客户端验证服务器的数字签名，确认服务器是它所声称的身份。</li><li>**客户端 DH 参数：**客户端将其 DH 参数发送到服务器。</li><li>**客户端和服务器计算预主密钥：**客户端和服务器使用交换的 DH 参数分别计算匹配的预主密钥，而不像 RSA 握手那样由客户端生成预主密钥并将其发送到服务器。</li><li>**创建会话密钥：**与 RSA 握手中一样，客户端和服务器现在从预主密钥、客户端随机数和服务器随机数计算会话密钥。</li><li>**客户端就绪：**与 RSA 握手相同。</li><li><strong>服务器就绪</strong></li><li><strong>实现安全对称加密</strong></li></ol><p>*DH 参数：DH 代表 Diffie-Hellman。Diffie-Hellman 算法使用指数计算得出相同的预主机密。服务器和客户端各自提供用于计算的参数，并且组合后在每一端产生不同的计算，但得出相等的结果。</p><h4 id=tls-record>TLS Record</h4><p>TLS Record 协议使用握手过程中创建的密钥来确保应用数据的安全。记录协议负责保护应用数据的安全，并验证其完整性和来源。它管理以下内容：将传出的消息分为可管理的块、重新组合传入的消息、压缩外发报文块和解压接收报文块（可选）、将信息验证码（Message Authentication Code, MAC）应用到外发信息并使用 MAC 验证接收信息、加密外发报文和解密接收报文。当 TLS Record 协议完成后，外发加密数据被传到传输控制协议（TCP）层进行传输。</p><h3 id=tls-12>TLS 1.2</h3><h4 id=tls-12-hankshake>TLS 1.2 HankShake</h4><p>完整的TLS握手流程，流程如下</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>  Client                                                       Server
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>  ClientHello                  --------&gt;
-</span></span><span class=line><span class=cl>                                                          ServerHello
-</span></span><span class=line><span class=cl>                                                          Certificate*
-</span></span><span class=line><span class=cl>                                                    ServerKeyExchange*
-</span></span><span class=line><span class=cl>                                                  CertificateRequest*
-</span></span><span class=line><span class=cl>                                &lt;--------              ServerHelloDone
-</span></span><span class=line><span class=cl>  Certificate*
-</span></span><span class=line><span class=cl>  ClientKeyExchange
-</span></span><span class=line><span class=cl>  CertificateVerify*
-</span></span><span class=line><span class=cl>  [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>  Finished                     --------&gt;
-</span></span><span class=line><span class=cl>                                                    [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>                                &lt;--------                     Finished
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>  Application Data             &lt;-------&gt;             Application Data
-</span></span></code></pre></div><blockquote><p>​ *表示可选步骤或与实际握手情况相关。比如重建已有连接，服务端无需执行Certificate，再比如使用RSA公钥加密时，无需ServerKeyExchange。
-​ 握手协议消息必须按上面流程的发送数据进行发送，否则需要以致命错误告知对方并关闭连接。</p></blockquote><p>完整的握手流程有时候也被称为2-RTT流程，即完整的握手流程需要客户端和服务端交互2次才能完成握手。</p><blockquote><p>交互应用请求到响应的交互时间被称为往返时间(Round-trip Time)</p></blockquote><h6 id=client-hello>Client Hello</h6><p>当客户端首次与服务端建立连接或需要重新协商加密握手会话时，需要将<code>Client Hello</code>作为第一条消息发送给服务端。</p><p><code>Client Hello</code>消息包含了许多重要信息，包括客户端版本号、客户端随机数、会话ID、密钥套件、压缩方式、扩展字段等。</p><p>客户端发送完 <code>ClientHello</code> 消息后，将等待 <code>ServerHello</code> 消息。 服务端返回的任何握手消息（<code>HelloRequest</code> 除外）将被视为致命错误。</p><h6 id=server-hello>Server Hello</h6><p>当服务端接收到<code>ClientHello</code>，则开始TLS握手流程， 服务端需要根据客户端提供的加密套件，协商一个合适的算法簇，其中包括对称加密算法、身份验证算法、非对称加密算法以及消息摘要算法。若服务端不能找到一个合适的算法簇匹配项，则会响应握手失败的预警消息。</p><p>若服务端接收到的版本号小于当前支持的最高版本，且服务端希望与旧客户端协商，则返回不大于客户端版本的服务端最高版本。
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="TLS Poison 攻击学习\r在 Black Hat USA 2020 - When TLS Hacks You 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.\n">
+<title>TLS Poison 攻击学习</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="TLS Poison 攻击学习">
+<meta property='og:description' content="TLS Poison 攻击学习\r在 Black Hat USA 2020 - When TLS Hacks You 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.\n">
+<meta property='og:url' content='https://Oight.github.io/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2025-12-07T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2025-12-07T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="TLS Poison 攻击学习">
+<meta name="twitter:description" content="TLS Poison 攻击学习\r在 Black Hat USA 2020 - When TLS Hacks You 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#关于tls">关于TLS</a>
+      <ol>
+        <li>
+          <ol>
+            <li><a href="#tls-handshake">TLS Handshake</a></li>
+            <li><a href="#tls-record">TLS Record</a></li>
+          </ol>
+        </li>
+        <li><a href="#tls-12">TLS 1.2</a>
+          <ol>
+            <li><a href="#tls-12-hankshake">TLS 1.2 HankShake</a></li>
+            <li><a href="#tls-12-session-resumption-overview">TLS 1.2 Session Resumption Overview</a></li>
+            <li><a href="#tls-12-session-resumption---session-id">TLS 1.2 Session Resumption - Session ID</a></li>
+            <li><a href="#session-ticket">Session Ticket</a></li>
+          </ol>
+        </li>
+        <li><a href="#tls-13">TLS 1.3</a>
+          <ol>
+            <li><a href="#tls-13-psk">TLS 1.3 PSK</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#dns-rebinding">DNS Rebinding</a></li>
+    <li><a href="#tls-posion">TLS posion</a>
+      <ol>
+        <li><a href="#攻击思路">攻击思路</a></li>
+      </ol>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E5%A4%8D%E7%8E%B0/" >
+                复现
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/tls-poison-%E6%94%BB%E5%87%BB%E5%AD%A6%E4%B9%A0/">TLS Poison 攻击学习</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2025-12-07</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 19 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="tls-poison-攻击学习">TLS Poison 攻击学习
+</h1><p>在 <a class="link" href="https://www.blackhat.com/us-20/briefings/schedule/#when-tls-hacks-you-19446"  target="_blank" rel="noopener"
+    >Black Hat USA 2020 - When TLS Hacks You</a> 上TLS Poison攻击被首次提出,该攻击是一种利用TLS协议特性结合客户端实现缺陷达到攻击内网应用的攻击方式,可以达到任意写入Memcached等内网服务的攻击效果,进而配合其他漏洞造成RCE等危害.</p>
+<h2 id="关于tls">关于TLS
+</h2><p>TLS(传输层安全性协议 英语: <strong>T</strong>ransport <strong>L</strong>ayer <strong>S</strong>ecurity，缩写：<strong>TLS</strong>)是 是一种广泛采用的安全性协议，旨在促进互联网通信的私密性和数据安全性。TLS 的主要用例是对 Web 应用和服务器之间的通信（例如，Web 浏览器加载网站）进行加密。TLS 还可以用于加密其他通信，如电子邮件、消息传递和 IP 语音 (VoIP) 等。在本文中，我们将重点介绍 TLS 在 Web 应用安全中发挥的作用。</p>
+<p>TLS 由互联网工程任务组（Internet Engineering Task Force, IETF）提出，协议的第一个版本于 1999 年发布。最新版本是 TLS 1.3，发布于 2018 年。</p>
+<p>Netscape 于 1995 年开发了安全套接字层 (SSL),用于确保互联网通信中的隐私、身份验证和数据完整性。SSL 是TLS协议的直接前身。在 1999 年，互联网工程任务组（IETF）提出了对 SSL 的更新。由于此更新是由 IETF 开发的，不再牵涉到 Netscape，因此名称更改为 TLS。SSL 的最终版本（3.0）与 TLS  的第一版本之间并无明显差异，应用名称更改只是表示所有权改变。</p>
+<p>由于它们紧密地联系在一起，这两个术语经常互换使用并混为一谈。有些人仍然使用 SSL 来指代 TLS，其他人则使用术语“SSL/TLS 加密”，因为 SSL 仍然具有很大的知名度。</p>
+<p>如今,TLS/SSL在互联网上有着广泛的应用,该协议由两层组成： TLS 记录协议（TLS Record）和 TLS 握手协议（TLS Handshake）。</p>
+<h4 id="tls-handshake">TLS Handshake
+</h4><p>TLS 握手是启动 TLS 通信会话的过程。在 TLS 握手过程中，通信双方交换消息以相互确认，彼此验证，确立它们将使用的加密算法，并生成一致的会话密钥。TLS 握手是 HTTPS 工作原理的基础部分。</p>
+<p>在 TLS 握手过程中，客户端和服务器一同执行以下操作：</p>
+<ul>
+<li>指定将要使用的 TLS 版本（TLS 1.0、1.2、1.3 等）</li>
+<li>决定将要使用哪些密码套件</li>
+<li>通过服务器的公钥和 SSL 证书颁发机构的数字签名来验证服务器的身份</li>
+<li>生成会话密钥，以在握手完成后使用对称加密</li>
+</ul>
+<p>TLS 握手是由客户端和服务器交换的一系列数据报或消息。TLS 握手涉及多个步骤，因为客户端和服务器要交换完成握手和进行进一步对话所需的信息。</p>
+<p>TLS 握手中的确切步骤将根据所使用的密钥交换算法的种类和双方支持的密码套件而有所不同。RSA 密钥交换算法虽然现在被认为不安全，但曾在 1.3 之前的 TLS 版本中使用。</p>
+<p><strong>TLS 握手的步骤:</strong></p>
+<ol>
+<li><strong>“客户端问候（client hello）” 消息：</strong> 客户端通过向服务器发送“问候”消息来开始握手。该消息将包含客户端支持的 TLS 版本，支持的密码套件，以及一串称为“客户端随机数（client random）”的随机字节。</li>
+<li><strong>“服务器问候（server hello）”消息：</strong> 作为对 client hello 消息的回复，服务器发送一条消息，内含服务器的 SSL 证书、服务器选择的密码套件，以及“服务器随机数（server random）”，即由服务器生成的另一串随机字节。</li>
+<li><strong>身份验证：</strong> 客户端使用颁发该证书的证书颁发机构验证服务器的 SSL 证书。此举确认服务器是其声称的身份，且客户端正在与该域的实际所有者进行交互。</li>
+<li><strong>预主密钥：</strong> 客户端再发送一串随机字节，即“预主密钥（premaster secret）”。预主密钥是使用公钥加密的，只能使用服务器的私钥解密。（客户端从服务器的 SSL 证书中获得<a class="link" href="https://www.cloudflare-cn.com/learning/ssl/how-does-public-key-encryption-work/"  target="_blank" rel="noopener"
+    >公钥</a>。）</li>
+<li>**私钥被使用：**服务器对预主密钥进行解密。</li>
+<li>**生成会话密钥：**客户端和服务器均使用客户端随机数、服务器随机数和预主密钥生成会话密钥。双方应得到相同的结果。</li>
+<li>**客户端就绪：**客户端发送一条“已完成”消息，该消息用会话密钥加密。</li>
+<li>**服务器就绪：**服务器发送一条“已完成”消息，该消息用会话密钥加密。</li>
+<li>**实现安全对称加密：**已完成握手，并使用会话密钥继续进行通信。</li>
+</ol>
+<p>所有 TLS 握手均使用非对称加密（公钥和私钥），但并非全都会在生成会话密钥的过程中使用私钥。例如，短暂的 Diffie-Hellman 握手过程如下：</p>
+<ol>
+<li>**客户端问候：**客户端发送客户端问候消息，内含协议版本、客户端随机数和密码套件列表。</li>
+<li>**服务器问候：**服务器以其 SSL 证书、其选定的密码套件和服务器随机数回复。与上述 RSA 握手相比，服务器在此消息中还包括以下内容（步骤 3）：</li>
+<li>**服务器的数字签名：**服务器对到此为止的所有消息计算出一个数字签名。</li>
+<li>**数字签名确认：**客户端验证服务器的数字签名，确认服务器是它所声称的身份。</li>
+<li>**客户端 DH 参数：**客户端将其 DH 参数发送到服务器。</li>
+<li>**客户端和服务器计算预主密钥：**客户端和服务器使用交换的 DH 参数分别计算匹配的预主密钥，而不像 RSA 握手那样由客户端生成预主密钥并将其发送到服务器。</li>
+<li>**创建会话密钥：**与 RSA 握手中一样，客户端和服务器现在从预主密钥、客户端随机数和服务器随机数计算会话密钥。</li>
+<li>**客户端就绪：**与 RSA 握手相同。</li>
+<li><strong>服务器就绪</strong></li>
+<li><strong>实现安全对称加密</strong></li>
+</ol>
+<p>*DH 参数：DH 代表 Diffie-Hellman。Diffie-Hellman 算法使用指数计算得出相同的预主机密。服务器和客户端各自提供用于计算的参数，并且组合后在每一端产生不同的计算，但得出相等的结果。</p>
+<h4 id="tls-record">TLS Record
+</h4><p>TLS Record  协议使用握手过程中创建的密钥来确保应用数据的安全。记录协议负责保护应用数据的安全，并验证其完整性和来源。它管理以下内容：将传出的消息分为可管理的块、重新组合传入的消息、压缩外发报文块和解压接收报文块（可选）、将信息验证码（Message Authentication Code, MAC）应用到外发信息并使用 MAC 验证接收信息、加密外发报文和解密接收报文。当 TLS  Record 协议完成后，外发加密数据被传到传输控制协议（TCP）层进行传输。</p>
+<h3 id="tls-12">TLS 1.2
+</h3><h4 id="tls-12-hankshake">TLS 1.2 HankShake
+</h4><p>完整的TLS握手流程，流程如下</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">  Client                                                       Server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  ClientHello                  --------&gt;
+</span></span><span class="line"><span class="cl">                                                          ServerHello
+</span></span><span class="line"><span class="cl">                                                          Certificate*
+</span></span><span class="line"><span class="cl">                                                    ServerKeyExchange*
+</span></span><span class="line"><span class="cl">                                                  CertificateRequest*
+</span></span><span class="line"><span class="cl">                                &lt;--------              ServerHelloDone
+</span></span><span class="line"><span class="cl">  Certificate*
+</span></span><span class="line"><span class="cl">  ClientKeyExchange
+</span></span><span class="line"><span class="cl">  CertificateVerify*
+</span></span><span class="line"><span class="cl">  [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">  Finished                     --------&gt;
+</span></span><span class="line"><span class="cl">                                                    [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">                                &lt;--------                     Finished
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  Application Data             &lt;-------&gt;             Application Data
+</span></span></code></pre></div><blockquote>
+<p>​    *表示可选步骤或与实际握手情况相关。比如重建已有连接，服务端无需执行Certificate，再比如使用RSA公钥加密时，无需ServerKeyExchange。
+​    握手协议消息必须按上面流程的发送数据进行发送，否则需要以致命错误告知对方并关闭连接。</p></blockquote>
+<p>完整的握手流程有时候也被称为2-RTT流程，即完整的握手流程需要客户端和服务端交互2次才能完成握手。</p>
+<blockquote>
+<p>交互应用请求到响应的交互时间被称为往返时间(Round-trip Time)</p></blockquote>
+<h6 id="client-hello">Client Hello
+</h6><p>当客户端首次与服务端建立连接或需要重新协商加密握手会话时，需要将<code>Client Hello</code>作为第一条消息发送给服务端。</p>
+<p><code>Client Hello</code>消息包含了许多重要信息，包括客户端版本号、客户端随机数、会话ID、密钥套件、压缩方式、扩展字段等。</p>
+<p>客户端发送完 <code>ClientHello</code> 消息后，将等待 <code>ServerHello</code> 消息。 服务端返回的任何握手消息（<code>HelloRequest</code> 除外）将被视为致命错误。</p>
+<h6 id="server-hello">Server Hello
+</h6><p>当服务端接收到<code>ClientHello</code>，则开始TLS握手流程， 服务端需要根据客户端提供的加密套件，协商一个合适的算法簇，其中包括对称加密算法、身份验证算法、非对称加密算法以及消息摘要算法。若服务端不能找到一个合适的算法簇匹配项，则会响应握手失败的预警消息。</p>
+<p>若服务端接收到的版本号小于当前支持的最高版本，且服务端希望与旧客户端协商，则返回不大于客户端版本的服务端最高版本。
 若服务端仅支持大于client_version的版本，则必须发送<code>protocol_version</code>警报消息并关闭连接。
-若服务端收到的版本号大于服务端支持的最高版本的版本，则必须返回服务端所支持的最高版本。</p><p>通过<code>ClientHello</code>和<code>ServerHello</code>，客户端和服务端就协商好算法套件和用于生成密钥的随机数。</p><h6 id=certificate>Certificate</h6><p>假设客户端和服务端使用默认的<code>TLS_RSA_WITH_AES_128_CBC_SHA</code>算法，在<code>ServerHello</code>完成后，服务端必须将本地的RSA证书传给客户端，以便客户端和服务端之间可以进行非对称加密保证对称加密密钥的安全性。
-RSA的证书有2个作用：</p><ul><li>客户端可以对服务端的证书进行合法性进行校验。</li><li>对<code>Client Key Exchange</code>生成的pre-master key进行公钥加密，保证只有服务端可以解密，确保对称加密密钥的安全性。</li></ul><p>发送给客户端的是一系列证书，服务端的证书必须排列在第一位，排在后面的证书可以认证前面的证书。
-当客户端收到了服务端的<code>ServerHello</code>时，若客户端也有证书需要服务端验证，则通过该握手请求将客户端的证书发送给服务端，若客户端没有证书，则无需发送证书请求到服务端。</p><h6 id=certificate-request>Certificate Request</h6><p>当需要TLS双向认证的时候，若服务端需要验证客户端的证书，则向客户端发送<code>Certificate Request</code>请求获取客户端指定类型的证书。</p><ul><li>服务端会指定客户端的证书类型。</li><li>客户端会确定是否有合适的证书。</li></ul><h6 id=server-hello-done>Server Hello Done</h6><p>当服务端处理Hello请求结束时，发送<code>Server Hello Done</code>消息，然后等待接收客户端握手消息。客户端收到服务端该消息，有必要时需要对服务端的证书进行有效性校验。</p><h6 id=client-certificate>Client Certificate</h6><p>当客户端收到了服务端的<code>CertificateRequest</code>请求时，需要发送<code>Client Certificate</code>消息，若客户端无法提供证书，则仍要发送此消息，消息内容可以不包含证书。</p><h6 id=client-key-exchange>Client Key Exchange</h6><p>客户端接收到ServerHelloDone消息后，计算密钥，通过发送<code>Client Key Exchange</code>消息给服务端。客户端和服务端通过<code>Key Exchange</code>消息交换密钥，使得双方的主密钥协商达成一致。</p><p>以RSA的密钥协商为例。在<code>ClientHello</code>和<code>ServerHello</code>分别在客户端和服务端创建了一个32位的随机数。客户端接收到<code>Server Hello Done</code>消息时，生成最后一个48位的预主密钥。通过服务端提供的证书进行公钥加密，以保证只有服务端的私钥才能解密。</p><h6 id=certificate-verify>Certificate Verify</h6><p>若服务端要求客户端发送证书，且客户端发送了非0长度的证书，此时客户端想要证明自己拥有该证书，则需要使用客户端私钥签名一段数据发送给服务端继续验证。该数据为客户端收发的所有握手数据的hash值（不包括本次消息）。</p><h6 id=finished>Finished</h6><p>当发送完<code>Change Cipher Spec</code>消息后必须立即发送该消息。当该消息用于验证密钥交换和身份验证过程是否成功。</p><p><code>Finished</code>消息是第一个使用协商的算法簇进行加密和防篡改保护的消息。一旦双方都通过了该消息验证，就完成了TLS握手。
-VerifyData为客户端收发的所有握手数据的hash值（不包括本次消息）。与<code>Certificate Verify</code>的hash值可能会不一样。如果发送过<code>Certificate Verify</code>消息，服务端的握手消息会包含<code>Certificate Verify</code>握手的数据。</p><h4 id=tls-12-session-resumption-overview>TLS 1.2 Session Resumption Overview</h4><p>完整的 TLS 握手产生的额外延时和计算成本对所有需要安全通信的应用程序牺牲了很多性能代价，为了帮助降低部分成本， TLS 提供了一种恢复会话机制，用来恢复或共享多个连接之间的相同协商的秘钥数据。会话恢复是一个重要的优化部署，简略的握手消除了一个完整的 TLS 握手往返耗时，大大降低了双方的计算成本。在 TLS 1.2 中， TLS Session Resumption 可以采用 Session ID 和会话票机制来实现。除了性能上的优势外，恢复的会话还可以用于单点登录，因为它保证了原始会话和任何恢复的会话都来自同一个客户端。</p><h4 id=tls-12-session-resumption---session-id>TLS 1.2 Session Resumption - Session ID</h4><p>在这种机制中，服务器在与客户端初次握手时，服务器会随机分配一个 Session ID。客户端和服务器将这个会话ID与会话密钥和连接状态一起存储。为了恢复会话，客户端将存储的会话ID与第一个协议消息（ClientHello）一起发送给服务器。如果服务器识别到了连接并愿意恢复会话，它就会用相同的会话ID来回复，重新建立各自的会话。这样就可以快速建立安全的连接，而且由于我们重用了之前协商好的会话数据，所以不会损失安全性。</p><p>Client 在一开始发送 ClientHello 消息中， ClientHello 消息中包括一个可变长度的 Session ID。如果为空则表示是一个新的会话，也就是客户端与服务端第一次握手，Server 在返回 ServerHello 时就会发送一个 Session ID ，此时内容为 Server 产生，当协商握手完成后，Session ID 就变得有效，并一直存在，直到由于超过有效时间或因为在与会话相关的连接上遇到服务器错误而被删除。如果不为空，该值就表示客户端希望重用该会话的安全参数，Server 会检查它的会话缓存以进行匹配，如果匹配成功，并且 Server 愿意在指定的会话状态下重建连接，它将会发送一个带有相同会话 ID 值的 ServerHello 消息，这时 Client 和 Server 必须都发送 ChangeCipherSpec 消息并且直接发送 Finished 消息，一旦重建立完成，Client 和 Server 可以开始交换应用层数据。如果一个会话 ID 不匹配，Server 会产生一个新的会话 ID，然后 TLS Client 和 Server 需要进行一次完整的握手。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>     Client                                                Server
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>     ClientHello                   --------&gt;
-</span></span><span class=line><span class=cl>                                                       ServerHello
-</span></span><span class=line><span class=cl>                                                [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>                                    &lt;--------             Finished
-</span></span><span class=line><span class=cl>     [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>     Finished                      --------&gt;
-</span></span><span class=line><span class=cl>     Application Data              &lt;-------&gt;     Application Data
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>         Figure 2.  Message flow for an abbreviated handshake
-</span></span></code></pre></div><p>客户端只需在其 Client Hello 消息中发送之前从 Server 那里得知的 Session ID ，然后 Server 确认这个 Session ID 在它的 TLS 会话缓存之后，它们就会进行所谓的 Abbreviated TLS Handshake 。在这次 TLS 握手过程中不会交换证书或密钥信息，之前协商好的密钥会被重新使用，这样就完成了一次 TLS Session Resumption 。</p><h4 id=session-ticket>Session Ticket</h4><p>Session id是最传统的方式，它的主要问题是，会话状态保存在服务器端，当大量用户访问服务器时，服务器用来保存会话状态的空间占用就会很大，需要对保存时间，保存机制做优化。</p><p>为了解决这个问题,TLS1.2引入了session ticket机制</p><p>Session Ticket的工作原理很简单：</p><ol><li>服务器在获取到客户端的密钥协商参数，并生成session key之后，会将完整的会话状态(session status)进行加密，生成session ticket，注意，<strong>这个信息只有服务器才能够解密</strong></li><li>Sever验证了客户端发送Finished消息后，通过"New session ticket"消息将session ticket发给客户端进行保存，服务器端就不再保存会话状态了</li><li>客户端在下次发起会话时，就可以将Session Ticket放入client hello中，服务器收到后进行解密验证，并从ticket的内容中提取会话状态，用来恢复会话。</li></ol><p>这种机制叫做会话票机制,会话票机制被称为无状态恢复机制。无状态恢复机制的主要改进是取消了服务器端的会话缓存，简化了部署，要求客户端在每次与服务器的新连接时提供会话票据，直到票据过期。</p><p>TLS SessionTicket 是一个扩展，其基于 <a class=link href=https://tools.ietf.org/html/rfc4366 target=_blank rel=noopener>RFC4366</a> 。Ticket 的格式是一个 opaque 的结构，用于携带特定会话的状态信息。RFC 推荐的 Session Ticket 结构如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>  <span class=n>uint32</span> <span class=n>ticket_lifetime_hint</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>  <span class=n>opaque</span> <span class=n>ticket</span><span class=o>&lt;</span><span class=mf>0..2</span><span class=o>^</span><span class=mi>16</span><span class=o>-</span><span class=mi>1</span><span class=o>&gt;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>NewSessionTicket</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>  <span class=n>opaque</span> <span class=n>key_name</span><span class=p>[</span><span class=mi>16</span><span class=p>];</span>
-</span></span><span class=line><span class=cl>  <span class=n>opaque</span> <span class=n>iv</span><span class=p>[</span><span class=mi>16</span><span class=p>];</span>
-</span></span><span class=line><span class=cl>  <span class=n>opaque</span> <span class=n>encrypted_state</span><span class=o>&lt;</span><span class=mf>0..2</span><span class=o>^</span><span class=mi>16</span><span class=o>-</span><span class=mi>1</span><span class=o>&gt;</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>  <span class=n>opaque</span> <span class=n>mac</span><span class=p>[</span><span class=mi>32</span><span class=p>];</span>
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>ticket</span><span class=p>;</span>
-</span></span></code></pre></div><p>这个扩展可以在 ClientHello 和 ServerHello 中发送。如果客户端拥有一个想要用来恢复会话的 ticket，那么它就会在 ClientHello 中的 SessionTicket 扩展中包含这个 ticket。如果客户端没有票据，并且准备在 NewSessionTicket 握手消息中接收票据，那么它必须在 SessionTicket 扩展中包含一个长度为零的 Session Ticket 。如果客户端不准备在 NewSessionTicket 握手消息中接收票据，则必须不包含 SessionTicket 扩展，除非客户端发送通过其他方式从服务器收到的非空票据。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>         Client                                               Server
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>         ClientHello
-</span></span><span class=line><span class=cl>        (empty SessionTicket extension)--------&gt;
-</span></span><span class=line><span class=cl>                                                         ServerHello
-</span></span><span class=line><span class=cl>                                     (empty SessionTicket extension)
-</span></span><span class=line><span class=cl>                                                        Certificate*
-</span></span><span class=line><span class=cl>                                                  ServerKeyExchange*
-</span></span><span class=line><span class=cl>                                                 CertificateRequest*
-</span></span><span class=line><span class=cl>                                      &lt;--------      ServerHelloDone
-</span></span><span class=line><span class=cl>         Certificate*
-</span></span><span class=line><span class=cl>         ClientKeyExchange
-</span></span><span class=line><span class=cl>         CertificateVerify*
-</span></span><span class=line><span class=cl>         [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>         Finished                     --------&gt;
-</span></span><span class=line><span class=cl>                                                    NewSessionTicket
-</span></span><span class=line><span class=cl>                                                  [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>                                      &lt;--------             Finished
-</span></span><span class=line><span class=cl>         Application Data             &lt;-------&gt;     Application Data
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>   Figure 1: Message Flow for Full Handshake Issuing New Session Ticket
-</span></span></code></pre></div><p>如上流程图所示，客户端通过在 ClientHello 消息中包含一个 SessionTicket TLS 扩展名来表示它支持这种机制，此时 SessionTicket 为空，服务器将发送一个空的SessionTicket 扩展来表示它将使用 NewSessionTicket 握手消息发送一个新的 Session Ticket，该消息是在服务器成功验证客户端的 Finished 消息后，在ChangeCipherSpec 消息之前的 TLS 握手期间发送。在得到 Session Ticket 后，Client 将该 Session Ticket 与主密和其他与当前会话相关的参数一起缓存。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>         Client                                                Server
-</span></span><span class=line><span class=cl>         ClientHello
-</span></span><span class=line><span class=cl>         (SessionTicket extension)      --------&gt;
-</span></span><span class=line><span class=cl>                                                          ServerHello
-</span></span><span class=line><span class=cl>                                      (empty SessionTicket extension)
-</span></span><span class=line><span class=cl>                                                     NewSessionTicket
-</span></span><span class=line><span class=cl>                                                   [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>                                       &lt;--------             Finished
-</span></span><span class=line><span class=cl>         [ChangeCipherSpec]
-</span></span><span class=line><span class=cl>         Finished                      --------&gt;
-</span></span><span class=line><span class=cl>         Application Data              &lt;-------&gt;     Application Data
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    Figure 2: Message Flow for Abbreviated Handshake Using New Session
-</span></span><span class=line><span class=cl>                                  Ticket
-</span></span></code></pre></div><p>当客户端希望恢复会话时，它在 ClientHello 消息中的 SessionTicket 扩展中包含该票据。然后服务器对收到的票据进行解密，验证票据的有效性，从票据的内容中检索会话状态，并使用这个状态来恢复会话。如果服务器成功验证了客户端的票据，那么就可以在 ServerHello 之后加入 NewSessionTicket 握手消息来续订票据。</p><h3 id=tls-13>TLS 1.3</h3><p>TLS1.3是TLS1.2的升级版本,于2018年8月发表,相比于TLS1.2</p><blockquote><p>减少握手等待时间，将握手时间从 2-RTT 降低到 1-RTT，并且增加 0-RTT 模式。</p><p>废除 Session ID 和 Session Ticket 会话恢复方式，统一通过 PSK 的方式进行会话恢复，并在 NewSessionTicket 消息中添加过期时间和用于混淆时间的偏移值。</p></blockquote><p>在握手时相对于 TLS 1.2 发生了比较明显的改动：</p><ol><li>与 TLS 1.2 握手类似，TLS 1.3 握手以 Client Hello 消息开始，但有一个重要的变化就是客户端发送支持的加密套件列表，并猜测服务器可能选择的密钥协议协议，也会发送它对该特定密钥协议协议的密钥共享。</li><li>Server 在回复 Server Hello 时，服务器回复它所选择的密钥协议协议，其中也包括服务器的密钥共享、证书以及 Server Finished 。</li><li>现在，客户端检查服务器证书，生成密钥，并发送 Client Finished ，之后就可以发送加密数据了。</li></ol><p>这样一来，TLS 1.3 握手就节省了整整一个来回和数百毫秒的时间，比 TLS 1.2 握手有了很大的改进。RFC 8446 提供的简要流程图如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>       Client                                           Server
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>Key  ^ ClientHello
-</span></span><span class=line><span class=cl>Exch | + key_share*
-</span></span><span class=line><span class=cl>     | + signature_algorithms*
-</span></span><span class=line><span class=cl>     | + psk_key_exchange_modes*
-</span></span><span class=line><span class=cl>     v + pre_shared_key*       --------&gt;
-</span></span><span class=line><span class=cl>                                                  ServerHello  ^ Key
-</span></span><span class=line><span class=cl>                                                 + key_share*  | Exch
-</span></span><span class=line><span class=cl>                                            + pre_shared_key*  v
-</span></span><span class=line><span class=cl>                                        {EncryptedExtensions}  ^  Server
-</span></span><span class=line><span class=cl>                                        {CertificateRequest*}  v  Params
-</span></span><span class=line><span class=cl>                                               {Certificate*}  ^
-</span></span><span class=line><span class=cl>                                         {CertificateVerify*}  | Auth
-</span></span><span class=line><span class=cl>                                                   {Finished}  v
-</span></span><span class=line><span class=cl>                               &lt;--------  [Application Data*]
-</span></span><span class=line><span class=cl>     ^ {Certificate*}
-</span></span><span class=line><span class=cl>Auth | {CertificateVerify*}
-</span></span><span class=line><span class=cl>     v {Finished}              --------&gt;
-</span></span><span class=line><span class=cl>       [Application Data]      &lt;-------&gt;  [Application Data]
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>              +  Indicates noteworthy extensions sent in the
-</span></span><span class=line><span class=cl>                 previously noted message.
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>              *  Indicates optional or situation-dependent
-</span></span><span class=line><span class=cl>                 messages/extensions that are not always sent.
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>              {} Indicates messages protected using keys
-</span></span><span class=line><span class=cl>                 derived from a [sender]_handshake_traffic_secret.
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>              [] Indicates messages protected using keys
-</span></span><span class=line><span class=cl>                 derived from [sender]_application_traffic_secret_N.
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>               Figure 1: Message Flow for Full TLS Handshake
-</span></span></code></pre></div><h4 id=tls-13-psk>TLS 1.3 PSK</h4><p>TLS1.3用PSK(预共享密钥 Pre-Shared Key) 替换了TLS1.2中的Session ID 和 Session Ticket 。</p><p><code>pre-shared-key</code>扩展数据字段定义如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>struct</span> <span class=p>{</span>        
-</span></span><span class=line><span class=cl>    <span class=n>opaque</span> <span class=n>identity</span><span class=o>&lt;</span><span class=mf>1..2</span><span class=o>^</span><span class=mi>16</span><span class=o>-</span><span class=mi>1</span><span class=o>&gt;</span><span class=p>;</span>        
-</span></span><span class=line><span class=cl>    <span class=n>uint32</span> <span class=n>obfuscated_ticket_age</span><span class=p>;</span>    
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>PskIdentity</span><span class=p>;</span>    
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=n>opaque</span> <span class=n>PskBinderEntry</span><span class=o>&lt;</span><span class=mf>32..255</span><span class=o>&gt;</span><span class=p>;</span>    
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=p>{</span>        
-</span></span><span class=line><span class=cl>    <span class=n>PskIdentity</span> <span class=n>identities</span><span class=o>&lt;</span><span class=mf>7..2</span><span class=o>^</span><span class=mi>16</span><span class=o>-</span><span class=mi>1</span><span class=o>&gt;</span><span class=p>;</span>        
-</span></span><span class=line><span class=cl>    <span class=n>PskBinderEntry</span> <span class=n>binders</span><span class=o>&lt;</span><span class=mf>33..2</span><span class=o>^</span><span class=mi>16</span><span class=o>-</span><span class=mi>1</span><span class=o>&gt;</span><span class=p>;</span>    
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>OfferedPsks</span><span class=p>;</span>    
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl><span class=k>struct</span> <span class=p>{</span>        
-</span></span><span class=line><span class=cl>    <span class=nf>select</span> <span class=p>(</span><span class=n>Handshake</span><span class=p>.</span><span class=n>msg_type</span><span class=p>)</span> <span class=p>{</span>           
-</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=nl>client_hello</span><span class=p>:</span> <span class=n>OfferedPsks</span><span class=p>;</span>            
-</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=nl>server_hello</span><span class=p>:</span> <span class=n>uint16</span> <span class=n>selected_identity</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=p>};</span>    
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>PreSharedKeyExtension</span><span class=p>;</span>
-</span></span></code></pre></div><p>首先对于client来说，在ClientHello的<code>pre-shared-key</code>扩展里提供了一个PSK的列表供server选择，对于server来说选择一个PSK在ServerHello扩展里返回给client</p><p>PSK的identity相对于tls1.2 里的ticket更为通用，可以是server段在NewSessionTicket消息里生成告诉client的，也可以是双方在tls之外预先配置的。</p><p>每个PSK都对应一个binder，用于将PSK和当前handshake绑定，其实就是确认双方都只能PSK对应的密钥。binder由client生成，由server段校验。其计算和Finished消息类似，都是对handshake消息进行transcript hash，然后再计算hash的HMAC，区别在于使用的key不一样，binder使用的key是通过对应PSK关联的密钥派生得到的binder_key。binder的作用是client向server证明自己知道PSK identity对应的密钥是什么，是否和server端记录的一致（如果不一致，server端将验证binder失败）。如果不一样，说明此前session很可能出现了MITM攻击导致client记录了一个和server端不一致的密钥。</p><p>RFC 8446 提供了一个 Session Resumption 的流程图如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>         Client                                               Server
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>   Initial Handshake:
-</span></span><span class=line><span class=cl>          ClientHello
-</span></span><span class=line><span class=cl>          + key_share               --------&gt;
-</span></span><span class=line><span class=cl>                                                          ServerHello
-</span></span><span class=line><span class=cl>                                                          + key_share
-</span></span><span class=line><span class=cl>                                                {EncryptedExtensions}
-</span></span><span class=line><span class=cl>                                                {CertificateRequest*}
-</span></span><span class=line><span class=cl>                                                       {Certificate*}
-</span></span><span class=line><span class=cl>                                                 {CertificateVerify*}
-</span></span><span class=line><span class=cl>                                                           {Finished}
-</span></span><span class=line><span class=cl>                                    &lt;--------     [Application Data*]
-</span></span><span class=line><span class=cl>          {Certificate*}
-</span></span><span class=line><span class=cl>          {CertificateVerify*}
-</span></span><span class=line><span class=cl>          {Finished}                --------&gt;
-</span></span><span class=line><span class=cl>                                    &lt;--------      [NewSessionTicket]
-</span></span><span class=line><span class=cl>          [Application Data]        &lt;-------&gt;      [Application Data]
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>   Subsequent Handshake:
-</span></span><span class=line><span class=cl>          ClientHello
-</span></span><span class=line><span class=cl>          + key_share*
-</span></span><span class=line><span class=cl>          + pre_shared_key          --------&gt;
-</span></span><span class=line><span class=cl>                                                          ServerHello
-</span></span><span class=line><span class=cl>                                                     + pre_shared_key
-</span></span><span class=line><span class=cl>                                                         + key_share*
-</span></span><span class=line><span class=cl>                                                {EncryptedExtensions}
-</span></span><span class=line><span class=cl>                                                           {Finished}
-</span></span><span class=line><span class=cl>                                    &lt;--------     [Application Data*]
-</span></span><span class=line><span class=cl>          {Finished}                --------&gt;
-</span></span><span class=line><span class=cl>          [Application Data]        &lt;-------&gt;      [Application Data]
-</span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>               Figure 3: Message Flow for Resumption and PSK
-</span></span></code></pre></div><ol><li>客户端向服务器发送一个带有 key_share 扩展的 ClientHello 消息。该扩展列出了客户端支持的密钥交换加密方法。</li><li>服务器用一个带有 key_share 扩展名的 ServerHello 消息进行响应，这个扩展包含了它要用于密钥交换的加密方法，并且服务器将其参数一同发送给客户端。</li><li>服务器和客户端都交换认证消息。</li><li>服务器向客户端发送 NewSessionTicket 消息，其中包含一个 PSK ，客户端可以通过在 ClientHello 消息的 pre_shared_key 扩展中包含这个 PSK ，用于未来的握手。</li><li>客户端和服务器现在可以交换加密的应用数据。</li><li>在未来的握手中，客户端向服务器发送一个包含 key_share 和 pre_shared_key 扩展名的 ClientHello 消息。 pre_shared_key 扩展包含 NewTicketSession 消息中发送的 PSK 。</li><li>服务器用包含 pre_shared_key 和 key_share 扩展名的 ServerHello 消息作出响应。 pre_shared_key 扩展包含服务器同意使用的 PSK ，并将其参数发送给客户端。</li><li>服务器和客户端互相发送 Finished 消息，之后客户端和服务器可以交换加密的应用数据。</li></ol><h2 id=dns-rebinding>DNS Rebinding</h2><p>DNS重新绑定是计算机攻击的一种形式。 在这种攻击中，恶意网页会导致访问者运行客户端脚本，攻击网络上其他地方的计算机。攻击者注册一个域名（如attacker.com），并在攻击者控制下将其代理给DNS服务器。 服务器配置为很短响应时间的TTL记录，防止响应被缓存。 当受害者浏览到恶意域时，攻击者的DNS 服务器首先用托管恶意客户端代码的服务器的 IP 地址作出响应。 例如，他们可以将受害者的浏览器指向包含旨在在受害者计算机上执行的恶意 JavaScript 或 Flash 脚本的网站。</p><p>恶意客户端代码会对原始域名（例如attacker.com）进行额外访问，这些都是由同源政策所允许的。 但是，当受害者的浏览器运行该脚本时，它会为该域创建一个新的 DNS 请求，并且攻击者会使用新的 IP 地址进行回复。 例如，他们可以使用内部 IP 地址或互联网上某个目标的IP地址进行回复。</p><h2 id=tls-posion>TLS posion</h2><p>综合上面的特性,就引出了TLS Poison攻击:即利用TLS Session Resumption 的特性结合 DNS Rebinding 技巧操作一些客户端帮助我们进行 SSRF 攻击。</p><h3 id=攻击思路>攻击思路</h3><ol><li>由上文我们知道,无论是在TLS1.2或是TLS1.3中,它们都会使用一种凭证来在恢复会话时验证客户端的身份,而这个凭证又是由服务器下发给客户端的.所以如果可以让客户端以HTTPS形式访问任意服务器,在进行TLS握手时,我们可以让客户端存储我们指定的会话凭证.</li><li>在进行HTTPS请求前,客户端一定需要对我们给的域名进行一次DNS查询,而在客户端想要恢复会话的时候,如果客户端的DNS缓存过期,则又会进行一次DNS查询;所以如果正好在客户端想要恢复TLS会话,而DNS缓存又过期了,就会发起一次DNS重绑定,此时就正好满足了DNS重绑定的条件.</li><li>所以我们可以为自己的域名搭建一个DNS服务器,在客户端第一次发起 DNS 请求时，我们让 DNS 服务器返回正确的、指向我们恶意服务器的 IP ，让第一次 TLS 握手成功，也让客户端缓存我们制定的会话凭据；在客户端恢复会话时，也就是客户端发起第二次 DNS 请求时，我们让 DNS 服务器返回我们想要攻击的内网地址，例如 127.0.0.1 ，这样在客户端尝试恢复会话的时候，客户端会拿着我们给它的特制票据去与这个地址尝试进行 TLS 握手。</li><li>这样我们就使用特定的票据向内网发起了一次请求</li></ol><p>可以发送对内网的请求可以做些什么呢?</p><p>首先我们可以访问内网 TCP 服务</p><p>比如：<code>127.0.0.1:11211</code> 的 memcached、Redis、内部 HTTP 服务、SMTP 等等。</p><p>本来外部是访问不到这些端口的，但因为请求是“从受害者那台机器发出来的”，所以相当于你远程操纵了受害者去打自己的内网。</p><p>memcached 是明文文本协议，如果你能控制发过去的 payload，就可能做到“任意写入某个 key 的值”。</p><p>如果内网有系统会从 memcached 里读配置 / 模板 / 序列化对象，就有机会链到 RCE 等更严重后果。</p><p>可以看一眼作者演示的攻击流程:</p><p>首先第一步攻击者发送一个 <a class=link href=https://jmaddux.com:25 target=_blank rel=noopener>https://jmaddux.com:25</a> 的地址给一个 Client ，Client 会首先进行 DNS 查询询问 jmaddux.com 的 IP 地址，此时攻击者自己控制的 DNS Server 可以自定义响应为一个正常的 IP ，比如 35.x.x.x ，此时我们可以给这个响应记录非常短非常短的 TTL ，以便让 Client 不要缓存我们的 DNS 记录。</p><p>第二步， Client 会与攻击者指定的 35.x.x.x 这个攻击者的服务器进行 TLS 握手，并获得攻击者服务器返回给 Client 的特制的票据(Payload) ，然后完成 TLS 握手。</p><p>第三步，当 Client 想与 Server 恢复会话时，需要再次查找 jmaddux.com 的 DNS 记录，由于攻击者之前给的 DNS 记录 TTL 时间非常非常短，让其在此时在自己的缓存中查不到原来的记录，这样会使得 Client 又去询问 jmaddux.com 的 DNS 记录，此时攻击者让其 DNS Server 返回 127.0.0.1 这个地址。</p><p>最后，如果 Client 不校验本次获得的 ip 是否与上次一致，就会尝试与 127.0.0.1:25 进行 TLS Session Resumption ，也就是说， Client 会拿着攻击者特制的票据访问 127.0.0.1:25 ，尝试与之恢复 TLS 会话，这里就表现为 Client 发送含有 Payload 的 Client Hello 消息到 SMTP 服务器，至此完成一次 SSRF 攻击。</p><p>很遗憾的是,由于一些莫名其妙的原因,直到现在我的复现环境都没成功搭起来,所以复现环节先欠着(挖坑ing)</p><p>总的来说,对于TLS Poison我也是看了好久,然后才勉勉强强东拼西凑出这么一篇东西出来,不过这种攻击方式确实很令人眼前一亮</p><h2 id=参考>参考</h2><blockquote><p><a class=link href=https://zeddyu.github.io/p/%e4%b8%80%e7%af%87%e6%96%87%e7%ab%a0%e5%b8%a6%e4%bd%a0%e8%af%bb%e6%87%82-tls-poison-%e6%94%bb%e5%87%bb/ target=_blank rel=noopener>一篇文章带你读懂 TLS Poison 攻击</a></p><p><a class=link href=https://www.cnblogs.com/Jack-Blog/p/13170728.html target=_blank rel=noopener>TLS1.2协议设计原理</a></p><p><a class=link href=https://kapsterio.github.io/test/2021/11/04/tls13-handshake.html target=_blank rel=noopener>tls1.3 handshake</a></p><p><a class=link href=https://zhuanlan.zhihu.com/p/395907216 target=_blank rel=noopener>传输层安全协议TLS——协议解析</a></p><p><a class=link href=https://www.cloudflare-cn.com/learning/ssl/what-happens-in-a-tls-handshake/ target=_blank rel=noopener>TLS 握手期间会发生什么？| SSL 握手</a></p><p><a class=link href=https://zhuanlan.zhihu.com/p/89426041 target=_blank rel=noopener>浅谈DNS重绑定漏洞</a></p><p><a class=link href=https://juejin.cn/post/6995363748160487461 target=_blank rel=noopener>当我们谈论HTTPS时，我们在谈什么(八) Session Ticket, Session ID 和 PSK</a></p><p><a class=link href=https://github.com/jmdx/TLS-poison target=_blank rel=noopener>TLS-poison_GitHub</a></p></blockquote></section><footer class=article-footer><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
-<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/cve-2024-39907%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>CVE-2024-39907漏洞复现</h2></div></a></article><article><a href=/p/cve-2025-55449%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>CVE-2025-55449漏洞复现</h2></div></a></article><article><a href=/p/cve-2025-2945-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>CVE-2025-2945 漏洞复现</h2></div></a></article><article><a href=/p/lilctf%E5%A4%8D%E7%8E%B0/><div class=article-details><h2 class=article-title>LilCTF复现</h2></div></a></article><article><a href=/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/><div class=article-details><h2 class=article-title>TGCTF知识梳理</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
-2024 -
-2026 Oight</section><section class=powerby>Build by Oight<br>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-<button class="pswp__button pswp__button--share" title=Share></button>
-<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-</button>
-<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><script>(function(){const t=420;function e(){document.querySelectorAll(".article-content .highlight").forEach(function(e){if(e.dataset.codeFoldInit==="true")return;if(e.dataset.codeFoldInit="true",e.scrollHeight<=t+40)return;const s=document.createElement("div");s.className="code-fold-wrapper",e.parentNode.insertBefore(s,e),s.appendChild(e),e.classList.add("code-collapsible","code-collapsed");const n=document.createElement("button");n.type="button",n.className="code-toggle-button",n.textContent="展开代码",n.setAttribute("aria-expanded","false"),n.addEventListener("click",function(){const t=e.classList.toggle("code-collapsed");n.textContent=t?"展开代码":"收起代码",n.setAttribute("aria-expanded",String(!t))}),s.appendChild(n)})}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",e):e()})()</script></body></html>
+若服务端收到的版本号大于服务端支持的最高版本的版本，则必须返回服务端所支持的最高版本。</p>
+<p>通过<code>ClientHello</code>和<code>ServerHello</code>，客户端和服务端就协商好算法套件和用于生成密钥的随机数。</p>
+<h6 id="certificate">Certificate
+</h6><p>假设客户端和服务端使用默认的<code>TLS_RSA_WITH_AES_128_CBC_SHA</code>算法，在<code>ServerHello</code>完成后，服务端必须将本地的RSA证书传给客户端，以便客户端和服务端之间可以进行非对称加密保证对称加密密钥的安全性。
+RSA的证书有2个作用：</p>
+<ul>
+<li>客户端可以对服务端的证书进行合法性进行校验。</li>
+<li>对<code>Client Key Exchange</code>生成的pre-master key进行公钥加密，保证只有服务端可以解密，确保对称加密密钥的安全性。</li>
+</ul>
+<p>发送给客户端的是一系列证书，服务端的证书必须排列在第一位，排在后面的证书可以认证前面的证书。
+当客户端收到了服务端的<code>ServerHello</code>时，若客户端也有证书需要服务端验证，则通过该握手请求将客户端的证书发送给服务端，若客户端没有证书，则无需发送证书请求到服务端。</p>
+<h6 id="certificate-request">Certificate Request
+</h6><p>当需要TLS双向认证的时候，若服务端需要验证客户端的证书，则向客户端发送<code>Certificate Request</code>请求获取客户端指定类型的证书。</p>
+<ul>
+<li>服务端会指定客户端的证书类型。</li>
+<li>客户端会确定是否有合适的证书。</li>
+</ul>
+<h6 id="server-hello-done">Server Hello Done
+</h6><p>当服务端处理Hello请求结束时，发送<code>Server Hello Done</code>消息，然后等待接收客户端握手消息。客户端收到服务端该消息，有必要时需要对服务端的证书进行有效性校验。</p>
+<h6 id="client-certificate">Client Certificate
+</h6><p>当客户端收到了服务端的<code>CertificateRequest</code>请求时，需要发送<code>Client Certificate</code>消息，若客户端无法提供证书，则仍要发送此消息，消息内容可以不包含证书。</p>
+<h6 id="client-key-exchange">Client Key Exchange
+</h6><p>客户端接收到ServerHelloDone消息后，计算密钥，通过发送<code>Client Key Exchange</code>消息给服务端。客户端和服务端通过<code>Key Exchange</code>消息交换密钥，使得双方的主密钥协商达成一致。</p>
+<p>以RSA的密钥协商为例。在<code>ClientHello</code>和<code>ServerHello</code>分别在客户端和服务端创建了一个32位的随机数。客户端接收到<code>Server Hello Done</code>消息时，生成最后一个48位的预主密钥。通过服务端提供的证书进行公钥加密，以保证只有服务端的私钥才能解密。</p>
+<h6 id="certificate-verify">Certificate Verify
+</h6><p>若服务端要求客户端发送证书，且客户端发送了非0长度的证书，此时客户端想要证明自己拥有该证书，则需要使用客户端私钥签名一段数据发送给服务端继续验证。该数据为客户端收发的所有握手数据的hash值（不包括本次消息）。</p>
+<h6 id="finished">Finished
+</h6><p>当发送完<code>Change Cipher Spec</code>消息后必须立即发送该消息。当该消息用于验证密钥交换和身份验证过程是否成功。</p>
+<p><code>Finished</code>消息是第一个使用协商的算法簇进行加密和防篡改保护的消息。一旦双方都通过了该消息验证，就完成了TLS握手。
+VerifyData为客户端收发的所有握手数据的hash值（不包括本次消息）。与<code>Certificate Verify</code>的hash值可能会不一样。如果发送过<code>Certificate Verify</code>消息，服务端的握手消息会包含<code>Certificate Verify</code>握手的数据。</p>
+<h4 id="tls-12-session-resumption-overview">TLS 1.2 Session Resumption Overview
+</h4><p>完整的 TLS 握手产生的额外延时和计算成本对所有需要安全通信的应用程序牺牲了很多性能代价，为了帮助降低部分成本， TLS  提供了一种恢复会话机制，用来恢复或共享多个连接之间的相同协商的秘钥数据。会话恢复是一个重要的优化部署，简略的握手消除了一个完整的 TLS  握手往返耗时，大大降低了双方的计算成本。在 TLS 1.2 中， TLS Session Resumption 可以采用 Session ID  和会话票机制来实现。除了性能上的优势外，恢复的会话还可以用于单点登录，因为它保证了原始会话和任何恢复的会话都来自同一个客户端。</p>
+<h4 id="tls-12-session-resumption---session-id">TLS 1.2 Session Resumption - Session ID
+</h4><p>在这种机制中，服务器在与客户端初次握手时，服务器会随机分配一个 Session  ID。客户端和服务器将这个会话ID与会话密钥和连接状态一起存储。为了恢复会话，客户端将存储的会话ID与第一个协议消息（ClientHello）一起发送给服务器。如果服务器识别到了连接并愿意恢复会话，它就会用相同的会话ID来回复，重新建立各自的会话。这样就可以快速建立安全的连接，而且由于我们重用了之前协商好的会话数据，所以不会损失安全性。</p>
+<p>Client 在一开始发送 ClientHello 消息中， ClientHello 消息中包括一个可变长度的 Session  ID。如果为空则表示是一个新的会话，也就是客户端与服务端第一次握手，Server 在返回 ServerHello 时就会发送一个 Session ID ，此时内容为 Server 产生，当协商握手完成后，Session ID  就变得有效，并一直存在，直到由于超过有效时间或因为在与会话相关的连接上遇到服务器错误而被删除。如果不为空，该值就表示客户端希望重用该会话的安全参数，Server 会检查它的会话缓存以进行匹配，如果匹配成功，并且 Server 愿意在指定的会话状态下重建连接，它将会发送一个带有相同会话 ID 值的  ServerHello 消息，这时 Client 和 Server 必须都发送 ChangeCipherSpec 消息并且直接发送  Finished 消息，一旦重建立完成，Client 和 Server 可以开始交换应用层数据。如果一个会话 ID 不匹配，Server  会产生一个新的会话 ID，然后 TLS Client 和 Server 需要进行一次完整的握手。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">     Client                                                Server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">     ClientHello                   --------&gt;
+</span></span><span class="line"><span class="cl">                                                       ServerHello
+</span></span><span class="line"><span class="cl">                                                [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">                                    &lt;--------             Finished
+</span></span><span class="line"><span class="cl">     [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">     Finished                      --------&gt;
+</span></span><span class="line"><span class="cl">     Application Data              &lt;-------&gt;     Application Data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         Figure 2.  Message flow for an abbreviated handshake
+</span></span></code></pre></div><p>客户端只需在其 Client Hello 消息中发送之前从 Server 那里得知的 Session ID ，然后 Server 确认这个  Session ID 在它的 TLS 会话缓存之后，它们就会进行所谓的 Abbreviated TLS Handshake 。在这次 TLS  握手过程中不会交换证书或密钥信息，之前协商好的密钥会被重新使用，这样就完成了一次 TLS Session Resumption 。</p>
+<h4 id="session-ticket">Session Ticket
+</h4><p>Session id是最传统的方式，它的主要问题是，会话状态保存在服务器端，当大量用户访问服务器时，服务器用来保存会话状态的空间占用就会很大，需要对保存时间，保存机制做优化。</p>
+<p>为了解决这个问题,TLS1.2引入了session ticket机制</p>
+<p>Session Ticket的工作原理很简单：</p>
+<ol>
+<li>服务器在获取到客户端的密钥协商参数，并生成session key之后，会将完整的会话状态(session status)进行加密，生成session ticket，注意，<strong>这个信息只有服务器才能够解密</strong></li>
+<li>Sever验证了客户端发送Finished消息后，通过&quot;New session ticket&quot;消息将session ticket发给客户端进行保存，服务器端就不再保存会话状态了</li>
+<li>客户端在下次发起会话时，就可以将Session Ticket放入client hello中，服务器收到后进行解密验证，并从ticket的内容中提取会话状态，用来恢复会话。</li>
+</ol>
+<p>这种机制叫做会话票机制,会话票机制被称为无状态恢复机制。无状态恢复机制的主要改进是取消了服务器端的会话缓存，简化了部署，要求客户端在每次与服务器的新连接时提供会话票据，直到票据过期。</p>
+<p>TLS SessionTicket 是一个扩展，其基于 <a class="link" href="https://tools.ietf.org/html/rfc4366"  target="_blank" rel="noopener"
+    >RFC4366</a> 。Ticket 的格式是一个 opaque 的结构，用于携带特定会话的状态信息。RFC 推荐的 Session Ticket 结构如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">uint32</span> <span class="n">ticket_lifetime_hint</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">opaque</span> <span class="n">ticket</span><span class="o">&lt;</span><span class="mf">0..2</span><span class="o">^</span><span class="mi">16</span><span class="o">-</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">NewSessionTicket</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">opaque</span> <span class="n">key_name</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">opaque</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="n">opaque</span> <span class="n">encrypted_state</span><span class="o">&lt;</span><span class="mf">0..2</span><span class="o">^</span><span class="mi">16</span><span class="o">-</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">opaque</span> <span class="n">mac</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">ticket</span><span class="p">;</span>
+</span></span></code></pre></div><p>这个扩展可以在 ClientHello 和 ServerHello 中发送。如果客户端拥有一个想要用来恢复会话的 ticket，那么它就会在  ClientHello 中的 SessionTicket 扩展中包含这个 ticket。如果客户端没有票据，并且准备在  NewSessionTicket 握手消息中接收票据，那么它必须在 SessionTicket 扩展中包含一个长度为零的 Session  Ticket 。如果客户端不准备在 NewSessionTicket 握手消息中接收票据，则必须不包含 SessionTicket  扩展，除非客户端发送通过其他方式从服务器收到的非空票据。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">         Client                                               Server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">         ClientHello
+</span></span><span class="line"><span class="cl">        (empty SessionTicket extension)--------&gt;
+</span></span><span class="line"><span class="cl">                                                         ServerHello
+</span></span><span class="line"><span class="cl">                                     (empty SessionTicket extension)
+</span></span><span class="line"><span class="cl">                                                        Certificate*
+</span></span><span class="line"><span class="cl">                                                  ServerKeyExchange*
+</span></span><span class="line"><span class="cl">                                                 CertificateRequest*
+</span></span><span class="line"><span class="cl">                                      &lt;--------      ServerHelloDone
+</span></span><span class="line"><span class="cl">         Certificate*
+</span></span><span class="line"><span class="cl">         ClientKeyExchange
+</span></span><span class="line"><span class="cl">         CertificateVerify*
+</span></span><span class="line"><span class="cl">         [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">         Finished                     --------&gt;
+</span></span><span class="line"><span class="cl">                                                    NewSessionTicket
+</span></span><span class="line"><span class="cl">                                                  [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">                                      &lt;--------             Finished
+</span></span><span class="line"><span class="cl">         Application Data             &lt;-------&gt;     Application Data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Figure 1: Message Flow for Full Handshake Issuing New Session Ticket
+</span></span></code></pre></div><p>如上流程图所示，客户端通过在 ClientHello 消息中包含一个 SessionTicket TLS 扩展名来表示它支持这种机制，此时 SessionTicket  为空，服务器将发送一个空的SessionTicket 扩展来表示它将使用 NewSessionTicket 握手消息发送一个新的 Session Ticket，该消息是在服务器成功验证客户端的 Finished 消息后，在ChangeCipherSpec 消息之前的 TLS  握手期间发送。在得到 Session Ticket 后，Client 将该 Session Ticket  与主密和其他与当前会话相关的参数一起缓存。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">         Client                                                Server
+</span></span><span class="line"><span class="cl">         ClientHello
+</span></span><span class="line"><span class="cl">         (SessionTicket extension)      --------&gt;
+</span></span><span class="line"><span class="cl">                                                          ServerHello
+</span></span><span class="line"><span class="cl">                                      (empty SessionTicket extension)
+</span></span><span class="line"><span class="cl">                                                     NewSessionTicket
+</span></span><span class="line"><span class="cl">                                                   [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">                                       &lt;--------             Finished
+</span></span><span class="line"><span class="cl">         [ChangeCipherSpec]
+</span></span><span class="line"><span class="cl">         Finished                      --------&gt;
+</span></span><span class="line"><span class="cl">         Application Data              &lt;-------&gt;     Application Data
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    Figure 2: Message Flow for Abbreviated Handshake Using New Session
+</span></span><span class="line"><span class="cl">                                  Ticket
+</span></span></code></pre></div><p>当客户端希望恢复会话时，它在 ClientHello 消息中的 SessionTicket  扩展中包含该票据。然后服务器对收到的票据进行解密，验证票据的有效性，从票据的内容中检索会话状态，并使用这个状态来恢复会话。如果服务器成功验证了客户端的票据，那么就可以在 ServerHello 之后加入 NewSessionTicket 握手消息来续订票据。</p>
+<h3 id="tls-13">TLS 1.3
+</h3><p>TLS1.3是TLS1.2的升级版本,于2018年8月发表,相比于TLS1.2</p>
+<blockquote>
+<p>减少握手等待时间，将握手时间从 2-RTT 降低到 1-RTT，并且增加 0-RTT 模式。</p>
+<p>废除 Session ID 和 Session Ticket 会话恢复方式，统一通过 PSK 的方式进行会话恢复，并在 NewSessionTicket 消息中添加过期时间和用于混淆时间的偏移值。</p></blockquote>
+<p>在握手时相对于 TLS 1.2 发生了比较明显的改动：</p>
+<ol>
+<li>与 TLS 1.2 握手类似，TLS 1.3 握手以 Client Hello 消息开始，但有一个重要的变化就是客户端发送支持的加密套件列表，并猜测服务器可能选择的密钥协议协议，也会发送它对该特定密钥协议协议的密钥共享。</li>
+<li>Server 在回复 Server Hello 时，服务器回复它所选择的密钥协议协议，其中也包括服务器的密钥共享、证书以及 Server Finished 。</li>
+<li>现在，客户端检查服务器证书，生成密钥，并发送 Client Finished ，之后就可以发送加密数据了。</li>
+</ol>
+<p>这样一来，TLS 1.3 握手就节省了整整一个来回和数百毫秒的时间，比 TLS 1.2 握手有了很大的改进。RFC 8446 提供的简要流程图如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">       Client                                           Server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">Key  ^ ClientHello
+</span></span><span class="line"><span class="cl">Exch | + key_share*
+</span></span><span class="line"><span class="cl">     | + signature_algorithms*
+</span></span><span class="line"><span class="cl">     | + psk_key_exchange_modes*
+</span></span><span class="line"><span class="cl">     v + pre_shared_key*       --------&gt;
+</span></span><span class="line"><span class="cl">                                                  ServerHello  ^ Key
+</span></span><span class="line"><span class="cl">                                                 + key_share*  | Exch
+</span></span><span class="line"><span class="cl">                                            + pre_shared_key*  v
+</span></span><span class="line"><span class="cl">                                        {EncryptedExtensions}  ^  Server
+</span></span><span class="line"><span class="cl">                                        {CertificateRequest*}  v  Params
+</span></span><span class="line"><span class="cl">                                               {Certificate*}  ^
+</span></span><span class="line"><span class="cl">                                         {CertificateVerify*}  | Auth
+</span></span><span class="line"><span class="cl">                                                   {Finished}  v
+</span></span><span class="line"><span class="cl">                               &lt;--------  [Application Data*]
+</span></span><span class="line"><span class="cl">     ^ {Certificate*}
+</span></span><span class="line"><span class="cl">Auth | {CertificateVerify*}
+</span></span><span class="line"><span class="cl">     v {Finished}              --------&gt;
+</span></span><span class="line"><span class="cl">       [Application Data]      &lt;-------&gt;  [Application Data]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              +  Indicates noteworthy extensions sent in the
+</span></span><span class="line"><span class="cl">                 previously noted message.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              *  Indicates optional or situation-dependent
+</span></span><span class="line"><span class="cl">                 messages/extensions that are not always sent.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              {} Indicates messages protected using keys
+</span></span><span class="line"><span class="cl">                 derived from a [sender]_handshake_traffic_secret.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">              [] Indicates messages protected using keys
+</span></span><span class="line"><span class="cl">                 derived from [sender]_application_traffic_secret_N.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">               Figure 1: Message Flow for Full TLS Handshake
+</span></span></code></pre></div><h4 id="tls-13-psk">TLS 1.3 PSK
+</h4><p>TLS1.3用PSK(预共享密钥 Pre-Shared Key) 替换了TLS1.2中的Session ID 和 Session Ticket 。</p>
+<p><code>pre-shared-key</code>扩展数据字段定义如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="k">struct</span> <span class="p">{</span>        
+</span></span><span class="line"><span class="cl">    <span class="n">opaque</span> <span class="n">identity</span><span class="o">&lt;</span><span class="mf">1..2</span><span class="o">^</span><span class="mi">16</span><span class="o">-</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">;</span>        
+</span></span><span class="line"><span class="cl">    <span class="n">uint32</span> <span class="n">obfuscated_ticket_age</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">PskIdentity</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">opaque</span> <span class="n">PskBinderEntry</span><span class="o">&lt;</span><span class="mf">32..255</span><span class="o">&gt;</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="p">{</span>        
+</span></span><span class="line"><span class="cl">    <span class="n">PskIdentity</span> <span class="n">identities</span><span class="o">&lt;</span><span class="mf">7..2</span><span class="o">^</span><span class="mi">16</span><span class="o">-</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">;</span>        
+</span></span><span class="line"><span class="cl">    <span class="n">PskBinderEntry</span> <span class="n">binders</span><span class="o">&lt;</span><span class="mf">33..2</span><span class="o">^</span><span class="mi">16</span><span class="o">-</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">OfferedPsks</span><span class="p">;</span>    
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">struct</span> <span class="p">{</span>        
+</span></span><span class="line"><span class="cl">    <span class="nf">select</span> <span class="p">(</span><span class="n">Handshake</span><span class="p">.</span><span class="n">msg_type</span><span class="p">)</span> <span class="p">{</span>           
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nl">client_hello</span><span class="p">:</span> <span class="n">OfferedPsks</span><span class="p">;</span>            
+</span></span><span class="line"><span class="cl">        <span class="k">case</span> <span class="nl">server_hello</span><span class="p">:</span> <span class="n">uint16</span> <span class="n">selected_identity</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">};</span>    
+</span></span><span class="line"><span class="cl"><span class="p">}</span> <span class="n">PreSharedKeyExtension</span><span class="p">;</span>
+</span></span></code></pre></div><p>首先对于client来说，在ClientHello的<code>pre-shared-key</code>扩展里提供了一个PSK的列表供server选择，对于server来说选择一个PSK在ServerHello扩展里返回给client</p>
+<p>PSK的identity相对于tls1.2 里的ticket更为通用，可以是server段在NewSessionTicket消息里生成告诉client的，也可以是双方在tls之外预先配置的。</p>
+<p>每个PSK都对应一个binder，用于将PSK和当前handshake绑定，其实就是确认双方都只能PSK对应的密钥。binder由client生成，由server段校验。其计算和Finished消息类似，都是对handshake消息进行transcript  hash，然后再计算hash的HMAC，区别在于使用的key不一样，binder使用的key是通过对应PSK关联的密钥派生得到的binder_key。binder的作用是client向server证明自己知道PSK  identity对应的密钥是什么，是否和server端记录的一致（如果不一致，server端将验证binder失败）。如果不一样，说明此前session很可能出现了MITM攻击导致client记录了一个和server端不一致的密钥。</p>
+<p>RFC 8446 提供了一个 Session Resumption 的流程图如下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">         Client                                               Server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Initial Handshake:
+</span></span><span class="line"><span class="cl">          ClientHello
+</span></span><span class="line"><span class="cl">          + key_share               --------&gt;
+</span></span><span class="line"><span class="cl">                                                          ServerHello
+</span></span><span class="line"><span class="cl">                                                          + key_share
+</span></span><span class="line"><span class="cl">                                                {EncryptedExtensions}
+</span></span><span class="line"><span class="cl">                                                {CertificateRequest*}
+</span></span><span class="line"><span class="cl">                                                       {Certificate*}
+</span></span><span class="line"><span class="cl">                                                 {CertificateVerify*}
+</span></span><span class="line"><span class="cl">                                                           {Finished}
+</span></span><span class="line"><span class="cl">                                    &lt;--------     [Application Data*]
+</span></span><span class="line"><span class="cl">          {Certificate*}
+</span></span><span class="line"><span class="cl">          {CertificateVerify*}
+</span></span><span class="line"><span class="cl">          {Finished}                --------&gt;
+</span></span><span class="line"><span class="cl">                                    &lt;--------      [NewSessionTicket]
+</span></span><span class="line"><span class="cl">          [Application Data]        &lt;-------&gt;      [Application Data]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">   Subsequent Handshake:
+</span></span><span class="line"><span class="cl">          ClientHello
+</span></span><span class="line"><span class="cl">          + key_share*
+</span></span><span class="line"><span class="cl">          + pre_shared_key          --------&gt;
+</span></span><span class="line"><span class="cl">                                                          ServerHello
+</span></span><span class="line"><span class="cl">                                                     + pre_shared_key
+</span></span><span class="line"><span class="cl">                                                         + key_share*
+</span></span><span class="line"><span class="cl">                                                {EncryptedExtensions}
+</span></span><span class="line"><span class="cl">                                                           {Finished}
+</span></span><span class="line"><span class="cl">                                    &lt;--------     [Application Data*]
+</span></span><span class="line"><span class="cl">          {Finished}                --------&gt;
+</span></span><span class="line"><span class="cl">          [Application Data]        &lt;-------&gt;      [Application Data]
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">               Figure 3: Message Flow for Resumption and PSK
+</span></span></code></pre></div><ol>
+<li>客户端向服务器发送一个带有 key_share 扩展的 ClientHello 消息。该扩展列出了客户端支持的密钥交换加密方法。</li>
+<li>服务器用一个带有 key_share 扩展名的 ServerHello 消息进行响应，这个扩展包含了它要用于密钥交换的加密方法，并且服务器将其参数一同发送给客户端。</li>
+<li>服务器和客户端都交换认证消息。</li>
+<li>服务器向客户端发送 NewSessionTicket 消息，其中包含一个 PSK ，客户端可以通过在 ClientHello 消息的 pre_shared_key 扩展中包含这个 PSK ，用于未来的握手。</li>
+<li>客户端和服务器现在可以交换加密的应用数据。</li>
+<li>在未来的握手中，客户端向服务器发送一个包含 key_share 和 pre_shared_key 扩展名的 ClientHello 消息。 pre_shared_key 扩展包含 NewTicketSession 消息中发送的 PSK 。</li>
+<li>服务器用包含 pre_shared_key 和 key_share 扩展名的 ServerHello 消息作出响应。 pre_shared_key 扩展包含服务器同意使用的 PSK ，并将其参数发送给客户端。</li>
+<li>服务器和客户端互相发送 Finished 消息，之后客户端和服务器可以交换加密的应用数据。</li>
+</ol>
+<h2 id="dns-rebinding">DNS Rebinding
+</h2><p>DNS重新绑定是计算机攻击的一种形式。  在这种攻击中，恶意网页会导致访问者运行客户端脚本，攻击网络上其他地方的计算机。攻击者注册一个域名（如attacker.com），并在攻击者控制下将其代理给DNS服务器。 服务器配置为很短响应时间的TTL记录，防止响应被缓存。 当受害者浏览到恶意域时，攻击者的DNS 服务器首先用托管恶意客户端代码的服务器的 IP 地址作出响应。 例如，他们可以将受害者的浏览器指向包含旨在在受害者计算机上执行的恶意 JavaScript 或 Flash 脚本的网站。</p>
+<p>恶意客户端代码会对原始域名（例如attacker.com）进行额外访问，这些都是由同源政策所允许的。 但是，当受害者的浏览器运行该脚本时，它会为该域创建一个新的 DNS 请求，并且攻击者会使用新的 IP 地址进行回复。 例如，他们可以使用内部  IP 地址或互联网上某个目标的IP地址进行回复。</p>
+<h2 id="tls-posion">TLS posion
+</h2><p>综合上面的特性,就引出了TLS Poison攻击:即利用TLS Session Resumption 的特性结合 DNS Rebinding 技巧操作一些客户端帮助我们进行 SSRF 攻击。</p>
+<h3 id="攻击思路">攻击思路
+</h3><ol>
+<li>由上文我们知道,无论是在TLS1.2或是TLS1.3中,它们都会使用一种凭证来在恢复会话时验证客户端的身份,而这个凭证又是由服务器下发给客户端的.所以如果可以让客户端以HTTPS形式访问任意服务器,在进行TLS握手时,我们可以让客户端存储我们指定的会话凭证.</li>
+<li>在进行HTTPS请求前,客户端一定需要对我们给的域名进行一次DNS查询,而在客户端想要恢复会话的时候,如果客户端的DNS缓存过期,则又会进行一次DNS查询;所以如果正好在客户端想要恢复TLS会话,而DNS缓存又过期了,就会发起一次DNS重绑定,此时就正好满足了DNS重绑定的条件.</li>
+<li>所以我们可以为自己的域名搭建一个DNS服务器,在客户端第一次发起 DNS 请求时，我们让 DNS 服务器返回正确的、指向我们恶意服务器的 IP ，让第一次 TLS  握手成功，也让客户端缓存我们制定的会话凭据；在客户端恢复会话时，也就是客户端发起第二次 DNS 请求时，我们让 DNS  服务器返回我们想要攻击的内网地址，例如 127.0.0.1 ，这样在客户端尝试恢复会话的时候，客户端会拿着我们给它的特制票据去与这个地址尝试进行 TLS 握手。</li>
+<li>这样我们就使用特定的票据向内网发起了一次请求</li>
+</ol>
+<p>可以发送对内网的请求可以做些什么呢?</p>
+<p>首先我们可以访问内网 TCP 服务</p>
+<p>比如：<code>127.0.0.1:11211</code> 的 memcached、Redis、内部 HTTP 服务、SMTP 等等。</p>
+<p>本来外部是访问不到这些端口的，但因为请求是“从受害者那台机器发出来的”，所以相当于你远程操纵了受害者去打自己的内网。</p>
+<p>memcached 是明文文本协议，如果你能控制发过去的 payload，就可能做到“任意写入某个 key 的值”。</p>
+<p>如果内网有系统会从 memcached 里读配置 / 模板 / 序列化对象，就有机会链到 RCE 等更严重后果。</p>
+<p>可以看一眼作者演示的攻击流程:</p>
+<p>首先第一步攻击者发送一个 <a class="link" href="https://jmaddux.com:25"  target="_blank" rel="noopener"
+    >https://jmaddux.com:25</a> 的地址给一个 Client ，Client 会首先进行 DNS 查询询问 jmaddux.com 的 IP 地址，此时攻击者自己控制的 DNS Server 可以自定义响应为一个正常的 IP ，比如 35.x.x.x ，此时我们可以给这个响应记录非常短非常短的 TTL ，以便让  Client 不要缓存我们的 DNS 记录。</p>
+<p>第二步， Client 会与攻击者指定的 35.x.x.x 这个攻击者的服务器进行 TLS 握手，并获得攻击者服务器返回给 Client 的特制的票据(Payload) ，然后完成 TLS 握手。</p>
+<p>第三步，当 Client 想与 Server 恢复会话时，需要再次查找 jmaddux.com 的 DNS 记录，由于攻击者之前给的 DNS  记录 TTL 时间非常非常短，让其在此时在自己的缓存中查不到原来的记录，这样会使得 Client 又去询问 jmaddux.com 的 DNS  记录，此时攻击者让其 DNS Server 返回 127.0.0.1 这个地址。</p>
+<p>最后，如果 Client 不校验本次获得的 ip 是否与上次一致，就会尝试与 127.0.0.1:25 进行 TLS Session  Resumption ，也就是说， Client 会拿着攻击者特制的票据访问 127.0.0.1:25 ，尝试与之恢复 TLS  会话，这里就表现为 Client 发送含有 Payload 的 Client Hello 消息到 SMTP 服务器，至此完成一次 SSRF  攻击。</p>
+<p>很遗憾的是,由于一些莫名其妙的原因,直到现在我的复现环境都没成功搭起来,所以复现环节先欠着(挖坑ing)</p>
+<p>总的来说,对于TLS Poison我也是看了好久,然后才勉勉强强东拼西凑出这么一篇东西出来,不过这种攻击方式确实很令人眼前一亮</p>
+<h2 id="参考">参考
+</h2><blockquote>
+<p><a class="link" href="https://zeddyu.github.io/p/%e4%b8%80%e7%af%87%e6%96%87%e7%ab%a0%e5%b8%a6%e4%bd%a0%e8%af%bb%e6%87%82-tls-poison-%e6%94%bb%e5%87%bb/"  target="_blank" rel="noopener"
+    >一篇文章带你读懂 TLS Poison 攻击</a></p>
+<p><a class="link" href="https://www.cnblogs.com/Jack-Blog/p/13170728.html"  target="_blank" rel="noopener"
+    >TLS1.2协议设计原理</a></p>
+<p><a class="link" href="https://kapsterio.github.io/test/2021/11/04/tls13-handshake.html"  target="_blank" rel="noopener"
+    >tls1.3 handshake</a></p>
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/395907216"  target="_blank" rel="noopener"
+    >传输层安全协议TLS——协议解析</a></p>
+<p><a class="link" href="https://www.cloudflare-cn.com/learning/ssl/what-happens-in-a-tls-handshake/"  target="_blank" rel="noopener"
+    >TLS 握手期间会发生什么？| SSL 握手</a></p>
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/89426041"  target="_blank" rel="noopener"
+    >浅谈DNS重绑定漏洞</a></p>
+<p><a class="link" href="https://juejin.cn/post/6995363748160487461"  target="_blank" rel="noopener"
+    >当我们谈论HTTPS时，我们在谈什么(八) Session Ticket, Session ID 和 PSK</a></p>
+<p><a class="link" href="https://github.com/jmdx/TLS-poison"  target="_blank" rel="noopener"
+    >TLS-poison_GitHub</a></p></blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/cve-2024-39907%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">CVE-2024-39907漏洞复现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/cve-2025-55449%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">CVE-2025-55449漏洞复现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/cve-2025-2945-%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">CVE-2025-2945 漏洞复现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/lilctf%E5%A4%8D%E7%8E%B0/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">LilCTF复现</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/tgctf%E7%9F%A5%E8%AF%86%E6%A2%B3%E7%90%86/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">TGCTF知识梳理</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+  <script>
+    (function () {
+      const maxHeight = 420;
+
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
+    </body>
+</html>
