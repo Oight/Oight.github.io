@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="分布式系统学习（3）\r在前面几篇博文中学习了分布式计算框架MapReduce和分布式文件系统GFS，根据MIT6.824的课程安排，接下来就到分布式共识算法了。这一节要求我们自己读论文，给出的论文资料是Leslie Lamport在2001年发表的《Paxos Made Simple》，在这篇论文中Leslie Lamport介绍了Paxos共识算法。\n">
+<title>分布式学习(3)</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A03/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="分布式学习(3)">
+<meta property='og:description' content="分布式系统学习（3）\r在前面几篇博文中学习了分布式计算框架MapReduce和分布式文件系统GFS，根据MIT6.824的课程安排，接下来就到分布式共识算法了。这一节要求我们自己读论文，给出的论文资料是Leslie Lamport在2001年发表的《Paxos Made Simple》，在这篇论文中Leslie Lamport介绍了Paxos共识算法。\n">
+<meta property='og:url' content='https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A03/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-09-12T10:29:47&#43;08:00'/><meta property='article:modified_time' content='2026-09-12T10:29:47&#43;08:00'/>
+<meta name="twitter:title" content="分布式学习(3)">
+<meta name="twitter:description" content="分布式系统学习（3）\r在前面几篇博文中学习了分布式计算框架MapReduce和分布式文件系统GFS，根据MIT6.824的课程安排，接下来就到分布式共识算法了。这一节要求我们自己读论文，给出的论文资料是Leslie Lamport在2001年发表的《Paxos Made Simple》，在这篇论文中Leslie Lamport介绍了Paxos共识算法。\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#为什么需要分布式共识算法">为什么需要分布式共识算法</a></li>
+    <li><a href="#分布式共识算法">分布式共识算法</a>
+      <ol>
+        <li><a href="#问题描述">问题描述</a></li>
+        <li><a href="#选择值">选择值</a></li>
+        <li><a href="#学习被选择的值">学习被选择的值</a></li>
+        <li><a href="#进展性">进展性</a></li>
+        <li><a href="#实现">实现</a></li>
+        <li><a href="#实现状态机">实现状态机</a>
+          <ol>
+            <li><a href="#正常运作与填补空缺机制">正常运作与“填补空缺”机制</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#论文及其翻译">论文及其翻译</a>
+      <ol>
+        <li><a href="#paxos-made-simple-中文翻译">Paxos Made Simple 中文翻译</a>
+          <ol>
+            <li><a href="#摘要">摘要</a></li>
+            <li><a href="#目录">目录</a></li>
+            <li><a href="#1-引言">1 引言</a></li>
+            <li><a href="#2-共识算法">2 共识算法</a></li>
+            <li><a href="#3-实现状态机">3 实现状态机</a></li>
+            <li><a href="#参考文献">参考文献</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%BF%90%E7%BB%B4/" style="background-color: #2a9d8f; color: #fff;">
+                运维
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A03/">分布式学习(3)</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-09-12</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 36 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="分布式系统学习3">分布式系统学习（3）
+</h1><p>在前面几篇博文中学习了分布式计算框架MapReduce和分布式文件系统GFS，根据MIT6.824的课程安排，接下来就到分布式共识算法了。这一节要求我们自己读论文，给出的论文资料是Leslie Lamport在2001年发表的《Paxos Made Simple》，在这篇论文中Leslie Lamport介绍了Paxos共识算法。</p>
+<p>Lamport于1998年《The Part-Time Parliament》中首次提出了Paxos算法。在该论文中，作者将该算法比喻为希腊的一个Paxos小岛上的议会选举，由于并不是所有人都了解的古希腊文化，并且选举算法本就十分抽象，很多人并不能理解他的算法（以及Paxos议会本身）。于是在2001年，Lamport重新发表了更容易理解的论文《Paxos Made Simple》</p>
+<h2 id="为什么需要分布式共识算法">为什么需要分布式共识算法
+</h2><p>众所周知，在我们所构建的由大量廉价硬件构成的分布式系统中，故障是客观存在无法避免的，在一个部分节点软件硬件故障、网络故障等不同类型故障的影响下，我们的分布式系统仍要向外界提供可靠的服务，就需要在设计系统架构时充分考虑当异常情况发生时，如何保证系统能够向外界提供稳定的服务，所以系统内组件间就必须要达成一些共识，来面对服务器的异常情况</p>
+<p>在由大量普通机器组成的分布式系统中，节点和网络故障是常态。为了让多个副本在故障和并发下仍能对外表现为一个逻辑上一致的服务，系统必须对关键决策（如日志顺序、主节点、事务提交、配置变更）达成一致。分布式共识算法就是让一组可能故障的节点在多数派存活时对这些决策达成一致，并保证一旦决定就不会被推翻。它支撑复制状态机、选主、分布式锁、配置管理等。但共识只适用于需要强一致的场景，并且有可用性和延迟代价；弱一致系统不一定需要共识。</p>
+<h2 id="分布式共识算法">分布式共识算法
+</h2><p>现在我们设想这样一个场景</p>
+<p>你和你的朋友A, B生活在不同的地方，你们平时通过邮件/即时通信软件进行联系，有一天你突发奇想想要进行聚餐，接下来你们就要商量什么时间聚了</p>
+<p>假设你提出要在大年初一聚，你把这个提案发给B和C，如果B和C都收到了你的消息，然后都同意了，那就皆大欢喜。如果只有B收到了也同意了，C刚好在开会没收到，他开完会同时收到了你和B的提案，假使他不同意，但你收到B的回信后已经定好饭店了，那C也只能少数服从多数。在上面两个过程中就是你们三人达成共识的过程。</p>
+<p>但很不幸的是，在大多数情况下提出提议的人不止一个，同样的场景，你提议在大年初一聚，C刚好网卡了没收到你的提议，而他想在中秋节聚，于是你们俩提出了不同的提案，这时候你们三人都面对着两个不同的方案，这时候究竟去哪聚就是未定态，你们并未对于一个事件达成共识。这时候你们就会在群里争论或者吵架。</p>
+<p>为了避免这种场面的发生，你们仨就约定了一套规则，如果面对不同提案时，应该如何应对来避免吵架，因为我们的初衷是要聚餐联络感情，吵架不是我们的初衷，甚至和我们的初衷相悖。</p>
+<p>而这套规则延伸出来就是分布式共识算法。</p>
+<p>分布式共识算法有很多种，它们在分布式和区块链等领域都有广泛的应用。今天介绍的就是其中的一种——Paxos算法。</p>
+<h3 id="问题描述">问题描述
+</h3><p>在论文中是这样描述问题的：</p>
+<blockquote>
+<p>Assume a collection of processes that can propose values. A consensus al-
+gorithm ensures that a single one among the proposed values is chosen. If
+no value is proposed, then no value should be chosen. If a value has been
+chosen, then processes should be able to learn the chosen value. The safety
+requirements for consensus are:
+• Only a value that has been proposed may be chosen,
+• Only a single value is chosen, and
+• A process never learns that a value has been chosen unless it actually
+has been.
+We won’t try to specify precise liveness requirements. However, the goal is
+to ensure that some proposed value is eventually chosen and, if a value has
+been chosen, then a process can eventually learn the value.
+We let the three roles in the consensus algorithm be performed by three
+classes of agents: proposers, acceptors, and learners. In an implementation,
+a single process may act as more than one agent, but the mapping from
+agents to processes does not concern us here.
+Assume that agents can communicate with one another by sending mes-
+sages. We use the customary asynchronous, non-Byzantine model, in which:
+• Agents operate at arbitrary speed, may fail by stopping, and may
+restart. Since all agents may fail after a value is chosen and then
+restart, a solution is impossible unless some information can be re-
+membered by an agent that has failed and restarted.
+• Messages can take arbitrarily long to be delivered, can be duplicated,
+and can be lost, but they are not corrupted.</p>
+<p>假设有一组可以提议值的进程。共识算法确保在这些提议的值中选出一个唯一的值。如果没有值被提议，则不应选择任何值。如果一个值已被选择，那么进程应该能够获知被选择的值。</p>
+<p>共识的安全性要求如下：</p>
+<ul>
+<li>只有被提议过的值才可能被选择，</li>
+<li>只能选择一个唯一的值，以及</li>
+<li>一个进程只有在某个值确实被选择时，才知道该值已被选择。</li>
+</ul>
+<p>我们不会尝试规定精确的活性（liveness）要求。然而，目标是确保某个提议的值最终被选择，并且如果一个值已被选择，那么进程最终能够获知该值。</p>
+<p>我们让共识算法中的三个角色由三类代理（agent）执行：<strong>提议者（proposers）</strong>、<strong>接受者（acceptors）<strong>和</strong>学习者（learners）</strong>。在实现中，单个进程可能扮演多个代理角色，但代理到进程的映射与我们这里无关。假设代理之间可以通过发送消息进行通信。我们使用通常的异步、非拜占庭模型，其中：</p>
+<ul>
+<li>代理以任意速度运行，可能因停止而故障，也可能重启。由于所有代理在值被选择后都可能故障并重启，除非故障并重启的代理能够记住某些信息，否则解决方案是不可能的。</li>
+<li>消息的传递可能花费任意长的时间，可能被重复，也可能丢失，但不会被破坏。</li>
+</ul></blockquote>
+<p>回到一开始的聚餐问题，即，我们初步规定，只有被提议过的时间才能被选择；只能有一个唯一的时间被选择；对于任何一个人来说，只有其他人（多数派）已经决定好是那个时间了，他才知道到底是什么时候</p>
+<p>同时我们假设有三种人，在我们生活中也很常见：喜欢出主意的（提议者），做决定的（接收者），随波逐流的（学习者），这三种人组成了共识算法中的三种角色。</p>
+<p>另外，<strong>非拜占庭模型</strong>指的是节点/组件出故障时，行为仍然是可预期的、非恶意的，通常表现为崩溃、停止响应、超时、丢消息、离线、重启等。它不会“撒谎”或伪造信息。类比来说，就是所有人都是完全的好人，在整个过程中不会出现捣蛋鬼，不会发生比如A告诉B和C要在1号聚餐，但B又告诉C，A说要在2号聚餐这种情况</p>
+<h3 id="选择值">选择值
+</h3><p>回到共识算法本身来，对于接受者来说，需要做出决定，就必须要选择一个值。选择值最简单的方法是使用单个接受者代理。提议者向接受者发送一个提议，接受者选择它收到的第一个提议值。虽然简单，但这种方案并不令人满意，因为接受者的故障会使任何进一步的进展变得不可能。类比来说，假如A,B,C三个人一直是B来做决定，但有一天B生病了做不了决定，A只会提出建议，而C只会说随便，都行，那整个事件就无法进行下去了。所以让我们尝试另一种选择值的方法。</p>
+<p>我们不使用单个接受者，而是使用多个接受者代理。提议者向一组接受者发送一个提议值。接受者可以<strong>接受</strong>该提议值。当足够多的接受者接受了该值时，该值就被选择了。足够多是多少？为了确保只选择一个唯一的值，我们可以让足够多的集合由任意多数派（majority）的代理组成。因为任意两个多数派至少有一个共同的接受者，所以只要一个接受者最多接受一个值，这就能工作。</p>
+<p>我们的朋友圈扩大了，现在有A,B,C,D,E 五个人，B,D都可以做决定，A,E都喜欢提建议，那么首先提出建议的人默认是同意的，当每个人都只能同意一个人的建议时，A、B、C、D、E 五个人里，任意三个人就构成一个多数派。假设 A 提议大年初一，A 自己默认同意，B 也觉得初一不错，于是 A、B 接受了初一。与此同时，E 提议中秋节，E 自己默认同意，D 也觉得中秋不错，于是 E、D 接受了中秋。现在两个提案各拿到两票，谁都没有达到多数派，因为五个人里必须至少三个人同意同一个时间。</p>
+<p>关键落在 C 身上：如果 C 接受大年初一，那么 A、B、C 三人接受初一，初一被选定；如果 C 接受中秋节，那么 C、D、E 三人接受中秋，中秋被选定。C 不能同时接受两个，所以不会出现两个时间都被多数派选定的情况。</p>
+<p>为什么？因为任意两个三人多数派一定至少重合一个人。比如 {A,B,C} 和 {C,D,E} 重合 C；{A,B,C} 和 {B,D,E} 重合 B；{A,C,D} 和 {B,D,E} 重合 D。这个重合的人不可能同时同意两个不同时间，所以两个不同时间不可能同时成为最终决定。即使后来有人反悔或改主意，已经由多数派选定的值也不会被推翻，其他人只能学习这个结果。如果 C 一直不表态，或者网络故障导致无法凑齐三人，那么大家暂时无法决定，但也不会错误地选出两个结果。</p>
+<p>在没有故障或消息丢失的情况下，即使只有一个提议者提议了一个值，我们也希望该值能被选择。这提示了以下要求：</p>
+<blockquote>
+<p><strong>P1.</strong> 一个接受者必须接受它收到的第一个提议。</p></blockquote>
+<p>这样要求的原因是，如果接受者有拒绝接受它收到的第一个提议的权力，而假如提议者只提出了一个提议，然后接受者拒绝了这个提议（因为接受者不知道会不会有更多个提议），那整个系统就瘫痪了，没有值被选择。</p>
+<p>但这个要求带来了一个问题。不同的提议者可能在大约同一时间提议不同的值，导致每个接受者都接受了一个值，但没有哪个值被其中的多数派所接受。即使只有两个被提议的值，如果每个值被大约一半的接受者接受，单个接受者的故障就可能使得无法知道哪个值被选择了。P1和要求一个值只有被多数派接受者接受时才被选择，意味着必须允许一个接受者接受多个提议。</p>
+<p>类比一下就是，现在同样是聚餐问题，还是 A、B、C、D、E 五个人，A 提议大年初一，E 提议中秋节。A 自己默认同意初一，E 自己默认同意中秋。消息到达顺序不一样：</p>
+<ul>
+<li>B 先收到初一的建议，于是同意初一；</li>
+<li>D 先收到中秋的建议，于是同意中秋；</li>
+<li>C 还在开会，没收到任何消息；</li>
+<li>此时初一有 A、B 两票，中秋有 E、D 两票，谁都没到三人多数派。</li>
+</ul>
+<p>如果按照每个人只能同意一次，那如果C一直没有回复，那整个系统就一直卡住了，所以我们必须允许让其他人改口的机会，即，如果没能达成共识，大家可以进行第二轮磋商。必须允许一个接受者接受多个提议即允许大家能够进行多轮投票，而P1是规定了收到第一次提案的时候你不能不搭理别人。</p>
+<p>我们通过为每个提议分配一个（自然）编号来跟踪接受者可能接受的不同提议，因此一个提议由提议编号和一个值组成。为了防止混淆，我们要求不同的提议有不同的编号。如何实现这一点取决于实现，所以现在我们先假设它可以实现。</p>
+<p>当一个具有该值的单个提议被多数派接受者接受时，该值就被选择了。在这种情况下，我们说该提议（以及它的值）已被选择。我们可以允许多个提议被选择，但<strong>必须保证所有被选择的提议具有相同的值</strong>。通过对提议编号进行归纳，保证以下条件就足够了：</p>
+<blockquote>
+<p><strong>P2.</strong> 如果一个值为 v 的提议被选择，那么每个被选择的编号更高的提议都具有值 v。</p></blockquote>
+<p>这一条保证了最后只有一个唯一的值会被选择</p>
+<p>同时我们需要满足以下条件来满足P2：</p>
+<blockquote>
+<p><strong>P2ᵃ.</strong> 如果一个值为 v 的提议被选择，那么任何接受者接受的每个编号更高的提议都具有值 v。</p></blockquote>
+<p>我们仍然维持P1以确保某个提议被选择。因为通信是异步的，一个提议可能在某个特定的接受者 cc 从未收到任何提议的情况下被选择。假设一个新的提议者“醒来”并发出一个编号更高但值不同的提议。P1要求 cc 接受这个提议，这违反了P2ᵃ</p>
+<p>同时维持P1和P2ᵃ需要将P2ᵃ加强为：</p>
+<blockquote>
+<p><strong>P2ᵇ.</strong> 如果一个值为 v 的提议被选择，那么任何提议者发出的每个编号更高的提议都具有值 v。</p></blockquote>
+<p>由于一个提议必须先由提议者发出才能被接受者接受，P2ᵇ 蕴含 P2ᵃ，而 P2ᵃ 又蕴含 <strong>P2</strong></p>
+<p>这里的具体实现会在后面的部分涉及到，暂时看不懂可以先往后看</p>
+<p>为了发现如何满足 P2ᵇ，让我们考虑如何证明它成立。我们假设某个编号为 m、值为 v 的提议被选择，并证明任何编号 n&gt;m 的提议也具有值 v。通过对 n 使用归纳法可以使证明更容易，因此我们可以在额外的假设下证明编号 n 的提议具有值 v，即每个编号在 m…(n−1) 范围内的提议都具有值 v，其中 i…j 表示从 i 到 j 的编号集合。</p>
+<p>为了使编号 m 的提议被选择，必须存在某个由多数派接受者组成的集合 C，使得 C 中的每个接受者都接受了它。结合归纳假设，m 被选择的假设意味着：</p>
+<p>CC 中的每个接受者都接受了一个编号在 m…(n−1) 范围内的提议，并且任何接受者接受的编号在 m…(n−1) 范围内的每个提议都具有值 v。</p>
+<p>这里我们让AI给出证明（数学苦手(╥﹏╥)）</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">下面给出 Paxos 中 P2ᵇ 的具体证明，并说明它如何推出 P2ᵃ 和 P2。
+</span></span><span class="line"><span class="cl">1. 先明确三个条件
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    P2：如果某个值为 v 的提案被选择，那么任何编号更高的、被选择的提案的值都是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    P2ᵃ：如果某个值为 v 的提案被选择，那么任何 acceptor 接受的编号更高的提案的值都是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    P2ᵇ：如果某个值为 v 的提案被选择，那么任何 proposer 发出的编号更高的提案的值都是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">显然：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    一个提案必须先被 proposer 发出，才能被 acceptor 接受，所以 P2ᵇ ⇒ P2ᵃ。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    一个提案必须先被 acceptor 接受，才能被选择，所以 P2ᵃ ⇒ P2。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">因此只要证明 P2ᵇ 成立，就得到了 Paxos 的安全性核心。
+</span></span><span class="line"><span class="cl">2. 证明目标
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">假设编号为 m、值为 v 的提案已经被选择。
+</span></span><span class="line"><span class="cl">我们要证明：任何编号 n&gt;m 的提案，其值都为 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">使用强归纳法。归纳假设：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    对于所有满足 m≤k&lt;n 的编号 k，任何编号为 k 的提案（只要被发出）其值都是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">基础情形 k=m：编号 m 的提案被选择，值为 v，所以成立。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">下面证明编号 n 的提案也一定具有值 v。
+</span></span><span class="line"><span class="cl">3. 关键：proposer 发出编号 n 的提案前要执行 prepare 阶段
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">proposer 在发出编号 n 的提案之前，必须先向一个多数派集合 S 发送 prepare 请求，编号为 n。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">每个收到 prepare 请求的 acceptor 会：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    如果 n 大于它已经承诺过的最大编号，则承诺不再接受任何编号小于 n 的提案；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    返回它已经接受的编号最高的提案（如果有的话）。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">设这个多数派集合为 S。
+</span></span><span class="line"><span class="cl">4. 利用编号 m 的提案已被选择
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">因为编号 m、值为 v 的提案已经被选择，所以存在一个多数派集合 C，使得 C 中的每个 acceptor 都接受了编号 m 的提案。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">任意两个多数派集合必有交集，所以：
+</span></span><span class="line"><span class="cl">S∩C≠∅
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">取一个 acceptor a∈S∩C。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">因为 a∈C，所以 a 接受了编号 m 的提案。
+</span></span><span class="line"><span class="cl">因为 a∈S，所以 a 响应了编号 n 的 prepare 请求。
+</span></span><span class="line"><span class="cl">5. 为什么 a 返回的最高编号提案一定小于 n
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">a 响应了 prepare(n)，说明在它响应之前，它没有接受过编号大于等于 n 的提案。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">原因：如果 a 已经接受了某个编号 ≥n 的提案，那么它一定已经承诺过至少这个编号，因此它的承诺编号 ≥n。当它收到 prepare(n) 时，由于 n 不大于它已承诺的编号，它会拒绝这个 prepare 请求，而不会响应。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">所以，响应 prepare(n) 的 acceptor 所返回的已接受提案的编号都一定小于 n。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">特别地，a 返回的已接受提案中，编号最高的那个提案，其编号 kk 满足：
+</span></span><span class="line"><span class="cl">k&lt;n
+</span></span><span class="line"><span class="cl">又因为 a 接受了编号 m 的提案，所以 a 返回的最高编号至少是 m，即：
+</span></span><span class="line"><span class="cl">m≤k&lt;n
+</span></span><span class="line"><span class="cl">6. 利用归纳假设
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">根据归纳假设，对于所有编号在 [m,n−1] 范围内的提案，只要被发出，其值都是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">而 aa 返回的最高编号提案的编号 k 满足：
+</span></span><span class="line"><span class="cl">m≤k&lt;n
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">因此，这个编号为 k 的提案的值一定是 v。
+</span></span><span class="line"><span class="cl">7. proposer 在 prepare 阶段如何选择值
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">proposer 收到多数派 S 的 prepare 响应后，会检查所有响应中已经接受的提案，并选择其中编号最高的那个提案的值作为自己要提出的值。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">由于：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    所有响应中的已接受提案编号都小于 n；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    至少有一个响应（来自 a）包含了编号 m 的提案，所以最高编号至少为 m；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    因此，所有响应中的最高编号 k 一定满足 m≤k&lt;n；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    根据归纳假设，这个最高编号提案的值为 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">所以 proposer 在发出编号 n 的提案时，必须选择值 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">因此，编号 n 的提案具有值 v。
+</span></span><span class="line"><span class="cl">8. 归纳完成
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">由强归纳法，对于所有 n&gt;m，任何编号为 n 的提案都具有值 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">这就证明了：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    P2ᵇ：如果一个值为 v 的提案被选择，那么任何 proposer 发出的编号更高的提案都具有值 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">9. 推出 P2ᵃ 和 P2
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    因为 proposer 发出的提案才能被 acceptor 接受，所以 P2ᵇ 直接推出 P2ᵃ：任何 acceptor 接受的更高编号提案的值都是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    因为被选择的提案必须先被 acceptor 接受，所以 P2ᵃ 直接推出 P2：任何被选择的更高编号提案的值都是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">总结
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">证明的核心在于：
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    一旦编号 m 的提案被选择，多数派 C 接受了它；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    任何新的编号 n 的 prepare 多数派 S 必与 C 相交；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    交集 acceptor 接受了 m，所以它返回的最高编号 ≥m；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    同时它响应了 prepare(n)，所以它返回的最高编号 &lt;n；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    因此最高编号落在 [m,n−1] 内；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    由归纳假设，这个最高编号提案的值为 v；
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    proposer 必须选择这个最高编号提案的值，所以编号 n 的提案值也是 v。
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">于是 P2ᵇ 成立，进而 P2ᵃ、P2 成立，Paxos 的安全性得到保证。
+</span></span></code></pre></div><p>由于任何由多数派接受者组成的集合 S 至少包含 C 中的一个成员，我们可以通过确保维持以下不变式来得出结论：编号 n 的提议具有值 v：</p>
+<blockquote>
+<p><strong>P2ᶜ.</strong> 对于任意 v 和 n，如果一个值为 v、编号为 n 的提议被发出，那么存在一个由多数派接受者组成的集合 S，使得要么 (a) S 中没有接受者接受过任何编号小于 n 的提议，要么 (b) v 是 S 中接受者接受的所有编号小于 n 的提议中编号最高的那个提议的值。</p></blockquote>
+<p>为了维持 P2ᶜ 的不变性，想要发出编号为 n 的提议的提议者必须了解某个多数派接受者集合中每个接受者已经接受或将要接受的编号小于 n 的最高编号提议（如果有的话）。了解已经接受的提议很容易；预测未来的接受则很困难。提议者不试图预测未来，而是通过获取一个承诺来控制它，即不会有这样的接受发生。换句话说，提议者请求接受者不再接受任何编号小于 n 的提议。这引出了以下发出提议的算法：</p>
+<ol>
+<li>一个提议者选择一个新的提议编号 n，并向某个接受者集合中的每个成员发送一个请求，要求它回复：
+(a) 一个承诺，即不再接受编号小于 n 的提议，以及
+(b) 它已接受的编号小于 n 的最高编号提议（如果有的话）。
+我将这样的请求称为编号为 n 的 <strong>准备（prepare）</strong> 请求。</li>
+<li>如果提议者从多数派接受者那里收到了所请求的回复，那么它可以发出一个编号为 n、值为 v 的提议，其中 v 是回复中最高编号提议的值，或者如果回复者没有报告任何提议，则 v 是提议者选择的任意值。</li>
+</ol>
+<p>提议者通过向某个接受者集合发送请求来发出一个提议，请求该提议被接受。（这不一定是回复初始请求的同一组接受者。）我们称之为 <strong>接受（accept）</strong> 请求。</p>
+<p>以上就是提议者的算法。</p>
+<p>这里大量摘抄了原论文中的内容，原因是我完全想不到如何用我贫瘠的语言使得我的解释比原文中更加清晰严谨，这一部分在原文中已经足够清晰了，多看几遍应该就能体会到了。</p>
+<p>那么以上是提议者的算法。那么接受者呢？它可以收到来自提议者的两种请求：<strong>准备</strong>请求和<strong>接受</strong>请求。</p>
+<p>比起提议者，接受者的算法就相对简单了：</p>
+<p>首先我们有：</p>
+<blockquote>
+<p><strong>P1ᵃ.</strong> 当且仅当一个接受者没有响应过编号大于 n 的<strong>准备</strong>请求时，它可以接受编号为 n 的提议。</p></blockquote>
+<p>假设一个接受者收到一个编号为 n 的<strong>准备</strong>请求，但它已经响应了一个编号大于 n 的<strong>准备</strong>请求，那很显然，他完全没必要响应这个新的请求，它不会接受提议者想要发出的编号为 n 的建议。所以我们可以让接受者忽略这样的准备请求。我们也让它忽略它已经接受的提议的准备请求。</p>
+<p>通过这个优化，接受者就只需要记住它曾经接受的最高编号的提议，已经它响应过的最高编号的最高编号的准备请求的编号。因为 P2ᶜ 必须在故障情况下保持不变，接受者即使在故障后重启也必须记住这些信息。</p>
+<p>将提议者和接受者的行为放在一起，我们看到算法在两个阶段中运行：</p>
+<p><strong>阶段 1.</strong>
+(a) 一个提议者选择一个提议编号 n，并向多数派接受者发送一个编号为 n 的<strong>准备</strong>请求。
+(b) 如果一个接受者收到一个编号为 n 的<strong>准备</strong>请求，且 n 大于它已响应的任何<strong>准备</strong>请求的编号，那么它响应该请求，承诺不再接受任何编号小于 n 的提议，并附上它已接受的最高编号的提议（如果有的话）。</p>
+<p><strong>阶段 2.</strong>
+(a) 如果提议者从多数派接受者那里收到了对其<strong>准备</strong>请求（编号 n）的响应，那么它向这些接受者中的每一个发送一个<strong>接受</strong>请求，针对编号为 n、值为 v 的提议，其中 v 是响应中最高编号提议的值，或者如果响应没有报告任何提议则为任意值。
+(b) 如果一个接受者收到一个编号为 n 的提议的<strong>接受</strong>请求，它接受该提议，除非它已经响应了一个编号大于 n 的<strong>准备</strong>请求。</p>
+<p>一个提议者可以发出多个提议，只要它对每个提议都遵循该算法。它可以在协议中间的任意时刻放弃一个提议。（即使该提议的请求和/或响应在其被放弃很久之后才到达目的地，正确性也能得到保持。）如果某个提议者已开始尝试发出编号更高的提议，放弃当前提议可能是个好主意。因此，如果一个接受者因为已经收到编号更高的<strong>准备</strong>请求而忽略了一个<strong>准备</strong>或<strong>接受</strong>请求，那么它应该通知提议者，提议者随后应该放弃其提议。这是一个不影响正确性的性能优化。</p>
+<h3 id="学习被选择的值">学习被选择的值
+</h3><p>现在又可以回到我们简单快乐的聚餐问题了，对于随波逐流的人（学习者），他们必须知道那个提议被多数派接受者接受了。最简单的方式是每个接受者都告诉学习者他们接受了那个提议。但它要求每个接受者向每个学习者回复——回复数量等于接受者数量和学习者数量的乘积。</p>
+<p>非拜占庭故障的假设使得一个学习者很容易从另一个学习者那里得知一个值已被接受。我们可以让接受者将它们的接受响应发送给一个杰出的学习者，该学习者随后在被选择的值被选择时通知其他学习者。这种方法需要额外的一轮通信才能让所有学习者发现被选择的值。它的可靠性也较低，因为杰出的学习者可能故障。但它所需的响应数量仅等于接受者数量与学习者数量之和。</p>
+<p>所以我们也可以在随波逐流的人中选择一个最诚信的，让他告诉其他随波逐流的人到底选了什么值。</p>
+<h3 id="进展性">进展性
+</h3><p>读到这里，聪明的读者肯定已经想到了，如果两个提议者各自不断发出编号递增的一系列提议，但没有一个被选择。两者一直处于竞争的状态，就会导致一直循环下去。</p>
+<p>对于这种情况，必须选择一个杰出的提议者作为唯一尝试发出提议的提议者。如果杰出的提议者能够成功地与多数派接受者通信，并且它使用的提议编号大于任何已使用的编号，那么它将成功地发出一个被接受的提议。通过放弃一个提议并在得知有更高编号的提议请求时重试，杰出的提议者最终将选择一个足够高的提议编号。如果系统（提议者、接受者和通信网络）中有足够多的部分正常工作，那么通过选举一个单一的杰出提议者可以实现活性。Fischer、Lynch和Patterson的著名结果[1]表明，一个可靠的提议者选举算法必须使用随机性或真实时间——例如，通过使用超时。然而，无论选举成功与否，安全性都得到保证。</p>
+<h3 id="实现">实现
+</h3><p>Paxos算法[5]假设一个进程网络。在其共识算法中，每个进程扮演提议者、接受者和学习者的角色。该算法选择一个领导者，它扮演杰出的提议者和杰出的学习者的角色。Paxos共识算法正是上面描述的算法，其中请求和响应作为普通消息发送。（响应消息标有相应的提议编号以防止混淆。）在故障期间保留的稳定存储用于维护接受者必须记住的信息。接受者在实际发送响应之前将预期的响应记录在稳定存储中。</p>
+<p>剩下的就是描述保证不会有两个提议以相同编号发出的机制。不同的提议者从不相交的编号集合中选择它们的编号，因此两个不同的提议者永远不会以相同编号发出提议。每个提议者记住（在稳定存储中）它尝试发出的最高编号的提议，并以比它已使用的任何编号更高的编号开始阶段1。</p>
+<h3 id="实现状态机">实现状态机
+</h3><p>最后有关于状态机相关的</p>
+<p>实现分布式系统的一种标准方法是使用<strong>状态机复制（State Machine Replication）</strong>。只要所有服务器（节点）按照相同的顺序执行相同的确定性命令，它们的状态就会保持一致。</p>
+<p>为了保证所有服务器执行相同的命令序列，我们将系统的运行过程划分为一系列的 Paxos 共识实例（Instance）。<strong>第 iii 个 Paxos 实例选中的值，就是全局命令序列中的第 iii 条命令。</strong></p>
+<h4 id="正常运作与填补空缺机制">正常运作与“填补空缺”机制
+</h4><p>在正常运行中，Leader 充当所有 Paxos 实例的特定提议者。</p>
+<ol>
+<li><strong>Phase 1 批处理</strong>：Leader 可以在启动时对<strong>无限多个</strong>未来的 Paxos 实例统一执行一次 Phase 1（使用同一个提议编号）。这使得 Leader 获得了这些实例的“提议权”，且只需极少的网络开销。</li>
+<li><strong>Phase 2 分配命令</strong>：当客户端发来新命令时，Leader 直接将其作为值，对下一个空闲的实例执行 Phase 2。</li>
+<li><strong>填补空缺（Gap Filling）</strong>：假设 Leader 宕机，新 Leader 上任。新 Leader 发现序列中第 1-134、138、139 个命令已确定，但 135-137 缺失。为了保持状态机的顺序执行，新 Leader 不能直接跳过 135-137 去执行 138。相反，Leader 会为 135-137 实例提议特殊的 <strong>“空操作（No-Op）”命令</strong>。一旦这些空操作被多数派接受（达成共识），序列的连续性就被修复了，系统可以继续向下执行。</li>
+<li><strong>流水线优化</strong>：Leader 可以在确认第 iii 个命令被选中之前，就提前提议第 i+1i+1i+1 个命令。这极大地提高了系统的吞吐量。因为如果发生网络分区或 Leader 宕机，Paxos 的安全性依然能保证不会产生冲突的分支。</li>
+</ol>
+<p>由于 Leader 选举是罕见事件，在绝大多数时间里，Paxos 状态机只需要执行 <strong>Phase 2</strong> 即可达成共识。研究表明，Phase 2 的通信开销已经达到了在存在故障的情况下达成一致的<strong>理论最低极限</strong>，因此 Paxos 在工程上是极其高效且最优的。</p>
+<h2 id="论文及其翻译">论文及其翻译
+</h2><blockquote>
+<p><a class="link" href="https://pdos.csail.mit.edu/6.824/papers/paxos-simple.pdf"  target="_blank" rel="noopener"
+    >Paxos Made Simple</a></p></blockquote>
+<h3 id="paxos-made-simple-中文翻译">Paxos Made Simple 中文翻译
+</h3><p><strong>Leslie Lamport</strong>
+2001年11月1日</p>
+<hr>
+<h4 id="摘要">摘要
+</h4><p>Paxos算法，如果用简单的英语来描述，其实非常简单。</p>
+<hr>
+<h4 id="目录">目录
+</h4><ul>
+<li>1 引言</li>
+<li>2 共识算法
+<ul>
+<li>2.1 问题描述</li>
+<li>2.2 选择值</li>
+<li>2.3 学习被选择的值</li>
+<li>2.4 进展性</li>
+<li>2.5 实现</li>
+</ul>
+</li>
+<li>3 实现状态机</li>
+</ul>
+<hr>
+<h4 id="1-引言">1 引言
+</h4><p>用于实现容错分布式系统的Paxos算法一直被认为难以理解，也许是因为最初的表述对许多读者来说如同天书[5]。事实上，它是最简单、最显而易见的分布式算法之一。其核心是一个共识算法——即[5]中的“主教会议”算法。下一节将展示，这个共识算法几乎是从我们希望它满足的性质中必然推导出来的。最后一节解释完整的Paxos算法，该算法通过将共识 straightforwardly 应用于构建分布式系统的状态机方法而获得——这种方法应该广为人知，因为它可能是分布式系统理论中被引用最多的文章的主题[4]。</p>
+<hr>
+<h4 id="2-共识算法">2 共识算法
+</h4><h5 id="问题描述-1">问题描述
+</h5><p>假设有一组可以提议值的进程。共识算法确保在这些提议的值中选出一个唯一的值。如果没有值被提议，则不应选择任何值。如果一个值已被选择，那么进程应该能够获知被选择的值。</p>
+<p>共识的安全性要求如下：</p>
+<ul>
+<li>只有被提议过的值才可能被选择，</li>
+<li>只能选择一个唯一的值，以及</li>
+<li>一个进程只有在某个值确实被选择时，才知道该值已被选择。</li>
+</ul>
+<p>我们不会尝试规定精确的活性（liveness）要求。然而，目标是确保某个提议的值最终被选择，并且如果一个值已被选择，那么进程最终能够获知该值。</p>
+<p>我们让共识算法中的三个角色由三类代理（agent）执行：<strong>提议者（proposers）</strong>、<strong>接受者（acceptors）<strong>和</strong>学习者（learners）</strong>。在实现中，单个进程可能扮演多个代理角色，但代理到进程的映射与我们这里无关。假设代理之间可以通过发送消息进行通信。我们使用通常的异步、非拜占庭模型，其中：</p>
+<ul>
+<li>代理以任意速度运行，可能因停止而故障，也可能重启。由于所有代理在值被选择后都可能故障并重启，除非故障并重启的代理能够记住某些信息，否则解决方案是不可能的。</li>
+<li>消息的传递可能花费任意长的时间，可能被重复，也可能丢失，但不会被破坏。</li>
+</ul>
+<h5 id="选择值-1">选择值
+</h5><p>选择值最简单的方法是使用单个接受者代理。提议者向接受者发送一个提议，接受者选择它收到的第一个提议值。虽然简单，但这种方案并不令人满意，因为接受者的故障会使任何进一步的进展变得不可能。所以，让我们尝试另一种选择值的方法。</p>
+<p>我们不使用单个接受者，而是使用多个接受者代理。提议者向一组接受者发送一个提议值。接受者可以<strong>接受</strong>该提议值。当足够多的接受者接受了该值时，该值就被选择了。足够多是多少？为了确保只选择一个唯一的值，我们可以让足够多的集合由任意多数派（majority）的代理组成。因为任意两个多数派至少有一个共同的接受者，所以只要一个接受者最多接受一个值，这就能工作。（多数派有一个明显的推广，已在许多论文中出现，显然始于[3]。）</p>
+<p>在没有故障或消息丢失的情况下，即使只有一个提议者提议了一个值，我们也希望该值能被选择。这提示了以下要求：</p>
+<ol>
+<li><strong>P1.</strong> 一个接受者必须接受它收到的第一个提议。</li>
+</ol>
+<p>但这个要求带来了一个问题。不同的提议者可能在大约同一时间提议不同的值，导致每个接受者都接受了一个值，但没有哪个值被其中的多数派所接受。即使只有两个被提议的值，如果每个值被大约一半的接受者接受，单个接受者的故障就可能使得无法知道哪个值被选择了。P1和要求一个值只有被多数派接受者接受时才被选择，意味着必须允许一个接受者接受多个提议。</p>
+<p>我们通过为每个提议分配一个（自然）编号来跟踪接受者可能接受的不同提议，因此一个提议由提议编号和一个值组成。为了防止混淆，我们要求不同的提议有不同的编号。如何实现这一点取决于实现，所以现在我们先假设它可以实现。</p>
+<p>当一个具有该值的单个提议被多数派接受者接受时，该值就被选择了。在这种情况下，我们说该提议（以及它的值）已被选择。我们可以允许多个提议被选择，但必须保证所有被选择的提议具有相同的值。通过对提议编号进行归纳，保证以下条件就足够了：</p>
+<ul>
+<li><strong>P2.</strong> 如果一个值为 \(v\) 的提议被选择，那么每个被选择的编号更高的提议都具有值 \(v\)。</li>
+</ul>
+<p>由于编号是全序的，条件P2保证了关键的安全性属性——只选择一个唯一的值。</p>
+<p>要被选择，一个提议必须至少被一个接受者接受。所以，我们可以通过满足以下条件来满足P2：</p>
+<ul>
+<li><strong>P2ᵃ.</strong> 如果一个值为 \(v\) 的提议被选择，那么任何接受者接受的每个编号更高的提议都具有值 \(v\)。</li>
+</ul>
+<p>我们仍然维持P1以确保某个提议被选择。因为通信是异步的，一个提议可能在某个特定的接受者 \(c\) 从未收到任何提议的情况下被选择。假设一个新的提议者“醒来”并发出一个编号更高但值不同的提议。P1要求 \(c\) 接受这个提议，这违反了P2ᵃ。</p>
+<p>同时维持P1和P2ᵃ需要将P2ᵃ加强为：</p>
+<ul>
+<li><strong>P2ᵇ.</strong> 如果一个值为 \(v\) 的提议被选择，那么任何提议者发出的每个编号更高的提议都具有值 \(v\)。</li>
+</ul>
+<p>由于一个提议必须先由提议者发出才能被接受者接受，P2ᵇ 蕴含 P2ᵃ，而 P2ᵃ 又蕴含 <strong>P2</strong>。</p>
+<p>为了发现如何满足 P2ᵇ，让我们考虑如何证明它成立。我们假设某个编号为 \(m\)、值为 \(v\) 的提议被选择，并证明任何编号 \(n>m\) 的提议也具有值 \(v\)。通过对 \(n\) 使用归纳法可以使证明更容易，因此我们可以在额外的假设下证明编号 \(n\) 的提议具有值 \(v\)，即每个编号在 \(m\ldots(n-1)\) 范围内的提议都具有值 \(v\)，其中 \(i\ldots j\) 表示从 \(i\) 到 \(j\) 的编号集合。</p>
+<p>为了使编号 \(m\) 的提议被选择，必须存在某个由多数派接受者组成的集合 \(C\)，使得 \(C\) 中的每个接受者都接受了它。结合归纳假设，\(m\) 被选择的假设意味着：</p>
+<p>\(C\) 中的每个接受者都接受了一个编号在 \(m\ldots(n-1)\) 范围内的提议，并且任何接受者接受的编号在 \(m\ldots(n-1)\) 范围内的每个提议都具有值 \(v\)。</p>
+<p>由于任何由多数派接受者组成的集合 \(S\) 至少包含 \(C\) 中的一个成员，我们可以通过确保维持以下不变式来得出结论：编号 \(n\) 的提议具有值 \(v\)：</p>
+<ul>
+<li><strong>P2ᶜ.</strong> 对于任意 \(v\) 和 \(n\)，如果一个值为 \(v\)、编号为 \(n\) 的提议被发出，那么存在一个由多数派接受者组成的集合 \(S\)，使得要么 (a) \(S\) 中没有接受者接受过任何编号小于 \(n\) 的提议，要么 (b) \(v\) 是 \(S\) 中接受者接受的所有编号小于 \(n\) 的提议中编号最高的那个提议的值。</li>
+</ul>
+<p>因此，我们可以通过维持 P2ᶜ 的不变性来满足 P2ᵇ。</p>
+<p>为了维持 P2ᶜ 的不变性，想要发出编号为 \(n\) 的提议的提议者必须了解某个多数派接受者集合中每个接受者已经接受或将要接受的编号小于 \(n\) 的最高编号提议（如果有的话）。了解已经接受的提议很容易；预测未来的接受则很困难。提议者不试图预测未来，而是通过获取一个承诺来控制它，即不会有这样的接受发生。换句话说，提议者请求接受者不再接受任何编号小于 \(n\) 的提议。这引出了以下发出提议的算法：</p>
+<ol>
+<li>
+<p>一个提议者选择一个新的提议编号 \(n\)，并向某个接受者集合中的每个成员发送一个请求，要求它回复：
+(a) 一个承诺，即不再接受编号小于 \(n\) 的提议，以及
+(b) 它已接受的编号小于 \(n\) 的最高编号提议（如果有的话）。
+我将这样的请求称为编号为 \(n\) 的 <strong>准备（prepare）</strong> 请求。</p>
+</li>
+<li>
+<p>如果提议者从多数派接受者那里收到了所请求的回复，那么它可以发出一个编号为 \(n\)、值为 \(v\) 的提议，其中 \(v\) 是回复中最高编号提议的值，或者如果回复者没有报告任何提议，则 \(v\) 是提议者选择的任意值。</p>
+</li>
+</ol>
+<p>提议者通过向某个接受者集合发送请求来发出一个提议，请求该提议被接受。（这不一定是回复初始请求的同一组接受者。）我们称之为 <strong>接受（accept）</strong> 请求。</p>
+<p>以上就是提议者的算法。那么接受者呢？它可以收到来自提议者的两种请求：<strong>准备</strong>请求和<strong>接受</strong>请求。接受者可以忽略任何请求而不会损害安全性。所以，我们只需要说明它在何时被允许响应请求。它总是可以响应<strong>准备</strong>请求。当且仅当它没有承诺不这样做时，它可以响应<strong>接受</strong>请求，即接受该提议。换句话说：</p>
+<ul>
+<li><strong>P1ᵃ.</strong> 当且仅当一个接受者没有响应过编号大于 \(n\) 的<strong>准备</strong>请求时，它可以接受编号为 \(n\) 的提议。</li>
+</ul>
+<p>注意 P1ᵃ 包含了 P1。我们现在有了一个完整的选择值的算法，它满足所需的安全性属性——假设提议编号是唯一的。</p>
+<p>最终的算法通过一个小优化得到。假设一个接受者收到一个编号为 \(n\) 的<strong>准备</strong>请求，但它已经响应了一个编号大于 \(n\) 的<strong>准备</strong>请求，从而承诺不再接受任何编号为 \(n\) 的新提议。那么接受者就没有理由响应这个新的<strong>准备</strong>请求，因为它不会接受提议者想要发出的编号为 \(n\) 的提议。所以我们让接受者忽略这样的<strong>准备</strong>请求。我们也让它忽略它已经接受的提议的<strong>准备</strong>请求。</p>
+<p>通过这个优化，一个接受者只需要记住它曾经接受的最高编号的提议，以及它响应过的最高编号的<strong>准备</strong>请求的编号。因为 P2ᶜ 必须在故障情况下保持不变，接受者即使在故障后重启也必须记住这些信息。注意，提议者可以随时放弃一个提议并忘记它——只要它不再尝试发出具有相同编号的另一个提议。</p>
+<p>将提议者和接受者的行为放在一起，我们看到算法在两个阶段中运行：</p>
+<p><strong>阶段 1.</strong>
+(a) 一个提议者选择一个提议编号 \(n\)，并向多数派接受者发送一个编号为 \(n\) 的<strong>准备</strong>请求。
+(b) 如果一个接受者收到一个编号为 \(n\) 的<strong>准备</strong>请求，且 \(n\) 大于它已响应的任何<strong>准备</strong>请求的编号，那么它响应该请求，承诺不再接受任何编号小于 \(n\) 的提议，并附上它已接受的最高编号的提议（如果有的话）。</p>
+<p><strong>阶段 2.</strong>
+(a) 如果提议者从多数派接受者那里收到了对其<strong>准备</strong>请求（编号 \(n\)）的响应，那么它向这些接受者中的每一个发送一个<strong>接受</strong>请求，针对编号为 \(n\)、值为 \(v\) 的提议，其中 \(v\) 是响应中最高编号提议的值，或者如果响应没有报告任何提议则为任意值。
+(b) 如果一个接受者收到一个编号为 \(n\) 的提议的<strong>接受</strong>请求，它接受该提议，除非它已经响应了一个编号大于 \(n\) 的<strong>准备</strong>请求。</p>
+<p>一个提议者可以发出多个提议，只要它对每个提议都遵循该算法。它可以在协议中间的任意时刻放弃一个提议。（即使该提议的请求和/或响应在其被放弃很久之后才到达目的地，正确性也能得到保持。）如果某个提议者已开始尝试发出编号更高的提议，放弃当前提议可能是个好主意。因此，如果一个接受者因为已经收到编号更高的<strong>准备</strong>请求而忽略了一个<strong>准备</strong>或<strong>接受</strong>请求，那么它应该通知提议者，提议者随后应该放弃其提议。这是一个不影响正确性的性能优化。</p>
+<h5 id="学习被选择的值-1">学习被选择的值
+</h5><p>为了获知一个值已被选择，学习者必须发现一个提议已被多数派接受者接受。显而易见的算法是让每个接受者在接受一个提议时，向所有学习者回复，发送该提议。这允许学习者尽快发现被选择的值，但它要求每个接受者向每个学习者回复——回复数量等于接受者数量和学习者数量的乘积。</p>
+<p>非拜占庭故障的假设使得一个学习者很容易从另一个学习者那里得知一个值已被接受。我们可以让接受者将它们的接受响应发送给一个杰出的学习者，该学习者随后在被选择的值被选择时通知其他学习者。这种方法需要额外的一轮通信才能让所有学习者发现被选择的值。它的可靠性也较低，因为杰出的学习者可能故障。但它所需的响应数量仅等于接受者数量与学习者数量之和。</p>
+<p>更一般地，接受者可以将它们的接受响应发送给一组杰出的学习者，其中每个学习者随后可以在值被选择时通知所有学习者。使用更大的杰出学习者集合可以提供更高的可靠性，但代价是更高的通信复杂度。</p>
+<p>由于消息丢失，一个值可能被选择但没有学习者发现。学习者可以询问接受者它们接受了哪些提议，但接受者的故障可能使得无法知道多数派是否接受了某个特定提议。在这种情况下，学习者只有在新提议被选择时才能发现被选择的值。如果学习者需要知道一个值是否已被选择，它可以让一个提议者使用上述算法发出一个提议。</p>
+<h5 id="进展性-1">进展性
+</h5><p>很容易构造一个场景，其中两个提议者各自不断发出编号递增的一系列提议，但没有一个被选择。提议者 \(p\) 完成了编号 \(n_1\) 的提议的阶段1。另一个提议者 \(q\) 然后完成了编号 \(n_2>n_1\) 的提议的阶段1。提议者 \(p\) 的编号为 \(n_1\) 的提议的阶段2<strong>接受</strong>请求被忽略，因为接受者都已承诺不再接受任何编号小于 \(n_2\) 的新提议。于是，提议者 \(p\) 开始并完成编号 \(n_3>n_2\) 的新提议的阶段1，导致提议者 \(q\) 的阶段2<strong>接受</strong>请求被忽略。如此循环。</p>
+<p>为了保证进展，必须选择一个杰出的提议者作为唯一尝试发出提议的提议者。如果杰出的提议者能够成功地与多数派接受者通信，并且它使用的提议编号大于任何已使用的编号，那么它将成功地发出一个被接受的提议。通过放弃一个提议并在得知有更高编号的提议请求时重试，杰出的提议者最终将选择一个足够高的提议编号。如果系统（提议者、接受者和通信网络）中有足够多的部分正常工作，那么通过选举一个单一的杰出提议者可以实现活性。Fischer、Lynch和Patterson的著名结果[1]表明，一个可靠的提议者选举算法必须使用随机性或真实时间——例如，通过使用超时。然而，无论选举成功与否，安全性都得到保证。</p>
+<h5 id="实现-1">实现
+</h5><p>Paxos算法[5]假设一个进程网络。在其共识算法中，每个进程扮演提议者、接受者和学习者的角色。该算法选择一个领导者，它扮演杰出的提议者和杰出的学习者的角色。Paxos共识算法正是上面描述的算法，其中请求和响应作为普通消息发送。（响应消息标有相应的提议编号以防止混淆。）在故障期间保留的稳定存储用于维护接受者必须记住的信息。接受者在实际发送响应之前将预期的响应记录在稳定存储中。</p>
+<p>剩下的就是描述保证不会有两个提议以相同编号发出的机制。不同的提议者从不相交的编号集合中选择它们的编号，因此两个不同的提议者永远不会以相同编号发出提议。每个提议者记住（在稳定存储中）它尝试发出的最高编号的提议，并以比它已使用的任何编号更高的编号开始阶段1。</p>
+<hr>
+<h4 id="3-实现状态机">3 实现状态机
+</h4><p>实现分布式系统的一种简单方式是作为一组向中央服务器发出命令的客户端。该服务器可以被描述为一个确定性状态机，按某种顺序执行客户端命令。状态机有一个当前状态；它通过接收一个命令作为输入，产生一个输出和一个新状态来执行一步。例如，分布式银行系统的客户端可能是柜员，状态机的状态可能由所有用户的账户余额组成。取款将通过执行一个状态机命令来执行，该命令在且仅当余额大于取款金额时减少账户余额，并输出旧余额和新余额。</p>
+<p>使用单个中央服务器的实现在该服务器故障时会失败。因此，我们改为使用一组服务器，每个服务器独立地实现状态机。因为状态机是确定性的，如果所有服务器执行相同的命令序列，它们将产生相同的状态序列和输出。发出命令的客户端可以使用任何服务器为其生成的输出。</p>
+<p>为了保证所有服务器执行相同的状态机命令序列，我们实现一系列独立的Paxos共识算法实例，第 \(i\) 个实例选择的值是序列中的第 \(i\) 个状态机命令。每个服务器在每个算法实例中扮演所有角色（提议者、接受者和学习者）。目前，我假设服务器集合是固定的，因此所有共识算法实例使用相同的代理集合。</p>
+<p>在正常操作中，选举单个服务器作为领导者，它在所有共识算法实例中扮演杰出的提议者（唯一尝试发出提议的提议者）的角色。客户端向领导者发送命令，领导者决定每个命令在序列中的位置。如果领导者决定某个客户端命令应该是第135个命令，它尝试让该命令被选为第135个共识算法实例的值。它通常会成功。它可能因为故障而失败，或者因为另一个服务器也认为自己是领导者，并且对第135个命令应该是什么有不同的想法。但共识算法确保最多只有一个命令可以被选为第135个命令。</p>
+<p>这种方法效率的关键在于，在Paxos共识算法中，要提议的值直到阶段2才被选择。回想一下，在完成提议者算法的阶段1之后，要么要提议的值已确定，要么提议者可以自由提议任意值。我现在将描述Paxos状态机实现在正常操作期间如何工作。稍后，我将讨论可能出错的地方。</p>
+<p>我考虑当前领导者刚刚故障并选举了新领导者时会发生什么。（系统启动是一个特殊情况，其中还没有命令被提议。）新领导者作为所有共识算法实例的学习者，应该知道大多数已被选择的命令。假设它知道命令1-134、138和139——也就是说，共识算法实例1-134、138和139中选择的值。（我们稍后将看到命令序列中如何出现这样的间隙。）然后它执行实例135-137以及所有大于139的实例的阶段1。（我下面描述这是如何完成的。）假设这些执行的结果确定了实例135和140中要提议的值，但在所有其他实例中未约束要提议的值。然后领导者执行实例135和140的阶段2，从而选择命令135和140。</p>
+<p>领导者以及任何其他了解领导者所知的所有命令的服务器，现在可以执行命令1-135。但是，它不能执行它也知道命令138-140，因为命令136和137尚未被选择。领导者可以将客户端请求的下两个命令作为命令136和137。相反，我们让它通过提议一个特殊的“无操作”命令作为命令136和137来立即填补间隙，该命令保持状态不变。（它通过执行共识算法实例136和137的阶段2来实现这一点。）一旦这些无操作命令被选择，命令138-140就可以被执行。现在命令1-140已被选择。领导者还完成了所有大于140的共识算法实例的阶段1，并且它可以自由地在这些实例的阶段2中提议任意值。</p>
+<p>它将命令编号141分配给客户端请求的下一个命令，将其作为共识算法实例141的阶段2中的值进行提议。它将其收到的下一个客户端命令作为命令142进行提议，依此类推。领导者可以在得知其提议的命令141已被选择之前提议命令142。它在提议命令141时发送的所有消息可能都丢失了，并且命令142可能在任何其他服务器了解到领导者为命令141提议了什么之前就被选择了。当领导者在实例141中未能收到其阶段2消息的预期响应时，它将重新发送这些消息。如果一切顺利，其提议的命令将被选择。然而，它可能在此之前故障，在被选择的命令序列中留下一个间隙。</p>
+<p>一般来说，假设一个领导者可以领先 \(\alpha\) 个命令——也就是说，在命令1到 \(i\) 被选择之后，它可以提议命令 \(i+1\) 到 \(i+\alpha\)。那么最多可能出现 \(\alpha-1\) 个命令的间隙。</p>
+<p>新选举的领导者执行无限多个共识算法实例的阶段1——在上述场景中，是实例135-137以及所有大于139的实例。通过对所有实例使用相同的提议编号，它可以通过向其他服务器发送一条相当短的消息来完成这个任务。在阶段1中，接受者只有在已经收到某个提议者的阶段2消息时，才会回复比简单OK更多的内容。（在上述场景中，这只发生在实例135和140中。）因此，一个服务器（作为接受者）可以通过一条相当短的消息来响应所有实例。因此，执行这无限多个阶段1实例不会造成问题。</p>
+<p>由于领导者的故障和新领导者的选举应该是罕见事件，执行一个状态机命令——即就命令/值达成共识——的有效成本是仅执行共识算法阶段2的成本。可以证明，Paxos共识算法的阶段2在存在故障的情况下达成一致的所有算法中具有最小可能的成本[2]。因此，Paxos算法本质上是最优的。</p>
+<p>对系统正常操作的讨论假设除了当前领导者故障和新领导者选举之间的短暂时期外，始终只有一个领导者。在异常情况下，领导者选举可能失败。如果没有服务器充当领导者，则不会提议新命令。如果多个服务器认为它们是领导者，那么它们都可以在同一个共识算法实例中提议值，这可能阻止任何值被选择。然而，安全性得以保持——两个不同的服务器永远不会对第 \(i\) 个状态机命令选择的值产生分歧。选举单个领导者只是为了确保进展。</p>
+<p>如果服务器集合可以改变，那么必须有某种方法来确定哪些服务器实现哪些共识算法实例。最简单的方法是通过状态机本身来实现。当前服务器集合可以成为状态的一部分，并可以通过普通的状态机命令来更改。我们可以允许领导者领先 \(\alpha\) 个命令，方法是让执行共识算法实例 \(i+\alpha\) 的服务器集合由执行第 \(i\) 个状态机命令后的状态来指定。这允许简单实现任意复杂的重配置算法。</p>
+<hr>
+<h4 id="参考文献">参考文献
+</h4><ul>
+<li>[1] Michael J. Fischer, Nancy Lynch, and Michael S. Paterson. Impossibility of distributed consensus with one faulty process. <em>Journal of the ACM</em>, 32(2):374-382, April 1985.</li>
+<li>[2] Idit Keidar and Sergio Rajsbaum. On the cost of fault-tolerant consensus when there are no faults&ndash;a tutorial. Technical Report MIT-LCS-TR-821, Laboratory for Computer Science, Massachusetts Institute Technology, Cambridge, MA, 02139, May 2001. also published in SIGACT News 32(2) (June 2001).</li>
+<li>[3] Leslie Lamport. The implementation of reliable distributed multiprocess systems. <em>Computer Networks</em>, 2:95-114, 1978.</li>
+<li>[4] Leslie Lamport. Time, clocks, and the ordering of events in a distributed system. <em>Communications of the ACM</em>, 21(7):558-565, July 1978.</li>
+<li>[5] Leslie Lamport. The part-time parliament. <em>ACM Transactions on Computer Systems</em>, 16(2):133-169, May 1998.</li>
+</ul>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">相关文章</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="">
+    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A02.2/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">分布式学习2.2</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A01.1/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">分布式学习1.1</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%BA%8C/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">分布式学习(二)</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="">
+    <a href="/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A0%E4%B8%80/">
+        
+        
+
+        <div class="article-details">
+            <h2 class="article-title">分布式学习(一)</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/docker%E5%AD%A6%E4%B9%A0/">
+        
+        
+            <div class="article-image">
+                
+                    <img src="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*vQK4s0lOiK1ZkcXxFNIMDQ.png" loading="lazy" data-key="" data-hash="https://miro.medium.com/v2/resize:fit:1100/format:webp/1*vQK4s0lOiK1ZkcXxFNIMDQ.png"/>
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Docker学习</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+  <script>
+    (function () {
+      const maxHeight = 420;
+
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
+    </body>
+</html>

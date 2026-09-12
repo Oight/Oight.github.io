@@ -7,7 +7,420 @@
         <generator>Hugo -- gohugo.io</generator>
         <language>zh-cn</language>
         <copyright>Oight</copyright>
-        <lastBuildDate>Sun, 06 Sep 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Sat, 12 Sep 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>分布式学习(3)</title>
+        <link>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A03/</link>
+        <pubDate>Sat, 12 Sep 2026 10:29:47 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A03/</guid>
+        <description>&lt;h1 id=&#34;分布式系统学习3&#34;&gt;分布式系统学习（3）
+&lt;/h1&gt;&lt;p&gt;在前面几篇博文中学习了分布式计算框架MapReduce和分布式文件系统GFS，根据MIT6.824的课程安排，接下来就到分布式共识算法了。这一节要求我们自己读论文，给出的论文资料是Leslie Lamport在2001年发表的《Paxos Made Simple》，在这篇论文中Leslie Lamport介绍了Paxos共识算法。&lt;/p&gt;
+&lt;p&gt;Lamport于1998年《The Part-Time Parliament》中首次提出了Paxos算法。在该论文中，作者将该算法比喻为希腊的一个Paxos小岛上的议会选举，由于并不是所有人都了解的古希腊文化，并且选举算法本就十分抽象，很多人并不能理解他的算法（以及Paxos议会本身）。于是在2001年，Lamport重新发表了更容易理解的论文《Paxos Made Simple》&lt;/p&gt;
+&lt;h2 id=&#34;为什么需要分布式共识算法&#34;&gt;为什么需要分布式共识算法
+&lt;/h2&gt;&lt;p&gt;众所周知，在我们所构建的由大量廉价硬件构成的分布式系统中，故障是客观存在无法避免的，在一个部分节点软件硬件故障、网络故障等不同类型故障的影响下，我们的分布式系统仍要向外界提供可靠的服务，就需要在设计系统架构时充分考虑当异常情况发生时，如何保证系统能够向外界提供稳定的服务，所以系统内组件间就必须要达成一些共识，来面对服务器的异常情况&lt;/p&gt;
+&lt;p&gt;在由大量普通机器组成的分布式系统中，节点和网络故障是常态。为了让多个副本在故障和并发下仍能对外表现为一个逻辑上一致的服务，系统必须对关键决策（如日志顺序、主节点、事务提交、配置变更）达成一致。分布式共识算法就是让一组可能故障的节点在多数派存活时对这些决策达成一致，并保证一旦决定就不会被推翻。它支撑复制状态机、选主、分布式锁、配置管理等。但共识只适用于需要强一致的场景，并且有可用性和延迟代价；弱一致系统不一定需要共识。&lt;/p&gt;
+&lt;h2 id=&#34;分布式共识算法&#34;&gt;分布式共识算法
+&lt;/h2&gt;&lt;p&gt;现在我们设想这样一个场景&lt;/p&gt;
+&lt;p&gt;你和你的朋友A, B生活在不同的地方，你们平时通过邮件/即时通信软件进行联系，有一天你突发奇想想要进行聚餐，接下来你们就要商量什么时间聚了&lt;/p&gt;
+&lt;p&gt;假设你提出要在大年初一聚，你把这个提案发给B和C，如果B和C都收到了你的消息，然后都同意了，那就皆大欢喜。如果只有B收到了也同意了，C刚好在开会没收到，他开完会同时收到了你和B的提案，假使他不同意，但你收到B的回信后已经定好饭店了，那C也只能少数服从多数。在上面两个过程中就是你们三人达成共识的过程。&lt;/p&gt;
+&lt;p&gt;但很不幸的是，在大多数情况下提出提议的人不止一个，同样的场景，你提议在大年初一聚，C刚好网卡了没收到你的提议，而他想在中秋节聚，于是你们俩提出了不同的提案，这时候你们三人都面对着两个不同的方案，这时候究竟去哪聚就是未定态，你们并未对于一个事件达成共识。这时候你们就会在群里争论或者吵架。&lt;/p&gt;
+&lt;p&gt;为了避免这种场面的发生，你们仨就约定了一套规则，如果面对不同提案时，应该如何应对来避免吵架，因为我们的初衷是要聚餐联络感情，吵架不是我们的初衷，甚至和我们的初衷相悖。&lt;/p&gt;
+&lt;p&gt;而这套规则延伸出来就是分布式共识算法。&lt;/p&gt;
+&lt;p&gt;分布式共识算法有很多种，它们在分布式和区块链等领域都有广泛的应用。今天介绍的就是其中的一种——Paxos算法。&lt;/p&gt;
+&lt;h3 id=&#34;问题描述&#34;&gt;问题描述
+&lt;/h3&gt;&lt;p&gt;在论文中是这样描述问题的：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Assume a collection of processes that can propose values. A consensus al-
+gorithm ensures that a single one among the proposed values is chosen. If
+no value is proposed, then no value should be chosen. If a value has been
+chosen, then processes should be able to learn the chosen value. The safety
+requirements for consensus are:
+• Only a value that has been proposed may be chosen,
+• Only a single value is chosen, and
+• A process never learns that a value has been chosen unless it actually
+has been.
+We won’t try to specify precise liveness requirements. However, the goal is
+to ensure that some proposed value is eventually chosen and, if a value has
+been chosen, then a process can eventually learn the value.
+We let the three roles in the consensus algorithm be performed by three
+classes of agents: proposers, acceptors, and learners. In an implementation,
+a single process may act as more than one agent, but the mapping from
+agents to processes does not concern us here.
+Assume that agents can communicate with one another by sending mes-
+sages. We use the customary asynchronous, non-Byzantine model, in which:
+• Agents operate at arbitrary speed, may fail by stopping, and may
+restart. Since all agents may fail after a value is chosen and then
+restart, a solution is impossible unless some information can be re-
+membered by an agent that has failed and restarted.
+• Messages can take arbitrarily long to be delivered, can be duplicated,
+and can be lost, but they are not corrupted.&lt;/p&gt;
+&lt;p&gt;假设有一组可以提议值的进程。共识算法确保在这些提议的值中选出一个唯一的值。如果没有值被提议，则不应选择任何值。如果一个值已被选择，那么进程应该能够获知被选择的值。&lt;/p&gt;
+&lt;p&gt;共识的安全性要求如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;只有被提议过的值才可能被选择，&lt;/li&gt;
+&lt;li&gt;只能选择一个唯一的值，以及&lt;/li&gt;
+&lt;li&gt;一个进程只有在某个值确实被选择时，才知道该值已被选择。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我们不会尝试规定精确的活性（liveness）要求。然而，目标是确保某个提议的值最终被选择，并且如果一个值已被选择，那么进程最终能够获知该值。&lt;/p&gt;
+&lt;p&gt;我们让共识算法中的三个角色由三类代理（agent）执行：&lt;strong&gt;提议者（proposers）&lt;/strong&gt;、&lt;strong&gt;接受者（acceptors）&lt;strong&gt;和&lt;/strong&gt;学习者（learners）&lt;/strong&gt;。在实现中，单个进程可能扮演多个代理角色，但代理到进程的映射与我们这里无关。假设代理之间可以通过发送消息进行通信。我们使用通常的异步、非拜占庭模型，其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;代理以任意速度运行，可能因停止而故障，也可能重启。由于所有代理在值被选择后都可能故障并重启，除非故障并重启的代理能够记住某些信息，否则解决方案是不可能的。&lt;/li&gt;
+&lt;li&gt;消息的传递可能花费任意长的时间，可能被重复，也可能丢失，但不会被破坏。&lt;/li&gt;
+&lt;/ul&gt;&lt;/blockquote&gt;
+&lt;p&gt;回到一开始的聚餐问题，即，我们初步规定，只有被提议过的时间才能被选择；只能有一个唯一的时间被选择；对于任何一个人来说，只有其他人（多数派）已经决定好是那个时间了，他才知道到底是什么时候&lt;/p&gt;
+&lt;p&gt;同时我们假设有三种人，在我们生活中也很常见：喜欢出主意的（提议者），做决定的（接收者），随波逐流的（学习者），这三种人组成了共识算法中的三种角色。&lt;/p&gt;
+&lt;p&gt;另外，&lt;strong&gt;非拜占庭模型&lt;/strong&gt;指的是节点/组件出故障时，行为仍然是可预期的、非恶意的，通常表现为崩溃、停止响应、超时、丢消息、离线、重启等。它不会“撒谎”或伪造信息。类比来说，就是所有人都是完全的好人，在整个过程中不会出现捣蛋鬼，不会发生比如A告诉B和C要在1号聚餐，但B又告诉C，A说要在2号聚餐这种情况&lt;/p&gt;
+&lt;h3 id=&#34;选择值&#34;&gt;选择值
+&lt;/h3&gt;&lt;p&gt;回到共识算法本身来，对于接受者来说，需要做出决定，就必须要选择一个值。选择值最简单的方法是使用单个接受者代理。提议者向接受者发送一个提议，接受者选择它收到的第一个提议值。虽然简单，但这种方案并不令人满意，因为接受者的故障会使任何进一步的进展变得不可能。类比来说，假如A,B,C三个人一直是B来做决定，但有一天B生病了做不了决定，A只会提出建议，而C只会说随便，都行，那整个事件就无法进行下去了。所以让我们尝试另一种选择值的方法。&lt;/p&gt;
+&lt;p&gt;我们不使用单个接受者，而是使用多个接受者代理。提议者向一组接受者发送一个提议值。接受者可以&lt;strong&gt;接受&lt;/strong&gt;该提议值。当足够多的接受者接受了该值时，该值就被选择了。足够多是多少？为了确保只选择一个唯一的值，我们可以让足够多的集合由任意多数派（majority）的代理组成。因为任意两个多数派至少有一个共同的接受者，所以只要一个接受者最多接受一个值，这就能工作。&lt;/p&gt;
+&lt;p&gt;我们的朋友圈扩大了，现在有A,B,C,D,E 五个人，B,D都可以做决定，A,E都喜欢提建议，那么首先提出建议的人默认是同意的，当每个人都只能同意一个人的建议时，A、B、C、D、E 五个人里，任意三个人就构成一个多数派。假设 A 提议大年初一，A 自己默认同意，B 也觉得初一不错，于是 A、B 接受了初一。与此同时，E 提议中秋节，E 自己默认同意，D 也觉得中秋不错，于是 E、D 接受了中秋。现在两个提案各拿到两票，谁都没有达到多数派，因为五个人里必须至少三个人同意同一个时间。&lt;/p&gt;
+&lt;p&gt;关键落在 C 身上：如果 C 接受大年初一，那么 A、B、C 三人接受初一，初一被选定；如果 C 接受中秋节，那么 C、D、E 三人接受中秋，中秋被选定。C 不能同时接受两个，所以不会出现两个时间都被多数派选定的情况。&lt;/p&gt;
+&lt;p&gt;为什么？因为任意两个三人多数派一定至少重合一个人。比如 {A,B,C} 和 {C,D,E} 重合 C；{A,B,C} 和 {B,D,E} 重合 B；{A,C,D} 和 {B,D,E} 重合 D。这个重合的人不可能同时同意两个不同时间，所以两个不同时间不可能同时成为最终决定。即使后来有人反悔或改主意，已经由多数派选定的值也不会被推翻，其他人只能学习这个结果。如果 C 一直不表态，或者网络故障导致无法凑齐三人，那么大家暂时无法决定，但也不会错误地选出两个结果。&lt;/p&gt;
+&lt;p&gt;在没有故障或消息丢失的情况下，即使只有一个提议者提议了一个值，我们也希望该值能被选择。这提示了以下要求：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;P1.&lt;/strong&gt; 一个接受者必须接受它收到的第一个提议。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;这样要求的原因是，如果接受者有拒绝接受它收到的第一个提议的权力，而假如提议者只提出了一个提议，然后接受者拒绝了这个提议（因为接受者不知道会不会有更多个提议），那整个系统就瘫痪了，没有值被选择。&lt;/p&gt;
+&lt;p&gt;但这个要求带来了一个问题。不同的提议者可能在大约同一时间提议不同的值，导致每个接受者都接受了一个值，但没有哪个值被其中的多数派所接受。即使只有两个被提议的值，如果每个值被大约一半的接受者接受，单个接受者的故障就可能使得无法知道哪个值被选择了。P1和要求一个值只有被多数派接受者接受时才被选择，意味着必须允许一个接受者接受多个提议。&lt;/p&gt;
+&lt;p&gt;类比一下就是，现在同样是聚餐问题，还是 A、B、C、D、E 五个人，A 提议大年初一，E 提议中秋节。A 自己默认同意初一，E 自己默认同意中秋。消息到达顺序不一样：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;B 先收到初一的建议，于是同意初一；&lt;/li&gt;
+&lt;li&gt;D 先收到中秋的建议，于是同意中秋；&lt;/li&gt;
+&lt;li&gt;C 还在开会，没收到任何消息；&lt;/li&gt;
+&lt;li&gt;此时初一有 A、B 两票，中秋有 E、D 两票，谁都没到三人多数派。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;如果按照每个人只能同意一次，那如果C一直没有回复，那整个系统就一直卡住了，所以我们必须允许让其他人改口的机会，即，如果没能达成共识，大家可以进行第二轮磋商。必须允许一个接受者接受多个提议即允许大家能够进行多轮投票，而P1是规定了收到第一次提案的时候你不能不搭理别人。&lt;/p&gt;
+&lt;p&gt;我们通过为每个提议分配一个（自然）编号来跟踪接受者可能接受的不同提议，因此一个提议由提议编号和一个值组成。为了防止混淆，我们要求不同的提议有不同的编号。如何实现这一点取决于实现，所以现在我们先假设它可以实现。&lt;/p&gt;
+&lt;p&gt;当一个具有该值的单个提议被多数派接受者接受时，该值就被选择了。在这种情况下，我们说该提议（以及它的值）已被选择。我们可以允许多个提议被选择，但&lt;strong&gt;必须保证所有被选择的提议具有相同的值&lt;/strong&gt;。通过对提议编号进行归纳，保证以下条件就足够了：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;P2.&lt;/strong&gt; 如果一个值为 v 的提议被选择，那么每个被选择的编号更高的提议都具有值 v。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;这一条保证了最后只有一个唯一的值会被选择&lt;/p&gt;
+&lt;p&gt;同时我们需要满足以下条件来满足P2：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;P2ᵃ.&lt;/strong&gt; 如果一个值为 v 的提议被选择，那么任何接受者接受的每个编号更高的提议都具有值 v。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;我们仍然维持P1以确保某个提议被选择。因为通信是异步的，一个提议可能在某个特定的接受者 cc 从未收到任何提议的情况下被选择。假设一个新的提议者“醒来”并发出一个编号更高但值不同的提议。P1要求 cc 接受这个提议，这违反了P2ᵃ&lt;/p&gt;
+&lt;p&gt;同时维持P1和P2ᵃ需要将P2ᵃ加强为：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;P2ᵇ.&lt;/strong&gt; 如果一个值为 v 的提议被选择，那么任何提议者发出的每个编号更高的提议都具有值 v。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;由于一个提议必须先由提议者发出才能被接受者接受，P2ᵇ 蕴含 P2ᵃ，而 P2ᵃ 又蕴含 &lt;strong&gt;P2&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这里的具体实现会在后面的部分涉及到，暂时看不懂可以先往后看&lt;/p&gt;
+&lt;p&gt;为了发现如何满足 P2ᵇ，让我们考虑如何证明它成立。我们假设某个编号为 m、值为 v 的提议被选择，并证明任何编号 n&amp;gt;m 的提议也具有值 v。通过对 n 使用归纳法可以使证明更容易，因此我们可以在额外的假设下证明编号 n 的提议具有值 v，即每个编号在 m…(n−1) 范围内的提议都具有值 v，其中 i…j 表示从 i 到 j 的编号集合。&lt;/p&gt;
+&lt;p&gt;为了使编号 m 的提议被选择，必须存在某个由多数派接受者组成的集合 C，使得 C 中的每个接受者都接受了它。结合归纳假设，m 被选择的假设意味着：&lt;/p&gt;
+&lt;p&gt;CC 中的每个接受者都接受了一个编号在 m…(n−1) 范围内的提议，并且任何接受者接受的编号在 m…(n−1) 范围内的每个提议都具有值 v。&lt;/p&gt;
+&lt;p&gt;这里我们让AI给出证明（数学苦手(╥﹏╥)）&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;下面给出 Paxos 中 P2ᵇ 的具体证明，并说明它如何推出 P2ᵃ 和 P2。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;1. 先明确三个条件
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    P2：如果某个值为 v 的提案被选择，那么任何编号更高的、被选择的提案的值都是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    P2ᵃ：如果某个值为 v 的提案被选择，那么任何 acceptor 接受的编号更高的提案的值都是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    P2ᵇ：如果某个值为 v 的提案被选择，那么任何 proposer 发出的编号更高的提案的值都是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;显然：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    一个提案必须先被 proposer 发出，才能被 acceptor 接受，所以 P2ᵇ ⇒ P2ᵃ。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    一个提案必须先被 acceptor 接受，才能被选择，所以 P2ᵃ ⇒ P2。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;因此只要证明 P2ᵇ 成立，就得到了 Paxos 的安全性核心。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;2. 证明目标
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;假设编号为 m、值为 v 的提案已经被选择。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;我们要证明：任何编号 n&amp;gt;m 的提案，其值都为 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;使用强归纳法。归纳假设：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    对于所有满足 m≤k&amp;lt;n 的编号 k，任何编号为 k 的提案（只要被发出）其值都是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;基础情形 k=m：编号 m 的提案被选择，值为 v，所以成立。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;下面证明编号 n 的提案也一定具有值 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;3. 关键：proposer 发出编号 n 的提案前要执行 prepare 阶段
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;proposer 在发出编号 n 的提案之前，必须先向一个多数派集合 S 发送 prepare 请求，编号为 n。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;每个收到 prepare 请求的 acceptor 会：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    如果 n 大于它已经承诺过的最大编号，则承诺不再接受任何编号小于 n 的提案；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    返回它已经接受的编号最高的提案（如果有的话）。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;设这个多数派集合为 S。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;4. 利用编号 m 的提案已被选择
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;因为编号 m、值为 v 的提案已经被选择，所以存在一个多数派集合 C，使得 C 中的每个 acceptor 都接受了编号 m 的提案。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;任意两个多数派集合必有交集，所以：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;S∩C≠∅
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;取一个 acceptor a∈S∩C。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;因为 a∈C，所以 a 接受了编号 m 的提案。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;因为 a∈S，所以 a 响应了编号 n 的 prepare 请求。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;5. 为什么 a 返回的最高编号提案一定小于 n
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;a 响应了 prepare(n)，说明在它响应之前，它没有接受过编号大于等于 n 的提案。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;原因：如果 a 已经接受了某个编号 ≥n 的提案，那么它一定已经承诺过至少这个编号，因此它的承诺编号 ≥n。当它收到 prepare(n) 时，由于 n 不大于它已承诺的编号，它会拒绝这个 prepare 请求，而不会响应。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;所以，响应 prepare(n) 的 acceptor 所返回的已接受提案的编号都一定小于 n。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;特别地，a 返回的已接受提案中，编号最高的那个提案，其编号 kk 满足：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;k&amp;lt;n
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;又因为 a 接受了编号 m 的提案，所以 a 返回的最高编号至少是 m，即：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;m≤k&amp;lt;n
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;6. 利用归纳假设
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;根据归纳假设，对于所有编号在 [m,n−1] 范围内的提案，只要被发出，其值都是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;而 aa 返回的最高编号提案的编号 k 满足：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;m≤k&amp;lt;n
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;因此，这个编号为 k 的提案的值一定是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;7. proposer 在 prepare 阶段如何选择值
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;proposer 收到多数派 S 的 prepare 响应后，会检查所有响应中已经接受的提案，并选择其中编号最高的那个提案的值作为自己要提出的值。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;由于：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    所有响应中的已接受提案编号都小于 n；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    至少有一个响应（来自 a）包含了编号 m 的提案，所以最高编号至少为 m；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    因此，所有响应中的最高编号 k 一定满足 m≤k&amp;lt;n；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    根据归纳假设，这个最高编号提案的值为 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;所以 proposer 在发出编号 n 的提案时，必须选择值 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;因此，编号 n 的提案具有值 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;8. 归纳完成
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;由强归纳法，对于所有 n&amp;gt;m，任何编号为 n 的提案都具有值 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;这就证明了：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    P2ᵇ：如果一个值为 v 的提案被选择，那么任何 proposer 发出的编号更高的提案都具有值 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;9. 推出 P2ᵃ 和 P2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    因为 proposer 发出的提案才能被 acceptor 接受，所以 P2ᵇ 直接推出 P2ᵃ：任何 acceptor 接受的更高编号提案的值都是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    因为被选择的提案必须先被 acceptor 接受，所以 P2ᵃ 直接推出 P2：任何被选择的更高编号提案的值都是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;总结
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;证明的核心在于：
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    一旦编号 m 的提案被选择，多数派 C 接受了它；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    任何新的编号 n 的 prepare 多数派 S 必与 C 相交；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    交集 acceptor 接受了 m，所以它返回的最高编号 ≥m；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    同时它响应了 prepare(n)，所以它返回的最高编号 &amp;lt;n；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    因此最高编号落在 [m,n−1] 内；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    由归纳假设，这个最高编号提案的值为 v；
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    proposer 必须选择这个最高编号提案的值，所以编号 n 的提案值也是 v。
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;于是 P2ᵇ 成立，进而 P2ᵃ、P2 成立，Paxos 的安全性得到保证。
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;由于任何由多数派接受者组成的集合 S 至少包含 C 中的一个成员，我们可以通过确保维持以下不变式来得出结论：编号 n 的提议具有值 v：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;P2ᶜ.&lt;/strong&gt; 对于任意 v 和 n，如果一个值为 v、编号为 n 的提议被发出，那么存在一个由多数派接受者组成的集合 S，使得要么 (a) S 中没有接受者接受过任何编号小于 n 的提议，要么 (b) v 是 S 中接受者接受的所有编号小于 n 的提议中编号最高的那个提议的值。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;为了维持 P2ᶜ 的不变性，想要发出编号为 n 的提议的提议者必须了解某个多数派接受者集合中每个接受者已经接受或将要接受的编号小于 n 的最高编号提议（如果有的话）。了解已经接受的提议很容易；预测未来的接受则很困难。提议者不试图预测未来，而是通过获取一个承诺来控制它，即不会有这样的接受发生。换句话说，提议者请求接受者不再接受任何编号小于 n 的提议。这引出了以下发出提议的算法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一个提议者选择一个新的提议编号 n，并向某个接受者集合中的每个成员发送一个请求，要求它回复：
+(a) 一个承诺，即不再接受编号小于 n 的提议，以及
+(b) 它已接受的编号小于 n 的最高编号提议（如果有的话）。
+我将这样的请求称为编号为 n 的 &lt;strong&gt;准备（prepare）&lt;/strong&gt; 请求。&lt;/li&gt;
+&lt;li&gt;如果提议者从多数派接受者那里收到了所请求的回复，那么它可以发出一个编号为 n、值为 v 的提议，其中 v 是回复中最高编号提议的值，或者如果回复者没有报告任何提议，则 v 是提议者选择的任意值。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;提议者通过向某个接受者集合发送请求来发出一个提议，请求该提议被接受。（这不一定是回复初始请求的同一组接受者。）我们称之为 &lt;strong&gt;接受（accept）&lt;/strong&gt; 请求。&lt;/p&gt;
+&lt;p&gt;以上就是提议者的算法。&lt;/p&gt;
+&lt;p&gt;这里大量摘抄了原论文中的内容，原因是我完全想不到如何用我贫瘠的语言使得我的解释比原文中更加清晰严谨，这一部分在原文中已经足够清晰了，多看几遍应该就能体会到了。&lt;/p&gt;
+&lt;p&gt;那么以上是提议者的算法。那么接受者呢？它可以收到来自提议者的两种请求：&lt;strong&gt;准备&lt;/strong&gt;请求和&lt;strong&gt;接受&lt;/strong&gt;请求。&lt;/p&gt;
+&lt;p&gt;比起提议者，接受者的算法就相对简单了：&lt;/p&gt;
+&lt;p&gt;首先我们有：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;P1ᵃ.&lt;/strong&gt; 当且仅当一个接受者没有响应过编号大于 n 的&lt;strong&gt;准备&lt;/strong&gt;请求时，它可以接受编号为 n 的提议。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;假设一个接受者收到一个编号为 n 的&lt;strong&gt;准备&lt;/strong&gt;请求，但它已经响应了一个编号大于 n 的&lt;strong&gt;准备&lt;/strong&gt;请求，那很显然，他完全没必要响应这个新的请求，它不会接受提议者想要发出的编号为 n 的建议。所以我们可以让接受者忽略这样的准备请求。我们也让它忽略它已经接受的提议的准备请求。&lt;/p&gt;
+&lt;p&gt;通过这个优化，接受者就只需要记住它曾经接受的最高编号的提议，已经它响应过的最高编号的最高编号的准备请求的编号。因为 P2ᶜ 必须在故障情况下保持不变，接受者即使在故障后重启也必须记住这些信息。&lt;/p&gt;
+&lt;p&gt;将提议者和接受者的行为放在一起，我们看到算法在两个阶段中运行：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段 1.&lt;/strong&gt;
+(a) 一个提议者选择一个提议编号 n，并向多数派接受者发送一个编号为 n 的&lt;strong&gt;准备&lt;/strong&gt;请求。
+(b) 如果一个接受者收到一个编号为 n 的&lt;strong&gt;准备&lt;/strong&gt;请求，且 n 大于它已响应的任何&lt;strong&gt;准备&lt;/strong&gt;请求的编号，那么它响应该请求，承诺不再接受任何编号小于 n 的提议，并附上它已接受的最高编号的提议（如果有的话）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段 2.&lt;/strong&gt;
+(a) 如果提议者从多数派接受者那里收到了对其&lt;strong&gt;准备&lt;/strong&gt;请求（编号 n）的响应，那么它向这些接受者中的每一个发送一个&lt;strong&gt;接受&lt;/strong&gt;请求，针对编号为 n、值为 v 的提议，其中 v 是响应中最高编号提议的值，或者如果响应没有报告任何提议则为任意值。
+(b) 如果一个接受者收到一个编号为 n 的提议的&lt;strong&gt;接受&lt;/strong&gt;请求，它接受该提议，除非它已经响应了一个编号大于 n 的&lt;strong&gt;准备&lt;/strong&gt;请求。&lt;/p&gt;
+&lt;p&gt;一个提议者可以发出多个提议，只要它对每个提议都遵循该算法。它可以在协议中间的任意时刻放弃一个提议。（即使该提议的请求和/或响应在其被放弃很久之后才到达目的地，正确性也能得到保持。）如果某个提议者已开始尝试发出编号更高的提议，放弃当前提议可能是个好主意。因此，如果一个接受者因为已经收到编号更高的&lt;strong&gt;准备&lt;/strong&gt;请求而忽略了一个&lt;strong&gt;准备&lt;/strong&gt;或&lt;strong&gt;接受&lt;/strong&gt;请求，那么它应该通知提议者，提议者随后应该放弃其提议。这是一个不影响正确性的性能优化。&lt;/p&gt;
+&lt;h3 id=&#34;学习被选择的值&#34;&gt;学习被选择的值
+&lt;/h3&gt;&lt;p&gt;现在又可以回到我们简单快乐的聚餐问题了，对于随波逐流的人（学习者），他们必须知道那个提议被多数派接受者接受了。最简单的方式是每个接受者都告诉学习者他们接受了那个提议。但它要求每个接受者向每个学习者回复——回复数量等于接受者数量和学习者数量的乘积。&lt;/p&gt;
+&lt;p&gt;非拜占庭故障的假设使得一个学习者很容易从另一个学习者那里得知一个值已被接受。我们可以让接受者将它们的接受响应发送给一个杰出的学习者，该学习者随后在被选择的值被选择时通知其他学习者。这种方法需要额外的一轮通信才能让所有学习者发现被选择的值。它的可靠性也较低，因为杰出的学习者可能故障。但它所需的响应数量仅等于接受者数量与学习者数量之和。&lt;/p&gt;
+&lt;p&gt;所以我们也可以在随波逐流的人中选择一个最诚信的，让他告诉其他随波逐流的人到底选了什么值。&lt;/p&gt;
+&lt;h3 id=&#34;进展性&#34;&gt;进展性
+&lt;/h3&gt;&lt;p&gt;读到这里，聪明的读者肯定已经想到了，如果两个提议者各自不断发出编号递增的一系列提议，但没有一个被选择。两者一直处于竞争的状态，就会导致一直循环下去。&lt;/p&gt;
+&lt;p&gt;对于这种情况，必须选择一个杰出的提议者作为唯一尝试发出提议的提议者。如果杰出的提议者能够成功地与多数派接受者通信，并且它使用的提议编号大于任何已使用的编号，那么它将成功地发出一个被接受的提议。通过放弃一个提议并在得知有更高编号的提议请求时重试，杰出的提议者最终将选择一个足够高的提议编号。如果系统（提议者、接受者和通信网络）中有足够多的部分正常工作，那么通过选举一个单一的杰出提议者可以实现活性。Fischer、Lynch和Patterson的著名结果[1]表明，一个可靠的提议者选举算法必须使用随机性或真实时间——例如，通过使用超时。然而，无论选举成功与否，安全性都得到保证。&lt;/p&gt;
+&lt;h3 id=&#34;实现&#34;&gt;实现
+&lt;/h3&gt;&lt;p&gt;Paxos算法[5]假设一个进程网络。在其共识算法中，每个进程扮演提议者、接受者和学习者的角色。该算法选择一个领导者，它扮演杰出的提议者和杰出的学习者的角色。Paxos共识算法正是上面描述的算法，其中请求和响应作为普通消息发送。（响应消息标有相应的提议编号以防止混淆。）在故障期间保留的稳定存储用于维护接受者必须记住的信息。接受者在实际发送响应之前将预期的响应记录在稳定存储中。&lt;/p&gt;
+&lt;p&gt;剩下的就是描述保证不会有两个提议以相同编号发出的机制。不同的提议者从不相交的编号集合中选择它们的编号，因此两个不同的提议者永远不会以相同编号发出提议。每个提议者记住（在稳定存储中）它尝试发出的最高编号的提议，并以比它已使用的任何编号更高的编号开始阶段1。&lt;/p&gt;
+&lt;h3 id=&#34;实现状态机&#34;&gt;实现状态机
+&lt;/h3&gt;&lt;p&gt;最后有关于状态机相关的&lt;/p&gt;
+&lt;p&gt;实现分布式系统的一种标准方法是使用&lt;strong&gt;状态机复制（State Machine Replication）&lt;/strong&gt;。只要所有服务器（节点）按照相同的顺序执行相同的确定性命令，它们的状态就会保持一致。&lt;/p&gt;
+&lt;p&gt;为了保证所有服务器执行相同的命令序列，我们将系统的运行过程划分为一系列的 Paxos 共识实例（Instance）。&lt;strong&gt;第 iii 个 Paxos 实例选中的值，就是全局命令序列中的第 iii 条命令。&lt;/strong&gt;&lt;/p&gt;
+&lt;h4 id=&#34;正常运作与填补空缺机制&#34;&gt;正常运作与“填补空缺”机制
+&lt;/h4&gt;&lt;p&gt;在正常运行中，Leader 充当所有 Paxos 实例的特定提议者。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Phase 1 批处理&lt;/strong&gt;：Leader 可以在启动时对&lt;strong&gt;无限多个&lt;/strong&gt;未来的 Paxos 实例统一执行一次 Phase 1（使用同一个提议编号）。这使得 Leader 获得了这些实例的“提议权”，且只需极少的网络开销。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Phase 2 分配命令&lt;/strong&gt;：当客户端发来新命令时，Leader 直接将其作为值，对下一个空闲的实例执行 Phase 2。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;填补空缺（Gap Filling）&lt;/strong&gt;：假设 Leader 宕机，新 Leader 上任。新 Leader 发现序列中第 1-134、138、139 个命令已确定，但 135-137 缺失。为了保持状态机的顺序执行，新 Leader 不能直接跳过 135-137 去执行 138。相反，Leader 会为 135-137 实例提议特殊的 &lt;strong&gt;“空操作（No-Op）”命令&lt;/strong&gt;。一旦这些空操作被多数派接受（达成共识），序列的连续性就被修复了，系统可以继续向下执行。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;流水线优化&lt;/strong&gt;：Leader 可以在确认第 iii 个命令被选中之前，就提前提议第 i+1i+1i+1 个命令。这极大地提高了系统的吞吐量。因为如果发生网络分区或 Leader 宕机，Paxos 的安全性依然能保证不会产生冲突的分支。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;由于 Leader 选举是罕见事件，在绝大多数时间里，Paxos 状态机只需要执行 &lt;strong&gt;Phase 2&lt;/strong&gt; 即可达成共识。研究表明，Phase 2 的通信开销已经达到了在存在故障的情况下达成一致的&lt;strong&gt;理论最低极限&lt;/strong&gt;，因此 Paxos 在工程上是极其高效且最优的。&lt;/p&gt;
+&lt;h2 id=&#34;论文及其翻译&#34;&gt;论文及其翻译
+&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://pdos.csail.mit.edu/6.824/papers/paxos-simple.pdf&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Paxos Made Simple&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;paxos-made-simple-中文翻译&#34;&gt;Paxos Made Simple 中文翻译
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Leslie Lamport&lt;/strong&gt;
+2001年11月1日&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;摘要&#34;&gt;摘要
+&lt;/h4&gt;&lt;p&gt;Paxos算法，如果用简单的英语来描述，其实非常简单。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;目录&#34;&gt;目录
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;1 引言&lt;/li&gt;
+&lt;li&gt;2 共识算法
+&lt;ul&gt;
+&lt;li&gt;2.1 问题描述&lt;/li&gt;
+&lt;li&gt;2.2 选择值&lt;/li&gt;
+&lt;li&gt;2.3 学习被选择的值&lt;/li&gt;
+&lt;li&gt;2.4 进展性&lt;/li&gt;
+&lt;li&gt;2.5 实现&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;3 实现状态机&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;1-引言&#34;&gt;1 引言
+&lt;/h4&gt;&lt;p&gt;用于实现容错分布式系统的Paxos算法一直被认为难以理解，也许是因为最初的表述对许多读者来说如同天书[5]。事实上，它是最简单、最显而易见的分布式算法之一。其核心是一个共识算法——即[5]中的“主教会议”算法。下一节将展示，这个共识算法几乎是从我们希望它满足的性质中必然推导出来的。最后一节解释完整的Paxos算法，该算法通过将共识 straightforwardly 应用于构建分布式系统的状态机方法而获得——这种方法应该广为人知，因为它可能是分布式系统理论中被引用最多的文章的主题[4]。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;2-共识算法&#34;&gt;2 共识算法
+&lt;/h4&gt;&lt;h5 id=&#34;问题描述-1&#34;&gt;问题描述
+&lt;/h5&gt;&lt;p&gt;假设有一组可以提议值的进程。共识算法确保在这些提议的值中选出一个唯一的值。如果没有值被提议，则不应选择任何值。如果一个值已被选择，那么进程应该能够获知被选择的值。&lt;/p&gt;
+&lt;p&gt;共识的安全性要求如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;只有被提议过的值才可能被选择，&lt;/li&gt;
+&lt;li&gt;只能选择一个唯一的值，以及&lt;/li&gt;
+&lt;li&gt;一个进程只有在某个值确实被选择时，才知道该值已被选择。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我们不会尝试规定精确的活性（liveness）要求。然而，目标是确保某个提议的值最终被选择，并且如果一个值已被选择，那么进程最终能够获知该值。&lt;/p&gt;
+&lt;p&gt;我们让共识算法中的三个角色由三类代理（agent）执行：&lt;strong&gt;提议者（proposers）&lt;/strong&gt;、&lt;strong&gt;接受者（acceptors）&lt;strong&gt;和&lt;/strong&gt;学习者（learners）&lt;/strong&gt;。在实现中，单个进程可能扮演多个代理角色，但代理到进程的映射与我们这里无关。假设代理之间可以通过发送消息进行通信。我们使用通常的异步、非拜占庭模型，其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;代理以任意速度运行，可能因停止而故障，也可能重启。由于所有代理在值被选择后都可能故障并重启，除非故障并重启的代理能够记住某些信息，否则解决方案是不可能的。&lt;/li&gt;
+&lt;li&gt;消息的传递可能花费任意长的时间，可能被重复，也可能丢失，但不会被破坏。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id=&#34;选择值-1&#34;&gt;选择值
+&lt;/h5&gt;&lt;p&gt;选择值最简单的方法是使用单个接受者代理。提议者向接受者发送一个提议，接受者选择它收到的第一个提议值。虽然简单，但这种方案并不令人满意，因为接受者的故障会使任何进一步的进展变得不可能。所以，让我们尝试另一种选择值的方法。&lt;/p&gt;
+&lt;p&gt;我们不使用单个接受者，而是使用多个接受者代理。提议者向一组接受者发送一个提议值。接受者可以&lt;strong&gt;接受&lt;/strong&gt;该提议值。当足够多的接受者接受了该值时，该值就被选择了。足够多是多少？为了确保只选择一个唯一的值，我们可以让足够多的集合由任意多数派（majority）的代理组成。因为任意两个多数派至少有一个共同的接受者，所以只要一个接受者最多接受一个值，这就能工作。（多数派有一个明显的推广，已在许多论文中出现，显然始于[3]。）&lt;/p&gt;
+&lt;p&gt;在没有故障或消息丢失的情况下，即使只有一个提议者提议了一个值，我们也希望该值能被选择。这提示了以下要求：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;P1.&lt;/strong&gt; 一个接受者必须接受它收到的第一个提议。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;但这个要求带来了一个问题。不同的提议者可能在大约同一时间提议不同的值，导致每个接受者都接受了一个值，但没有哪个值被其中的多数派所接受。即使只有两个被提议的值，如果每个值被大约一半的接受者接受，单个接受者的故障就可能使得无法知道哪个值被选择了。P1和要求一个值只有被多数派接受者接受时才被选择，意味着必须允许一个接受者接受多个提议。&lt;/p&gt;
+&lt;p&gt;我们通过为每个提议分配一个（自然）编号来跟踪接受者可能接受的不同提议，因此一个提议由提议编号和一个值组成。为了防止混淆，我们要求不同的提议有不同的编号。如何实现这一点取决于实现，所以现在我们先假设它可以实现。&lt;/p&gt;
+&lt;p&gt;当一个具有该值的单个提议被多数派接受者接受时，该值就被选择了。在这种情况下，我们说该提议（以及它的值）已被选择。我们可以允许多个提议被选择，但必须保证所有被选择的提议具有相同的值。通过对提议编号进行归纳，保证以下条件就足够了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;P2.&lt;/strong&gt; 如果一个值为 \(v\) 的提议被选择，那么每个被选择的编号更高的提议都具有值 \(v\)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;由于编号是全序的，条件P2保证了关键的安全性属性——只选择一个唯一的值。&lt;/p&gt;
+&lt;p&gt;要被选择，一个提议必须至少被一个接受者接受。所以，我们可以通过满足以下条件来满足P2：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;P2ᵃ.&lt;/strong&gt; 如果一个值为 \(v\) 的提议被选择，那么任何接受者接受的每个编号更高的提议都具有值 \(v\)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;我们仍然维持P1以确保某个提议被选择。因为通信是异步的，一个提议可能在某个特定的接受者 \(c\) 从未收到任何提议的情况下被选择。假设一个新的提议者“醒来”并发出一个编号更高但值不同的提议。P1要求 \(c\) 接受这个提议，这违反了P2ᵃ。&lt;/p&gt;
+&lt;p&gt;同时维持P1和P2ᵃ需要将P2ᵃ加强为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;P2ᵇ.&lt;/strong&gt; 如果一个值为 \(v\) 的提议被选择，那么任何提议者发出的每个编号更高的提议都具有值 \(v\)。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;由于一个提议必须先由提议者发出才能被接受者接受，P2ᵇ 蕴含 P2ᵃ，而 P2ᵃ 又蕴含 &lt;strong&gt;P2&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;为了发现如何满足 P2ᵇ，让我们考虑如何证明它成立。我们假设某个编号为 \(m\)、值为 \(v\) 的提议被选择，并证明任何编号 \(n&gt;m\) 的提议也具有值 \(v\)。通过对 \(n\) 使用归纳法可以使证明更容易，因此我们可以在额外的假设下证明编号 \(n\) 的提议具有值 \(v\)，即每个编号在 \(m\ldots(n-1)\) 范围内的提议都具有值 \(v\)，其中 \(i\ldots j\) 表示从 \(i\) 到 \(j\) 的编号集合。&lt;/p&gt;
+&lt;p&gt;为了使编号 \(m\) 的提议被选择，必须存在某个由多数派接受者组成的集合 \(C\)，使得 \(C\) 中的每个接受者都接受了它。结合归纳假设，\(m\) 被选择的假设意味着：&lt;/p&gt;
+&lt;p&gt;\(C\) 中的每个接受者都接受了一个编号在 \(m\ldots(n-1)\) 范围内的提议，并且任何接受者接受的编号在 \(m\ldots(n-1)\) 范围内的每个提议都具有值 \(v\)。&lt;/p&gt;
+&lt;p&gt;由于任何由多数派接受者组成的集合 \(S\) 至少包含 \(C\) 中的一个成员，我们可以通过确保维持以下不变式来得出结论：编号 \(n\) 的提议具有值 \(v\)：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;P2ᶜ.&lt;/strong&gt; 对于任意 \(v\) 和 \(n\)，如果一个值为 \(v\)、编号为 \(n\) 的提议被发出，那么存在一个由多数派接受者组成的集合 \(S\)，使得要么 (a) \(S\) 中没有接受者接受过任何编号小于 \(n\) 的提议，要么 (b) \(v\) 是 \(S\) 中接受者接受的所有编号小于 \(n\) 的提议中编号最高的那个提议的值。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，我们可以通过维持 P2ᶜ 的不变性来满足 P2ᵇ。&lt;/p&gt;
+&lt;p&gt;为了维持 P2ᶜ 的不变性，想要发出编号为 \(n\) 的提议的提议者必须了解某个多数派接受者集合中每个接受者已经接受或将要接受的编号小于 \(n\) 的最高编号提议（如果有的话）。了解已经接受的提议很容易；预测未来的接受则很困难。提议者不试图预测未来，而是通过获取一个承诺来控制它，即不会有这样的接受发生。换句话说，提议者请求接受者不再接受任何编号小于 \(n\) 的提议。这引出了以下发出提议的算法：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;一个提议者选择一个新的提议编号 \(n\)，并向某个接受者集合中的每个成员发送一个请求，要求它回复：
+(a) 一个承诺，即不再接受编号小于 \(n\) 的提议，以及
+(b) 它已接受的编号小于 \(n\) 的最高编号提议（如果有的话）。
+我将这样的请求称为编号为 \(n\) 的 &lt;strong&gt;准备（prepare）&lt;/strong&gt; 请求。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果提议者从多数派接受者那里收到了所请求的回复，那么它可以发出一个编号为 \(n\)、值为 \(v\) 的提议，其中 \(v\) 是回复中最高编号提议的值，或者如果回复者没有报告任何提议，则 \(v\) 是提议者选择的任意值。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;提议者通过向某个接受者集合发送请求来发出一个提议，请求该提议被接受。（这不一定是回复初始请求的同一组接受者。）我们称之为 &lt;strong&gt;接受（accept）&lt;/strong&gt; 请求。&lt;/p&gt;
+&lt;p&gt;以上就是提议者的算法。那么接受者呢？它可以收到来自提议者的两种请求：&lt;strong&gt;准备&lt;/strong&gt;请求和&lt;strong&gt;接受&lt;/strong&gt;请求。接受者可以忽略任何请求而不会损害安全性。所以，我们只需要说明它在何时被允许响应请求。它总是可以响应&lt;strong&gt;准备&lt;/strong&gt;请求。当且仅当它没有承诺不这样做时，它可以响应&lt;strong&gt;接受&lt;/strong&gt;请求，即接受该提议。换句话说：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;P1ᵃ.&lt;/strong&gt; 当且仅当一个接受者没有响应过编号大于 \(n\) 的&lt;strong&gt;准备&lt;/strong&gt;请求时，它可以接受编号为 \(n\) 的提议。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;注意 P1ᵃ 包含了 P1。我们现在有了一个完整的选择值的算法，它满足所需的安全性属性——假设提议编号是唯一的。&lt;/p&gt;
+&lt;p&gt;最终的算法通过一个小优化得到。假设一个接受者收到一个编号为 \(n\) 的&lt;strong&gt;准备&lt;/strong&gt;请求，但它已经响应了一个编号大于 \(n\) 的&lt;strong&gt;准备&lt;/strong&gt;请求，从而承诺不再接受任何编号为 \(n\) 的新提议。那么接受者就没有理由响应这个新的&lt;strong&gt;准备&lt;/strong&gt;请求，因为它不会接受提议者想要发出的编号为 \(n\) 的提议。所以我们让接受者忽略这样的&lt;strong&gt;准备&lt;/strong&gt;请求。我们也让它忽略它已经接受的提议的&lt;strong&gt;准备&lt;/strong&gt;请求。&lt;/p&gt;
+&lt;p&gt;通过这个优化，一个接受者只需要记住它曾经接受的最高编号的提议，以及它响应过的最高编号的&lt;strong&gt;准备&lt;/strong&gt;请求的编号。因为 P2ᶜ 必须在故障情况下保持不变，接受者即使在故障后重启也必须记住这些信息。注意，提议者可以随时放弃一个提议并忘记它——只要它不再尝试发出具有相同编号的另一个提议。&lt;/p&gt;
+&lt;p&gt;将提议者和接受者的行为放在一起，我们看到算法在两个阶段中运行：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段 1.&lt;/strong&gt;
+(a) 一个提议者选择一个提议编号 \(n\)，并向多数派接受者发送一个编号为 \(n\) 的&lt;strong&gt;准备&lt;/strong&gt;请求。
+(b) 如果一个接受者收到一个编号为 \(n\) 的&lt;strong&gt;准备&lt;/strong&gt;请求，且 \(n\) 大于它已响应的任何&lt;strong&gt;准备&lt;/strong&gt;请求的编号，那么它响应该请求，承诺不再接受任何编号小于 \(n\) 的提议，并附上它已接受的最高编号的提议（如果有的话）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;阶段 2.&lt;/strong&gt;
+(a) 如果提议者从多数派接受者那里收到了对其&lt;strong&gt;准备&lt;/strong&gt;请求（编号 \(n\)）的响应，那么它向这些接受者中的每一个发送一个&lt;strong&gt;接受&lt;/strong&gt;请求，针对编号为 \(n\)、值为 \(v\) 的提议，其中 \(v\) 是响应中最高编号提议的值，或者如果响应没有报告任何提议则为任意值。
+(b) 如果一个接受者收到一个编号为 \(n\) 的提议的&lt;strong&gt;接受&lt;/strong&gt;请求，它接受该提议，除非它已经响应了一个编号大于 \(n\) 的&lt;strong&gt;准备&lt;/strong&gt;请求。&lt;/p&gt;
+&lt;p&gt;一个提议者可以发出多个提议，只要它对每个提议都遵循该算法。它可以在协议中间的任意时刻放弃一个提议。（即使该提议的请求和/或响应在其被放弃很久之后才到达目的地，正确性也能得到保持。）如果某个提议者已开始尝试发出编号更高的提议，放弃当前提议可能是个好主意。因此，如果一个接受者因为已经收到编号更高的&lt;strong&gt;准备&lt;/strong&gt;请求而忽略了一个&lt;strong&gt;准备&lt;/strong&gt;或&lt;strong&gt;接受&lt;/strong&gt;请求，那么它应该通知提议者，提议者随后应该放弃其提议。这是一个不影响正确性的性能优化。&lt;/p&gt;
+&lt;h5 id=&#34;学习被选择的值-1&#34;&gt;学习被选择的值
+&lt;/h5&gt;&lt;p&gt;为了获知一个值已被选择，学习者必须发现一个提议已被多数派接受者接受。显而易见的算法是让每个接受者在接受一个提议时，向所有学习者回复，发送该提议。这允许学习者尽快发现被选择的值，但它要求每个接受者向每个学习者回复——回复数量等于接受者数量和学习者数量的乘积。&lt;/p&gt;
+&lt;p&gt;非拜占庭故障的假设使得一个学习者很容易从另一个学习者那里得知一个值已被接受。我们可以让接受者将它们的接受响应发送给一个杰出的学习者，该学习者随后在被选择的值被选择时通知其他学习者。这种方法需要额外的一轮通信才能让所有学习者发现被选择的值。它的可靠性也较低，因为杰出的学习者可能故障。但它所需的响应数量仅等于接受者数量与学习者数量之和。&lt;/p&gt;
+&lt;p&gt;更一般地，接受者可以将它们的接受响应发送给一组杰出的学习者，其中每个学习者随后可以在值被选择时通知所有学习者。使用更大的杰出学习者集合可以提供更高的可靠性，但代价是更高的通信复杂度。&lt;/p&gt;
+&lt;p&gt;由于消息丢失，一个值可能被选择但没有学习者发现。学习者可以询问接受者它们接受了哪些提议，但接受者的故障可能使得无法知道多数派是否接受了某个特定提议。在这种情况下，学习者只有在新提议被选择时才能发现被选择的值。如果学习者需要知道一个值是否已被选择，它可以让一个提议者使用上述算法发出一个提议。&lt;/p&gt;
+&lt;h5 id=&#34;进展性-1&#34;&gt;进展性
+&lt;/h5&gt;&lt;p&gt;很容易构造一个场景，其中两个提议者各自不断发出编号递增的一系列提议，但没有一个被选择。提议者 \(p\) 完成了编号 \(n_1\) 的提议的阶段1。另一个提议者 \(q\) 然后完成了编号 \(n_2&gt;n_1\) 的提议的阶段1。提议者 \(p\) 的编号为 \(n_1\) 的提议的阶段2&lt;strong&gt;接受&lt;/strong&gt;请求被忽略，因为接受者都已承诺不再接受任何编号小于 \(n_2\) 的新提议。于是，提议者 \(p\) 开始并完成编号 \(n_3&gt;n_2\) 的新提议的阶段1，导致提议者 \(q\) 的阶段2&lt;strong&gt;接受&lt;/strong&gt;请求被忽略。如此循环。&lt;/p&gt;
+&lt;p&gt;为了保证进展，必须选择一个杰出的提议者作为唯一尝试发出提议的提议者。如果杰出的提议者能够成功地与多数派接受者通信，并且它使用的提议编号大于任何已使用的编号，那么它将成功地发出一个被接受的提议。通过放弃一个提议并在得知有更高编号的提议请求时重试，杰出的提议者最终将选择一个足够高的提议编号。如果系统（提议者、接受者和通信网络）中有足够多的部分正常工作，那么通过选举一个单一的杰出提议者可以实现活性。Fischer、Lynch和Patterson的著名结果[1]表明，一个可靠的提议者选举算法必须使用随机性或真实时间——例如，通过使用超时。然而，无论选举成功与否，安全性都得到保证。&lt;/p&gt;
+&lt;h5 id=&#34;实现-1&#34;&gt;实现
+&lt;/h5&gt;&lt;p&gt;Paxos算法[5]假设一个进程网络。在其共识算法中，每个进程扮演提议者、接受者和学习者的角色。该算法选择一个领导者，它扮演杰出的提议者和杰出的学习者的角色。Paxos共识算法正是上面描述的算法，其中请求和响应作为普通消息发送。（响应消息标有相应的提议编号以防止混淆。）在故障期间保留的稳定存储用于维护接受者必须记住的信息。接受者在实际发送响应之前将预期的响应记录在稳定存储中。&lt;/p&gt;
+&lt;p&gt;剩下的就是描述保证不会有两个提议以相同编号发出的机制。不同的提议者从不相交的编号集合中选择它们的编号，因此两个不同的提议者永远不会以相同编号发出提议。每个提议者记住（在稳定存储中）它尝试发出的最高编号的提议，并以比它已使用的任何编号更高的编号开始阶段1。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;3-实现状态机&#34;&gt;3 实现状态机
+&lt;/h4&gt;&lt;p&gt;实现分布式系统的一种简单方式是作为一组向中央服务器发出命令的客户端。该服务器可以被描述为一个确定性状态机，按某种顺序执行客户端命令。状态机有一个当前状态；它通过接收一个命令作为输入，产生一个输出和一个新状态来执行一步。例如，分布式银行系统的客户端可能是柜员，状态机的状态可能由所有用户的账户余额组成。取款将通过执行一个状态机命令来执行，该命令在且仅当余额大于取款金额时减少账户余额，并输出旧余额和新余额。&lt;/p&gt;
+&lt;p&gt;使用单个中央服务器的实现在该服务器故障时会失败。因此，我们改为使用一组服务器，每个服务器独立地实现状态机。因为状态机是确定性的，如果所有服务器执行相同的命令序列，它们将产生相同的状态序列和输出。发出命令的客户端可以使用任何服务器为其生成的输出。&lt;/p&gt;
+&lt;p&gt;为了保证所有服务器执行相同的状态机命令序列，我们实现一系列独立的Paxos共识算法实例，第 \(i\) 个实例选择的值是序列中的第 \(i\) 个状态机命令。每个服务器在每个算法实例中扮演所有角色（提议者、接受者和学习者）。目前，我假设服务器集合是固定的，因此所有共识算法实例使用相同的代理集合。&lt;/p&gt;
+&lt;p&gt;在正常操作中，选举单个服务器作为领导者，它在所有共识算法实例中扮演杰出的提议者（唯一尝试发出提议的提议者）的角色。客户端向领导者发送命令，领导者决定每个命令在序列中的位置。如果领导者决定某个客户端命令应该是第135个命令，它尝试让该命令被选为第135个共识算法实例的值。它通常会成功。它可能因为故障而失败，或者因为另一个服务器也认为自己是领导者，并且对第135个命令应该是什么有不同的想法。但共识算法确保最多只有一个命令可以被选为第135个命令。&lt;/p&gt;
+&lt;p&gt;这种方法效率的关键在于，在Paxos共识算法中，要提议的值直到阶段2才被选择。回想一下，在完成提议者算法的阶段1之后，要么要提议的值已确定，要么提议者可以自由提议任意值。我现在将描述Paxos状态机实现在正常操作期间如何工作。稍后，我将讨论可能出错的地方。&lt;/p&gt;
+&lt;p&gt;我考虑当前领导者刚刚故障并选举了新领导者时会发生什么。（系统启动是一个特殊情况，其中还没有命令被提议。）新领导者作为所有共识算法实例的学习者，应该知道大多数已被选择的命令。假设它知道命令1-134、138和139——也就是说，共识算法实例1-134、138和139中选择的值。（我们稍后将看到命令序列中如何出现这样的间隙。）然后它执行实例135-137以及所有大于139的实例的阶段1。（我下面描述这是如何完成的。）假设这些执行的结果确定了实例135和140中要提议的值，但在所有其他实例中未约束要提议的值。然后领导者执行实例135和140的阶段2，从而选择命令135和140。&lt;/p&gt;
+&lt;p&gt;领导者以及任何其他了解领导者所知的所有命令的服务器，现在可以执行命令1-135。但是，它不能执行它也知道命令138-140，因为命令136和137尚未被选择。领导者可以将客户端请求的下两个命令作为命令136和137。相反，我们让它通过提议一个特殊的“无操作”命令作为命令136和137来立即填补间隙，该命令保持状态不变。（它通过执行共识算法实例136和137的阶段2来实现这一点。）一旦这些无操作命令被选择，命令138-140就可以被执行。现在命令1-140已被选择。领导者还完成了所有大于140的共识算法实例的阶段1，并且它可以自由地在这些实例的阶段2中提议任意值。&lt;/p&gt;
+&lt;p&gt;它将命令编号141分配给客户端请求的下一个命令，将其作为共识算法实例141的阶段2中的值进行提议。它将其收到的下一个客户端命令作为命令142进行提议，依此类推。领导者可以在得知其提议的命令141已被选择之前提议命令142。它在提议命令141时发送的所有消息可能都丢失了，并且命令142可能在任何其他服务器了解到领导者为命令141提议了什么之前就被选择了。当领导者在实例141中未能收到其阶段2消息的预期响应时，它将重新发送这些消息。如果一切顺利，其提议的命令将被选择。然而，它可能在此之前故障，在被选择的命令序列中留下一个间隙。&lt;/p&gt;
+&lt;p&gt;一般来说，假设一个领导者可以领先 \(\alpha\) 个命令——也就是说，在命令1到 \(i\) 被选择之后，它可以提议命令 \(i+1\) 到 \(i+\alpha\)。那么最多可能出现 \(\alpha-1\) 个命令的间隙。&lt;/p&gt;
+&lt;p&gt;新选举的领导者执行无限多个共识算法实例的阶段1——在上述场景中，是实例135-137以及所有大于139的实例。通过对所有实例使用相同的提议编号，它可以通过向其他服务器发送一条相当短的消息来完成这个任务。在阶段1中，接受者只有在已经收到某个提议者的阶段2消息时，才会回复比简单OK更多的内容。（在上述场景中，这只发生在实例135和140中。）因此，一个服务器（作为接受者）可以通过一条相当短的消息来响应所有实例。因此，执行这无限多个阶段1实例不会造成问题。&lt;/p&gt;
+&lt;p&gt;由于领导者的故障和新领导者的选举应该是罕见事件，执行一个状态机命令——即就命令/值达成共识——的有效成本是仅执行共识算法阶段2的成本。可以证明，Paxos共识算法的阶段2在存在故障的情况下达成一致的所有算法中具有最小可能的成本[2]。因此，Paxos算法本质上是最优的。&lt;/p&gt;
+&lt;p&gt;对系统正常操作的讨论假设除了当前领导者故障和新领导者选举之间的短暂时期外，始终只有一个领导者。在异常情况下，领导者选举可能失败。如果没有服务器充当领导者，则不会提议新命令。如果多个服务器认为它们是领导者，那么它们都可以在同一个共识算法实例中提议值，这可能阻止任何值被选择。然而，安全性得以保持——两个不同的服务器永远不会对第 \(i\) 个状态机命令选择的值产生分歧。选举单个领导者只是为了确保进展。&lt;/p&gt;
+&lt;p&gt;如果服务器集合可以改变，那么必须有某种方法来确定哪些服务器实现哪些共识算法实例。最简单的方法是通过状态机本身来实现。当前服务器集合可以成为状态的一部分，并可以通过普通的状态机命令来更改。我们可以允许领导者领先 \(\alpha\) 个命令，方法是让执行共识算法实例 \(i+\alpha\) 的服务器集合由执行第 \(i\) 个状态机命令后的状态来指定。这允许简单实现任意复杂的重配置算法。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;参考文献&#34;&gt;参考文献
+&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;[1] Michael J. Fischer, Nancy Lynch, and Michael S. Paterson. Impossibility of distributed consensus with one faulty process. &lt;em&gt;Journal of the ACM&lt;/em&gt;, 32(2):374-382, April 1985.&lt;/li&gt;
+&lt;li&gt;[2] Idit Keidar and Sergio Rajsbaum. On the cost of fault-tolerant consensus when there are no faults&amp;ndash;a tutorial. Technical Report MIT-LCS-TR-821, Laboratory for Computer Science, Massachusetts Institute Technology, Cambridge, MA, 02139, May 2001. also published in SIGACT News 32(2) (June 2001).&lt;/li&gt;
+&lt;li&gt;[3] Leslie Lamport. The implementation of reliable distributed multiprocess systems. &lt;em&gt;Computer Networks&lt;/em&gt;, 2:95-114, 1978.&lt;/li&gt;
+&lt;li&gt;[4] Leslie Lamport. Time, clocks, and the ordering of events in a distributed system. &lt;em&gt;Communications of the ACM&lt;/em&gt;, 21(7):558-565, July 1978.&lt;/li&gt;
+&lt;li&gt;[5] Leslie Lamport. The part-time parliament. &lt;em&gt;ACM Transactions on Computer Systems&lt;/em&gt;, 16(2):133-169, May 1998.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
         <title>分布式学习2.2</title>
         <link>https://Oight.github.io/p/%E5%88%86%E5%B8%83%E5%BC%8F%E5%AD%A6%E4%B9%A02.2/</link>
         <pubDate>Sun, 06 Sep 2026 10:29:47 +0800</pubDate>
