@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-cn" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Hack-A-Sat-qualifier-2020 复现\r又开新坑了，从未接触过的全新领域——卫星安全！\nbeckley\r这道题更像是传统CTF MISC中的OSINT算是初步接触卫星安全领域的开胃小菜吧\n环境配置\r首先从 yichen115的仓库中拉取题目\n">
+<title>Hack-A-Sat-qualifier-2020 复现</title>
+
+<link rel='canonical' href='https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/'>
+
+<link rel="stylesheet" href="/scss/style.min.cfe2632a91c7cb600e0badeaecd0da79bddaa315643726e117b52f62c13fe88c.css"><meta property='og:title' content="Hack-A-Sat-qualifier-2020 复现">
+<meta property='og:description' content="Hack-A-Sat-qualifier-2020 复现\r又开新坑了，从未接触过的全新领域——卫星安全！\nbeckley\r这道题更像是传统CTF MISC中的OSINT算是初步接触卫星安全领域的开胃小菜吧\n环境配置\r首先从 yichen115的仓库中拉取题目\n">
+<meta property='og:url' content='https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/'>
+<meta property='og:site_name' content='Oight'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2026-10-16T10:29:47&#43;08:00'/><meta property='article:modified_time' content='2026-10-16T10:29:47&#43;08:00'/>
+<meta name="twitter:title" content="Hack-A-Sat-qualifier-2020 复现">
+<meta name="twitter:description" content="Hack-A-Sat-qualifier-2020 复现\r又开新坑了，从未接触过的全新领域——卫星安全！\nbeckley\r这道题更像是传统CTF MISC中的OSINT算是初步接触卫星安全领域的开胃小菜吧\n环境配置\r首先从 yichen115的仓库中拉取题目\n">
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="切换菜单">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/avatar_hu_37edead8cd3c258e.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">🐧</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Oight</a></h1>
+            <h2 class="site-description">Talk is cheap. Show me the code.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://space.bilibili.com/696224138'
+                        target="_blank"
+                        title="bilibili"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-bilibili"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 10a4 4 0 0 1 4 -4h10a4 4 0 0 1 4 4v6a4 4 0 0 1 -4 4h-10a4 4 0 0 1 -4 -4v-6z" /><path d="M8 3l2 3" /><path d="M16 3l-2 3" /><path d="M9 13v-2" /><path d="M15 11v2" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://github.com/Oight'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>主页</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%85%B3%E4%BA%8E/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>关于</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%E5%8F%8B%E6%83%85%E9%93%BE%E6%8E%A5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>友情链接</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>暗色模式</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">目录</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#beckley">beckley</a>
+      <ol>
+        <li><a href="#环境配置">环境配置</a></li>
+        <li><a href="#解题">解题</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+            <main class="main full-width">
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E5%8D%AB%E6%98%9F%E5%AE%89%E5%85%A8/" >
+                卫星安全
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/">Hack-A-Sat-qualifier-2020 复现</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">2026-10-16</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    阅读时长: 4 分钟
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <h1 id="hack-a-sat-qualifier-2020-复现">Hack-A-Sat-qualifier-2020 复现
+</h1><p>又开新坑了，从未接触过的全新领域——卫星安全！</p>
+<h2 id="beckley">beckley
+</h2><p>这道题更像是传统CTF MISC中的OSINT算是初步接触卫星安全领域的开胃小菜吧</p>
+<h3 id="环境配置">环境配置
+</h3><p>首先从 <a class="link" href="https://github.com/yichen115/hackasat-qualifier-2020.git"  target="_blank" rel="noopener"
+    >yichen115的仓库</a>中拉取题目</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/yichen115/hackasat-qualifier-2020.git
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> hackasat-qualifier-2020
+</span></span><span class="line"><span class="cl"><span class="c1"># 然后构建基础镜像</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> hackasat-qualifier-2020
+</span></span><span class="line"><span class="cl">docker build -t generator-base .
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> ..
+</span></span></code></pre></div><p>由于原来Dockerfile中sgp4库的版本太旧了，需要修改sgp4库的版本</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">vim challenge/Dockerfile
+</span></span></code></pre></div><p>修改成这样：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">FROM ubuntu:16.04
+</span></span><span class="line"><span class="cl"><span class="c1">#Install Apache, Python, Curl. Enable CGI. Install PIP, use PIP to install skyfield</span>
+</span></span><span class="line"><span class="cl">RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    apt-get update -y<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    apt-get install -y apache2 python curl<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    a2enmod cgi<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    python get-pip.py<span class="p">;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>    pip install skyfield <span class="nv">sgp4</span><span class="o">==</span>2.15<span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">COPY errors /etc/apache2/sites-enabled/000-default.conf
+</span></span><span class="line"><span class="cl">COPY custom_50x.html /var/www/html/custom_50x.html
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">WORKDIR /usr/lib/cgi-bin
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Upload all files to cgi-bin directory</span>
+</span></span><span class="line"><span class="cl">COPY *.py ./
+</span></span><span class="line"><span class="cl">COPY entrypoint.sh ./
+</span></span><span class="line"><span class="cl">COPY deltat.* ./
+</span></span><span class="line"><span class="cl">COPY Leap_Second.dat ./
+</span></span><span class="line"><span class="cl">RUN chmod +x challenge.py
+</span></span><span class="line"><span class="cl"><span class="c1"># Suppress error output</span>
+</span></span><span class="line"><span class="cl">RUN <span class="nb">echo</span> <span class="s2">&#34;ServerName beckley.mydomain.com&#34;</span> &gt;&gt; /etc/apache2/apache2.conf
+</span></span><span class="line"><span class="cl"><span class="c1">#ENV FLAG=flag{Hungry_For_Apples}</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># RUN</span>
+</span></span><span class="line"><span class="cl">ENTRYPOINT ./entrypoint.sh
+</span></span></code></pre></div><p>然后使用<code>make build</code>生成镜像，也可以用<code>make challenge</code>只生成题目镜像</p>
+<p>然后就可以启动题目了</p>
+<p>使用以下命令启动题目容器：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">socat -v tcp-listen:19020,reuseaddr exec:<span class="s2">&#34;docker run --rm -i -e SERVICE_HOST=172.17.0.1 -e SERVICE_PORT=19021 -e SEED=1000 -e FLAG=flag{zulu49225delta\:GG1EnNVMK3-hPvlNKAdEJxcujvp9WK4rEchuEdlDp3yv_Wh_uvB5ehGq-fyRowvwkWpdAMTKbidqhK4JhFsaz1k} -p 19021\:80 beckley\:challenge&#34;</span>
+</span></span></code></pre></div><p>这道题需要启3个终端来交互第一个终端运行上面的命令启动容器</p>
+<p>第二个终端需要使用<code>nc</code>访问题目容器</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nc 172.17.0.1 <span class="m">19020</span>
+</span></span></code></pre></div><p>第三个终端用来提交答案获取flag，可以先尝试随便传点东西测试题目环境是否搭建成功</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl http://172.17.0.1:19021/cgi-bin/HSCKML.py?CAMERA<span class="o">=</span>0,0,0,0,0 -H <span class="s1">&#39;User-Agent: GoogleEarth/7.3.2.5815(X11;Linux (5.2.0.0);en;kml:2.2;client:Pro;type:default)&#39;</span> -H <span class="s1">&#39;Accept: application/vnd.google-earth.kml+xml, application/vnd.google-earth.kmz, image/*, */*&#39;</span> -H <span class="s1">&#39;Accept-Language: en-US, *&#39;</span> -H <span class="s1">&#39;Connection: keep-alive&#39;</span>
+</span></span></code></pre></div><p>连接成功后会返回xml的响应：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;kml</span> <span class="na">xmlns=</span><span class="s">&#34;http://www.opengis.net/kml/2.2&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;Placemark&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;name&gt;</span>Keep Looking...<span class="nt">&lt;/name&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;Point&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;coordinates&gt;</span>0.000000,0.000000<span class="nt">&lt;/coordinates&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/Point&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/Placemark&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/kml&gt;</span>
+</span></span></code></pre></div><p>搭建成功后就像这样：</p>
+<p><img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ii4iaoye4sj31tm10ze81.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="图片"
+	
+	
+></p>
+<h3 id="解题">解题
+</h3><p>现在我们就可以正式开始解题了，先看看nc给我们的题目描述</p>
+<p><img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ii4ica93gtj30yn081782.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="图片"
+	
+	
+></p>
+<p>这里的意思是太空中有颗卫星于 2020 年 3 月 26 日 21:53:13 按照特定的视角拍到了华盛顿纪念碑，我们需要伪造一个Google earth Pro的KML文件来获取flag</p>
+<p>附件中给了我们KML的文件格式：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-xml" data-lang="xml"><span class="line"><span class="cl"><span class="cp">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;kml</span> <span class="na">xmlns=</span><span class="s">&#34;http://www.opengis.net/kml/2.2&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;Folder&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;name&gt;</span>HackASatCompetition<span class="nt">&lt;/name&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;visibility&gt;</span>0<span class="nt">&lt;/visibility&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;open&gt;</span>0<span class="nt">&lt;/open&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;description&gt;</span>HackASatComp1<span class="nt">&lt;/description&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;NetworkLink&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;name&gt;</span>View Centered Placemark<span class="nt">&lt;/name&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;visibility&gt;</span>0<span class="nt">&lt;/visibility&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;open&gt;</span>0<span class="nt">&lt;/open&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;description&gt;</span>This is where the satellite was located when we saw it.<span class="nt">&lt;/description&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;refreshVisibility&gt;</span>0<span class="nt">&lt;/refreshVisibility&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;flyToView&gt;</span>0<span class="nt">&lt;/flyToView&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;LookAt</span> <span class="na">id=</span><span class="s">&#34;ID&#34;</span><span class="nt">&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="c">&lt;!-- specific to LookAt --&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;longitude&gt;</span>FILL ME IN<span class="nt">&lt;/longitude&gt;</span>            	<span class="c">&lt;!-- kml:angle180 --&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;latitude&gt;</span>FILL ME IN TOO<span class="nt">&lt;/latitude&gt;</span>              	<span class="c">&lt;!-- kml:angle90 --&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;altitude&gt;</span>FILL ME IN AS WELL<span class="nt">&lt;/altitude&gt;</span>              		<span class="c">&lt;!-- double --&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;heading&gt;</span>FILL IN THIS VALUE<span class="nt">&lt;/heading&gt;</span>                <span class="c">&lt;!-- kml:angle360 --&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;tilt&gt;</span>FILL IN THIS VALUE TOO<span class="nt">&lt;/tilt&gt;</span>                     <span class="c">&lt;!-- kml:anglepos90 --&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;range&gt;</span>FILL IN THIS VALUE ALSO<span class="nt">&lt;/range&gt;</span>                     <span class="c">&lt;!-- double --&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;altitudeMode&gt;</span>clampToGround<span class="nt">&lt;/altitudeMode&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/LookAt&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;Link&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;href&gt;</span>http://FILL ME IN:FILL ME IN/cgi-bin/HSCKML.py<span class="nt">&lt;/href&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;refreshInterval&gt;</span>1<span class="nt">&lt;/refreshInterval&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;viewRefreshMode&gt;</span>onStop<span class="nt">&lt;/viewRefreshMode&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;viewRefreshTime&gt;</span>1<span class="nt">&lt;/viewRefreshTime&gt;</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&lt;viewFormat&gt;</span>BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth];CAMERA=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading];VIEW=[horizFov],[vertFov],[horizPixels],[vertPixels],[terrainEnabled]<span class="nt">&lt;/viewFormat&gt;</span>
+</span></span><span class="line"><span class="cl">      <span class="nt">&lt;/Link&gt;</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&lt;/NetworkLink&gt;</span>
+</span></span><span class="line"><span class="cl">  <span class="nt">&lt;/Folder&gt;</span>
+</span></span><span class="line"><span class="cl"><span class="nt">&lt;/kml&gt;</span>
+</span></span></code></pre></div><p>我们需要提交的参数有6个：<code>longitude</code>, <code>latitude</code>, <code>altitude</code>, <code>heading</code>, <code>tilt</code>, <code>range</code></p>
+<p>longitude 是华盛顿纪念碑的经度，latitude 是华盛顿纪念碑的纬度，altitude 是纪念碑的海拔，但由于这里<code>altitudeMode</code>是clampToGround，所以可以填0，华盛顿纪念碑的经纬度我们可以通过谷歌地图得到</p>
+<p><img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ii4ikgb8cyj30il0kjtg6.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="图片"
+	
+	
+></p>
+<p>我们还需要<code>heading</code>, <code>tilt</code>, 和 <code>range</code>三个参数</p>
+<p>heading 是飞行器前进的方向</p>
+<p>tilt 是卫星与地球表面法线之间的角度</p>
+<p>range 是卫星距离目标的距离</p>
+<p>这三个参数我们可以从题目一开始给出的信息中获取：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">The image was taken on March 26th, 2020, at 21:53:13
+</span></span><span class="line"><span class="cl">The satellite we used was:
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">REDACT
+</span></span><span class="line"><span class="cl"><span class="m">1</span> 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 <span class="m">0</span>  <span class="m">9995</span>
+</span></span><span class="line"><span class="cl"><span class="m">2</span> <span class="m">13337</span>  51.6460  33.2488 <span class="m">0005270</span>  61.9928  83.3154 15.48919755219337
+</span></span></code></pre></div><p>题目中给出了卫星的TLE（Two-Line Element set），TLE的格式是这样的：</p>
+<p><strong>第 1 行</strong></p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>字段</th>
+          <th>值</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>行号</td>
+          <td><code>1</code></td>
+          <td>第一行</td>
+      </tr>
+      <tr>
+          <td>卫星编号</td>
+          <td><code>13337</code></td>
+          <td>NORAD 目录编号</td>
+      </tr>
+      <tr>
+          <td>分类</td>
+          <td><code>U</code></td>
+          <td>Unclassified（非机密）</td>
+      </tr>
+      <tr>
+          <td>国际编号</td>
+          <td><code>98067A</code></td>
+          <td>1998 年第 67 次发射，A 部分</td>
+      </tr>
+      <tr>
+          <td>历元</td>
+          <td><code>20087.38052801</code></td>
+          <td>2020 年第 87 天（3 月 27 日）09:07:57 UTC</td>
+      </tr>
+      <tr>
+          <td>平均运动一阶导数</td>
+          <td><code>-.00000452</code></td>
+          <td>轨道周期变化率</td>
+      </tr>
+      <tr>
+          <td>辐射压项</td>
+          <td><code>00000-0</code></td>
+          <td>太阳辐射压影响</td>
+      </tr>
+      <tr>
+          <td>BSTAR 阻力</td>
+          <td><code>00000+0</code></td>
+          <td>大气阻力项</td>
+      </tr>
+      <tr>
+          <td>星历类型</td>
+          <td><code>0</code></td>
+          <td>默认</td>
+      </tr>
+      <tr>
+          <td>元素集号</td>
+          <td><code>999</code></td>
+          <td>轨道参数版本</td>
+      </tr>
+      <tr>
+          <td>校验和</td>
+          <td><code>5</code></td>
+          <td>校验位</td>
+      </tr>
+  </tbody>
+</table></div>
+<p><strong>第 2 行</strong></p>
+<div class="table-wrapper"><table>
+  <thead>
+      <tr>
+          <th>字段</th>
+          <th>值</th>
+          <th>含义</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td>行号</td>
+          <td><code>2</code></td>
+          <td>第二行</td>
+      </tr>
+      <tr>
+          <td>卫星编号</td>
+          <td><code>13337</code></td>
+          <td>与第一行一致</td>
+      </tr>
+      <tr>
+          <td>轨道倾角</td>
+          <td><code>51.6460°</code></td>
+          <td>轨道平面与赤道面的夹角</td>
+      </tr>
+      <tr>
+          <td>升交点赤经</td>
+          <td><code>33.2488°</code></td>
+          <td>轨道升交点经度</td>
+      </tr>
+      <tr>
+          <td>偏心率</td>
+          <td><code>0005270</code> → <code>0.0005270</code></td>
+          <td>轨道形状（接近圆形）</td>
+      </tr>
+      <tr>
+          <td>近地点幅角</td>
+          <td><code>61.9928°</code></td>
+          <td>近地点方向</td>
+      </tr>
+      <tr>
+          <td>平近点角</td>
+          <td><code>83.3154°</code></td>
+          <td>卫星在轨道上的位置</td>
+      </tr>
+      <tr>
+          <td>平均运动</td>
+          <td><code>15.48919755</code></td>
+          <td>每天绕地球 15.49 圈</td>
+      </tr>
+      <tr>
+          <td>圈数</td>
+          <td><code>21933</code></td>
+          <td>发射以来的圈数</td>
+      </tr>
+      <tr>
+          <td>校验和</td>
+          <td><code>7</code></td>
+          <td>校验位</td>
+      </tr>
+  </tbody>
+</table></div>
+<p>更详细的信息可以看：<a class="link" href="https://www.space-track.org/documentation#/tle"  target="_blank" rel="noopener"
+    >TLE</a></p>
+<p>我们可以用python的skyfield库来解析TLE数据</p>
+<p>写脚本求一下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">skyfield.api</span> <span class="kn">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">EarthSatellite</span><span class="p">,</span> <span class="n">Topos</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">tle_lines</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;1 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 0  9995&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;2 13337  51.6460  33.2488 0005270  61.9928  83.3154 15.48919755219337&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">ts</span> <span class="o">=</span> <span class="n">load</span><span class="o">.</span><span class="n">timescale</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">satellite</span> <span class="o">=</span> <span class="n">EarthSatellite</span><span class="p">(</span><span class="n">tle_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tle_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;Test Satellite&#39;</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">utc</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">monument</span> <span class="o">=</span> <span class="n">Topos</span><span class="p">(</span><span class="s1">&#39;38.88964619165539 N&#39;</span><span class="p">,</span> <span class="s1">&#39;77.03486031680167 W&#39;</span><span class="p">,</span> <span class="n">elevation_m</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">difference</span> <span class="o">=</span> <span class="n">satellite</span> <span class="o">-</span> <span class="n">monument</span>
+</span></span><span class="line"><span class="cl"><span class="n">topocentric</span> <span class="o">=</span> <span class="n">difference</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">distance</span> <span class="o">=</span> <span class="n">topocentric</span><span class="o">.</span><span class="n">altaz</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Altitude:&#39;</span><span class="p">,</span> <span class="n">alt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Azimuth:&#39;</span><span class="p">,</span> <span class="n">az</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Distance: </span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">distance</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">tilt</span> <span class="o">=</span> <span class="mi">90</span> <span class="o">-</span> <span class="n">alt</span><span class="o">.</span><span class="n">degrees</span>
+</span></span><span class="line"><span class="cl"><span class="n">heading</span> <span class="o">=</span> <span class="p">(</span><span class="mi">180</span> <span class="o">+</span> <span class="n">az</span><span class="o">.</span><span class="n">degrees</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tilt:&#39;</span><span class="p">,</span> <span class="n">tilt</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Heading:&#39;</span><span class="p">,</span> <span class="n">heading</span><span class="p">)</span>
+</span></span></code></pre></div><p>我们来看看为什么要这么写，首先是卫星的TEL：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">tle_lines</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;1 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 0  9995&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;2 13337  51.6460  33.2488 0005270  61.9928  83.3154 15.48919755219337&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span></code></pre></div><p>然后是历元，时间点越精确，得到的卫星数据就越精确</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">utc</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+</span></span></code></pre></div><p>可以看看skyfield的文档 <a class="link" href="https://rhodesmill.org/skyfield/earth-satellites.html"  target="_blank" rel="noopener"
+    >skyfield</a>：</p>
+<p>我们从TEL中得到的是位置是地心天球参考系中卫星的 x、y、z 坐标，也就是说是以地心为观察者视角得到的卫星的位置，而解题需要知道的是以华盛顿纪念碑为观察者视角的卫星位置，所以我们需要做减法来得到距离distance</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">difference</span> <span class="o">=</span> <span class="n">satellite</span> <span class="o">-</span> <span class="n">monument</span>
+</span></span><span class="line"><span class="cl"><span class="n">topocentric</span> <span class="o">=</span> <span class="n">difference</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">distance</span> <span class="o">=</span> <span class="n">topocentric</span><span class="o">.</span><span class="n">altaz</span><span class="p">()</span>
+</span></span></code></pre></div><p>然后我们可以得到高度角alt和方位角az</p>
+<p>其中，高度角与tilt是互余的</p>
+<p><img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii4j7fbz5mj30d406imxl.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="图片"
+	
+	
+></p>
+<p>所以我们只需要用90减去高度角就是tilt了</p>
+<p>而heading 是卫星前进的方向，我们所得到的方位角是从目标看卫星的方向，而我们需要从卫星看目标的方向，所以需要加180度，然后模360使得范围落在360度内</p>
+<p><img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ii4jbu64utj30b504jtae.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="图片"
+	
+	
+></p>
+<p>所以可以得到答案</p>
+<p><img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ii4jfsrhiej31ea084jxw.jpg"
+	
+	
+	
+	loading="lazy"
+	
+		alt="图片"
+	
+	
+></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2024 - 
+        
+        2026 Oight
+    </section>
+    
+    <section class="powerby">
+        
+            Build by Oight <br/>
+        使用 <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> 构建 <br />
+        主题 <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> 由 <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a> 设计
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+  <script>
+    (function () {
+      const maxHeight = 420;
+
+      function initCodeFold() {
+        document
+          .querySelectorAll(".article-content .highlight")
+          .forEach(function (block) {
+            if (block.dataset.codeFoldInit === "true") return;
+
+            block.dataset.codeFoldInit = "true";
+
+            if (block.scrollHeight <= maxHeight + 40) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.className = "code-fold-wrapper";
+
+            block.parentNode.insertBefore(wrapper, block);
+            wrapper.appendChild(block);
+
+            block.classList.add("code-collapsible", "code-collapsed");
+
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "code-toggle-button";
+            button.textContent = "展开代码";
+            button.setAttribute("aria-expanded", "false");
+
+            button.addEventListener("click", function () {
+              const collapsed = block.classList.toggle("code-collapsed");
+
+              button.textContent = collapsed ? "展开代码" : "收起代码";
+              button.setAttribute("aria-expanded", String(!collapsed));
+            });
+
+            wrapper.appendChild(button);
+          });
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCodeFold);
+      } else {
+        initCodeFold();
+      }
+    })();
+  </script>
+    </body>
+</html>
