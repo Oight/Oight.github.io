@@ -646,7 +646,7 @@
 </span></span><span class="line"><span class="cl"><span class="n">heading</span> <span class="o">=</span> <span class="p">(</span><span class="mi">180</span> <span class="o">+</span> <span class="n">az</span><span class="o">.</span><span class="n">degrees</span><span class="p">)</span> <span class="o">%</span> <span class="mi">360</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Tilt:&#39;</span><span class="p">,</span> <span class="n">tilt</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Heading:&#39;</span><span class="p">,</span> <span class="n">heading</span><span class="p">)</span>
-</span></span></code></pre></div><p>我们来看看为什么要这么写，首先是卫星的TEL：</p>
+</span></span></code></pre></div><p>我们来看看为什么要这么写，首先是卫星的TLE：</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">tle_lines</span> <span class="o">=</span> <span class="p">[</span>
 </span></span><span class="line"><span class="cl">    <span class="s2">&#34;1 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 0  9995&#34;</span><span class="p">,</span>
 </span></span><span class="line"><span class="cl">    <span class="s2">&#34;2 13337  51.6460  33.2488 0005270  61.9928  83.3154 15.48919755219337&#34;</span>
@@ -655,7 +655,7 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">t</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">utc</span><span class="p">(</span><span class="mi">2020</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
 </span></span></code></pre></div><p>可以看看skyfield的文档 <a class="link" href="https://rhodesmill.org/skyfield/earth-satellites.html"  target="_blank" rel="noopener"
     >skyfield</a>：</p>
-<p>我们从TEL中得到的是位置是地心天球参考系中卫星的 x、y、z 坐标，也就是说是以地心为观察者视角得到的卫星的位置，而解题需要知道的是以华盛顿纪念碑为观察者视角的卫星位置，所以我们需要做减法来得到距离distance</p>
+<p>我们从TLE中得到的是位置是地心天球参考系中卫星的 x、y、z 坐标，也就是说是以地心为观察者视角得到的卫星的位置，而解题需要知道的是以华盛顿纪念碑为观察者视角的卫星位置，所以我们需要做减法来得到距离distance</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">difference</span> <span class="o">=</span> <span class="n">satellite</span> <span class="o">-</span> <span class="n">monument</span>
 </span></span><span class="line"><span class="cl"><span class="n">topocentric</span> <span class="o">=</span> <span class="n">difference</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="n">alt</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">distance</span> <span class="o">=</span> <span class="n">topocentric</span><span class="o">.</span><span class="n">altaz</span><span class="p">()</span>
