@@ -1,450 +1,568 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>卫星安全 on Oight</title><link>https://Oight.github.io/categories/%E5%8D%AB%E6%98%9F%E5%AE%89%E5%85%A8/</link><description>Recent content in 卫星安全 on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Fri, 16 Oct 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/%E5%8D%AB%E6%98%9F%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml"/><item><title>Hack-A-Sat-qualifier-2020 复现</title><link>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</link><pubDate>Fri, 16 Oct 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</guid><description>&lt;h1 id="hack-a-sat-qualifier-2020-复现">Hack-A-Sat-qualifier-2020 复现
-&lt;/h1>&lt;p>又开新坑了，从未接触过的全新领域——卫星安全！&lt;/p>
-&lt;h2 id="beckley">beckley
-&lt;/h2>&lt;p>这道题更像是传统CTF MISC中的OSINT算是初步接触卫星安全领域的开胃小菜吧&lt;/p>
-&lt;h3 id="环境配置">环境配置
-&lt;/h3>&lt;p>首先从 &lt;a class="link" href="https://github.com/yichen115/hackasat-qualifier-2020.git" target="_blank" rel="noopener"
->yichen115的仓库&lt;/a>中拉取题目&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">git clone https://github.com/yichen115/hackasat-qualifier-2020.git
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> hackasat-qualifier-2020
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 然后构建基础镜像&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> hackasat-qualifier-2020
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker build -t generator-base .
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> ..
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>由于原来Dockerfile中sgp4库的版本太旧了，需要修改sgp4库的版本&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">vim challenge/Dockerfile
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>修改成这样：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">FROM ubuntu:16.04
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#Install Apache, Python, Curl. Enable CGI. Install PIP, use PIP to install skyfield&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list&lt;span class="p">;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> apt-get update -y&lt;span class="p">;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> apt-get install -y apache2 python curl&lt;span class="p">;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> a2enmod cgi&lt;span class="p">;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py&lt;span class="p">;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> python get-pip.py&lt;span class="p">;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> pip install skyfield &lt;span class="nv">sgp4&lt;/span>&lt;span class="o">==&lt;/span>2.15&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">COPY errors /etc/apache2/sites-enabled/000-default.conf
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">COPY custom_50x.html /var/www/html/custom_50x.html
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">WORKDIR /usr/lib/cgi-bin
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Upload all files to cgi-bin directory&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">COPY *.py ./
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">COPY entrypoint.sh ./
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">COPY deltat.* ./
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">COPY Leap_Second.dat ./
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">RUN chmod +x challenge.py
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Suppress error output&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">RUN &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;ServerName beckley.mydomain.com&amp;#34;&lt;/span> &amp;gt;&amp;gt; /etc/apache2/apache2.conf
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#ENV FLAG=flag{Hungry_For_Apples}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># RUN&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ENTRYPOINT ./entrypoint.sh
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后使用&lt;code>make build&lt;/code>生成镜像，也可以用&lt;code>make challenge&lt;/code>只生成题目镜像&lt;/p>
-&lt;p>然后就可以启动题目了&lt;/p>
-&lt;p>使用以下命令启动题目容器：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">socat -v tcp-listen:19020,reuseaddr exec:&lt;span class="s2">&amp;#34;docker run --rm -i -e SERVICE_HOST=172.17.0.1 -e SERVICE_PORT=19021 -e SEED=1000 -e FLAG=flag{zulu49225delta\:GG1EnNVMK3-hPvlNKAdEJxcujvp9WK4rEchuEdlDp3yv_Wh_uvB5ehGq-fyRowvwkWpdAMTKbidqhK4JhFsaz1k} -p 19021\:80 beckley\:challenge&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这道题需要启3个终端来交互第一个终端运行上面的命令启动容器&lt;/p>
-&lt;p>第二个终端需要使用&lt;code>nc&lt;/code>访问题目容器&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">nc 172.17.0.1 &lt;span class="m">19020&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>第三个终端用来提交答案获取flag，可以先尝试随便传点东西测试题目环境是否搭建成功&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">curl http://172.17.0.1:19021/cgi-bin/HSCKML.py?CAMERA&lt;span class="o">=&lt;/span>0,0,0,0,0 -H &lt;span class="s1">&amp;#39;User-Agent: GoogleEarth/7.3.2.5815(X11;Linux (5.2.0.0);en;kml:2.2;client:Pro;type:default)&amp;#39;&lt;/span> -H &lt;span class="s1">&amp;#39;Accept: application/vnd.google-earth.kml+xml, application/vnd.google-earth.kmz, image/*, */*&amp;#39;&lt;/span> -H &lt;span class="s1">&amp;#39;Accept-Language: en-US, *&amp;#39;&lt;/span> -H &lt;span class="s1">&amp;#39;Connection: keep-alive&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>连接成功后会返回xml的响应：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-xml" data-lang="xml">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;kml&lt;/span> &lt;span class="na">xmlns=&lt;/span>&lt;span class="s">&amp;#34;http://www.opengis.net/kml/2.2&amp;#34;&lt;/span>&lt;span class="nt">&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;Placemark&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;name&amp;gt;&lt;/span>Keep Looking...&lt;span class="nt">&amp;lt;/name&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;Point&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;coordinates&amp;gt;&lt;/span>0.000000,0.000000&lt;span class="nt">&amp;lt;/coordinates&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;/Point&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;/Placemark&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;/kml&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>搭建成功后就像这样：&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ii4iaoye4sj31tm10ze81.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;h3 id="解题">解题
-&lt;/h3>&lt;p>现在我们就可以正式开始解题了，先看看nc给我们的题目描述&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ii4ica93gtj30yn081782.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>这里的意思是太空中有颗卫星于 2020 年 3 月 26 日 21:53:13 按照特定的视角拍到了华盛顿纪念碑，我们需要伪造一个Google earth Pro的KML文件来获取flag&lt;/p>
-&lt;p>附件中给了我们KML的文件格式：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-xml" data-lang="xml">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;kml&lt;/span> &lt;span class="na">xmlns=&lt;/span>&lt;span class="s">&amp;#34;http://www.opengis.net/kml/2.2&amp;#34;&lt;/span>&lt;span class="nt">&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;Folder&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;name&amp;gt;&lt;/span>HackASatCompetition&lt;span class="nt">&amp;lt;/name&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;visibility&amp;gt;&lt;/span>0&lt;span class="nt">&amp;lt;/visibility&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;open&amp;gt;&lt;/span>0&lt;span class="nt">&amp;lt;/open&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;description&amp;gt;&lt;/span>HackASatComp1&lt;span class="nt">&amp;lt;/description&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;NetworkLink&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;name&amp;gt;&lt;/span>View Centered Placemark&lt;span class="nt">&amp;lt;/name&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;visibility&amp;gt;&lt;/span>0&lt;span class="nt">&amp;lt;/visibility&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;open&amp;gt;&lt;/span>0&lt;span class="nt">&amp;lt;/open&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;description&amp;gt;&lt;/span>This is where the satellite was located when we saw it.&lt;span class="nt">&amp;lt;/description&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;refreshVisibility&amp;gt;&lt;/span>0&lt;span class="nt">&amp;lt;/refreshVisibility&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;flyToView&amp;gt;&lt;/span>0&lt;span class="nt">&amp;lt;/flyToView&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;LookAt&lt;/span> &lt;span class="na">id=&lt;/span>&lt;span class="s">&amp;#34;ID&amp;#34;&lt;/span>&lt;span class="nt">&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c">&amp;lt;!-- specific to LookAt --&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;longitude&amp;gt;&lt;/span>FILL ME IN&lt;span class="nt">&amp;lt;/longitude&amp;gt;&lt;/span> &lt;span class="c">&amp;lt;!-- kml:angle180 --&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;latitude&amp;gt;&lt;/span>FILL ME IN TOO&lt;span class="nt">&amp;lt;/latitude&amp;gt;&lt;/span> &lt;span class="c">&amp;lt;!-- kml:angle90 --&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;altitude&amp;gt;&lt;/span>FILL ME IN AS WELL&lt;span class="nt">&amp;lt;/altitude&amp;gt;&lt;/span> &lt;span class="c">&amp;lt;!-- double --&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;heading&amp;gt;&lt;/span>FILL IN THIS VALUE&lt;span class="nt">&amp;lt;/heading&amp;gt;&lt;/span> &lt;span class="c">&amp;lt;!-- kml:angle360 --&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;tilt&amp;gt;&lt;/span>FILL IN THIS VALUE TOO&lt;span class="nt">&amp;lt;/tilt&amp;gt;&lt;/span> &lt;span class="c">&amp;lt;!-- kml:anglepos90 --&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;range&amp;gt;&lt;/span>FILL IN THIS VALUE ALSO&lt;span class="nt">&amp;lt;/range&amp;gt;&lt;/span> &lt;span class="c">&amp;lt;!-- double --&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;altitudeMode&amp;gt;&lt;/span>clampToGround&lt;span class="nt">&amp;lt;/altitudeMode&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;/LookAt&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;Link&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;href&amp;gt;&lt;/span>http://FILL ME IN:FILL ME IN/cgi-bin/HSCKML.py&lt;span class="nt">&amp;lt;/href&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;refreshInterval&amp;gt;&lt;/span>1&lt;span class="nt">&amp;lt;/refreshInterval&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;viewRefreshMode&amp;gt;&lt;/span>onStop&lt;span class="nt">&amp;lt;/viewRefreshMode&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;viewRefreshTime&amp;gt;&lt;/span>1&lt;span class="nt">&amp;lt;/viewRefreshTime&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;viewFormat&amp;gt;&lt;/span>BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth];CAMERA=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading];VIEW=[horizFov],[vertFov],[horizPixels],[vertPixels],[terrainEnabled]&lt;span class="nt">&amp;lt;/viewFormat&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;/Link&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;/NetworkLink&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;lt;/Folder&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nt">&amp;lt;/kml&amp;gt;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>我们需要提交的参数有6个：&lt;code>longitude&lt;/code>, &lt;code>latitude&lt;/code>, &lt;code>altitude&lt;/code>, &lt;code>heading&lt;/code>, &lt;code>tilt&lt;/code>, &lt;code>range&lt;/code>&lt;/p>
-&lt;p>longitude 是华盛顿纪念碑的经度，latitude 是华盛顿纪念碑的纬度，altitude 是纪念碑的海拔，但由于这里&lt;code>altitudeMode&lt;/code>是clampToGround，所以可以填0，华盛顿纪念碑的经纬度我们可以通过谷歌地图得到&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ii4ikgb8cyj30il0kjtg6.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>我们还需要&lt;code>heading&lt;/code>, &lt;code>tilt&lt;/code>, 和 &lt;code>range&lt;/code>三个参数&lt;/p>
-&lt;p>heading 是飞行器前进的方向&lt;/p>
-&lt;p>tilt 是卫星与地球表面法线之间的角度&lt;/p>
-&lt;p>range 是卫星距离目标的距离&lt;/p>
-&lt;p>这三个参数我们可以从题目一开始给出的信息中获取：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">The image was taken on March 26th, 2020, at 21:53:13
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">The satellite we used was:
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">REDACT
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">1&lt;/span> 13337U 98067A 20087.38052801 -.00000452 00000-0 00000+0 &lt;span class="m">0&lt;/span> &lt;span class="m">9995&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">2&lt;/span> &lt;span class="m">13337&lt;/span> 51.6460 33.2488 &lt;span class="m">0005270&lt;/span> 61.9928 83.3154 15.48919755219337
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>题目中给出了卫星的TLE（Two-Line Element set），TLE的格式是这样的：&lt;/p>
-&lt;p>&lt;strong>第 1 行&lt;/strong>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>字段&lt;/th>
-&lt;th>值&lt;/th>
-&lt;th>含义&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>行号&lt;/td>
-&lt;td>&lt;code>1&lt;/code>&lt;/td>
-&lt;td>第一行&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>卫星编号&lt;/td>
-&lt;td>&lt;code>13337&lt;/code>&lt;/td>
-&lt;td>NORAD 目录编号&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>分类&lt;/td>
-&lt;td>&lt;code>U&lt;/code>&lt;/td>
-&lt;td>Unclassified（非机密）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>国际编号&lt;/td>
-&lt;td>&lt;code>98067A&lt;/code>&lt;/td>
-&lt;td>1998 年第 67 次发射，A 部分&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>历元&lt;/td>
-&lt;td>&lt;code>20087.38052801&lt;/code>&lt;/td>
-&lt;td>2020 年第 87 天（3 月 27 日）09:07:57 UTC&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>平均运动一阶导数&lt;/td>
-&lt;td>&lt;code>-.00000452&lt;/code>&lt;/td>
-&lt;td>轨道周期变化率&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>辐射压项&lt;/td>
-&lt;td>&lt;code>00000-0&lt;/code>&lt;/td>
-&lt;td>太阳辐射压影响&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>BSTAR 阻力&lt;/td>
-&lt;td>&lt;code>00000+0&lt;/code>&lt;/td>
-&lt;td>大气阻力项&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>星历类型&lt;/td>
-&lt;td>&lt;code>0&lt;/code>&lt;/td>
-&lt;td>默认&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>元素集号&lt;/td>
-&lt;td>&lt;code>999&lt;/code>&lt;/td>
-&lt;td>轨道参数版本&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>校验和&lt;/td>
-&lt;td>&lt;code>5&lt;/code>&lt;/td>
-&lt;td>校验位&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>第 2 行&lt;/strong>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>字段&lt;/th>
-&lt;th>值&lt;/th>
-&lt;th>含义&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>行号&lt;/td>
-&lt;td>&lt;code>2&lt;/code>&lt;/td>
-&lt;td>第二行&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>卫星编号&lt;/td>
-&lt;td>&lt;code>13337&lt;/code>&lt;/td>
-&lt;td>与第一行一致&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>轨道倾角&lt;/td>
-&lt;td>&lt;code>51.6460°&lt;/code>&lt;/td>
-&lt;td>轨道平面与赤道面的夹角&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>升交点赤经&lt;/td>
-&lt;td>&lt;code>33.2488°&lt;/code>&lt;/td>
-&lt;td>轨道升交点经度&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>偏心率&lt;/td>
-&lt;td>&lt;code>0005270&lt;/code> → &lt;code>0.0005270&lt;/code>&lt;/td>
-&lt;td>轨道形状（接近圆形）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>近地点幅角&lt;/td>
-&lt;td>&lt;code>61.9928°&lt;/code>&lt;/td>
-&lt;td>近地点方向&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>平近点角&lt;/td>
-&lt;td>&lt;code>83.3154°&lt;/code>&lt;/td>
-&lt;td>卫星在轨道上的位置&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>平均运动&lt;/td>
-&lt;td>&lt;code>15.48919755&lt;/code>&lt;/td>
-&lt;td>每天绕地球 15.49 圈&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>圈数&lt;/td>
-&lt;td>&lt;code>21933&lt;/code>&lt;/td>
-&lt;td>发射以来的圈数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>校验和&lt;/td>
-&lt;td>&lt;code>7&lt;/code>&lt;/td>
-&lt;td>校验位&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>更详细的信息可以看：&lt;a class="link" href="https://www.space-track.org/documentation#/tle" target="_blank" rel="noopener"
->TLE&lt;/a>&lt;/p>
-&lt;p>我们可以用python的skyfield库来解析TLE数据&lt;/p>
-&lt;p>写脚本求一下：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">skyfield.api&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">load&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">EarthSatellite&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">Topos&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">tle_lines&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">[&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;1 13337U 98067A 20087.38052801 -.00000452 00000-0 00000+0 0 9995&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;2 13337 51.6460 33.2488 0005270 61.9928 83.3154 15.48919755219337&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">ts&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">load&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">timescale&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">satellite&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">EarthSatellite&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">tle_lines&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">],&lt;/span> &lt;span class="n">tle_lines&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">],&lt;/span> &lt;span class="s1">&amp;#39;Test Satellite&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">ts&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">t&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">ts&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">utc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">2020&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">26&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">21&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">53&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">13&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">monument&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">Topos&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;38.88964619165539 N&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;77.03486031680167 W&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">elevation_m&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">difference&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">satellite&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="n">monument&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">topocentric&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">difference&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">at&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">t&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">alt&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">az&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">distance&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">topocentric&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">altaz&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;Altitude:&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">alt&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;Azimuth:&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">az&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;Distance: &lt;/span>&lt;span class="si">%d&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span> &lt;span class="o">%&lt;/span> &lt;span class="n">distance&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">m&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">tilt&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">90&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="n">alt&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">degrees&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">heading&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="mi">180&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">az&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">degrees&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">%&lt;/span> &lt;span class="mi">360&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;Tilt:&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">tilt&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;Heading:&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">heading&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>我们来看看为什么要这么写，首先是卫星的TLE：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">tle_lines&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">[&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;1 13337U 98067A 20087.38052801 -.00000452 00000-0 00000+0 0 9995&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;2 13337 51.6460 33.2488 0005270 61.9928 83.3154 15.48919755219337&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后是历元，时间点越精确，得到的卫星数据就越精确&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">t&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">ts&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">utc&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">2020&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">26&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">21&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">53&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">13&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>可以看看skyfield的文档 &lt;a class="link" href="https://rhodesmill.org/skyfield/earth-satellites.html" target="_blank" rel="noopener"
->skyfield&lt;/a>：&lt;/p>
-&lt;p>我们从TLE中得到的是位置是地心天球参考系中卫星的 x、y、z 坐标，也就是说是以地心为观察者视角得到的卫星的位置，而解题需要知道的是以华盛顿纪念碑为观察者视角的卫星位置，所以我们需要做减法来得到距离distance&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">difference&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">satellite&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="n">monument&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">topocentric&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">difference&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">at&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">t&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">alt&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">az&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">distance&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">topocentric&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">altaz&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>然后我们可以得到高度角alt和方位角az&lt;/p>
-&lt;p>其中，高度角与tilt是互余的&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii4j7fbz5mj30d406imxl.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>所以我们只需要用90减去高度角就是tilt了&lt;/p>
-&lt;p>而heading 是卫星前进的方向，我们所得到的方位角是从目标看卫星的方向，而我们需要从卫星看目标的方向，所以需要加180度，然后模360使得范围落在360度内&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ii4jbu64utj30b504jtae.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>所以可以得到答案&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ii4jfsrhiej31ea084jxw.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;h2 id="bus">bus
-&lt;/h2>&lt;h3 id="环境搭建">环境搭建
-&lt;/h3>&lt;p>这道题的环境就好搭多了&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> Hack-a-sat/hackasat-qualifier-2020/bus
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">make challenge
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样环境就搭好了，然后启动容器&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">socat -v tcp-listen:31340,reuseaddr exec:&lt;span class="s2">&amp;#34;docker run --rm -i -e SEED=1234 -e FLAG=flag{a7e06e19-a49b-4aad-ad62-6815cce7f162} bus\:challenge&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>就可以开始做题了&lt;/p>
-&lt;h3 id="解题-1">解题
-&lt;/h3>&lt;p>使用nc连接容器&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl"> nc 172.17.0.1 &lt;span class="m">31340&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ii55xsk5baj31sf0m1e3q.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>题目会疯狂冒出一些字符，同时每次输出后都会停顿一段时间，题目描述是这样的：&lt;/p>
-&lt;blockquote>
-&lt;p>There&amp;rsquo;s a very busy bus we&amp;rsquo;ve tapped a port onto,surely there is some juicy information hidden in the device memory&amp;hellip;somewhere&amp;hellip;&lt;/p>&lt;/blockquote>
-&lt;p>所以这道题也比较像是传统CTF中的MISC题，这些字符应该是从某种总线协议中抓包出来的东西。这个特征比较像是IIC协议&lt;/p>
-&lt;p>我们可以先学习一下IIC协议&lt;/p>
-&lt;h4 id="i2c">I2C
-&lt;/h4>&lt;p>IIC（I2C）是一种由飞利浦半导体开发的两线制、多主从、同步串行通信协议，广泛用于微控制器与外围设备之间的数据传输。&lt;/p>
-&lt;p>设计I2C的初衷是减少电视机等复杂电子系统内部的布线数量，同时也降低制造成本。通过使用只有两根线的通信总线，它有效地减少了器件间连接的复杂性。&lt;/p>
-&lt;p>I2C使用SCL（串行时钟线）和SDA（串行数据线）两条线路进行双向传输，可以支持多个主设备和多个从设备连接到同一总线上。&lt;/p>
-&lt;p>I2C的通信方式是使用同步串行，数据传输同步于时钟信号。其格式由开始/结束指令，8位组成一字节的数据流和可选的应答位组成&lt;/p>
-&lt;p>I2C的数据传输过程是这样的：&lt;/p>
-&lt;p>数据信号以8位的序列传输。所以在特殊的开始条件发生后，就会出现第一个8位序列，它指示了数据被发送到哪个从设备的地址。每个8位序列之后都会跟随一个称为确认的位。&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii56b7luluj31hc0b2agg.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>我们来描述I2C传输数据的一个过程：&lt;/p>
-&lt;p>空闲状态：SDA和SCL都为高电平表示总线空闲&lt;/p>
-&lt;p>现在要开始传输了，主设备会先发一个开始（Start）指令，其行为是，SCL保持高电平，SDA由高电平变到低电平&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ii56frfzs8j30ha06njrt.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>然后数据开始传输，传输过程中以SCL时钟周期为单位，一个周期传输一位，像这样：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">SCL 低：发送方把 SDA 设置成下一位
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SCL 高：接收方读取 SDA 上的这一位
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SCL 低：发送方准备下一位
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">SCL 高：接收方读取下一位
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">...
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>假如我们要传一个字节（8位），就像这样：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">第1个SCL周期：SDA = 1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第2个SCL周期：SDA = 0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第3个SCL周期：SDA = 1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第4个SCL周期：SDA = 0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第5个SCL周期：SDA = 0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第6个SCL周期：SDA = 1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第7个SCL周期：SDA = 0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第8个SCL周期：SDA = 1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">第9个SCL周期：接收方发 ACK/NACK
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>要注意的是SDA 在 SCL 低电平时改变，在 SCL 高电平时保持稳定；&lt;/p>
-&lt;p>可以简单理解为数据在SDA上传输，由SCL来控制这一位是由发送方发送还是由接收方接收。&lt;/p>
-&lt;p>在传输结束后，由主设备发送终止（Stop）信号，此时SCL保持高电位，SDA由低电位变为高电位&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii56o8rvgwj30hb06mdgc.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>回到我们题目上来，我们可以截取一段数据看看：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">^82+00+00+1f+00+00+00+12+47+40+41+c6+97+e1+3f+89+81+3f+c1+99+1d+a1+c0+20+18+a1+40+5e+42+ac+3c+.^83+00+00+3f+.^82+00+00+3f+00+00+00+20+fa+3f+41+c8+da+e2+3f+a6+64+3f+c1+ff+33+a1+c0+a4+d2+a0+40+de+50+55+40+.^b4+01+c9+61+20+30+33+00+f0+28+65+f5+e6+8f+3c+ba+5b+35+28+c7+5b+8f+6d+f3+ee+a2+57+23+bb+3b+9c+f0+31+a9+ed+80+2e+42+57+.^83+00+00+1f+.^82+00+00+1f+00+00+00+1d+ec+3f+41+d8+04+e5+3f+67+4e+40+c1+38+1b+a1+c0+e1+dd+a0+40+b9+91+91+3c+.^82+00+00+1f+00+00+00+1d+ec+3f+41+d8+04+e5+3f+67+4e+40+c1+38+1b+a1+c0+e1+dd+a0+40+b9+91+91+3c+.^83+00+00+3f+.^82+00+00+3f+00+00+00+da+81+3f+41+50+c7+e3+3f+9c+28+40+c1+77+df+a0+c0+44+1d+a0+40+7f+b7+52+40+.^b4+01+cf+28+65+f5+e6+8f+3c+ba+5b+35+28+c7+5b+8f+6d+f3+ee+a2+57+23+bb+3b+9c+f0+31+a9+ed+80+2e+42+57+1e+6a+bc+13+50+4b+50+0a+a6+85+32+6d+.^83+00+00+1f+.^82+00+00+1f+00+00+00+41+85+40+41+e2+7a+e1+3f+e8+28+40+c1+fc+50+a0+c0+6e+09+9f+40+57+8c+e9+3c+.
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>我们截取了两次输出，可以看到每段都是以 &lt;code>^82&lt;/code>, &lt;code>^83&lt;/code>, &lt;code>^b4&lt;/code>开头&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>整理一下&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>^82+00+00+1f+00+00+00+12+47+40+41+c6+97+e1+3f+89+81+3f+c1+99+1d+a1+c0+20+18+a1+40+5e+42+ac+3c+.&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>^83+00+00+3f+.&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>^82+00+00+3f+00+00+00+20+fa+3f+41+c8+da+e2+3f+a6+64+3f+c1+ff+33+a1+c0+a4+d2+a0+40+de+50+55+40+.&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>^b4+01+c9+61+20+30+33+00+f0+28+65+f5+e6+8f+3c+ba+5b+35+28+c7+5b+8f+6d+f3+ee+a2+57+23+bb+3b+9c+f0+31+a9+ed+80+2e+42+57+.&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>^83+00+00+1f+.&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>^82+00+00+1f+00+00+00+1d+ec+3f+41+d8+04+e5+3f+67+4e+40+c1+38+1b+a1+c0+e1+dd+a0+40+b9+91+91+3c+.&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>I2C 事务 START 后的第一个字节是“地址字节”，所以我们可以猜到&lt;code>0x82&lt;/code>, &lt;code>0x83&lt;/code>, &lt;code>0xb4&lt;/code>应该都是地址字节，可以从地址字节中看出后面操作时读还是写：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">bit7 bit6 bit5 bit4 bit3 bit2 bit1 | bit0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;--------- 7 位从设备地址 -------&amp;gt; R/W
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>所以我们可以得到：&lt;/p>
-&lt;p>&lt;code>0x82&lt;/code> → 7 位地址 &lt;code>0x41&lt;/code>，写&lt;/p>
-&lt;p>&lt;code>0x83&lt;/code> → 7 位地址 &lt;code>0x41&lt;/code>，读&lt;/p>
-&lt;p>&lt;code>0xb4&lt;/code> → 7 位地址 &lt;code>0x5a&lt;/code>，写&lt;/p>
-&lt;p>我们把数据丢进Cyberchef用Hex解码一下，我们可以在最后一个&lt;code>0xb4&lt;/code>找到较为完整的字符&lt;code>Juicy Da&lt;/code>&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ii575cy6dhj31l90m0dj8.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>按照标准的I2C协议标准，&lt;code>0x82&lt;/code> 写，&lt;code>0x83&lt;/code>读，&lt;code>0xb4&lt;/code> 写的话，我们不知道正确的Flag是什么，而题目默认的写入会在Juciy Data后截断，也就是说我们无法直接从写入流中读到flag。所以我们可以猜测这里题目对I2C协议的实现进行了一些更改。&lt;/p>
-&lt;p>我们假设题目将原来的读写标志位反转了，即变成了：&lt;code>0x82&lt;/code> 读，&lt;code>0x83&lt;/code>写，&lt;code>0xb4&lt;/code> 读&lt;/p>
-&lt;p>这样一来，原来的Juciy Data就变成从设备的EEP中读取出来的，或许我们就可以从设备的EEP中读取出flag&lt;/p>
-&lt;p>我们再观察题目完成的输出流，其每次写入操作都会向&lt;code>0x41&lt;/code>写入&lt;code>^83+00+00+3f+.&lt;/code>或&lt;code>^83+00+00+1f+.&lt;/code>&lt;/p>
-&lt;p>过程是：首先读一下 0x41 的内容看看是不是 1f，是的话向 0x41 写入 0x3f，然后再次读取确认一下，是 0x3f 的话就可以读取 0x5a 的内容了，所以&lt;code>0x41&lt;/code>应该是EPS电源系统控制器，通过&lt;code>0x1f&lt;/code>和&lt;code>0x3f&lt;/code>来控制总线上连接设备的供电。&lt;/p>
-&lt;p>我们来对比一下差异&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">0x1f = 0001 1111
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">0x3f = 0011 1111
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>两者差异是：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">0x3f ^ 0x1f = 0x20
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>我们可以看到，在每次读取之前都要将&lt;code>0001 1111&lt;/code>变成&lt;code>0011 1111&lt;/code>才能开始读取，可得控制 EEP 电源的就是 &lt;code>0x20&lt;/code> 这一位，所以我们可以这样写：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">^83+00+00+20+.
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这样就可以把其他设备断电，只保持EEP供电，从而使我们可以读取flag&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii580zcgo3j30um05ijvi.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>可以看到，我们输入&lt;code>^83+00+00+20+.&lt;/code>之后题目停止了输出，显然我们成功关掉了其他设备，现在我们只需要进行读取，这样输入：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">^b4000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>这里的意思是，程序需要知道我们想要读取多少字节，但我们不知道flag的长度，所以我们需要填充很多占位符进去，确保程序能够读足够多的位，从而读出flag&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ii586ds5gnj31iu0g3qr4.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>我们将读取出来的数据解码一下，就能拿到flag了&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii587n7fjuj31ks0tpnc1.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>我们也可以试验一下不关闭其他设备，直接读EEP会是什么情况：&lt;/p>
-&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii58g3crc0j31i30oihdt.jpg"
-loading="lazy"
-alt="图片"
->&lt;/p>
-&lt;p>可以看到有一队其他设备的数据混入了我们读取流中，导致我们的读取被打断或是越界，我们没办法把 EEP 整片 dump 出来。&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>卫星安全 on Oight</title>
+        <link>https://Oight.github.io/categories/%E5%8D%AB%E6%98%9F%E5%AE%89%E5%85%A8/</link>
+        <description>Recent content in 卫星安全 on Oight</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>zh-cn</language>
+        <copyright>Oight</copyright>
+        <lastBuildDate>Fri, 16 Oct 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/categories/%E5%8D%AB%E6%98%9F%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Hack-A-Sat-qualifier-2020 复现</title>
+        <link>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</link>
+        <pubDate>Fri, 16 Oct 2026 10:29:47 +0800</pubDate>
+        
+        <guid>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</guid>
+        <description>&lt;h1 id=&#34;hack-a-sat-qualifier-2020-复现&#34;&gt;Hack-A-Sat-qualifier-2020 复现
+&lt;/h1&gt;&lt;p&gt;又开新坑了，从未接触过的全新领域——卫星安全！&lt;/p&gt;
+&lt;h2 id=&#34;beckley&#34;&gt;beckley
+&lt;/h2&gt;&lt;p&gt;这道题更像是传统CTF MISC中的OSINT算是初步接触卫星安全领域的开胃小菜吧&lt;/p&gt;
+&lt;h3 id=&#34;环境配置&#34;&gt;环境配置
+&lt;/h3&gt;&lt;p&gt;首先从 &lt;a class=&#34;link&#34; href=&#34;https://github.com/yichen115/hackasat-qualifier-2020.git&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;yichen115的仓库&lt;/a&gt;中拉取题目&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;git clone https://github.com/yichen115/hackasat-qualifier-2020.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; hackasat-qualifier-2020
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 然后构建基础镜像&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; hackasat-qualifier-2020
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;docker build -t generator-base .
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; ..
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;由于原来Dockerfile中sgp4库的版本太旧了，需要修改sgp4库的版本&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;vim challenge/Dockerfile
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;修改成这样：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;FROM ubuntu:16.04
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#Install Apache, Python, Curl. Enable CGI. Install PIP, use PIP to install skyfield&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;RUN sed -i s@/archive.ubuntu.com/@/mirrors.aliyun.com/@g /etc/apt/sources.list&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;    apt-get update -y&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;    apt-get install -y apache2 python curl&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;    a2enmod cgi&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;    python get-pip.py&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;    pip install skyfield &lt;span class=&#34;nv&#34;&gt;sgp4&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;2.15&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;COPY errors /etc/apache2/sites-enabled/000-default.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;COPY custom_50x.html /var/www/html/custom_50x.html
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;WORKDIR /usr/lib/cgi-bin
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Upload all files to cgi-bin directory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;COPY *.py ./
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;COPY entrypoint.sh ./
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;COPY deltat.* ./
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;COPY Leap_Second.dat ./
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;RUN chmod +x challenge.py
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Suppress error output&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;RUN &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;ServerName beckley.mydomain.com&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; /etc/apache2/apache2.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#ENV FLAG=flag{Hungry_For_Apples}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# RUN&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ENTRYPOINT ./entrypoint.sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后使用&lt;code&gt;make build&lt;/code&gt;生成镜像，也可以用&lt;code&gt;make challenge&lt;/code&gt;只生成题目镜像&lt;/p&gt;
+&lt;p&gt;然后就可以启动题目了&lt;/p&gt;
+&lt;p&gt;使用以下命令启动题目容器：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;socat -v tcp-listen:19020,reuseaddr exec:&lt;span class=&#34;s2&#34;&gt;&amp;#34;docker run --rm -i -e SERVICE_HOST=172.17.0.1 -e SERVICE_PORT=19021 -e SEED=1000 -e FLAG=flag{zulu49225delta\:GG1EnNVMK3-hPvlNKAdEJxcujvp9WK4rEchuEdlDp3yv_Wh_uvB5ehGq-fyRowvwkWpdAMTKbidqhK4JhFsaz1k} -p 19021\:80 beckley\:challenge&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这道题需要启3个终端来交互第一个终端运行上面的命令启动容器&lt;/p&gt;
+&lt;p&gt;第二个终端需要使用&lt;code&gt;nc&lt;/code&gt;访问题目容器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc 172.17.0.1 &lt;span class=&#34;m&#34;&gt;19020&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;第三个终端用来提交答案获取flag，可以先尝试随便传点东西测试题目环境是否搭建成功&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;curl http://172.17.0.1:19021/cgi-bin/HSCKML.py?CAMERA&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;0,0,0,0,0 -H &lt;span class=&#34;s1&#34;&gt;&amp;#39;User-Agent: GoogleEarth/7.3.2.5815(X11;Linux (5.2.0.0);en;kml:2.2;client:Pro;type:default)&amp;#39;&lt;/span&gt; -H &lt;span class=&#34;s1&#34;&gt;&amp;#39;Accept: application/vnd.google-earth.kml+xml, application/vnd.google-earth.kmz, image/*, */*&amp;#39;&lt;/span&gt; -H &lt;span class=&#34;s1&#34;&gt;&amp;#39;Accept-Language: en-US, *&amp;#39;&lt;/span&gt; -H &lt;span class=&#34;s1&#34;&gt;&amp;#39;Connection: keep-alive&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;连接成功后会返回xml的响应：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;kml&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;xmlns=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;http://www.opengis.net/kml/2.2&amp;#34;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;Placemark&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;Keep Looking...&lt;span class=&#34;nt&#34;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;Point&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;coordinates&amp;gt;&lt;/span&gt;0.000000,0.000000&lt;span class=&#34;nt&#34;&gt;&amp;lt;/coordinates&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/Point&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/Placemark&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/kml&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;搭建成功后就像这样：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ii4iaoye4sj31tm10ze81.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;解题&#34;&gt;解题
+&lt;/h3&gt;&lt;p&gt;现在我们就可以正式开始解题了，先看看nc给我们的题目描述&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ii4ica93gtj30yn081782.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;这里的意思是太空中有颗卫星于 2020 年 3 月 26 日 21:53:13 按照特定的视角拍到了华盛顿纪念碑，我们需要伪造一个Google earth Pro的KML文件来获取flag&lt;/p&gt;
+&lt;p&gt;附件中给了我们KML的文件格式：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;kml&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;xmlns=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;http://www.opengis.net/kml/2.2&amp;#34;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;lt;Folder&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;HackASatCompetition&lt;span class=&#34;nt&#34;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;visibility&amp;gt;&lt;/span&gt;0&lt;span class=&#34;nt&#34;&gt;&amp;lt;/visibility&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;open&amp;gt;&lt;/span&gt;0&lt;span class=&#34;nt&#34;&gt;&amp;lt;/open&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;description&amp;gt;&lt;/span&gt;HackASatComp1&lt;span class=&#34;nt&#34;&gt;&amp;lt;/description&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;NetworkLink&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;name&amp;gt;&lt;/span&gt;View Centered Placemark&lt;span class=&#34;nt&#34;&gt;&amp;lt;/name&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;visibility&amp;gt;&lt;/span&gt;0&lt;span class=&#34;nt&#34;&gt;&amp;lt;/visibility&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;open&amp;gt;&lt;/span&gt;0&lt;span class=&#34;nt&#34;&gt;&amp;lt;/open&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;description&amp;gt;&lt;/span&gt;This is where the satellite was located when we saw it.&lt;span class=&#34;nt&#34;&gt;&amp;lt;/description&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;refreshVisibility&amp;gt;&lt;/span&gt;0&lt;span class=&#34;nt&#34;&gt;&amp;lt;/refreshVisibility&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;flyToView&amp;gt;&lt;/span&gt;0&lt;span class=&#34;nt&#34;&gt;&amp;lt;/flyToView&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;LookAt&lt;/span&gt; &lt;span class=&#34;na&#34;&gt;id=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;ID&amp;#34;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c&#34;&gt;&amp;lt;!-- specific to LookAt --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;longitude&amp;gt;&lt;/span&gt;FILL ME IN&lt;span class=&#34;nt&#34;&gt;&amp;lt;/longitude&amp;gt;&lt;/span&gt;            	&lt;span class=&#34;c&#34;&gt;&amp;lt;!-- kml:angle180 --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;latitude&amp;gt;&lt;/span&gt;FILL ME IN TOO&lt;span class=&#34;nt&#34;&gt;&amp;lt;/latitude&amp;gt;&lt;/span&gt;              	&lt;span class=&#34;c&#34;&gt;&amp;lt;!-- kml:angle90 --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;altitude&amp;gt;&lt;/span&gt;FILL ME IN AS WELL&lt;span class=&#34;nt&#34;&gt;&amp;lt;/altitude&amp;gt;&lt;/span&gt;              		&lt;span class=&#34;c&#34;&gt;&amp;lt;!-- double --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;heading&amp;gt;&lt;/span&gt;FILL IN THIS VALUE&lt;span class=&#34;nt&#34;&gt;&amp;lt;/heading&amp;gt;&lt;/span&gt;                &lt;span class=&#34;c&#34;&gt;&amp;lt;!-- kml:angle360 --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;tilt&amp;gt;&lt;/span&gt;FILL IN THIS VALUE TOO&lt;span class=&#34;nt&#34;&gt;&amp;lt;/tilt&amp;gt;&lt;/span&gt;                     &lt;span class=&#34;c&#34;&gt;&amp;lt;!-- kml:anglepos90 --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;range&amp;gt;&lt;/span&gt;FILL IN THIS VALUE ALSO&lt;span class=&#34;nt&#34;&gt;&amp;lt;/range&amp;gt;&lt;/span&gt;                     &lt;span class=&#34;c&#34;&gt;&amp;lt;!-- double --&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;altitudeMode&amp;gt;&lt;/span&gt;clampToGround&lt;span class=&#34;nt&#34;&gt;&amp;lt;/altitudeMode&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;/LookAt&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;Link&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;href&amp;gt;&lt;/span&gt;http://FILL ME IN:FILL ME IN/cgi-bin/HSCKML.py&lt;span class=&#34;nt&#34;&gt;&amp;lt;/href&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;refreshInterval&amp;gt;&lt;/span&gt;1&lt;span class=&#34;nt&#34;&gt;&amp;lt;/refreshInterval&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;viewRefreshMode&amp;gt;&lt;/span&gt;onStop&lt;span class=&#34;nt&#34;&gt;&amp;lt;/viewRefreshMode&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;viewRefreshTime&amp;gt;&lt;/span&gt;1&lt;span class=&#34;nt&#34;&gt;&amp;lt;/viewRefreshTime&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;viewFormat&amp;gt;&lt;/span&gt;BBOX=[bboxWest],[bboxSouth],[bboxEast],[bboxNorth];CAMERA=[lookatLon],[lookatLat],[lookatRange],[lookatTilt],[lookatHeading];VIEW=[horizFov],[vertFov],[horizPixels],[vertPixels],[terrainEnabled]&lt;span class=&#34;nt&#34;&gt;&amp;lt;/viewFormat&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Link&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/NetworkLink&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Folder&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/kml&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们需要提交的参数有6个：&lt;code&gt;longitude&lt;/code&gt;, &lt;code&gt;latitude&lt;/code&gt;, &lt;code&gt;altitude&lt;/code&gt;, &lt;code&gt;heading&lt;/code&gt;, &lt;code&gt;tilt&lt;/code&gt;, &lt;code&gt;range&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;longitude 是华盛顿纪念碑的经度，latitude 是华盛顿纪念碑的纬度，altitude 是纪念碑的海拔，但由于这里&lt;code&gt;altitudeMode&lt;/code&gt;是clampToGround，所以可以填0，华盛顿纪念碑的经纬度我们可以通过谷歌地图得到&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ii4ikgb8cyj30il0kjtg6.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;我们还需要&lt;code&gt;heading&lt;/code&gt;, &lt;code&gt;tilt&lt;/code&gt;, 和 &lt;code&gt;range&lt;/code&gt;三个参数&lt;/p&gt;
+&lt;p&gt;heading 是飞行器前进的方向&lt;/p&gt;
+&lt;p&gt;tilt 是卫星与地球表面法线之间的角度&lt;/p&gt;
+&lt;p&gt;range 是卫星距离目标的距离&lt;/p&gt;
+&lt;p&gt;这三个参数我们可以从题目一开始给出的信息中获取：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;The image was taken on March 26th, 2020, at 21:53:13
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;The satellite we used was:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;REDACT
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt;  &lt;span class=&#34;m&#34;&gt;9995&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;13337&lt;/span&gt;  51.6460  33.2488 &lt;span class=&#34;m&#34;&gt;0005270&lt;/span&gt;  61.9928  83.3154 15.48919755219337
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;题目中给出了卫星的TLE（Two-Line Element set），TLE的格式是这样的：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第 1 行&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;字段&lt;/th&gt;
+          &lt;th&gt;值&lt;/th&gt;
+          &lt;th&gt;含义&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;行号&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;1&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;第一行&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;卫星编号&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;13337&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;NORAD 目录编号&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;分类&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;U&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;Unclassified（非机密）&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;国际编号&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;98067A&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;1998 年第 67 次发射，A 部分&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;历元&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;20087.38052801&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;2020 年第 87 天（3 月 27 日）09:07:57 UTC&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;平均运动一阶导数&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;-.00000452&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;轨道周期变化率&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;辐射压项&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;00000-0&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;太阳辐射压影响&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;BSTAR 阻力&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;00000+0&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;大气阻力项&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;星历类型&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;0&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;默认&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;元素集号&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;999&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;轨道参数版本&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;校验和&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;5&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;校验位&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;第 2 行&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;字段&lt;/th&gt;
+          &lt;th&gt;值&lt;/th&gt;
+          &lt;th&gt;含义&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;行号&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;2&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;第二行&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;卫星编号&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;13337&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;与第一行一致&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;轨道倾角&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;51.6460°&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;轨道平面与赤道面的夹角&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;升交点赤经&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;33.2488°&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;轨道升交点经度&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;偏心率&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;0005270&lt;/code&gt; → &lt;code&gt;0.0005270&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;轨道形状（接近圆形）&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;近地点幅角&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;61.9928°&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;近地点方向&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;平近点角&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;83.3154°&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;卫星在轨道上的位置&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;平均运动&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;15.48919755&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;每天绕地球 15.49 圈&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;圈数&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;21933&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;发射以来的圈数&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;校验和&lt;/td&gt;
+          &lt;td&gt;&lt;code&gt;7&lt;/code&gt;&lt;/td&gt;
+          &lt;td&gt;校验位&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;更详细的信息可以看：&lt;a class=&#34;link&#34; href=&#34;https://www.space-track.org/documentation#/tle&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;TLE&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;我们可以用python的skyfield库来解析TLE数据&lt;/p&gt;
+&lt;p&gt;写脚本求一下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;skyfield.api&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;load&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;EarthSatellite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Topos&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;tle_lines&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;1 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 0  9995&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;2 13337  51.6460  33.2488 0005270  61.9928  83.3154 15.48919755219337&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;load&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;timescale&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;satellite&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;EarthSatellite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tle_lines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tle_lines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;Test Satellite&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2020&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;26&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;21&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;53&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;13&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;monument&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Topos&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;38.88964619165539 N&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;77.03486031680167 W&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;elevation_m&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;difference&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;satellite&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;monument&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;topocentric&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;difference&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;at&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;alt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;az&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;distance&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;topocentric&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;altaz&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Altitude:&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Azimuth:&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;az&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Distance: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%d&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;distance&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;tilt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;90&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;alt&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;degrees&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;heading&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;180&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;az&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;degrees&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;360&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Tilt:&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tilt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Heading:&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;heading&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们来看看为什么要这么写，首先是卫星的TLE：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;tle_lines&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;1 13337U 98067A   20087.38052801 -.00000452  00000-0  00000+0 0  9995&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;2 13337  51.6460  33.2488 0005270  61.9928  83.3154 15.48919755219337&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后是历元，时间点越精确，得到的卫星数据就越精确&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2020&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;26&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;21&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;53&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;13&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;可以看看skyfield的文档 &lt;a class=&#34;link&#34; href=&#34;https://rhodesmill.org/skyfield/earth-satellites.html&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;skyfield&lt;/a&gt;：&lt;/p&gt;
+&lt;p&gt;我们从TLE中得到的是位置是地心天球参考系中卫星的 x、y、z 坐标，也就是说是以地心为观察者视角得到的卫星的位置，而解题需要知道的是以华盛顿纪念碑为观察者视角的卫星位置，所以我们需要做减法来得到距离distance&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;difference&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;satellite&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;monument&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;topocentric&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;difference&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;at&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;alt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;az&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;distance&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;topocentric&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;altaz&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;然后我们可以得到高度角alt和方位角az&lt;/p&gt;
+&lt;p&gt;其中，高度角与tilt是互余的&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii4j7fbz5mj30d406imxl.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;所以我们只需要用90减去高度角就是tilt了&lt;/p&gt;
+&lt;p&gt;而heading 是卫星前进的方向，我们所得到的方位角是从目标看卫星的方向，而我们需要从卫星看目标的方向，所以需要加180度，然后模360使得范围落在360度内&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ii4jbu64utj30b504jtae.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;所以可以得到答案&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ii4jfsrhiej31ea084jxw.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;h2 id=&#34;bus&#34;&gt;bus
+&lt;/h2&gt;&lt;h3 id=&#34;环境搭建&#34;&gt;环境搭建
+&lt;/h3&gt;&lt;p&gt;这道题的环境就好搭多了&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; Hack-a-sat/hackasat-qualifier-2020/bus
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;make challenge
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样环境就搭好了，然后启动容器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;socat -v tcp-listen:31340,reuseaddr exec:&lt;span class=&#34;s2&#34;&gt;&amp;#34;docker run --rm -i -e SEED=1234 -e FLAG=flag{a7e06e19-a49b-4aad-ad62-6815cce7f162}  bus\:challenge&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;就可以开始做题了&lt;/p&gt;
+&lt;h3 id=&#34;解题-1&#34;&gt;解题
+&lt;/h3&gt;&lt;p&gt;使用nc连接容器&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; nc 172.17.0.1 &lt;span class=&#34;m&#34;&gt;31340&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ii55xsk5baj31sf0m1e3q.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;题目会疯狂冒出一些字符，同时每次输出后都会停顿一段时间，题目描述是这样的：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;There&amp;rsquo;s a very busy bus we&amp;rsquo;ve tapped a port onto,surely there is some juicy information hidden in the device memory&amp;hellip;somewhere&amp;hellip;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;所以这道题也比较像是传统CTF中的MISC题，这些字符应该是从某种总线协议中抓包出来的东西。这个特征比较像是IIC协议&lt;/p&gt;
+&lt;p&gt;我们可以先学习一下IIC协议&lt;/p&gt;
+&lt;h4 id=&#34;i2c&#34;&gt;I2C
+&lt;/h4&gt;&lt;p&gt;IIC（I2C）是一种由飞利浦半导体开发的两线制、多主从、同步串行通信协议，广泛用于微控制器与外围设备之间的数据传输。&lt;/p&gt;
+&lt;p&gt;设计I2C的初衷是减少电视机等复杂电子系统内部的布线数量，同时也降低制造成本。通过使用只有两根线的通信总线，它有效地减少了器件间连接的复杂性。&lt;/p&gt;
+&lt;p&gt;I2C使用SCL（串行时钟线）和SDA（串行数据线）两条线路进行双向传输，可以支持多个主设备和多个从设备连接到同一总线上。&lt;/p&gt;
+&lt;p&gt;I2C的通信方式是使用同步串行，数据传输同步于时钟信号。其格式由开始/结束指令，8位组成一字节的数据流和可选的应答位组成&lt;/p&gt;
+&lt;p&gt;I2C的数据传输过程是这样的：&lt;/p&gt;
+&lt;p&gt;数据信号以8位的序列传输。所以在特殊的开始条件发生后，就会出现第一个8位序列，它指示了数据被发送到哪个从设备的地址。每个8位序列之后都会跟随一个称为确认的位。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii56b7luluj31hc0b2agg.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;我们来描述I2C传输数据的一个过程：&lt;/p&gt;
+&lt;p&gt;空闲状态：SDA和SCL都为高电平表示总线空闲&lt;/p&gt;
+&lt;p&gt;现在要开始传输了，主设备会先发一个开始（Start）指令，其行为是，SCL保持高电平，SDA由高电平变到低电平&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ii56frfzs8j30ha06njrt.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;然后数据开始传输，传输过程中以SCL时钟周期为单位，一个周期传输一位，像这样：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SCL 低：发送方把 SDA 设置成下一位
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SCL 高：接收方读取 SDA 上的这一位
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SCL 低：发送方准备下一位
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;SCL 高：接收方读取下一位
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;假如我们要传一个字节（8位），就像这样：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第1个SCL周期：SDA = 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第2个SCL周期：SDA = 0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第3个SCL周期：SDA = 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第4个SCL周期：SDA = 0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第5个SCL周期：SDA = 0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第6个SCL周期：SDA = 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第7个SCL周期：SDA = 0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第8个SCL周期：SDA = 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;第9个SCL周期：接收方发 ACK/NACK
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;要注意的是SDA 在 SCL 低电平时改变，在 SCL 高电平时保持稳定；&lt;/p&gt;
+&lt;p&gt;可以简单理解为数据在SDA上传输，由SCL来控制这一位是由发送方发送还是由接收方接收。&lt;/p&gt;
+&lt;p&gt;在传输结束后，由主设备发送终止（Stop）信号，此时SCL保持高电位，SDA由低电位变为高电位&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii56o8rvgwj30hb06mdgc.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;回到我们题目上来，我们可以截取一段数据看看：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;^82+00+00+1f+00+00+00+12+47+40+41+c6+97+e1+3f+89+81+3f+c1+99+1d+a1+c0+20+18+a1+40+5e+42+ac+3c+.^83+00+00+3f+.^82+00+00+3f+00+00+00+20+fa+3f+41+c8+da+e2+3f+a6+64+3f+c1+ff+33+a1+c0+a4+d2+a0+40+de+50+55+40+.^b4+01+c9+61+20+30+33+00+f0+28+65+f5+e6+8f+3c+ba+5b+35+28+c7+5b+8f+6d+f3+ee+a2+57+23+bb+3b+9c+f0+31+a9+ed+80+2e+42+57+.^83+00+00+1f+.^82+00+00+1f+00+00+00+1d+ec+3f+41+d8+04+e5+3f+67+4e+40+c1+38+1b+a1+c0+e1+dd+a0+40+b9+91+91+3c+.^82+00+00+1f+00+00+00+1d+ec+3f+41+d8+04+e5+3f+67+4e+40+c1+38+1b+a1+c0+e1+dd+a0+40+b9+91+91+3c+.^83+00+00+3f+.^82+00+00+3f+00+00+00+da+81+3f+41+50+c7+e3+3f+9c+28+40+c1+77+df+a0+c0+44+1d+a0+40+7f+b7+52+40+.^b4+01+cf+28+65+f5+e6+8f+3c+ba+5b+35+28+c7+5b+8f+6d+f3+ee+a2+57+23+bb+3b+9c+f0+31+a9+ed+80+2e+42+57+1e+6a+bc+13+50+4b+50+0a+a6+85+32+6d+.^83+00+00+1f+.^82+00+00+1f+00+00+00+41+85+40+41+e2+7a+e1+3f+e8+28+40+c1+fc+50+a0+c0+6e+09+9f+40+57+8c+e9+3c+.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们截取了两次输出，可以看到每段都是以 &lt;code&gt;^82&lt;/code&gt;, &lt;code&gt;^83&lt;/code&gt;, &lt;code&gt;^b4&lt;/code&gt;开头&lt;/p&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th&gt;整理一下&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td&gt;^82+00+00+1f+00+00+00+12+47+40+41+c6+97+e1+3f+89+81+3f+c1+99+1d+a1+c0+20+18+a1+40+5e+42+ac+3c+.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;^83+00+00+3f+.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;^82+00+00+3f+00+00+00+20+fa+3f+41+c8+da+e2+3f+a6+64+3f+c1+ff+33+a1+c0+a4+d2+a0+40+de+50+55+40+.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;^b4+01+c9+61+20+30+33+00+f0+28+65+f5+e6+8f+3c+ba+5b+35+28+c7+5b+8f+6d+f3+ee+a2+57+23+bb+3b+9c+f0+31+a9+ed+80+2e+42+57+.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;^83+00+00+1f+.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td&gt;^82+00+00+1f+00+00+00+1d+ec+3f+41+d8+04+e5+3f+67+4e+40+c1+38+1b+a1+c0+e1+dd+a0+40+b9+91+91+3c+.&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I2C 事务 START 后的第一个字节是“地址字节”，所以我们可以猜到&lt;code&gt;0x82&lt;/code&gt;, &lt;code&gt;0x83&lt;/code&gt;, &lt;code&gt;0xb4&lt;/code&gt;应该都是地址字节，可以从地址字节中看出后面操作时读还是写：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bit7 bit6 bit5 bit4 bit3 bit2 bit1 | bit0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;--------- 7 位从设备地址 -------&amp;gt;   R/W
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;所以我们可以得到：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;0x82&lt;/code&gt; → 7 位地址 &lt;code&gt;0x41&lt;/code&gt;，写&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;0x83&lt;/code&gt; → 7 位地址 &lt;code&gt;0x41&lt;/code&gt;，读&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;0xb4&lt;/code&gt; → 7 位地址 &lt;code&gt;0x5a&lt;/code&gt;，写&lt;/p&gt;
+&lt;p&gt;我们把数据丢进Cyberchef用Hex解码一下，我们可以在最后一个&lt;code&gt;0xb4&lt;/code&gt;找到较为完整的字符&lt;code&gt;Juicy Da&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ii575cy6dhj31l90m0dj8.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;按照标准的I2C协议标准，&lt;code&gt;0x82&lt;/code&gt; 写，&lt;code&gt;0x83&lt;/code&gt;读，&lt;code&gt;0xb4&lt;/code&gt; 写的话，我们不知道正确的Flag是什么，而题目默认的写入会在Juciy Data后截断，也就是说我们无法直接从写入流中读到flag。所以我们可以猜测这里题目对I2C协议的实现进行了一些更改。&lt;/p&gt;
+&lt;p&gt;我们假设题目将原来的读写标志位反转了，即变成了：&lt;code&gt;0x82&lt;/code&gt; 读，&lt;code&gt;0x83&lt;/code&gt;写，&lt;code&gt;0xb4&lt;/code&gt; 读&lt;/p&gt;
+&lt;p&gt;这样一来，原来的Juciy Data就变成从设备的EEP中读取出来的，或许我们就可以从设备的EEP中读取出flag&lt;/p&gt;
+&lt;p&gt;我们再观察题目完成的输出流，其每次写入操作都会向&lt;code&gt;0x41&lt;/code&gt;写入&lt;code&gt;^83+00+00+3f+.&lt;/code&gt;或&lt;code&gt;^83+00+00+1f+.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;过程是：首先读一下 0x41 的内容看看是不是 1f，是的话向 0x41 写入 0x3f，然后再次读取确认一下，是 0x3f 的话就可以读取 0x5a 的内容了，所以&lt;code&gt;0x41&lt;/code&gt;应该是EPS电源系统控制器，通过&lt;code&gt;0x1f&lt;/code&gt;和&lt;code&gt;0x3f&lt;/code&gt;来控制总线上连接设备的供电。&lt;/p&gt;
+&lt;p&gt;我们来对比一下差异&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0x1f = 0001 1111
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0x3f = 0011 1111
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;两者差异是：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0x3f ^ 0x1f = 0x20
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;我们可以看到，在每次读取之前都要将&lt;code&gt;0001 1111&lt;/code&gt;变成&lt;code&gt;0011 1111&lt;/code&gt;才能开始读取，可得控制 EEP 电源的就是 &lt;code&gt;0x20&lt;/code&gt; 这一位，所以我们可以这样写：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;^83+00+00+20+.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这样就可以把其他设备断电，只保持EEP供电，从而使我们可以读取flag&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii580zcgo3j30um05ijvi.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;可以看到，我们输入&lt;code&gt;^83+00+00+20+.&lt;/code&gt;之后题目停止了输出，显然我们成功关掉了其他设备，现在我们只需要进行读取，这样输入：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;^b4000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这里的意思是，程序需要知道我们想要读取多少字节，但我们不知道flag的长度，所以我们需要填充很多占位符进去，确保程序能够读足够多的位，从而读出flag&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ii586ds5gnj31iu0g3qr4.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;我们将读取出来的数据解码一下，就能拿到flag了&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii587n7fjuj31ks0tpnc1.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;我们也可以试验一下不关闭其他设备，直接读EEP会是什么情况：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ii58g3crc0j31i30oihdt.jpg&#34;
+	
+	
+	
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;图片&#34;
+	
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;可以看到有一队其他设备的数据混入了我们读取流中，导致我们的读取被打断或是越界，我们没办法把 EEP 整片 dump 出来。&lt;/p&gt;
+&lt;h3 id=&#34;参考&#34;&gt;参考：
+&lt;/h3&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/678229227&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;I2C总线和通信协议详解&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/503219395&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;IIC通信协议，搞懂这篇就够了&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/yichen115/yuque_backup/blob/main/%E7%89%A9%E8%81%94%E7%BD%91%E5%AE%89%E5%85%A8/Hack-a-Sat/2020%E9%A2%84%E9%80%89%E8%B5%9B/bus.md&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;yichen115的博文&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
