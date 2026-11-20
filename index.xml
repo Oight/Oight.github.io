@@ -1,4 +1,277 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oight</title><link>https://Oight.github.io/</link><description>Recent content on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Fri, 16 Oct 2026 10:29:47 +0800</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>Hack-A-Sat-qualifier-2020 复现</title><link>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</link><pubDate>Fri, 16 Oct 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</guid><description>&lt;h1 id="hack-a-sat-qualifier-2020-复现">Hack-A-Sat-qualifier-2020 复现
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Oight</title><link>https://Oight.github.io/</link><description>Recent content on Oight</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Oight</copyright><lastBuildDate>Fri, 20 Nov 2026 09:18:15 +0800</lastBuildDate><atom:link href="https://Oight.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>如何使用IDEA进行调试——以CS61B Lecture2为例</title><link>https://Oight.github.io/p/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8idea%E8%BF%9B%E8%A1%8C%E8%B0%83%E8%AF%95%E4%BB%A5cs61b-lecture2%E4%B8%BA%E4%BE%8B/</link><pubDate>Fri, 20 Nov 2026 09:18:15 +0800</pubDate><guid>https://Oight.github.io/p/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8idea%E8%BF%9B%E8%A1%8C%E8%B0%83%E8%AF%95%E4%BB%A5cs61b-lecture2%E4%B8%BA%E4%BE%8B/</guid><description>&lt;h1 id="如何使用idea进行调试以cs61b-lecture2为例">如何使用IDEA进行调试——以CS61B Lecture2为例
+&lt;/h1>&lt;p>这篇博客是我在学习伯克利CS61B时临时起意想写的，由于我的上下文限制，以及最近没有很整块的时间构思行文，导致分布式学习5最近有点难产。&lt;del>所以先写这样一篇水一下博客数&lt;/del>&lt;/p>
+&lt;p>我不是Java大师，甚至我这些代码也是用Zed而不是用IDEA写的，所以我并不擅长Java,也不擅长IDEA的使用，这篇博客纯属我在学习CS61B中的学习笔记，如果有想要学习IDEA使用，被标题党骗进来的，还请轻喷QAQ&lt;/p>
+&lt;h2 id="代码">代码
+&lt;/h2>&lt;p>这里我用来调试的代码是伯克利CS61B&lt;a class="link" href="https://sp24.datastructur.es/" target="_blank" rel="noopener"
+>课程&lt;/a>中抄过来的，但我自己敲的时候有个别地方写得有点不一样，但不影响运行和调试，下面是所有的代码&lt;/p>
+&lt;p>首先这是项目结构&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msgy1ij7tpihxusj30fw0bw0ul.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>如果你发现无法在你的IDEA中运行代码，你可能需要这样做：&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ij7trbdbmzj30rm0yc15l.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>右键你的src目录，选择将目录标记为测试源代码根目录。&lt;/p>
+&lt;p>下面注释掉的代码是我一开始写来测试环境的，也是CS61B中Lecture2的第一部分的代码，如果只关注调试过程，这些代码可以不写。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Dog.java&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">package&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">lecture2&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">Dog&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">weightInPounds&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// public Dog() {&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// this.weightInPounds = 0;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// }&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">weight&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">this&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">weightInPounds&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">weight&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// public void makeNoise() {&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// if (weightInPounds &amp;gt; 10) {&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// System.out.println(&amp;#34;yip!&amp;#34;);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// } else if (weightInPounds &amp;gt; 30) {&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// System.out.println(&amp;#34;Bark&amp;#34;);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// } else {&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// System.out.println(&amp;#34;aroooooo&amp;#34;);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// }&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">//&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c1">// }&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// DogProblemBeautifulSolution.java&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kn">package&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">lecture2&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">DogProblemBeautifulSolution&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">largerFourNeighbors&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">returnDogs&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">length&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cnt&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">length&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">++&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">if&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">isBiggestOfFour&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">returnDogs&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">cnt&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">cnt&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">returnDogs&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">arrayWithNoNulls&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">returnDogs&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cnt&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">returnDogs&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">arrayWithNoNulls&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cnt&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">noNullDogs&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">cnt&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">cnt&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">++&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">noNullDogs&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">noNullDogs&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">boolean&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">validIndex&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">index&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">index&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;gt;=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;amp;&amp;amp;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">index&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">length&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">boolean&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">isBiggestOfFour&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">boolean&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">isBiggest&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">j&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">2&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">j&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;lt;=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">2&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">j&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">1&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">compareIndex&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">j&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">if&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">validIndex&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">compareIndex&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">if&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">compareIndex&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">weightInPounds&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;gt;=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">weightInPounds&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">isBiggest&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">false&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">return&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">isBiggest&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">10&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">15&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">20&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">15&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">10&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">5&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">10&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">15&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">22&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">20&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">};&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Dog&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">bigDogs1&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">largerFourNeighbors&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">dogs&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">k&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">0&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">k&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">bigDogs1&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">length&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">k&lt;/span>&lt;span class="o">++&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">if&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">bigDogs1&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">k&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">!=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">null&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">bigDogs1&lt;/span>&lt;span class="o">[&lt;/span>&lt;span class="n">k&lt;/span>&lt;span class="o">]&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">weightInPounds&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34; &amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">System&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">out&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">println&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>代码比较简单。功能就是给出一个数组，然后通过比较得到所有比它前两个数和它后两个数都大的数的数组，然后返回。&lt;/p>
+&lt;h2 id="调试">调试
+&lt;/h2>&lt;p>对于&lt;code>[10, 15, 20, 15, 10, 5, 10, 15, 22, 20]&lt;/code>这个数组，我们预期返回20和22这两个数，然后我们看看当前代码会返回什么：&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ij7udii455j31y10g9amx.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到返回空值，这显然不是我们想要的结果。&lt;/p>
+&lt;p>然后我们就可以开始调试，找出代码到底哪里出了问题。&lt;/p>
+&lt;p>我们首先在&lt;code>DogProblemBeautifulSolution.java&lt;/code>的第47行处下断点（下断点的作用是让代码在我们指定的地方停下来方便我们观察）&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ij7tze2vh8j30vl0o3wo9.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>然后我们点击调试按钮进行调试&lt;/p>
+&lt;p>&lt;img src="https://i1.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ij7u0wepmwj31z418c7wh.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到，代码在第47行处停下，这里是没有执行第47行代码的&lt;/p>
+&lt;p>&lt;img src="https://i1.wp.com/tvax4.sinaimg.cn/large/009XQ7msgy1ij7u2gr8v0j31z31897wh.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>然后我们需要一步步执行代码，来观察代码在运行过程中发生了什么，这里我们需要了解步进（Step Into）和 步过（Step Over）这两个概念。&lt;/p>
+&lt;p>步过是指运行至这个函数结束处（如果所在行为函数），也就是一行行运行代码&lt;/p>
+&lt;p>&lt;img src="https://i1.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ij7u3yaomsj30eh05ltab.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>步入是指进入函数内部观察程序行为（如果所在行为函数）。&lt;/p>
+&lt;p>&lt;img src="https://i2.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ij7u7nrpwxj30ef05habl.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>其快捷键分别为F8和F7。&lt;/p>
+&lt;p>我们点一下F8&lt;/p>
+&lt;p>&lt;img src="https://i2.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ij7u90xxjhj31xh13c1kx.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到函数执行后产生了我们预设的数组&lt;code>[10, 15, 20, 15, 10, 5, 10, 15, 22, 20]&lt;/code>&lt;/p>
+&lt;p>由于代码的核心逻辑都在&lt;code>largerFourNeighbors&lt;/code>函数中，所以我们F7步入看看&lt;/p>
+&lt;p>&lt;img src="https://i2.wp.com/tvax2.sinaimg.cn/large/009XQ7msgy1ij7uhvne9mj31gg0zl4kw.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到这里跳到了&lt;code>largerFourNeighbors&lt;/code>里面，和按F8产生了不同的效果，如果感兴趣可以停掉调试重新再&lt;code>largerFourNeighbors&lt;/code>函数处按F8看看会有什么不同。&lt;/p>
+&lt;p>然后我们走到第5行&lt;/p>
+&lt;p>&lt;img src="https://i3.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ij7ulo1spvj31ol12gquk.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>按F8,观察下面变量的变化&lt;/p>
+&lt;p>&lt;img src="https://i3.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ij7uniulwaj317911g4i7.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到weightInPounds变量从10变成了15，很明显这里在做具体比较&lt;/p>
+&lt;p>所以我们步进&lt;code>isBiggestOfFour&lt;/code>函数分析程序行为&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ij7uq4wnqbj31ig0y9ke9.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到下面&lt;code>i = 1&lt;/code>我们预期当&lt;code>i = 2&lt;/code>（20）应该是在这里返回true的。我们继续调试看看当&lt;code>i = 2&lt;/code>时会发生什么&lt;/p>
+&lt;p>可以一直按F7直到这里&lt;code>i = 2&lt;/code>，也可以重新启动调试在外面按到&lt;code>i = 2&lt;/code>再进来&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ij8cbrrflhj31pk10ikif.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>不论你使用什么方法，现在我们来到&lt;code>i = 2&lt;/code>了，我们可以一步步得运行看看程序会不会像我们预期的那样返回结果&lt;/p>
+&lt;p>点击3次（5次也行）F7,可以看到一直到if语句前这里&lt;code>isBiggest&lt;/code>的值都是true。可预想的，这里if语句不满足将&lt;code>isBiggest&lt;/code>设为&lt;code>false&lt;/code>的条件，所以这里&lt;code>j = -2, i = 2&lt;/code>时返回的是true&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ij8cf4d3b9j319e1321fj.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>这符合我们的预期。那我们接着往下走&lt;/p>
+&lt;p>同样的，当&lt;code>j = -1, i = 2&lt;/code>时，同样是我们预期中的结果，&lt;code>isBiggest&lt;/code>为true。&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ij8ck4cbtqj31dm138ha2.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>继续&lt;/p>
+&lt;p>当&lt;code>j = 0, i = 2&lt;/code>时，这时候&lt;code>dogs[i].weightInPounds&lt;/code>是20,&lt;code>dogs[compareIndex].weightInPounds&lt;/code>也是20，再看一眼代码，那我们已经可以猜到这里会发生什么了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ij8cnail5hj31em12wkg4.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>bad news&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ij8crxq2duj317r0ss4dm.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>这里将&lt;code>isBiggest&lt;/code>设为了false。这就与我们预期的结果不符了。&lt;/p>
+&lt;p>我们现在找到了问题出在哪，由于调试器只能向前走不能向后走，我们第一次观察到异常行为之后有问题的代码已经被执行完了，如果我们想再仔细看看代码到底出了什么问题，就需要重新调试了。&lt;/p>
+&lt;p>但这次我们就不需要再将断点下那么远了。我们知道了问题具体出在哪，就不用再关心前面没有出问题的逻辑了。&lt;/p>
+&lt;p>我们把调试停掉，然后取消掉原来在第47行设置的断点，把断点设置在第32行（在CS61B中将断点设在了第9行，但我觉得这个没什么很大的关系，看个人习惯）&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ij8cx2gszmj314u158kd9.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>重新启动调试&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax3.sinaimg.cn/large/009XQ7msly1ij8czbsaa2j31ls0zstxz.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以从这里开始调了&lt;/p>
+&lt;p>可以看到我们现在这里&lt;code>i = 0&lt;/code>，而在&lt;code>i = 2&lt;/code>时会出问题，所以我们要到&lt;code>i = 2&lt;/code>，要达成这个结果，这里我有两个选择，一是疯狂地按F7或F8,另一个选择是我可以使用IEDA提供的另一个快捷键&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ij8d5m26w0j30f9081ju7.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>它的作用是继续运行程序直到到达下一个断点，我们来试试看&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ij8d6wzy1aj31cu0yhkdh.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>现在&lt;code>i = 1&lt;/code>了，我们需要&lt;code>i = 2&lt;/code>&lt;/p>
+&lt;p>跳到&lt;code>i = 2&lt;/code>然后看到这里因为自身和自身比较了，所以无论是否比它的两个邻居更大，这里返回的都是false。问题就出在&lt;/p>
+&lt;p>&lt;code>if (dogs[compareIndex].weightInPounds &amp;gt;= dogs[i].weightInPounds)&lt;/code>这一行。&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ij8da1cdt1j3198128x13.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>这里在我们上面的分析中也分析出来了。解决办法也很简单，删掉=号就好了&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msgy1ij8dczyo8sj31gy0oak6x.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>删掉=再运行一下，发现和我们的预期行为相符。&lt;/p>
+&lt;p>这里我还要再介绍IDEA调试器的一个功能，这也是CS61B课程中提到的，我想这也是课程中要将断点设在第9行的原因，为了方便演示这个功能。&lt;/p>
+&lt;p>我们把=号加回去，然后把断点下在第9行重新调试&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ij8djd2pwzj31nm12h1kp.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到，判断&lt;code>isBiggest&lt;/code>是true或false的逻辑在&lt;code>isBiggestOfFour&lt;/code>函数的内部定义，我们现在在外部要想搞清楚现在&lt;code>isBiggest&lt;/code>到底true还是false，要怎么做呢？&lt;/p>
+&lt;p>我们会想到写一个print语句把结果打印出来，对Java这种需要编译的语言来说改代码要重新编译，如果代码量比较大，这个代价就比较高了。所以我们可以使用IDEA调试的时候动态输出程序的状态。&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax2.sinaimg.cn/large/009XQ7msly1ij8dnosmaaj31ny0vie1y.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>在这里我们可以写一些语句来做一些事情&lt;/p>
+&lt;p>现在我想知道当前&lt;code>isBiggest&lt;/code>到底true还是false&lt;/p>
+&lt;p>&lt;img src="https://i1.wp.com/tvax4.sinaimg.cn/large/009XQ7msly1ij8dqkjubuj30ns0dg0wh.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>然后Enter&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ij8dr2dw97j30is0cowhl.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>可以看到这里结果是false&lt;/p>
+&lt;p>同样的你也可以在这里预知一些未来，比如你可以提前知道第5只狗是否比它的邻居们更重&lt;/p>
+&lt;p>&lt;img src="https://i0.wp.com/tvax1.sinaimg.cn/large/009XQ7msly1ij8dsp76jsj30gu0d4778.jpg"
+loading="lazy"
+alt="图片"
+>&lt;/p>
+&lt;p>有一说一，都6206年了，居然还有人在学习古法调试的吗()&lt;/p></description></item><item><title>Hack-A-Sat-qualifier-2020 复现</title><link>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</link><pubDate>Fri, 16 Oct 2026 10:29:47 +0800</pubDate><guid>https://Oight.github.io/p/hack-a-sat-qualifier-2020-%E5%A4%8D%E7%8E%B0/</guid><description>&lt;h1 id="hack-a-sat-qualifier-2020-复现">Hack-A-Sat-qualifier-2020 复现
 &lt;/h1>&lt;p>又开新坑了，从未接触过的全新领域——卫星安全！&lt;/p>
 &lt;h2 id="beckley">beckley
 &lt;/h2>&lt;p>这道题更像是传统CTF MISC中的OSINT算是初步接触卫星安全领域的开胃小菜吧&lt;/p>
